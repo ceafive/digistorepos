@@ -28,10 +28,10 @@ export default function TransitionsModal({ open = false, onClose = () => {}, chi
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
-          timeout: 1000,
+          timeout: 0,
         }}
       >
-        <Fade in={open} timeout={200}>
+        <Fade in={open} timeout={0}>
           {children}
         </Fade>
       </Modal>

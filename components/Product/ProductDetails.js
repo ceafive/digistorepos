@@ -1,10 +1,12 @@
 import { openProductModal } from "features/products/productsSlice";
-import { camelCase, lowerCase, map, upperCase } from "lodash";
+import { camelCase, get, lowerCase, map, reduce, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Carousel from "components/Carousel";
 import { useForm } from "react-hook-form";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
+
+const initialFormData = {};
 
 const ProductDetails = ({ onClose }) => {
   const dispatch = useDispatch();
@@ -26,6 +28,9 @@ const ProductDetails = ({ onClose }) => {
   // const watchSetVariants = watch("setVariants");
 
   const [productPrice, setProductPrice] = React.useState(0);
+  const [formData, setFormData] = React.useState({});
+
+  // console.log({ productPrice });
 
   // console.log(errors);
 
@@ -41,19 +46,39 @@ const ProductDetails = ({ onClose }) => {
   // console.log({ allVariants });
 
   const submitFormData = (values) => {
-    const { quantity, ...rest } = values;
+    function IsJsonString(str) {
+      try {
+        var json = JSON.parse(str);
+        return typeof json === "object";
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const res = reduce(
+      values,
+      function (result, value, key) {
+        return { ...result, [key]: IsJsonString(value) ? get(JSON.parse(value), "value") : value };
+      },
+      {}
+    );
+
+    // console.log(res);
+    const { quantity, ...rest } = res;
     console.log({ values });
 
-    // dispatch(increaseTotalItemsInCart(Math.round(Number(values?.quantity))));
-    // dispatch(
-    //   addItemToCart({
-    //     id: product.product_id,
-    //     title: product.product_name,
-    //     price: Number(parseFloat(product.product_price).toFixed(2)),
-    //     imgURL: product.product_image,
-    //     variants: { ...values },
-    //   })
-    // );
+    dispatch(increaseTotalItemsInCart(Math.round(Number(res?.quantity))));
+    dispatch(
+      addItemToCart({
+        id: product.product_id,
+        title: product.product_name,
+        price: Number(parseFloat(productPrice).toFixed(2)),
+        imgURL: product.product_image,
+        quantity,
+        variants: rest,
+      })
+    );
+    onClose();
   };
 
   return (
@@ -103,18 +128,26 @@ const ProductDetails = ({ onClose }) => {
                     <div key={groupVariant[0]} className="px-3 mb-6">
                       <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">{groupVariant[0]}</label>
                       <select
+                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                         {...setVariant}
                         onChange={(e) => {
                           const value = JSON.parse(e.target.value);
-                          // const name = e.target.name;
-                          console.log(value?.value);
-                          setVariant.onChange({ ...e, target: { ...e.target, value: value?.value } });
+
+                          const target = {
+                            ...e.target,
+                            value: value?.value,
+                          };
+
+                          // setValue(camelCase(groupVariant[0]), value?.value);
+
+                          e = { ...e, target };
+                          // console.log(e.target.value);
+                          // setVariant.onChange(e);
 
                           if (value?.price) {
                             setProductPrice(Number(parseFloat(value?.price).toFixed(2)));
                           }
                         }}
-                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                       >
                         <option value={""}></option>
                         {groupVariant[1].map((variant) => {

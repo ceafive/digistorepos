@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { openInventoryModal, setProductToView } from "features/products/productsSlice";
+import { capitalize, lowerCase } from "lodash";
 
 const Accordion = ({ product, index }) => {
+  // console.log(product);
   const {
     register,
     handleSubmit,
@@ -114,6 +116,23 @@ const Accordion = ({ product, index }) => {
               className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
             />
           </div> */}
+
+          {product.variants && (
+            <div className="mt-2">
+              <label htmlFor="notes" className="font-bold">
+                Variants
+              </label>
+              <div className="flex flex-wrap justify-between items-center">
+                {Object.entries(product.variants).map((variant) => {
+                  return (
+                    <p key={variant[0]} className="mr-1">
+                      <span>{capitalize(lowerCase(variant[0]))}:</span> <span className="font-bold">{variant[1]}</span>
+                    </p>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           <div className="mt-2 text-right">
             <button
               className="text-xs text-blue-500 focus:outline-none"
