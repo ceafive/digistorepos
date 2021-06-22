@@ -7,6 +7,7 @@ import UserDropdown from "components/Dropdowns/UserDropdown.js";
 import { sidebarRoutes } from "utils/routes";
 import { useDispatch, useSelector } from "react-redux";
 import { setSecondPaneOpenPath } from "features/app/appSlice";
+import { setOutletSelected } from "features/products/productsSlice";
 
 const NavLink = ({ sidebarRoute }) => {
   const { name, slug, path, icon, iconColor } = sidebarRoute;
@@ -75,6 +76,10 @@ const ChildNavLink = ({ childLink }) => {
 export default function Sidebar() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const outlets = useSelector((state) => state.products.outlets);
+  const outletSelected = useSelector((state) => state.products.outletSelected);
+
+  console.log(outlets, outletSelected);
 
   React.useEffect(() => {
     // dispatch(setSecondPaneOpenPath());
@@ -104,8 +109,29 @@ export default function Sidebar() {
           </div>
           <div className="w-2/3">
             <p className="text-left text-blueGray-600 block uppercase font-bold p-4">
-              Electro Darko House HQ, East Legon
+         
             </p>
+            <div>
+            <div className="w-full px-3 mb-6 ">
+      <label className="block uppercase tracking-wide text-gray-700 font-bold mb-2" htmlFor="grid-state">
+          {outlets.find(outlet => outlet.outlet_id === outletSelected)?.outlet_name}
+      </label>
+      <div className="relative">
+        <select onChange={(e)=>{
+        e.persist()
+        console.log(e.target.value)
+        dispatch(setOutletSelected(e.target.value))
+        }} className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" >
+          {outlets.map(outlet=>{
+            return <option key={outlet.outlet_name} value={outlet.outlet_id}>
+              {outlet.outlet_name}
+              </option>
+          })}
+        </select>
+      
+      </div>
+    </div>
+            </div>
             <hr className="my-4 min-w-full" />
 
             <ul className="flex-col min-w-full list-none">

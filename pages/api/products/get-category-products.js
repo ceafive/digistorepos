@@ -13,7 +13,7 @@ function getHash(string, key) {
   return hmac.digest("hex");
 }
 
-export default function handler(req, res) {
+export default function handler(req, res) { 
   return cors(req, res, async () => {
     if (req.method !== "POST") {
       return res.status(200).json({ success: false, message: "Invalid request" });
@@ -29,8 +29,10 @@ export default function handler(req, res) {
 
       const userDetails = req.body.user;
       const category = req.body.category;
+      const outletSelected = req.body.outletSelected;
+   
       const iPayResponse = await axiosIPAY({
-        url: `stores/merchant/${userDetails["user_merchant_id"]}/store/outlet/${userDetails["user_assigned_outlets"][0]}/category/${category}/products`,
+        url: `stores/merchant/${userDetails["user_merchant_id"]}/store/outlet/${outletSelected}/category/${category}/products`,
         method: "get",
         headers: {
           Application: appID,
