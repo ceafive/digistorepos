@@ -226,7 +226,7 @@ const SearchResults = () => {
 
           {/* Products Display */}
           <div className="justify-center mt-4">
-            <div className="grid grid-cols-4 xl:grid-cols-5 gap-2">
+            <div className="grid grid-cols-4 xl:grid-cols-6 gap-3">
               {productsDisplay.map((product, index) => {
                 return (
                   <div
@@ -251,7 +251,7 @@ const SearchResults = () => {
                       }
                     }}
                   >
-                    <div className="h-full rounded overflow-hidden w-20">
+                    <div className="h-full rounded overflow-hidden w-20 xl:w-32">
                       <div className="relative" style={{ paddingBottom: "70%" }}>
                         <img className="absolute object-cover w-full h-full" src={product.product_image} alt={product.product_name} />
                       </div>
