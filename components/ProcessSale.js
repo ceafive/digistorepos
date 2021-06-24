@@ -261,7 +261,7 @@ const ProcessSale = () => {
                 }}
               >
                 <i className="fas fa-arrow-left mr-1 "></i>
-                <span>Back to Sales</span>
+                <span>Back to Sale</span>
               </button>
             )}
           </p>
