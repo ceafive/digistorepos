@@ -12,30 +12,30 @@ import { motion } from "framer-motion";
 import OutletsPage from "components/Sell/OutletsPage";
 
 export default function Sell() {
-  const dispatch = useDispatch();
-  const outletSelected = useSelector((state) => state.products.outletSelected);
+  // const dispatch = useDispatch();
+  // const outletSelected = useSelector((state) => state.products.outletSelected);
 
-  const userDetails = sessionStorage.getItem("IPAYPOSUSER") ? JSON.parse(sessionStorage.getItem("IPAYPOSUSER")) : null;
+  // const userDetails = sessionStorage.getItem("IPAYPOSUSER") ? JSON.parse(sessionStorage.getItem("IPAYPOSUSER")) : null;
 
-  React.useEffect(() => {
-    if (userDetails?.user_assigned_outlets?.length === 1) {
-      dispatch(setOutletSelected(userDetails?.user_assigned_outlets[0]));
-    }
-  }, [dispatch, userDetails?.user_assigned_outlets]);
+  // React.useEffect(() => {
+  //   if (userDetails?.user_assigned_outlets?.length === 1) {
+  //     dispatch(setOutletSelected(userDetails?.user_assigned_outlets[0]));
+  //   }
+  // }, [dispatch, userDetails?.user_assigned_outlets]);
 
-  if (!userDetails) {
-    return null;
-  }
+  // if (!userDetails) {
+  //   return null;
+  // }
 
-  if (userDetails?.user_assigned_outlets?.length === 1) {
-    return <SellPage />;
-  }
+  // if (userDetails?.user_assigned_outlets?.length === 1) {
+  //   return <SellPage />;
+  // }
 
-  if (userDetails?.user_assigned_outlets?.length > 1) {
-    return <OutletsPage />;
-  }
+  // if (userDetails?.user_assigned_outlets?.length > 1) {
+  //   return <OutletsPage />;
+  // }
 
-  return null;
+  return <SellPage />;
 }
 
 Sell.layout = Admin;

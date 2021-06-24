@@ -16,11 +16,7 @@ const DiscountBox = ({ setShowDiscountBox }) => {
         <hr />
         <div className="flex items-center mt-4 px-2">
           <div className="flex items-center mr-2 border border-gray-200 rounded-full">
-            <div
-              className={`${
-                cartDiscountType === "percent" ? "bg-gray-200" : ""
-              } m-1 rounded-full px-3 transition-all duration-500 ease-in-out`}
-            >
+            <div className={`${cartDiscountType === "percent" ? "bg-gray-200" : ""} m-1 rounded-full px-3 transition-colors`}>
               <button
                 className="focus:outline-none h-full w-full"
                 onClick={() => {
@@ -30,11 +26,7 @@ const DiscountBox = ({ setShowDiscountBox }) => {
                 %
               </button>
             </div>
-            <div
-              className={`${
-                cartDiscountType === "amount" ? "bg-gray-200" : ""
-              } m-1 rounded-full px-3 transition-all duration-500 ease-in-out`}
-            >
+            <div className={`${cartDiscountType === "amount" ? "bg-gray-200" : ""} m-1 rounded-full px-3 transition-colors`}>
               <button
                 className="focus:outline-none h-full w-full"
                 onClick={() => {
@@ -63,6 +55,7 @@ const DiscountBox = ({ setShowDiscountBox }) => {
             className="text-white font-bold bg-red-700 px-3 py-1 mr-2 rounded"
             onClick={() => {
               setShowDiscountBox(false);
+              dispatch(onChangeCartDiscountType("percent"));
             }}
           >
             Cancel

@@ -44,20 +44,13 @@ const SellPage = () => {
       }
     };
 
-    const fetchCustomers = async () => {
-      const res = await axios.get("https://jsonplaceholder.typicode.com/users");
-      const data = await res.data;
-      dispatch(customersAdded(data.slice(0)));
-    };
-
-    fetchCustomers();
     fetchItems();
   }, [dispatch, outletSelected]);
 
   if (fetching) {
     return (
-      <div className="min-h-screen flex-col justify-center items-center w-full">
-        <Spinner />
+      <div className="min-h-screen flex-col justify-center items-center w-full h-full">
+        <Spinner type="TailSpin" />
       </div>
     );
   }

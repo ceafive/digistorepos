@@ -32,7 +32,7 @@ export default function handler(req, res) {
       const outletSelected = req.body.outletSelected;
 
       const iPayResponse = await axiosIPAY({
-        url: `/stores/merchant/${userDetails["user_merchant_id"]}/store/outlet/${outletSelected}/category/${category}/products`,
+        url: `/stores/merchant/${userDetails["user_merchant_id"]}/store/outlet/${userDetails?.user_assigned_outlets[0]}/category/${category}/products`,
         method: "get",
         headers: {
           Application: appID,

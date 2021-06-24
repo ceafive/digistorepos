@@ -28,6 +28,8 @@ const SearchResults = () => {
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
   const outletSelected = useSelector((state) => state.products.outletSelected);
 
+  console.log(productCategories);
+
   const perPage = 12;
 
   const [searchProductsDisplay, setSearchProductsDisplay] = React.useState(products);
@@ -172,7 +174,7 @@ const SearchResults = () => {
                     searchProductsDisplay.map((product) => {
                       return (
                         <div
-                          className="w-full py-2 cursor-pointer"
+                          className="w-full p-2 cursor-pointer border border-gray-400"
                           key={product.product_id}
                           onClick={() => {
                             if (product?.product_properties?.length > 0) {
@@ -194,13 +196,13 @@ const SearchResults = () => {
                         >
                           <div className="flex items-center text-black font-medium" key={product.product_id}>
                             <div className="flex items-center w-full">
-                              <div className="w-48 h-24">
-                                <img className="w-full h-full" src={product.product_image} alt={product.product_name} />
+                              <div className="w-48 h-20">
+                                <img className="w-full h-full object-cover" src={product.product_image} alt={product.product_name} />
                               </div>
 
                               <div className="px-4 w-full">
                                 <div className="flex justify-between items-center w-full">
-                                  <p>{product.product_name}</p>
+                                  <p className="font-semibold">{product.product_name}</p>
                                   <p>GHC{product.product_price}</p>
                                 </div>
                                 <p>{product.product_id}</p>
