@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  openSidebarSecondpane: true,
+  openSidebarSecondpane: false,
   secondPaneOpenPathname: "home",
 };
 
@@ -10,6 +10,7 @@ const appSlice = createSlice({
   initialState,
   reducers: {
     setSidebarSecondPaneOpen(state, action) {
+      // state.openSidebarSecondpane = !state.openSidebarSecondpane;
       state.openSidebarSecondpane = action.payload;
     },
     setSecondPaneOpenPath(state, action) {

@@ -17,37 +17,32 @@ const SellPage = () => {
   const inventoryModalOpen = useSelector((state) => state.products.inventoryModalOpen);
   const outletSelected = useSelector((state) => state.products.outletSelected);
 
-  const [fetching, setFetching] = React.useState(false)
-
-  // console.log({outletSelected,fetching});
-  
+  // Compnent State
+  const [fetching, setFetching] = React.useState(false);
 
   React.useEffect(() => {
-    const fetchItems = async ()=>{
+    const fetchItems = async () => {
       try {
-        setFetching(true)
+        setFetching(true);
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
-  
-        const productsAddedRes = await axios.post("/api/products/get-outlet-products", {user,outletSelected});
-        const onSetProductCategoriesRes = await axios.post("/api/products/get-outlet-categories", {user,outletSelected});
-        
-        const { data:productsAddedResData } = await productsAddedRes.data;
-        const { data:onSetProductCategoriesResData } = await onSetProductCategoriesRes.data;
+
+        const productsAddedRes = await axios.post("/api/products/get-outlet-products", { user, outletSelected });
+        const onSetProductCategoriesRes = await axios.post("/api/products/get-outlet-categories", { user, outletSelected });
+
+        const { data: productsAddedResData } = await productsAddedRes.data;
+        const { data: onSetProductCategoriesResData } = await onSetProductCategoriesRes.data;
 
         // console.log({productsAddedResData, onSetProductCategoriesResData});
-    
+
         dispatch(productsAdded(productsAddedResData));
         dispatch(onSetProductCategories(onSetProductCategoriesResData));
-        
       } catch (error) {
         console.log(error);
-      }finally{
-        setFetching(false)
+      } finally {
+        setFetching(false);
       }
-    }
-
-
+    };
 
     const fetchCustomers = async () => {
       const res = await axios.get("https://jsonplaceholder.typicode.com/users");
@@ -56,15 +51,15 @@ const SellPage = () => {
     };
 
     fetchCustomers();
-    fetchItems()
-
+    fetchItems();
   }, [dispatch, outletSelected]);
 
-
-  if(fetching){
-    return    <div className="min-h-screen flex-col justify-center items-center w-full">
-      <Spinner/>
+  if (fetching) {
+    return (
+      <div className="min-h-screen flex-col justify-center items-center w-full">
+        <Spinner />
       </div>
+    );
   }
 
   return (
@@ -75,10 +70,10 @@ const SellPage = () => {
             <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
               <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
             </Modal>
-            <div className="w-full xl:w-7/12 pb-6 pt-12 px-4">
+            <div className="w-full xl:w-8/12 pb-6 pt-12 px-4">
               <SearchResults />
             </div>
-            <div className="w-full xl:w-5/12 pb-6 pt-6 px-4">
+            <div className="w-full xl:w-4/12 pb-6 pt-6 px-4">
               <Cart />
             </div>
           </motion.div>

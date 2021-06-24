@@ -1,10 +1,4 @@
-import {
-  onClickToCheckout,
-  onAddCartNote,
-  onChangeCartDiscountType,
-  setDiscount,
-  applyDiscount,
-} from "features/cart/cartSlice";
+import { onClickToCheckout, onAddCartNote, onChangeCartDiscountType, setDiscount, applyDiscount } from "features/cart/cartSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -16,18 +10,12 @@ const PayButton = () => {
   const cartDiscountType = useSelector((state) => state.cart.cartDiscountType);
   const cartDiscount = useSelector((state) => state.cart.cartDiscount);
   const totalTaxes = useSelector((state) => state.cart.totalTaxes);
-  const cartTotalMinusDiscountPlusTax = useSelector(
-    (state) => state.cart.cartTotalMinusDiscountPlusTax
-  );
-  const cartTotalMinusDiscount = useSelector(
-    (state) => state.cart.cartTotalMinusDiscount
-  );
+  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
+  const cartTotalMinusDiscount = useSelector((state) => state.cart.cartTotalMinusDiscount);
 
   const [showAddNoteInput, setShowAddNoteInput] = React.useState(false);
 
-  const covidTax = Number(
-    parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2)
-  );
+  const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
 
   React.useEffect(() => {
     dispatch(applyDiscount());
@@ -40,7 +28,7 @@ const PayButton = () => {
       <div className="flex justify-between py-2">
         {!showAddNoteInput && (
           <button
-            className="font-semibold text-blue-500"
+            className="font-medium text-blue-500"
             onClick={() => {
               setShowAddNoteInput(true);
             }}
@@ -56,31 +44,31 @@ const PayButton = () => {
               dispatch(onAddCartNote(e.target.value));
             }}
             type="text"
-            placeholder="Add a note here"
+            placeholder="Add a note to this sale"
             className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full"
           />
         )}
-        {/* <p className="font-semibold text-blue-500"></p> */}
+        {/* <p className="font-medium "></p> */}
         {/* <div className="flex justify-between w-2/3">
-          <p className="font-semibold text-blue-500">Discount</p>
-          <p className="font-semibold text-gray-500">Promo Code</p>
-          <p className="font-semibold text-blue-500">Note</p>
+          <p className="font-medium ">Discount</p>
+          <p className="font-medium text-gray-500">Promo Code</p>
+          <p className="font-medium ">Note</p>
         </div> */}
       </div>
 
       <hr />
-      <div className="flex justify-between font-bold py-1">
+      <div className="flex justify-between font-medium py-1">
         <div className="flex justify-between w-2/3">
-          <p className="font-bold text-blue-500">Subtotal</p>
+          <p className="font-medium ">Subtotal</p>
         </div>
         <div className="flex">
           <p>GHS{totalPriceInCart}</p>
         </div>
       </div>
 
-      <div className="flex justify-between items-center font-bold py-1">
+      <div className="flex justify-between items-center font-medium py-1">
         <div className="w-2/3">
-          <p className="font-bold text-blue-500">Discount</p>
+          <p className="font-medium ">Discount</p>
         </div>
         <div className="flex items-center">
           <div className="flex items-center mr-2 border border-gray-200 rounded-full">
@@ -127,18 +115,18 @@ const PayButton = () => {
         </div>
       </div>
 
-      <div className="flex justify-between font-bold py-1 pt-4">
+      <div className="flex justify-between font-medium py-1 pt-4">
         <div className="flex justify-between w-2/3">
-          <p className="font-bold text-blue-900">Total before tax</p>
+          <p className="font-medium text-blue-900">Total before tax</p>
         </div>
         <div className="flex ">
           <p>GHC{cartTotalMinusDiscount}</p>
         </div>
       </div>
 
-      <div className="flex justify-between font-bold py-1">
+      <div className="flex justify-between font-medium py-1">
         <div className="flex justify-between w-2/3">
-          <p className="font-bold text-blue-500">Tax</p>
+          <p className="font-medium ">Tax</p>
           <p>VAT COVID-19 Levy 4%</p>
         </div>
         <div className="flex ">
@@ -151,10 +139,8 @@ const PayButton = () => {
         <button
           disabled={!totalPriceInCart}
           className={`w-full ${
-            totalPriceInCart
-              ? "bg-green-600 text-white"
-              : "bg-gray-400 text-gray-300"
-          } py-3 px-6  font-semibold text-xl rounded`}
+            totalPriceInCart ? "bg-green-600 text-white" : "bg-gray-400 text-gray-300"
+          } py-3 px-6  font-medium text-xl rounded`}
           onClick={() => {
             dispatch(onClickToCheckout());
           }}

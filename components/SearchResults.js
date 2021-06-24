@@ -17,6 +17,8 @@ import axios from "axios";
 import InventoryDetails from "./Product/InventoryDetails";
 import ProductDetails from "./Product/ProductDetails";
 
+const categoryColors = ["#fedede", "#eefefd", "#aeffff", "#deeafa"];
+
 const SearchResults = () => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.products.products);
@@ -33,7 +35,12 @@ const SearchResults = () => {
   const [pageCount, setPageCount] = React.useState(0);
   const [offset, setOffset] = React.useState(Math.ceil(0 * perPage));
 
-  // console.log(productsDisplay);
+  const categoryTabColors = React.useMemo(() => {
+    return Array.from({ length: productCategories?.length + 1 }, () => {
+      const randomIndex = Math.floor(Math.random() * categoryColors.length);
+      return categoryColors[randomIndex];
+    });
+  }, []);
 
   React.useEffect(() => {
     const pageCount = Math.ceil(products.length / perPage);
@@ -41,7 +48,7 @@ const SearchResults = () => {
   }, [products.length]);
 
   React.useEffect(() => {
-    const KEYS_TO_FILTERS = ["title", "url"];
+    const KEYS_TO_FILTERS = ["product_name", "product_description"];
     const filteredProducts = products.filter(createFilter(searchTerm ?? "", KEYS_TO_FILTERS));
 
     setSearchProductsDisplay(filteredProducts);
@@ -56,7 +63,7 @@ const SearchResults = () => {
         const res = await axios.post("/api/products/get-category-products", {
           user,
           category: categorySelected.category_id,
-          outletSelected
+          outletSelected,
         });
         const { data } = await res.data;
         setProductsDisplay(take([...data].slice(offset), perPage));
@@ -95,7 +102,7 @@ const SearchResults = () => {
                     dispatch(currentSearchTerm(e.target.value));
                   }}
                   type="text"
-                  placeholder="Search here..."
+                  placeholder="Start typing or scanning..."
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
                 />
                 {searchTerm && (
@@ -109,47 +116,51 @@ const SearchResults = () => {
                   </span>
                 )}
               </div>
-              <div className="flex items-center w-full mt-4">
-                <button
-                  className={`shadow rounded bg-white text-black font-semibold border-t-2 ${
-                    categorySelected?.category_name === "ALL" ? "border-green-300" : "border-gray-400"
-                  } px-6 py-2 focus:outline-none mr-2 transition-colors duration-150 ease-in-out`}
-                  onClick={() => {
-                    setOffset(0);
-                    dispatch(
-                      onSelectCategory({
-                        category_id: "ALL",
-                        category_name: "ALL",
-                        category_description: "All Categories",
-                      })
+              <div className="flex justify-start items-center w-full mt-4">
+                <div className="flex items-center">
+                  <button
+                    className={`shadow rounded text-black font-semibold border-t-4 ${
+                      categorySelected?.category_name === "ALL" ? "border-green-300" : "border-gray-400"
+                    } px-6 py-2 focus:outline-none mr-2 transition-colors duration-150 ease-in-out`}
+                    style={{ height: 120, width: 120, backgroundColor: categoryTabColors[0] }}
+                    onClick={() => {
+                      setOffset(0);
+                      dispatch(
+                        onSelectCategory({
+                          category_id: "ALL",
+                          category_name: "ALL",
+                          category_description: "All Categories",
+                        })
+                      );
+                    }}
+                  >
+                    All
+                  </button>
+                  {productCategories?.map((productCatergory, index) => {
+                    return (
+                      <button
+                        key={productCatergory.category_id}
+                        className={`shadow rounded text-black font-semibold border-t-4 ${
+                          categorySelected?.category_name === productCatergory.category_name ? "border-green-400" : "border-gray-400"
+                        } px-6 py-2 focus:outline-none mr-2 transition-colors duration-150 ease-in-out`}
+                        style={{ height: 120, width: 120, backgroundColor: categoryTabColors.slice(1)[index] }}
+                        onClick={() => {
+                          setOffset(0);
+                          // console.log(productCatergory);
+                          dispatch(onSelectCategory(productCatergory));
+                        }}
+                      >
+                        {productCatergory.category_name}
+                      </button>
                     );
-                  }}
-                >
-                  All
-                </button>
-                {productCategories?.map((productCatergory) => {
-                  return (
-                    <button
-                      key={productCatergory.category_id}
-                      className={`shadow rounded bg-white text-black font-semibold border-t-2 ${
-                        categorySelected?.category_name === productCatergory.category_name ? "border-green-300" : "border-gray-400"
-                      } px-6 py-2 focus:outline-none mr-2 transition-colors duration-150 ease-in-out`}
-                      onClick={() => {
-                        setOffset(0);
-                        // console.log(productCatergory);
-                        dispatch(onSelectCategory(productCatergory));
-                      }}
-                    >
-                      {productCatergory.category_name}
-                    </button>
-                  );
-                })}
+                  })}
+                </div>
               </div>
 
               {/* search results */}
               {searchTerm && (
                 <div
-                  className={`z-10 absolute w-full p-4 bg-white rounded shadow-lg ${
+                  className={`z-10 absolute w-full py-4 px-8 bg-white rounded shadow-lg border  ${
                     searchProductsDisplay.length > 0 && "overflow-x-hidden overflow-scroll"
                   }`}
                   style={{
@@ -164,30 +175,35 @@ const SearchResults = () => {
                           className="w-full py-2 cursor-pointer"
                           key={product.product_id}
                           onClick={() => {
-                            dispatch(increaseTotalItemsInCart());
-                            dispatch(
-                              addItemToCart({
-                                id: product.product_id,
-                                title: product.product_name,
-                                price: Number(parseFloat(product.product_price).toFixed(2)),
-                                imgURL: product.product_image,
-                              })
-                            );
-                            // console.log(product);
+                            if (product?.product_properties?.length > 0) {
+                              dispatch(setProductToView(product));
+                              dispatch(openProductModal());
+                            } else {
+                              dispatch(increaseTotalItemsInCart());
+                              dispatch(
+                                addItemToCart({
+                                  id: product.product_id,
+                                  title: product.product_name,
+                                  price: Number(parseFloat(product.product_price).toFixed(2)),
+                                  imgURL: product.product_image,
+                                  variants: { type: "normal" },
+                                })
+                              );
+                            }
                           }}
                         >
-                          <div className="flex items-center bg-blueGray-800 text-white" key={product.product_id}>
+                          <div className="flex items-center text-black font-medium" key={product.product_id}>
                             <div className="flex items-center w-full">
-                              <img className="w-24 h-24" src={product.product_image} alt={product.product_name} />
+                              <div className="w-48 h-24">
+                                <img className="w-full h-full" src={product.product_image} alt={product.product_name} />
+                              </div>
 
-                              <div className="flex justify-between items-center w-full px-4">
-                                <div className="">
+                              <div className="px-4 w-full">
+                                <div className="flex justify-between items-center w-full">
                                   <p>{product.product_name}</p>
-                                  <p>{product.product_quantity}</p>
-                                </div>
-                                <div>
                                   <p>GHC{product.product_price}</p>
                                 </div>
+                                <p>{product.product_id}</p>
                               </div>
                             </div>
                           </div>
@@ -206,7 +222,7 @@ const SearchResults = () => {
 
           {/* Products Display */}
           <div className="justify-center mt-4">
-            <div className="grid grid-cols-3 gap-4 ">
+            <div className="grid grid-cols-4 xl:grid-cols-5 gap-2">
               {productsDisplay.map((product, index) => {
                 return (
                   <div
@@ -225,21 +241,18 @@ const SearchResults = () => {
                             title: product.product_name,
                             price: Number(parseFloat(product.product_price).toFixed(2)),
                             imgURL: product.product_image,
+                            variants: { type: "normal" },
                           })
                         );
                       }
                     }}
                   >
-                    <div className="w-full h-full rounded-xl shadow-lg overflow-hidden">
-                      <div className="relative" style={{ paddingBottom: "75%" }}>
+                    <div className="w-full h-full rounded overflow-hidden" style={{ width: 150 }}>
+                      <div className="relative" style={{ paddingBottom: "70%" }}>
                         <img className="absolute object-cover w-full h-full" src={product.product_image} alt={product.product_name} />
                       </div>
-                      <div className="bg-white text-black p-2 h-full">
-                        <p className="font-bold">{product.product_name}</p>
-                        <p className="text-xs">
-                          <span>Quantity: </span>
-                          <span className="font-bold">{product.product_quantity}</span>
-                        </p>
+                      <div className="bg-white text-black text-center px-2 font-medium">
+                        <p className="truncate">{product.product_name}</p>
                       </div>
                     </div>
                   </div>
@@ -249,7 +262,7 @@ const SearchResults = () => {
 
             <div className="flex w-full justify-center mt-6">
               <ReactPaginate
-                previousLabel={"previous"}
+                previousLabel={"prev"}
                 nextLabel={"next"}
                 breakLabel={"..."}
                 breakClassName={

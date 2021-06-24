@@ -1,19 +1,28 @@
-import axios from 'axios';
-import React from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import axios from "axios";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Spinner from "components/Spinner";
-import { setAllOutlets, setOutletSelected } from 'features/products/productsSlice';
+import { onSelectCategory, setAllOutlets, setOutletSelected } from "features/products/productsSlice";
+import { intersectionWith } from "lodash";
+import { onResetCart } from "features/cart/cartSlice";
 
-
-const Outlet = ({outlet})=>{
- const dispatch = useDispatch()
-  return  (
+const Outlet = ({ outlet }) => {
+  const dispatch = useDispatch();
+  return (
     <div
       key={outlet.outlet_id}
       className="rounded cursor-pointer"
       // className="w-40 h-40 shadow-lg rounded cursor-pointer"
       onClick={() => {
-        dispatch(setOutletSelected(outlet?.outlet_id))
+        dispatch(setOutletSelected(outlet?.outlet_id));
+        dispatch(onResetCart());
+        dispatch(
+          onSelectCategory({
+            category_id: "ALL",
+            category_name: "ALL",
+            category_description: "All Categories",
+          })
+        );
       }}
     >
       <div className="w-full h-full rounded-xl shadow-lg overflow-hidden">
@@ -31,83 +40,76 @@ const Outlet = ({outlet})=>{
             <span className="font-bold">{outlet.outlet_contact}</span>
           </p>
 
-          {outlet?.outlet_opening_hours &&<div className="my-1">
-            <p>Opening Hours: </p>
-            {outlet?.outlet_opening_hours?.map(openingHour =>{
-              return  <p key={openingHour?.outlet_opening_day}>
-                <span>{openingHour?.outlet_opening_day}:</span> {" "}
-                <span  className="font-bold">{openingHour?.outlet_opening_starttime}</span> {"-"} {" "}
-                <span  className="font-bold">{openingHour?.outlet_opening_endtime}</span>
-                </p>
-               
-            })}
-          </div>}
-
+          {outlet?.outlet_opening_hours && (
+            <div className="my-1">
+              <p>Opening Hours: </p>
+              {outlet?.outlet_opening_hours?.map((openingHour) => {
+                return (
+                  <p key={openingHour?.outlet_opening_day}>
+                    <span>{openingHour?.outlet_opening_day}:</span>{" "}
+                    <span className="font-bold">{openingHour?.outlet_opening_starttime}</span> {"-"}{" "}
+                    <span className="font-bold">{openingHour?.outlet_opening_endtime}</span>
+                  </p>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-}
-
-
+};
 
 const OutletsPage = () => {
-  const dispatch = useDispatch()
-  const outlets = useSelector(state => state.products.outlets)
-  const [fetching, setFetching] = React.useState(false)
-
+  const dispatch = useDispatch();
+  const outlets = useSelector((state) => state.products.outlets);
+  const [fetching, setFetching] = React.useState(false);
 
   React.useEffect(() => {
-  
-    const fetchItems = async ()=>{
+    const fetchItems = async () => {
       try {
-        setFetching(true)
+        setFetching(true);
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
-  
+
         const res = await axios.post("/api/products/get-outlets", user);
         const { data } = await res.data;
-        dispatch(setAllOutlets(data))
-  
-        
+        const { user_assigned_outlets } = user;
+
+        const response = intersectionWith(data, user_assigned_outlets ?? [], (arrVal, othVal) => {
+          return arrVal.outlet_id === othVal;
+        });
+        dispatch(setAllOutlets(user_assigned_outlets ? response : data));
       } catch (error) {
         console.log(error);
-      }finally{
-        setFetching(false)
+      } finally {
+        setFetching(false);
       }
-    }
+    };
 
+    fetchItems();
+  }, [dispatch]);
 
+  if (fetching) {
+    return <Spinner />;
+  }
 
-    
-    
-    fetchItems()
+  return (
+    <div>
+      {" "}
+      <div className="justify-center mt-4 min-h-screen">
+        <div className="text-center font-semibold text-lg my-4">
+          <p>Select Outlet</p>
+        </div>
 
-  }, [dispatch, ]);
-
-
-
-    if(fetching){
-      return <Spinner/>
-    }
-
-
-    return    <div>   <div className="justify-center mt-4 min-h-screen">
-
-      <div className='text-center font-semibold text-lg my-4'>
-        <p>Select Outlet</p>
+        <div className="grid grid-cols-4 gap-4 ">
+          {outlets.map((outlet, index) => {
+            return <Outlet key={index} outlet={outlet} />;
+          })}
+        </div>
       </div>
+    </div>
+  );
+};
 
-     <div className="grid grid-cols-4 gap-4 ">
-    
-     {outlets.map((outlet, index) => {
-       return  <Outlet key={index} outlet={outlet} />;
-     })}
-         
-       </div>
-         </div></div> 
-  
-   
-}
-
-export default OutletsPage
+export default OutletsPage;

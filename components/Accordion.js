@@ -32,17 +32,29 @@ const Accordion = ({ product, index }) => {
           {isActive ? <i className="fas fa-chevron-down"></i> : <i className="fas fa-chevron-right"></i>}
         </div>
         <div className="flex justify-between w-full">
-          <div>
+          <div className="flex ">
             <span className="mr-1">{index + 1}.</span>
-            <span className="font-bold">{product.title.substring(0, 20)}</span>
+            <div>
+              <span className="font-bold">{product.title.substring(0, 20)}</span>
+              {product.variants && (
+                <div className="flex">
+                  {Object.entries(product.variants).map((variant, index) => {
+                    return (
+                      <p key={variant[0]} className="text-xs font-semibold m-0 p-0">
+                        <span>{capitalize(variant[1])}</span> {index !== Object.entries(product.variants).length - 1 && <span> / </span>}
+                      </p>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
           <div className="font-bold">
             <span className="mr-1">GHS{Number(parseFloat(product.totalPrice).toFixed(2))}</span>
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
-                console.log("clicked");
-                dispatch(removeItemFromCart(product.title));
+                dispatch(removeItemFromCart(product.uniqueId));
               }}
             >
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>
@@ -67,11 +79,11 @@ const Accordion = ({ product, index }) => {
                 }}
                 type="number"
                 placeholder="eg. 0"
-                className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
+                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
               />
             </div>
 
-            <div className=" mr-2">
+            <div className="mr-2">
               <label htmlFor="price" className="font-bold">
                 Price
               </label>
@@ -82,10 +94,11 @@ const Accordion = ({ product, index }) => {
                 value={product.price}
                 type="number"
                 placeholder="eg. 0"
-                className="border-0 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
+                className="border-0 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
               />
             </div>
-            <div className="">
+
+            {/* <div className="">
               <label htmlFor="discount" className="font-bold">
                 Discount %
               </label>
@@ -100,9 +113,9 @@ const Accordion = ({ product, index }) => {
                 max={100}
                 maxLength={3}
                 placeholder="eg. 0"
-                className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
+                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
               />
-            </div>
+            </div> */}
           </div>
 
           {/* <div className="mt-2">
@@ -117,11 +130,9 @@ const Accordion = ({ product, index }) => {
             />
           </div> */}
 
-          {product.variants && (
+          {/* {product.variants && (
             <div className="mt-2">
-              <label htmlFor="notes" className="font-bold">
-                Variants
-              </label>
+              <p className="">Variants</p>
               <div className="flex flex-wrap justify-between items-center">
                 {Object.entries(product.variants).map((variant) => {
                   return (
@@ -132,8 +143,8 @@ const Accordion = ({ product, index }) => {
                 })}
               </div>
             </div>
-          )}
-          <div className="mt-2 text-right">
+          )} */}
+          <div className="text-right">
             <button
               className="text-xs text-blue-500 focus:outline-none"
               onClick={() => {

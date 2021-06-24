@@ -11,7 +11,7 @@ export default function Navbar() {
       <nav className="w-full z-10 bg-blueGray-800 text-white md:flex-row md:flex-nowrap md:justify-start flex items-center p-4">
         <div className="w-full mx-autp items-center flex justify-between md:flex-nowrap flex-wrap md:px-10 px-4">
           {/* Brand */}
-          <span className="text-sm uppercase hidden lg:inline-block font-semibold">Dashboard</span>
+          <span className="text-sm uppercase hidden lg:inline-block font-semibold"></span>
           {/* User */}
           <div className="flex items-center">
             <button
