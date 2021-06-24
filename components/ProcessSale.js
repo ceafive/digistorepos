@@ -54,9 +54,9 @@ const loyaltyTabs = ["Loyalty", "Layby", "Store Credit", "On Account"];
 
 const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors }) => {
   return (
-    <div className="my-4">
-      <label className="mb-1" htmlFor="">
-        Enter Mobile number
+    <div className="my-3">
+      <label className="mb-2 text-sm" htmlFor="">
+        Enter Mobile Money number (Optional)
       </label>
       <input
         type="text"
@@ -280,13 +280,13 @@ const ProcessSale = () => {
                     }}
                     type="number"
                     placeholder="Enter an amount"
-                    className="border border-blue-500 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded shadow focus:outline-none text-right text-xl"
+                    className="border border-blue-500 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded shadow focus:outline-none text-right text-2xl"
                   />
-                  <button className="ml-2 bg-green-500 px-2 py-1 text-white rounded">Give Change</button>
+                  {/* <button className="ml-2 bg-green-500 px-2 py-1 text-white rounded">Give Change</button> */}
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 xl:grid-cols-6 gap-2 my-4 mt-8">
+              <div className="grid grid-cols-3 xl:grid-cols-5 gap-2 my-4 mt-8">
                 {paymentButtons.map((paymentButton) => {
                   return (
                     <div key={paymentButton.name} className="">
@@ -296,7 +296,14 @@ const ProcessSale = () => {
                         onClick={() => {
                           setPaymentMethodSet(paymentButton.name);
                           if (paymentButton.name === "CASH") {
-                            setOpenCashModal(true);
+                            if (payerAmountEntered === cartTotalMinusDiscountPlusTax) {
+                              dispatch(
+                                setAmountReceivedFromPayer({
+                                  method: paymentButton.name,
+                                  amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
+                                })
+                              );
+                            } else setOpenCashModal(true);
                           } else {
                             dispatch(
                               setAmountReceivedFromPayer({
@@ -326,16 +333,16 @@ const ProcessSale = () => {
                 </div> */}
               </div>
 
-              {(paymentMethodSet === "MTNMM" || paymentMethodSet === "TIGOC" || paymentMethodSet === "VODAC") && (
-                <MoMoInput
-                  paymentMethodSet={paymentMethodSet}
-                  register={register}
-                  lengthOfMobileNumber={lengthOfMobileNumber}
-                  errors={errors}
-                />
-              )}
+              {/* {(paymentMethodSet === "MTNMM" || paymentMethodSet === "TIGOC" || paymentMethodSet === "VODAC") && ( */}
+              <MoMoInput
+                paymentMethodSet={paymentMethodSet}
+                register={register}
+                lengthOfMobileNumber={lengthOfMobileNumber}
+                errors={errors}
+              />
+              {/* )} */}
 
-              <div className="w-full">
+              {/* <div className="w-full">
                 <span className="z-10 absolute text-center text-blue-500 w-8 pl-3 py-3">
                   <i className="fas fa-user-alt"></i>
                 </span>
@@ -344,7 +351,7 @@ const ProcessSale = () => {
                   placeholder="Add a customer to pay with the following options:"
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
                 />
-              </div>
+              </div> */}
               {/* 
               <div className="grid grid-cols-3 gap-2 my-4">
                 {loyaltyTabs.map((loyaltyTab) => {
@@ -361,18 +368,21 @@ const ProcessSale = () => {
                 })}
               </div> */}
 
-              <div className="w-full self-end mt-4">
+              <div className="w-full self-end mt-20">
                 <button
-                  disabled={
-                    !amountReceivedFromPayer ||
-                    (paymentMethodSet === "Mobile Money" &&
-                      (!watchMobileMoneyNumber || watchMobileMoneyNumber?.length !== lengthOfMobileNumber))
-                  }
+                  // disabled={
+                  //   !amountReceivedFromPayer ||
+                  //   (paymentMethodSet !== "CASH" && (!watchMobileMoneyNumber || watchMobileMoneyNumber?.length !== lengthOfMobileNumber))
+                  // }
+                  // className={`${
+                  //   !amountReceivedFromPayer ||
+                  //   (paymentMethodSet !== "CASH" && (!watchMobileMoneyNumber || watchMobileMoneyNumber?.length !== lengthOfMobileNumber))
+                  //     ? "bg-gray-400 text-gray-300"
+                  //     : "bg-green-700 text-white"
+                  // } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}
+                  disabled={!amountReceivedFromPayer}
                   className={`${
-                    !amountReceivedFromPayer ||
-                    (paymentMethodSet !== "CASH" && (!watchMobileMoneyNumber || watchMobileMoneyNumber?.length !== lengthOfMobileNumber))
-                      ? "bg-gray-400 text-gray-300"
-                      : "bg-green-700 text-white"
+                    !amountReceivedFromPayer ? "bg-gray-400 text-gray-300" : "bg-green-700 text-white"
                   } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}
                   onClick={() => {
                     if (paymentMethodSet === "CASH") {

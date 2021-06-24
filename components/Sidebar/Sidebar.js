@@ -54,8 +54,8 @@ const ChildNavLink = ({ childLink }) => {
   };
 
   return (
-    <li className={`text-left p-3 py-2`}>
-      <button className="focus:outline-none" onClick={(e) => handleClick(e, path)}>
+    <li className={`text-left p-3 py-5`}>
+      <button className="focus:outline-none font-semibold" onClick={(e) => handleClick(e, path)}>
         <span
           className={
             router.pathname.indexOf(path) !== -1

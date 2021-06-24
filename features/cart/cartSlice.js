@@ -100,7 +100,6 @@ const cartSlice = createSlice({
       state.cartTotalMinusDiscount = valueReturn;
       state.cartTotalMinusDiscountPlusTax = Number(parseFloat(valueReturn + valueReturn * state.totalTaxes).toFixed(2));
     },
-
     onClickToCheckout: (state, action) => {
       state.clickToCheckout = action?.payload || !state.clickToCheckout;
     },
