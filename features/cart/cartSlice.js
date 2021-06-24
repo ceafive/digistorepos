@@ -67,7 +67,7 @@ const cartSlice = createSlice({
       state.currentCustomer = action.payload;
     },
     setAmountReceivedFromPayer(state, action) {
-      state.amountReceivedFromPayer = action.payload.amount;
+      state.amountReceivedFromPayer += action.payload.amount;
 
       state.paymentMethodsAndAmount.push({
         method: action.payload.method,
