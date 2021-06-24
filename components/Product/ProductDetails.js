@@ -121,7 +121,7 @@ const ProductDetails = ({ onClose }) => {
   }, [noOfSteps, step]);
 
   return (
-    <div className="relative flex w-full max-w-6xl rounded-lg  bg-white border border-gray-200" style={{ maxHeight: 500 }}>
+    <div className="relative flex w-full rounded-lg  bg-white border border-gray-200" style={{ maxHeight: 500 }}>
       <button className="absolute right-0 top-0 p-2 text-2xl focus:outline-none text-red-500" onClick={onClose}>
         <i className="fas fa-times"></i>
       </button>

@@ -54,8 +54,8 @@ const ChildNavLink = ({ childLink }) => {
   };
 
   return (
-    <li className={`text-left p-3 py-5`}>
-      <button className="focus:outline-none font-semibold" onClick={(e) => handleClick(e, path)}>
+    <li className={`text-left p-3 py-2`}>
+      <button className="focus:outline-none text-xs xl:text-base font-semibold" onClick={(e) => handleClick(e, path)}>
         <span
           className={
             router.pathname.indexOf(path) !== -1
@@ -90,11 +90,11 @@ export default function Sidebar() {
     <>
       <nav
         className={`side-bar left-0 fixed top-0 bottom-0 overflow-y-auto flex-row overflow-hidden ${
-          openSidebarSecondpane ? "w-64" : "w-28"
+          openSidebarSecondpane ? "w-48 xl:w-64" : "w-20 xl:w-28"
         } z-10`}
       >
         <div className={"min-h-full px-0 mx-auto flex w-full shadow-none"}>
-          <div className={`first-pane ${openSidebarSecondpane ? "w-28" : "w-28"} bg-blueGray-100`}>
+          <div className={`first-pane ${openSidebarSecondpane ? "w-20 xl:w-28" : "w-20 xl:w-28"} bg-blueGray-100`}>
             <ul className="flex-col min-w-full list-none">
               {sidebarRoutes.map((sidebarRoute) => {
                 return <NavLink key={sidebarRoute.id} sidebarRoute={sidebarRoute} />;
@@ -102,8 +102,8 @@ export default function Sidebar() {
             </ul>
           </div>
 
-          <div className={`second-pane ${openSidebarSecondpane ? "flex-grow" : "w-0"}`}>
-            <p className="text-left text-blueGray-600 block uppercase font-bold p-4">
+          <div className={`second-pane py-4 ${openSidebarSecondpane ? "flex-grow" : "w-0"}`}>
+            {/* <p className="text-left text-blueGray-600 block uppercase font-bold p-4">
               {outlets.find((outlet) => outlet.outlet_id === outletSelected)?.outlet_name}
             </p>
             {outlets.length > 1 && (
@@ -141,7 +141,7 @@ export default function Sidebar() {
                 </div>
               </div>
             )}
-            <hr className="my-4 min-w-full" />
+            <hr className="my-4 min-w-full" /> */}
 
             <ul className="flex-col list-none">
               {childLinks.map((childLink) => {

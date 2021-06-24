@@ -28,8 +28,6 @@ const SearchResults = () => {
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
   const outletSelected = useSelector((state) => state.products.outletSelected);
 
-  console.log(productCategories);
-
   const perPage = 12;
 
   const [searchProductsDisplay, setSearchProductsDisplay] = React.useState(products);
@@ -118,46 +116,6 @@ const SearchResults = () => {
                   </span>
                 )}
               </div>
-              <div className="flex justify-start items-center w-full mt-4">
-                <div className="flex items-center">
-                  <button
-                    className={`shadow rounded text-black font-semibold border-t-4 ${
-                      categorySelected?.category_name === "ALL" ? "border-green-300" : "border-gray-400"
-                    } px-6 py-2 focus:outline-none mr-2 transition-colors duration-150 ease-in-out`}
-                    style={{ height: 120, width: 120, backgroundColor: categoryTabColors[0] }}
-                    onClick={() => {
-                      setOffset(0);
-                      dispatch(
-                        onSelectCategory({
-                          category_id: "ALL",
-                          category_name: "ALL",
-                          category_description: "All Categories",
-                        })
-                      );
-                    }}
-                  >
-                    All
-                  </button>
-                  {productCategories?.map((productCatergory, index) => {
-                    return (
-                      <button
-                        key={productCatergory.category_id}
-                        className={`shadow rounded text-black font-semibold border-t-4 ${
-                          categorySelected?.category_name === productCatergory.category_name ? "border-green-400" : "border-gray-400"
-                        } px-6 py-2 focus:outline-none mr-2 transition-colors duration-150 ease-in-out`}
-                        style={{ height: 120, width: 120, backgroundColor: categoryTabColors.slice(1)[index] }}
-                        onClick={() => {
-                          setOffset(0);
-                          // console.log(productCatergory);
-                          dispatch(onSelectCategory(productCatergory));
-                        }}
-                      >
-                        {productCatergory.category_name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
 
               {/* search results */}
               {searchTerm && (
@@ -219,6 +177,50 @@ const SearchResults = () => {
                   )}
                 </div>
               )}
+
+              {/* search results */}
+
+              {/* Categories */}
+              <div className="flex justify-start items-center w-full mt-4">
+                <div className="grid grid-cols-4 xl:grid-cols-5 gap-2">
+                  <button
+                    className={`shadow rounded text-black font-semibold border-t-4 ${
+                      categorySelected?.category_name === "ALL" ? "border-green-300" : "border-gray-400"
+                    } px-6 py-2 focus:outline-none transition-colors duration-150 ease-in-out h-20 w-20 xl:h-32 xl:w-32`}
+                    style={{ backgroundColor: categoryTabColors[0] }}
+                    onClick={() => {
+                      setOffset(0);
+                      dispatch(
+                        onSelectCategory({
+                          category_id: "ALL",
+                          category_name: "ALL",
+                          category_description: "All Categories",
+                        })
+                      );
+                    }}
+                  >
+                    All
+                  </button>
+                  {productCategories?.map((productCatergory, index) => {
+                    return (
+                      <button
+                        key={productCatergory.category_id}
+                        className={`shadow rounded text-black font-semibold border-t-4 ${
+                          categorySelected?.category_name === productCatergory.category_name ? "border-green-400" : "border-gray-400"
+                        } p-2 focus:outline-none transition-colors duration-150 ease-in-out h-20 w-20 xl:h-32 xl:w-32`}
+                        style={{ backgroundColor: categoryTabColors.slice(1)[index] }}
+                        onClick={() => {
+                          setOffset(0);
+                          dispatch(onSelectCategory(productCatergory));
+                        }}
+                      >
+                        {productCatergory?.category_name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              {/* Categories */}
             </div>
           </div>
 
@@ -249,7 +251,7 @@ const SearchResults = () => {
                       }
                     }}
                   >
-                    <div className="w-full h-full rounded overflow-hidden" style={{ width: 150 }}>
+                    <div className="h-full rounded overflow-hidden w-20">
                       <div className="relative" style={{ paddingBottom: "70%" }}>
                         <img className="absolute object-cover w-full h-full" src={product.product_image} alt={product.product_name} />
                       </div>

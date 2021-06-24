@@ -146,7 +146,7 @@ const ProcessSale = () => {
           cartTotalMinusDiscountPlusTax={cartTotalMinusDiscountPlusTax}
         />
       </Modal>
-      <div className="flex m-4 max-h-1/2 divide-x divide-gray-200 bg-white rounded shadow">
+      <div className="flex m-4 divide-x divide-gray-200 bg-white rounded shadow">
         <div className="w-2/5 p-6">
           <div className="flex items-center font-semibold text-xl">
             <p className="">Sale Summary</p>

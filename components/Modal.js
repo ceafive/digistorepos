@@ -1,41 +1,21 @@
-/* This example requires Tailwind CSS v2.0+ */
-import { Fragment } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
-import Fade from "@material-ui/core/Fade";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Slide from "@material-ui/core/Slide";
 
-const useStyles = makeStyles((theme) => ({
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-}));
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
-export default function TransitionsModal({ open = false, onClose = () => {}, children }) {
-  const classes = useStyles();
-
+export default function AlertDialogSlide({ open = false, onClose = () => {}, children }) {
   return (
-    <div>
-      <Modal
-        className={classes.modal}
-        open={open}
-        onClose={onClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 300,
-        }}
-      >
-        <Fade in={open} timeout={0}>
-          {children}
-        </Fade>
-      </Modal>
-    </div>
+    <Dialog fullWidth maxWidth="lg" open={open} TransitionComponent={Transition} onClose={onClose}>
+      {children}
+    </Dialog>
   );
 }
 

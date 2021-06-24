@@ -63,10 +63,10 @@ const SellPage = () => {
             <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
               <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
             </Modal>
-            <div className="w-full xl:w-8/12 pb-6 pt-12 px-4">
+            <div className="w-6/12 xl:w-8/12 pb-6 pt-12 px-4">
               <SearchResults />
             </div>
-            <div className="w-full xl:w-4/12 pb-6 pt-6 px-4">
+            <div className="w-6/12 xl:w-4/12 pb-6 pt-6 px-4">
               <Cart />
             </div>
           </motion.div>

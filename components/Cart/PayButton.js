@@ -107,7 +107,7 @@ const PayButton = () => {
       <div className="flex justify-between font-medium py-2 px-4">
         <div className="flex justify-between w-2/3">
           <p className="font-medium ">Tax</p>
-          <p>VAT COVID-19 Levy 4%</p>
+          <p>COVID-19 Levy 4%</p>
         </div>
         <p>GHC{covidTax}</p>
       </div>
