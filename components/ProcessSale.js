@@ -252,7 +252,7 @@ const ProcessSale = () => {
 
         {/* Right part */}
         <div className="w-3/5 p-6 pt-0" style={{ height: 800 }}>
-          <p className="text-right my-2 mb-4 ">
+          <p className="text-right mt-4 mb-4 ">
             {step !== 2 && (
               <button
                 className="font-bold text-lg focus:outline-none"
