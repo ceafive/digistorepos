@@ -24,6 +24,7 @@
     "lodash": "^4.17.21",
     "material-table": "^1.69.3",
     "next": "^11.0.0",
+    "p-iteration": "^1.1.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.8.5",
@@ -63,8 +64,8 @@
   "devDependencies": {
     "autoprefixer": "^10.2.6",
     "postcss": "^8.3.4",
-    "tailwindcss": "^2.1.4",
-    "prettier": "^2.3.1"
+    "prettier": "^2.3.1",
+    "tailwindcss": "^2.1.4"
   },
   "prettier": {
     "printWidth": 140

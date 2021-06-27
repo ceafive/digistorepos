@@ -15,7 +15,6 @@ const SellPage = () => {
   const dispatch = useDispatch();
   const clickToCheckout = useSelector((state) => state.cart.clickToCheckout);
   const inventoryModalOpen = useSelector((state) => state.products.inventoryModalOpen);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
 
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
@@ -27,8 +26,8 @@ const SellPage = () => {
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
-        const productsAddedRes = await axios.post("/api/products/get-outlet-products", { user, outletSelected });
-        const onSetProductCategoriesRes = await axios.post("/api/products/get-outlet-categories", { user, outletSelected });
+        const productsAddedRes = await axios.post("/api/products/get-outlet-products", { user });
+        const onSetProductCategoriesRes = await axios.post("/api/products/get-outlet-categories", { user });
 
         const { data: productsAddedResData } = await productsAddedRes.data;
         const { data: onSetProductCategoriesResData } = await onSetProductCategoriesRes.data;
@@ -45,7 +44,7 @@ const SellPage = () => {
     };
 
     fetchItems();
-  }, [dispatch, outletSelected]);
+  }, [dispatch]);
 
   if (fetching) {
     return (

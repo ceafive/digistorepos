@@ -13,8 +13,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function AlertDialogSlide({ open = false, onClose = () => {}, children }) {
   return (
-    <Dialog fullWidth maxWidth="lg" open={open} TransitionComponent={Transition} onClose={onClose}>
-      {children}
+    <Dialog maxWidth={"lg"} open={open} TransitionComponent={Transition} onClose={onClose}>
+      <DialogContent classNa>{children}</DialogContent>
     </Dialog>
   );
 }

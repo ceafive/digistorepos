@@ -6,24 +6,20 @@ import Carousel from "components/Carousel";
 import { useForm } from "react-hook-form";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
 
-const initialFormData = {};
-
 const RenderTap = ({ item, setProductPrice, step, setStep, setFormData }) => {
   return (
-    <div className="flex flex-col justify-center items-center border border-gray-200 w-32 h-32">
-      <button
-        className="font-bold w-full h-full focus:outline-none"
-        onClick={() => {
-          setFormData((data) => ({ ...data, [item.property_id]: item.property_value }));
-          if (item?.property_price_set === "YES") {
-            setProductPrice(Number(parseFloat(item?.property_price).toFixed(2)));
-          }
-          setStep(step + 1);
-        }}
-      >
-        {item.property_value}
-      </button>
-    </div>
+    <button
+      className="font-bold border border-gray-200 focus:outline-none w-32 h-32"
+      onClick={() => {
+        setFormData((data) => ({ ...data, [item.property_id]: item.property_value }));
+        if (item?.property_price_set === "YES") {
+          setProductPrice(Number(parseFloat(item?.property_price).toFixed(2)));
+        }
+        setStep(step + 1);
+      }}
+    >
+      {item.property_value}
+    </button>
   );
 };
 
@@ -49,30 +45,25 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
       variants: rest,
     };
 
-    // console.log(data);
-    // return;
-
     dispatch(increaseTotalItemsInCart(Math.round(Number(res?.quantity))));
     dispatch(addItemToCart(data));
     reset();
   };
 
   return (
-    <div className="px-3 mb-6 w-full">
+    <div className="px-10 mb-6 w-full">
       <p className="block uppercase tracking-wide text-gray-700 text-center font-bold mb-6">Quantity</p>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-10 w-full">
         {quantities.map((quantity) => {
           return (
-            <div key={quantity} className="flex flex-col justify-center items-center border border-gray-200 w-32 h-32">
-              <button
-                className="font-bold w-full h-full focus:outline-none"
-                onClick={() => {
-                  submitFormData({ ...formData, QUANTITY: quantity });
-                }}
-              >
-                {quantity}
-              </button>
-            </div>
+            <button
+              className="font-bold ocus:outline-none border border-gray-200 w-32 h-32"
+              onClick={() => {
+                submitFormData({ ...formData, QUANTITY: quantity });
+              }}
+            >
+              {quantity}
+            </button>
           );
         })}
         {/* <div className="flex flex-col justify-center items-center border border-gray-200 w-32 h-32">
@@ -150,34 +141,32 @@ const ProductDetails = ({ onClose }) => {
             </div>
 
             <hr className="my-2" />
-            <div className="w-full px-10">
-              <div className="flex flex-wrap justify-between">
-                {currentStep ? (
-                  currentStep?.map((variant) => {
-                    return (
-                      <div key={variant[0]} className="px-3 mb-6 w-full">
-                        <p className="block uppercase tracking-wide text-gray-700 text-center font-bold mb-6">{variant[0]}</p>
-                        <div key={variant?.property_value} className="grid grid-cols-4 gap-2">
-                          {variant[1].map((item) => {
-                            return (
-                              <RenderTap
-                                key={item?.property_value}
-                                item={item}
-                                setProductPrice={setProductPrice}
-                                setStep={setStep}
-                                step={step}
-                                setFormData={setFormData}
-                              />
-                            );
-                          })}
-                        </div>
+            <div className="w-full">
+              {currentStep ? (
+                currentStep?.map((variant) => {
+                  return (
+                    <div key={variant[0]} className="w-full h-full ">
+                      <p className="block uppercase tracking-wide text-gray-700 text-center font-bold mb-2">{variant[0]}</p>
+                      <div key={variant?.property_value} className="grid grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-2">
+                        {variant[1].map((item) => {
+                          return (
+                            <RenderTap
+                              key={item?.property_value}
+                              item={item}
+                              setProductPrice={setProductPrice}
+                              setStep={setStep}
+                              step={step}
+                              setFormData={setFormData}
+                            />
+                          );
+                        })}
                       </div>
-                    );
-                  })
-                ) : (
-                  <RenderQuantityTap product={product} productPrice={productPrice} formData={formData} reset={reset} />
-                )}
-              </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <RenderQuantityTap product={product} productPrice={productPrice} formData={formData} reset={reset} />
+              )}
             </div>
           </div>
         </div>

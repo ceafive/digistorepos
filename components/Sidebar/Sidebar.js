@@ -7,7 +7,7 @@ import UserDropdown from "components/Dropdowns/UserDropdown.js";
 import { sidebarRoutes } from "utils/routes";
 import { useDispatch, useSelector } from "react-redux";
 import { setSecondPaneOpenPath, setSidebarSecondPaneOpen } from "features/app/appSlice";
-import { onSelectCategory, setOutletSelected } from "features/products/productsSlice";
+import { onSelectCategory } from "features/products/productsSlice";
 import { onResetCart } from "features/cart/cartSlice";
 
 const NavLink = ({ sidebarRoute }) => {
@@ -73,8 +73,6 @@ const ChildNavLink = ({ childLink }) => {
 export default function Sidebar() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const outlets = useSelector((state) => state.products.outlets);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
 
   React.useEffect(() => {
     // dispatch(setSecondPaneOpenPath());

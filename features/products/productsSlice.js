@@ -25,8 +25,8 @@ const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
-    setAllOutlets(state, action){
-      actionCreator('outlets',state, action.payload)
+    setAllOutlets(state, action) {
+      actionCreator("outlets", state, action.payload);
     },
     setOutletSelected(state, action) {
       state.outletSelected = action.payload;
@@ -66,7 +66,8 @@ export const {
   currentSearchTerm,
   onSetProductCategories,
   onSelectCategory,
-  openInventoryModal,setOutletSelected,
-  setAllOutlets
+  openInventoryModal,
+  setOutletSelected,
+  setAllOutlets,
 } = productsSlice.actions;
 export default productsSlice.reducer;

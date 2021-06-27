@@ -1,6 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import { format } from "date-fns";
-import { filter, findIndex, intersectionBy, intersectionWith, isEqual } from "lodash";
+import { filter, findIndex, intersectionBy, intersectionWith, isEqual, remove, subtract } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
@@ -23,6 +23,7 @@ const initialState = {
   amountReceivedFromPayer: 0,
   splitPayment: false,
   currentCustomer: null,
+  transactionFeeCharges: [],
 };
 
 const initialProductProps = {
@@ -60,6 +61,9 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
   reducers: {
+    setTransactionFeeCharges(state, action) {
+      state.transactionFeeCharges = action.payload;
+    },
     onResetCart: (state) => {
       return initialState;
     },
@@ -75,9 +79,13 @@ const cartSlice = createSlice({
         date: format(new Date(), "iii, d MMM yy h:mmaaa"),
       });
     },
-    onRemovePaymentMethod(state) {
-      state.amountReceivedFromPayer = 0;
-      state.paymentMethodsAndAmount = [];
+    onRemovePaymentMethod(state, action) {
+      var filtered = remove(state.paymentMethodsAndAmount, function (n) {
+        return n.method !== action.payload.method;
+      });
+
+      state.paymentMethodsAndAmount = filtered;
+      state.amountReceivedFromPayer = subtract(state.amountReceivedFromPayer, action.payload.amount);
     },
     calculateTaxes(state, action) {
       state.totalTaxes += action.payload;
@@ -245,5 +253,6 @@ export const {
   setAmountReceivedFromPayer,
   onRemovePaymentMethod,
   addCustomer,
+  setTransactionFeeCharges,
 } = cartSlice.actions;
 export default cartSlice.reducer;

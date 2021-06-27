@@ -26,7 +26,6 @@ const SearchResults = () => {
   const searchTerm = useSelector((state) => state.products.searchTerm);
   const categorySelected = useSelector((state) => state.products.categorySelected);
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
 
   const perPage = 12;
 
@@ -63,7 +62,6 @@ const SearchResults = () => {
         const res = await axios.post("/api/products/get-category-products", {
           user,
           category: categorySelected.category_id,
-          outletSelected,
         });
         const { data } = await res.data;
         setProductsDisplay(take([...data].slice(offset), perPage));
@@ -72,7 +70,7 @@ const SearchResults = () => {
 
       getCategoryProducts();
     } else setProductsDisplay(take([...products].slice(offset), perPage));
-  }, [offset, pageCount, products, categorySelected, outletSelected]);
+  }, [offset, pageCount, products, categorySelected]);
 
   const handlePageClick = (data) => {
     let selected = data.selected;
