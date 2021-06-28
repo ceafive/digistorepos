@@ -125,7 +125,7 @@ const SearchResults = () => {
 
   return (
     <>
-      <Modal open={productModalOpen} onClose={() => dispatch(openProductModal())} maxWidth="xl">
+      <Modal open={productModalOpen} onClose={() => dispatch(openProductModal())} maxWidth="lg">
         <ProductDetails onClose={() => dispatch(openProductModal())} />
       </Modal>
       <div className="relative w-full h-full">

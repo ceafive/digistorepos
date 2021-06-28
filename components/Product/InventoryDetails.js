@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 const InventoryDetails = ({ onClose }) => {
   const dispatch = useDispatch();
   const product = useSelector((state) => state.products.productToView);
-  console.log({ product });
+  // console.log({ product });
 
   return (
     <div className="relative flex w-full bg-white rounded-lg overflow-hidden">
@@ -14,7 +14,7 @@ const InventoryDetails = ({ onClose }) => {
         <i className="fas fa-times"></i>
       </button>
       <div>
-        <img className="w-64 h-64" src={product?.imgURL} alt={product?.title} />
+        <img className="w-64 h-64" src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.imgURL}`} alt={product?.title} />
       </div>
       <div className="p-4 pb-0 w-full">
         <div className="text-center">
