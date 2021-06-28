@@ -51,42 +51,43 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
   };
 
   return (
-    <div className="px-10 mb-6 w-full">
-      <p className="block uppercase tracking-wide text-gray-700 text-center font-bold mb-6">Quantity</p>
-      <div className="grid grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-10 w-full">
-        {quantities.map((quantity) => {
-          return (
-            <button
-              className="font-bold ocus:outline-none border border-gray-200 w-32 h-32"
-              onClick={() => {
-                submitFormData({ ...formData, QUANTITY: quantity });
-              }}
-            >
-              {quantity}
-            </button>
-          );
-        })}
-        {/* <div className="flex flex-col justify-center items-center border border-gray-200 w-32 h-32">
+    <>
+      {quantities.map((quantity) => {
+        return (
+          <button
+            key={quantity}
+            className="font-bold border border-gray-200 focus:outline-none w-32 h-32"
+            onClick={() => {
+              submitFormData({ ...formData, QUANTITY: quantity });
+            }}
+          >
+            {quantity}
+          </button>
+        );
+      })}
+      {/* <div className="flex flex-col justify-center items-center border border-gray-200 w-32 h-32">
           <input
             // type="number"
             placeholder="Enter Quantity"
             className="appearance-none focus:appearance-none font-bold focus:text-4xl text-center w-full h-full "
           ></input>
         </div> */}
-      </div>
-    </div>
+    </>
   );
 };
 
 const ProductDetails = ({ onClose }) => {
   const product = useSelector((state) => state.products.productToView);
-  const variants = Object.values(product.product_properties);
-  const groupVariants = variants.reduce((acc, variant) => {
-    const found = acc[variant.property_id] || [];
-    return { ...acc, [variant.property_id]: [...found, variant] };
-  }, {});
+  // const variants = Object.values(product.product_properties);
+  // const groupVariants = variants.reduce((acc, variant) => {
+  //   const found = acc[variant.property_id] || [];
+  //   return { ...acc, [variant.property_id]: [...found, variant] };
+  // }, {});
 
-  const allVariants = Object.entries(groupVariants);
+  const allVariants = Object.entries(product.product_properties);
+
+  // console.log(product);
+  // console.log(allVariants);
   const noOfSteps = allVariants.length;
 
   // Component State
@@ -111,63 +112,71 @@ const ProductDetails = ({ onClose }) => {
     }
   }, [noOfSteps, step]);
 
+  // return null;
+
   return (
-    <div className="relative flex w-full rounded-lg  bg-white border border-gray-200" style={{ maxHeight: 500 }}>
-      <button className="absolute right-0 top-0 p-2 text-2xl focus:outline-none text-red-500" onClick={onClose}>
-        <i className="fas fa-times"></i>
-      </button>
-      <div className="flex w-full">
-        <div className="w-4/12 flex items-center overflow-hidden m-2">
-          <div className="w-full items-center overflow-hidden">
-            <Carousel showArrows={false}>
-              {product?.product_images?.map((product_image) => {
+    <div className="flex w-full" style={{ maxHeight: 500 }}>
+      <div className="w-4/12 flex items-center overflow-hidden m-2">
+        <div className="w-full items-center overflow-hidden">
+          <Carousel showArrows={false}>
+            {product?.product_images?.map((product_image) => {
+              return (
+                <div key={product_image} className="overflow-hidden">
+                  <img
+                    className=""
+                    key={product_image}
+                    src={`https://payments.ipaygh.com/app/webroot/img/products/${product_image}`}
+                    alt={product_image}
+                    style={{ maxHeight: 200 }}
+                  />
+                </div>
+              );
+            })}
+          </Carousel>
+        </div>
+      </div>
+
+      <div className="w-8/12 p-4">
+        <div className="w-full">
+          <div className="text-center">
+            <p className="font-bold ">
+              <span className="text-xl mr-4">{upperCase(product.product_name)}</span>
+            </p>
+            <p className="text-sm">Product ID: {product.product_id}</p>
+          </div>
+
+          <hr className="my-2" />
+          <div className="w-full">
+            {currentStep ? (
+              currentStep?.map((variant) => {
                 return (
-                  <div key={product_image} className="overflow-hidden">
-                    <img className="" key={product_image} src={product_image} alt={product_image} style={{ maxHeight: 200 }} />
+                  <div key={variant[0]} className="w-full h-full">
+                    <p className="block uppercase tracking-wide text-gray-700 text-center font-bold mb-2">{variant[0]}</p>
+                    <div key={variant?.property_value} className="grid grid-cols-4 xl:grid-cols-4 gap-2 xl:gap-2">
+                      {variant[1].map((item) => {
+                        return (
+                          <RenderTap
+                            key={item?.property_value}
+                            item={item}
+                            setProductPrice={setProductPrice}
+                            setStep={setStep}
+                            step={step}
+                            setFormData={setFormData}
+                          />
+                        );
+                      })}
+                    </div>
                   </div>
                 );
-              })}
-            </Carousel>
-          </div>
-        </div>
-
-        <div className="w-8/12 p-4">
-          <div className="w-full">
-            <div className="text-center">
-              <p className="font-bold ">
-                <span className="text-xl mr-4">{upperCase(product.product_name)}</span>
-              </p>
-              <p className="text-sm">Product ID: {product.product_id}</p>
-            </div>
-
-            <hr className="my-2" />
-            <div className="w-full">
-              {currentStep ? (
-                currentStep?.map((variant) => {
-                  return (
-                    <div key={variant[0]} className="w-full h-full ">
-                      <p className="block uppercase tracking-wide text-gray-700 text-center font-bold mb-2">{variant[0]}</p>
-                      <div key={variant?.property_value} className="grid grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-2">
-                        {variant[1].map((item) => {
-                          return (
-                            <RenderTap
-                              key={item?.property_value}
-                              item={item}
-                              setProductPrice={setProductPrice}
-                              setStep={setStep}
-                              step={step}
-                              setFormData={setFormData}
-                            />
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <RenderQuantityTap product={product} productPrice={productPrice} formData={formData} reset={reset} />
-              )}
-            </div>
+              })
+            ) : (
+              <div className="w-full h-full">
+                <p className="block uppercase tracking-wide text-gray-700 text-center font-bold mb-2">Quantity</p>
+                <div className="grid grid-cols-4 xl:grid-cols-4 gap-2 xl:gap-2">
+                  <RenderQuantityTap product={product} productPrice={productPrice} formData={formData} reset={reset} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

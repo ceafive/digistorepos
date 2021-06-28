@@ -4,20 +4,48 @@ import { createFilter } from "react-search-input";
 import {
   currentSearchTerm,
   onSelectCategory,
-  openInventoryModal,
   openProductModal,
+  setCategoryProductsCount,
   setProductToView,
 } from "features/products/productsSlice";
 import { increaseTotalItemsInCart, addItemToCart } from "features/cart/cartSlice";
 import Modal from "components/Modal";
 
 import ReactPaginate from "react-paginate";
-import { take } from "lodash";
+import { filter, take } from "lodash";
 import axios from "axios";
-import InventoryDetails from "./Product/InventoryDetails";
+
 import ProductDetails from "./Product/ProductDetails";
 
-const categoryColors = ["#fedede", "#eefefd", "#aeffff", "#deeafa"];
+const categoryColors = [
+  "#fedede",
+  "#eefefd",
+  "#aeffff",
+  "#4362ce",
+  "#a0b5c3",
+  "#aaa385",
+  "#0a4585",
+  "#49a397",
+  "#d8af11",
+  "#59b1bf",
+  "#dc8394",
+  "#b1ccfe",
+];
+
+const productColors = [
+  "#fedede",
+  "#eefefd",
+  "#aeffff",
+  "#4362ce",
+  "#a0b5c3",
+  "#aaa385",
+  "#0a4585",
+  "#49a397",
+  "#d8af11",
+  "#59b1bf",
+  "#dc8394",
+  "#b1ccfe",
+];
 
 const SearchResults = () => {
   const dispatch = useDispatch();
@@ -26,20 +54,33 @@ const SearchResults = () => {
   const searchTerm = useSelector((state) => state.products.searchTerm);
   const categorySelected = useSelector((state) => state.products.categorySelected);
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
+  const categoryProductsCount = useSelector((state) => state.products.categoryProductsCount);
 
-  const perPage = 12;
+  const perPage = 12; // product number to display per page
 
   const [searchProductsDisplay, setSearchProductsDisplay] = React.useState(products);
   const [productsDisplay, setProductsDisplay] = React.useState([]);
   const [pageCount, setPageCount] = React.useState(0);
   const [offset, setOffset] = React.useState(Math.ceil(0 * perPage));
 
+  // console.log(categoryProductsCount);
+  // console.log(products);
+  // console.log(productsDisplay);
+  // console.log(categorySelected);
+
   const categoryTabColors = React.useMemo(() => {
     return Array.from({ length: productCategories?.length + 1 }, () => {
       const randomIndex = Math.floor(Math.random() * categoryColors.length);
       return categoryColors[randomIndex];
     });
-  }, []);
+  }, [productCategories?.length]);
+
+  const productTabColors = React.useMemo(() => {
+    return Array.from({ length: productsDisplay?.length + 1 }, () => {
+      const randomIndex = Math.floor(Math.random() * productColors.length);
+      return productColors[randomIndex];
+    });
+  }, [productsDisplay?.length]);
 
   React.useEffect(() => {
     const pageCount = Math.ceil(products.length / perPage);
@@ -54,23 +95,27 @@ const SearchResults = () => {
   }, [products, searchTerm]);
 
   React.useEffect(() => {
-    if (categorySelected.category_id !== "ALL") {
-      const getCategoryProducts = async () => {
-        let user = sessionStorage.getItem("IPAYPOSUSER");
-        user = JSON.parse(user);
-
-        const res = await axios.post("/api/products/get-category-products", {
-          user,
-          category: categorySelected.category_id,
-        });
-        const { data } = await res.data;
-        setProductsDisplay(take([...data].slice(offset), perPage));
-        // console.log("getCategoryProducts", data);
-      };
-
-      getCategoryProducts();
-    } else setProductsDisplay(take([...products].slice(offset), perPage));
-  }, [offset, pageCount, products, categorySelected]);
+    if (categorySelected.product_category !== "ALL") {
+      // console.log("hit here");
+      // const getCategoryProducts = async () => {
+      //   let user = sessionStorage.getItem("IPAYPOSUSER");
+      //   user = JSON.parse(user);
+      //   const res = await axios.post("/api/products/get-category-products", {
+      //     user,
+      //     category: categorySelected.category_id,
+      //   });
+      //   const { data } = await res.data;
+      //   // console.log("getCategoryProducts", data);
+      // };
+      // getCategoryProducts();
+      const filtered = filter(products, (o) => Boolean(o) && o?.product_category === categorySelected.product_category);
+      setProductsDisplay(take([...filtered].slice(offset), perPage));
+    } else {
+      // console.log("hit there");
+      const filtered = filter(products, (o) => Boolean(o));
+      setProductsDisplay(take([...filtered].slice(offset), perPage));
+    }
+  }, [categorySelected.product_category, offset, products]);
 
   const handlePageClick = (data) => {
     let selected = data.selected;
@@ -80,7 +125,7 @@ const SearchResults = () => {
 
   return (
     <>
-      <Modal open={productModalOpen} onClose={() => dispatch(openProductModal())}>
+      <Modal open={productModalOpen} onClose={() => dispatch(openProductModal())} maxWidth="xl">
         <ProductDetails onClose={() => dispatch(openProductModal())} />
       </Modal>
       <div className="relative w-full h-full">
@@ -175,47 +220,52 @@ const SearchResults = () => {
                   )}
                 </div>
               )}
-
               {/* search results */}
 
               {/* Categories */}
               <div className="flex justify-start items-center w-full mt-4">
-                <div className="grid grid-cols-4 xl:grid-cols-5 gap-2">
+                <div className="grid grid-cols-3 xl:grid-cols-6 gap-3">
                   <button
-                    className={`shadow rounded text-black font-semibold border-t-4 ${
-                      categorySelected?.category_name === "ALL" ? "border-green-300" : "border-gray-400"
-                    } px-6 py-2 focus:outline-none transition-colors duration-150 ease-in-out h-20 w-20 xl:h-32 xl:w-32`}
+                    className={`shadow rounded text-black font-semibold border-t-8 ${
+                      categorySelected?.product_category === "ALL" ? "border-green-300" : "border-gray-400"
+                    } p-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
                     style={{ backgroundColor: categoryTabColors[0] }}
                     onClick={() => {
                       setOffset(0);
                       dispatch(
                         onSelectCategory({
-                          category_id: "ALL",
-                          category_name: "ALL",
-                          category_description: "All Categories",
+                          product_category_id: "ALL",
+                          product_category: "ALL",
+                          product_category_description: "All Categories",
                         })
                       );
                     }}
                   >
                     All
                   </button>
-                  {productCategories?.map((productCatergory, index) => {
-                    return (
-                      <button
-                        key={productCatergory.category_id}
-                        className={`shadow rounded text-black font-semibold border-t-4 ${
-                          categorySelected?.category_name === productCatergory.category_name ? "border-green-400" : "border-gray-400"
-                        } p-2 focus:outline-none transition-colors duration-150 ease-in-out h-20 w-20 xl:h-32 xl:w-32`}
-                        style={{ backgroundColor: categoryTabColors.slice(1)[index] }}
-                        onClick={() => {
-                          setOffset(0);
-                          dispatch(onSelectCategory(productCatergory));
-                        }}
-                      >
-                        {productCatergory?.category_name}
-                      </button>
-                    );
-                  })}
+                  {productCategories
+                    ?.filter((productCatergory) => Boolean(productCatergory))
+                    ?.map((productCatergory, index) => {
+                      // console.log(productCatergory);
+                      return (
+                        <button
+                          key={productCatergory?.product_category_id}
+                          className={`shadow rounded text-black font-semibold border-t-8 ${
+                            categorySelected?.product_category === productCatergory?.product_category
+                              ? "border-green-300"
+                              : "border-gray-400"
+                          } p-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
+                          style={{ backgroundColor: categoryTabColors.slice(1)[index] }}
+                          onClick={() => {
+                            setOffset(0);
+                            dispatch(onSelectCategory(productCatergory));
+                          }}
+                        >
+                          <p>{productCatergory?.product_category}</p>
+                          <p className="text-xs">{productCatergory?.product_count}</p>
+                        </button>
+                      );
+                    })}
                 </div>
               </div>
               {/* Categories */}
@@ -223,16 +273,17 @@ const SearchResults = () => {
           </div>
 
           {/* Products Display */}
-          <div className="justify-center mt-4">
-            <div className="grid grid-cols-4 xl:grid-cols-6 gap-3">
+          <div className="justify-center mt-4 w-full">
+            <h1 className="text-center my-1">Products</h1>
+            <div className="grid grid-cols-3 xl:grid-cols-6 gap-3">
               {productsDisplay.map((product, index) => {
                 return (
-                  <div
+                  <button
                     key={product.product_id}
-                    className="rounded cursor-pointer"
-                    // className="w-40 h-40 shadow-lg rounded cursor-pointer"
+                    className={`shadow rounded text-black font-semibold px-2 py-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
+                    style={{ backgroundColor: productTabColors[index] }}
                     onClick={() => {
-                      if (product?.product_properties?.length > 0) {
+                      if (product?.product_properties) {
                         dispatch(setProductToView(product));
                         dispatch(openProductModal());
                       } else {
@@ -249,44 +300,70 @@ const SearchResults = () => {
                       }
                     }}
                   >
-                    <div className="h-full rounded overflow-hidden w-20 xl:w-32">
-                      <div className="relative" style={{ paddingBottom: "70%" }}>
-                        <img className="absolute object-cover w-full h-full" src={product.product_image} alt={product.product_name} />
-                      </div>
-                      <div className="bg-white text-black text-center px-2 font-medium">
-                        <p className="truncate">{product.product_name}</p>
-                      </div>
-                    </div>
-                  </div>
+                    {product.product_name}
+                  </button>
+                  // <div
+                  //     key={product.product_id}
+                  //     className="rounded cursor-pointer"
+                  //     // className="w-40 h-40 shadow-lg rounded cursor-pointer"
+                  //     onClick={() => {
+                  //       if (product?.product_properties?.length > 0) {
+                  //         dispatch(setProductToView(product));
+                  //         dispatch(openProductModal());
+                  //       } else {
+                  //         dispatch(increaseTotalItemsInCart());
+                  //         dispatch(
+                  //           addItemToCart({
+                  //             id: product.product_id,
+                  //             title: product.product_name,
+                  //             price: Number(parseFloat(product.product_price).toFixed(2)),
+                  //             imgURL: product.product_image,
+                  //             variants: { type: "normal" },
+                  //           })
+                  //         );
+                  //       }
+                  //     }}
+                  //   >
+                  //     <div className="h-full rounded overflow-hidden w-20 xl:w-36">
+                  //       <div className="relative" style={{ paddingBottom: "70%" }}>
+                  //         <img className="absolute object-cover w-full h-full" src={product.product_image} alt={product.product_name} />
+                  //       </div>
+                  //       <div className="bg-white text-black text-center px-2 font-medium">
+                  //         <p className="truncate"></p>
+                  //       </div>
+                  //     </div>
+                  //   </div>
                 );
               })}
             </div>
 
-            <div className="flex w-full justify-center mt-6">
-              <ReactPaginate
-                previousLabel={"prev"}
-                nextLabel={"next"}
-                breakLabel={"..."}
-                breakClassName={
-                  "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
-                }
-                previousLinkClassName={
-                  "relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                }
-                nextLinkClassName={
-                  "relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                }
-                pageCount={pageCount}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                onPageChange={handlePageClick}
-                containerClassName={"relative z-0 inline-flex rounded-md shadow-sm -space-x-px"}
-                activeLinkClassName={"z-10 bg-indigo-50 border-indigo-500 text-indigo-600"}
-                pageLinkClassName={
-                  "bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
-                }
-              />
-            </div>
+            {pageCount > 1 && (
+              <div className="flex w-full justify-center mt-6">
+                <ReactPaginate
+                  previousLabel={"prev"}
+                  nextLabel={"next"}
+                  breakLabel={"..."}
+                  breakClassName={
+                    "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+                  }
+                  previousLinkClassName={
+                    "relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  }
+                  nextLinkClassName={
+                    "relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  }
+                  pageCount={pageCount}
+                  marginPagesDisplayed={2}
+                  pageRangeDisplayed={5}
+                  onPageChange={handlePageClick}
+                  containerClassName={"relative z-0 inline-flex rounded-md shadow-sm -space-x-px"}
+                  activeLinkClassName={"z-10 bg-indigo-50 border-indigo-500 text-indigo-600"}
+                  pageLinkClassName={
+                    "bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+                  }
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

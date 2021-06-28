@@ -1,4 +1,11 @@
-import { onClickToCheckout, onAddCartNote, onChangeCartDiscountType, setDiscount, applyDiscount } from "features/cart/cartSlice";
+import {
+  onClickToCheckout,
+  onAddCartNote,
+  onChangeCartDiscountType,
+  setDiscount,
+  applyDiscount,
+  onResetCart,
+} from "features/cart/cartSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DiscountBox from "./DiscountBox";
@@ -29,7 +36,7 @@ const PayButton = () => {
   return (
     <div className="">
       <hr />
-      <div className="relative flex justify-between py-2 px-4">
+      <div className="relative py-2 px-4">
         {showDiscountBox && (
           <div className="absolute bottom-0 left-0">
             <DiscountBox setShowDiscountBox={setShowDiscountBox} />
@@ -40,27 +47,39 @@ const PayButton = () => {
             <NoteBox setShowAddNoteInput={setShowAddNoteInput} />
           </div>
         )}
-        <p className="font-bold">ADD</p>
-        <div className="flex justify-end w-2/3 font-bold text-blue-500">
-          {!cartDiscountOnCartTotal && (
-            <button
-              className="font-bold text-blue-500 mr-4 focus:outline-none"
-              onClick={() => {
-                setShowDiscountBox(true);
-              }}
-            >
-              Discount
-            </button>
-          )}
-          {/* <button className="font-bold text-blue-500 mr-4 focus:outline-none">Promo Code</button> */}
+        <div className="flex justify-end w-full mb-2">
           <button
-            className="font-bold text-blue-500 focus:outline-none"
+            className="font-bold text-red-500 focus:outline-none"
             onClick={() => {
-              setShowAddNoteInput(true);
+              dispatch(onResetCart());
             }}
           >
-            Note
+            Clear Cart
           </button>
+        </div>
+        <div className="flex justify-between w-full">
+          <p className="font-bold">ADD</p>
+          <div className="flex justify-end w-2/3 font-bold text-blue-500">
+            {!cartDiscountOnCartTotal && (
+              <button
+                className="font-bold text-blue-500 mr-4 focus:outline-none"
+                onClick={() => {
+                  setShowDiscountBox(true);
+                }}
+              >
+                Discount
+              </button>
+            )}
+            {/* <button className="font-bold text-blue-500 mr-4 focus:outline-none">Promo Code</button> */}
+            <button
+              className="font-bold text-blue-500 focus:outline-none"
+              onClick={() => {
+                setShowAddNoteInput(true);
+              }}
+            >
+              Note
+            </button>
+          </div>
         </div>
       </div>
 

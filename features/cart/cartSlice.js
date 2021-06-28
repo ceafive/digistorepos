@@ -24,6 +24,7 @@ const initialState = {
   splitPayment: false,
   currentCustomer: null,
   transactionFeeCharges: [],
+  activePayments: [],
 };
 
 const initialProductProps = {
@@ -61,6 +62,9 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
   reducers: {
+    setActivePayments(state, action) {
+      state.activePayments = action.payload;
+    },
     setTransactionFeeCharges(state, action) {
       state.transactionFeeCharges = action.payload;
     },
@@ -254,5 +258,6 @@ export const {
   onRemovePaymentMethod,
   addCustomer,
   setTransactionFeeCharges,
+  setActivePayments
 } = cartSlice.actions;
 export default cartSlice.reducer;

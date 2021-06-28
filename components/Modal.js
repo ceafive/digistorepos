@@ -6,72 +6,40 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
+import { useMediaQuery } from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AlertDialogSlide({ open = false, onClose = () => {}, children }) {
+export default function AlertDialogSlide({ maxWidth = "md", open = false, onClose = () => {}, children }) {
+  const theme = useTheme();
+  const classes = useStyles();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
-    <Dialog maxWidth={"lg"} open={open} TransitionComponent={Transition} onClose={onClose}>
-      <DialogContent classNa>{children}</DialogContent>
+    <Dialog
+      open={open}
+      TransitionComponent={Transition}
+      fullScreen={fullScreen}
+      fullWidth
+      maxWidth={maxWidth}
+      PaperProps={{ className: classes.paymentContainer }}
+      onClose={onClose}
+    >
+      <div className="relative h-full flex flex-col justify-center items-center m-3 border border-gray-200 bg-white  text-center rounded-lg font-semibold">
+        <button className="absolute right-0 top-0 p-2 pt-0 text-2xl focus:outline-none text-red-500" onClick={onClose}>
+          <i className="fas fa-times"></i>
+        </button>
+        {children}
+      </div>
     </Dialog>
   );
 }
 
-// export default function Modal({ open = false, onClose = () => {}, children }) {
-//   return (
-//     <Transition.Root show={open} as={Fragment}>
-//       <Dialog
-//         as="div"
-//         static
-//         className="fixed z-10 inset-0 overflow-y-auto"
-//         // initialFocus={cancelButtonRef}
-//         open={open}
-//         onClose={onClose}
-//       >
-//         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-//           <Transition.Child
-//             as={Fragment}
-//             enter="ease-out duration-300"
-//             enterFrom="opacity-0"
-//             enterTo="opacity-100"
-//             leave="ease-in duration-200"
-//             leaveFrom="opacity-100"
-//             leaveTo="opacity-0"
-//           >
-//             <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-//           </Transition.Child>
-
-//           {/* This element is to trick the browser into centering the modal contents. */}
-//           <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
-//             &#8203;
-//           </span>
-//           <Transition.Child
-//             as={Fragment}
-//             enter="ease-out duration-300"
-//             enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-//             enterTo="opacity-100 translate-y-0 sm:scale-100"
-//             leave="ease-in duration-200"
-//             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-//             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-//           >
-//             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full max-w-4xl">
-//               {children}
-//               {/* <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-//                 <button
-//                   type="button"
-//                   className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-1 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-//                   onClick={() => dispatch(openProductModal())}
-//                   ref={cancelButtonRef}
-//                 >
-//                   Close
-//                 </button>
-//               </div> */}
-//             </div>
-//           </Transition.Child>
-//         </div>
-//       </Dialog>
-//     </Transition.Root>
-//   );
-// }
+const useStyles = makeStyles((theme) => ({
+  paymentContainer: {
+    // height: "100%",
+    backgroundColor: "#fff",
+  },
+}));

@@ -34,8 +34,10 @@ const Cart = () => {
                 sale_total: cart.cartTotalMinusDiscountPlusTax,
                 status: "Parked",
               };
-              dispatch(setSalesHistoryitem([data]));
-              dispatch(onResetCart());
+
+              console.log(data);
+              // dispatch(setSalesHistoryitem([data]));
+              // dispatch(onResetCart());
             }}
           >
             <span>Park Sale</span>

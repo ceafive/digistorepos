@@ -8,7 +8,13 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import ProcessSale from "components/ProcessSale";
 import { motion } from "framer-motion";
-import { productsAdded, customersAdded, onSetProductCategories, openInventoryModal } from "features/products/productsSlice";
+import {
+  productsAdded,
+  customersAdded,
+  onSetProductCategories,
+  openInventoryModal,
+  setCategoryProductsCount,
+} from "features/products/productsSlice";
 import axios from "axios";
 
 const SellPage = () => {
@@ -26,16 +32,16 @@ const SellPage = () => {
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
-        const productsAddedRes = await axios.post("/api/products/get-outlet-products", { user });
-        const onSetProductCategoriesRes = await axios.post("/api/products/get-outlet-categories", { user });
+        const allProductsRes = await axios.post("/api/products/get-all-products", { user });
+        const allCategoriesRes = await axios.post("/api/products/get-all-categories", { user });
 
-        const { data: productsAddedResData } = await productsAddedRes.data;
-        const { data: onSetProductCategoriesResData } = await onSetProductCategoriesRes.data;
+        const { data: allProductsResData } = await allProductsRes.data;
+        const { data: allCategoriesResData } = await allCategoriesRes.data;
 
         // console.log({productsAddedResData, onSetProductCategoriesResData});
 
-        dispatch(productsAdded(productsAddedResData));
-        dispatch(onSetProductCategories(onSetProductCategoriesResData));
+        dispatch(productsAdded(allProductsResData));
+        dispatch(onSetProductCategories(allCategoriesResData));
       } catch (error) {
         console.log(error);
       } finally {

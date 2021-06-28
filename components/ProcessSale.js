@@ -2,6 +2,7 @@ import {
   onClickToCheckout,
   onRemovePaymentMethod,
   onResetCart,
+  setActivePayments,
   setAmountReceivedFromPayer,
   setTransactionFeeCharges,
 } from "features/cart/cartSlice";
@@ -14,6 +15,8 @@ import CashPaymentModal from "./Cart/CashPaymentModal";
 import { setAllOutlets, setOutletSelected } from "features/products/productsSlice";
 import axios from "axios";
 import { forEach } from "p-iteration";
+import CollectUserDetail from "./Cart/CollectUserDetail";
+import AddCustomer from "./Cart/AddCustomer";
 
 const paymentOptions = [
   { name: "CASH", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-CASH.png", showInput: false },
@@ -60,72 +63,14 @@ const paymentOptions = [
 
 const loyaltyTabs = ["Loyalty", "Layby", "Store Credit", "On Account"];
 
-const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors }) => {
-  return (
-    <div className="my-3">
-      <label className="mb-2 text-sm" htmlFor="">
-        {`Enter ${
-          paymentMethodSet === "MTNMM" ? "MTN Mobile Money" : paymentMethodSet === "VODAC" ? "Vodafone Cash" : " AirtelTigo Money"
-        } Number`}
-      </label>
-      <input
-        type="text"
-        {...register("mobileMoneyNumber", {
-          // required: true,
-          minLength: {
-            value: lengthOfMobileNumber,
-            message: "Cannot be shorter than 10 chars",
-          },
-          maxLength: {
-            value: lengthOfMobileNumber,
-            message: "Cannot be longer than 10 chars",
-          },
-          validate: {
-            cannotBeEmpty: (value) =>
-              (paymentMethodSet === "MTNMM" || paymentMethodSet === "TIGOC" || paymentMethodSet === "VODAC") && !value
-                ? "Please enter mobile number"
-                : "",
-          },
-        })}
-        placeholder="eg. 0547748484"
-        className="border border-blue-500 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm outline-none focus:outline-none w-full"
-      />
-      <p className="text-red-500 text-sm">{errors?.mobileMoneyNumber?.message}</p>
-    </div>
-  );
-};
-
-const OtherPaymentInput = ({ paymentMethodSet, register, errors }) => {
-  return (
-    <div className="my-3">
-      <label className="mb-2 text-sm" htmlFor="">
-        Enter Customer Phone number Or Email Address
-      </label>
-      <input
-        type="text"
-        {...register("phoneOrEmailAddress", {
-          // required: true,
-          validate: {
-            cannotBeEmpty: (value) =>
-              (paymentMethodSet === "CASH" || paymentMethodSet === "VISAG" || paymentMethodSet === "QRPAY") && !value
-                ? "Please enter mobile number or email address"
-                : "",
-          },
-        })}
-        placeholder="eg. 0547748484 or jane_doe@mail.com"
-        className="border border-blue-500 px-3 py-3 placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded text-sm outline-none focus:outline-none w-full"
-      />
-      <p className="text-red-500 text-sm">{errors?.phoneOrEmailAddress?.message}</p>
-    </div>
-  );
-};
-
 const ProcessSale = () => {
   const dispatch = useDispatch();
   const {
     formState: { errors },
     register,
     watch,
+    handleSubmit,
+    reset,
   } = useForm({
     mode: "all",
   });
@@ -143,6 +88,11 @@ const ProcessSale = () => {
   const cartDiscount = useSelector((state) => state.cart.cartDiscount);
   const outlets = useSelector((state) => state.products.outlets);
   const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
+  const totalItemsInCart = useSelector((state) => state.cart.totalItemsInCart);
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  const activePayments = useSelector((state) => state.cart.activePayments);
+
+  // console.log(activePayments);
 
   // Component State
   const [step, setStep] = React.useState(0);
@@ -150,15 +100,26 @@ const ProcessSale = () => {
   const [payerAmountEntered, setPayerAmountEntered] = React.useState(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer);
   const [openCashModal, setOpenCashModal] = React.useState(false);
   const [fetching, setFetching] = React.useState(false);
+  const [openPhoneNumberInputModal, setOpenPhoneNumberInputModal] = React.useState(false);
 
   // Variables
   const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
   const lengthOfMobileNumber = 10;
   const watchMobileMoneyNumber = watch("mobileMoneyNumber", "");
+  const watchPhoneOrEmailAddress = watch("phoneOrEmailAddress", "");
   const userDetails = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
-  const paymentButtons = intersectionWith(paymentOptions, userDetails?.user_permissions, (arrVal, othVal) => {
-    return isEqual(arrVal.name, othVal);
-  });
+  const paymentButtons = React.useMemo(() => {
+    const intersected = intersectionWith(paymentOptions, userDetails?.user_permissions, (arrVal, othVal) => {
+      return isEqual(arrVal.name, othVal);
+    });
+
+    const allIntersected = intersectionWith(intersected, activePayments, (arrVal, othVal) => {
+      return isEqual(arrVal.name, othVal);
+    });
+    return allIntersected;
+  }, [activePayments, userDetails?.user_permissions]);
+
+  // console.log(paymentButtons);
 
   React.useEffect(() => {
     setPayerAmountEntered(
@@ -171,7 +132,7 @@ const ProcessSale = () => {
   }, [amountReceivedFromPayer, cartTotalMinusDiscountPlusTax]);
 
   React.useEffect(() => {
-    const fetchItems = async () => {
+    const fetchOutlets = async () => {
       try {
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
@@ -190,12 +151,27 @@ const ProcessSale = () => {
       }
     };
 
-    fetchItems();
+    const fetchActivePayments = async () => {
+      try {
+        const res = await axios.post("/api/products/get-active-payments");
+        const { data } = await res.data;
+
+        dispatch(setActivePayments(data));
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    };
+
+    fetchOutlets();
+    fetchActivePayments();
   }, [dispatch]);
 
-  // console.log(transactionFeeCharges);
-  // console.log(paymentMethodsAndAmount);
-  // console.log(outlets);
+  React.useEffect(() => {
+    if (outlets.length === 1) {
+      dispatch(setOutletSelected(outlets[0]));
+    }
+  }, [dispatch, outlets]);
 
   const fetchFeeCharges = async (userPaymentMethods) => {
     try {
@@ -222,13 +198,60 @@ const ProcessSale = () => {
     }
   };
 
+  const onAddPayment = () => {
+    try {
+      fetchFeeCharges([
+        ...paymentMethodsAndAmount,
+        {
+          method: paymentMethodSet,
+          amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
+        },
+      ]);
+      if (paymentMethodSet === "CASH") {
+        if (payerAmountEntered === cartTotalMinusDiscountPlusTax) {
+          dispatch(
+            setAmountReceivedFromPayer({
+              method: paymentMethodSet,
+              amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
+            })
+          );
+        } else setOpenCashModal(true);
+      } else {
+        dispatch(
+          setAmountReceivedFromPayer({
+            method: paymentMethodSet,
+            amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
+          })
+        );
+      }
+      // reset({
+      //   mobileMoneyNumber: "",
+      //   phoneOrEmailAddress: "",
+      // });
+      setOpenPhoneNumberInputModal(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
-      <Modal open={openCashModal} onClose={() => setOpenCashModal(false)}>
+      <Modal open={openCashModal} onClose={() => setOpenCashModal(false)} maxWidth="sm">
         <CashPaymentModal
           onClose={() => setOpenCashModal(false)}
           payerAmountEntered={payerAmountEntered}
           cartTotalMinusDiscountPlusTax={cartTotalMinusDiscountPlusTax}
+        />
+      </Modal>
+      <Modal open={openPhoneNumberInputModal} onClose={() => setOpenPhoneNumberInputModal(false)} maxWidth="sm">
+        <CollectUserDetail
+          onAddPayment={onAddPayment}
+          paymentMethodSet={paymentMethodSet}
+          register={register}
+          handleSubmit={handleSubmit}
+          lengthOfMobileNumber={lengthOfMobileNumber}
+          errors={errors}
+          onClose={() => setOpenPhoneNumberInputModal(false)}
         />
       </Modal>
       <div className="flex m-4 divide-x divide-gray-200 bg-white rounded shadow">
@@ -259,7 +282,7 @@ const ProcessSale = () => {
           <hr className="mt-6 mb-5" />
 
           {/* Sub amount figures */}
-          <div className="pl-20">
+          <div className="pl-5 xl:pl-20">
             <div className="flex justify-between">
               <p>Sub-total</p>
               <p>GHC{totalPriceInCart}</p>
@@ -276,34 +299,42 @@ const ProcessSale = () => {
             </div>
 
             <div className="flex justify-between">
-              <p>Tax VAT COVID-19 Levy 4%</p>
+              <p>Tax COVID-19 Levy 4%</p>
               <p>GHC{covidTax}</p>
             </div>
           </div>
 
-          <hr className="mt-10 mb-5" />
+          <hr className="mt-5 mb-5" />
 
           <div className="">
             <div className="flex justify-between items-center">
               <p>
-                <span className="font-bold text-xl tracking-wide mr-4">{upperCase("sale total")}</span>
-                <span className="text-sm">2 items</span>
+                <span className="font-bold text-xl tracking-wide mr-4">SALE TOTAL</span>
+                <span className="text-sm">{totalItemsInCart} item(s)</span>
               </p>
               <p>GHC{cartTotalMinusDiscountPlusTax}</p>
             </div>
           </div>
 
-          <hr className="mt-10 mb-5" />
+          <hr className="mt-5 mb-5" />
 
-          <div className="pl-20">
+          <div className="pl-5 xl:pl-20">
             {paymentMethodsAndAmount.map((paymentMethod, index) => {
               const fee = find(transactionFeeCharges, { service: paymentMethod.method });
-              console.log(fee);
+              const showWatchMobileMoneyNumber =
+                paymentMethod.method === "MTNMM" || paymentMethod.method === "TIGOC" || paymentMethod.method === "VODAC";
+              const showWatchPhoneOrEmailAddress =
+                paymentMethod.method === "CASH" || paymentMethod.method === "VISAG" || paymentMethod.method === "QRPAY";
               return (
                 <div key={paymentMethod.method + index} className="flex justify-between my-4">
                   <div>
                     <p>{paymentMethod.method}</p>
                     {fee ? <p className="text-sm">Fee: GHC{fee?.charge}</p> : <></>}
+                    {watchMobileMoneyNumber || watchPhoneOrEmailAddress ? (
+                      <p className="text-sm">Contact: {showWatchMobileMoneyNumber ? watchMobileMoneyNumber : watchPhoneOrEmailAddress}</p>
+                    ) : (
+                      <></>
+                    )}
                     <p className="text-sm">{paymentMethod.date}</p>
                   </div>
                   <div>
@@ -328,7 +359,7 @@ const ProcessSale = () => {
                   <p className="font-bold text-xl tracking-wide mr-4">FEES</p>
                   <p>
                     GHC
-                    {reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(2)), 0)}
+                    {reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge)), 0)}
                   </p>
                 </div>
               </>
@@ -398,31 +429,7 @@ const ProcessSale = () => {
                         className="w-32 h-24 border border-gray-300 rounded shadow overflow-hidden"
                         onClick={() => {
                           setPaymentMethodSet(paymentButton.name);
-
-                          fetchFeeCharges([
-                            ...paymentMethodsAndAmount,
-                            {
-                              method: paymentButton.name,
-                              amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
-                            },
-                          ]);
-                          if (paymentButton.name === "CASH") {
-                            if (payerAmountEntered === cartTotalMinusDiscountPlusTax) {
-                              dispatch(
-                                setAmountReceivedFromPayer({
-                                  method: paymentButton.name,
-                                  amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
-                                })
-                              );
-                            } else setOpenCashModal(true);
-                          } else {
-                            dispatch(
-                              setAmountReceivedFromPayer({
-                                method: paymentButton.name,
-                                amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
-                              })
-                            );
-                          }
+                          setOpenPhoneNumberInputModal(true);
                         }}
                       >
                         <img className="w-full h-full" src={paymentButton.img} alt={paymentButton.name} />
@@ -432,47 +439,53 @@ const ProcessSale = () => {
                 })}
               </div>
 
-              {(paymentMethodSet === "MTNMM" || paymentMethodSet === "TIGOC" || paymentMethodSet === "VODAC") && (
-                <MoMoInput
-                  paymentMethodSet={paymentMethodSet}
-                  register={register}
-                  lengthOfMobileNumber={lengthOfMobileNumber}
-                  errors={errors}
-                />
+              {outlets.length > 1 && (
+                <>
+                  <h1 className="font-semibold mb-1">Outlets</h1>
+                  <div className="grid grid-cols-3 xl:grid-cols-5 gap-2">
+                    {outlets.map((outlet) => {
+                      return (
+                        <div key={outlet.outlet_name} className="">
+                          <button
+                            className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold"
+                            onClick={() => {
+                              dispatch(setOutletSelected(outlet));
+                            }}
+                          >
+                            {outlet.outlet_name}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
               )}
 
-              {(paymentMethodSet === "CASH" || paymentMethodSet === "VISAG" || paymentMethodSet === "QRPAY") && (
-                <OtherPaymentInput paymentMethodSet={paymentMethodSet} register={register} errors={errors} />
+              {currentCustomer ? (
+                <div className="w-full self-end">
+                  <h1 className="font-semibold mb-1 text-sm">Current Customer</h1>
+                  <div className="flex items-center">
+                    <span className="font-bold">{currentCustomer.customer_name}</span>
+                    <span className="text-xs ml-2">{currentCustomer.customer_email}</span>
+                    <span className="text-xs ml-2">{currentCustomer.customer_phone}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full">
+                  <div className="w-full z-10">
+                    <AddCustomer />
+                  </div>
+                  {/* <span className="z-10 absolute text-center text-blue-500 w-8 pl-3 py-3">
+                    <i className="fas fa-user-alt"></i>
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Add a customer to pay with the following options:"
+                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
+                  /> */}
+                </div>
               )}
 
-              <h1 className="font-semibold">Outlets</h1>
-              <div className="grid grid-cols-3 xl:grid-cols-5 gap-2">
-                {outlets.map((outlet) => {
-                  return (
-                    <div key={outlet.outlet_name} className="">
-                      <button
-                        className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold"
-                        onClick={() => {
-                          dispatch(setOutletSelected(outlet));
-                        }}
-                      >
-                        {outlet.outlet_name}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* <div className="w-full">
-                <span className="z-10 absolute text-center text-blue-500 w-8 pl-3 py-3">
-                  <i className="fas fa-user-alt"></i>
-                </span>
-                <input
-                  type="text"
-                  placeholder="Add a customer to pay with the following options:"
-                  className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
-                />
-              </div> */}
               {/* 
               <div className="grid grid-cols-3 gap-2 my-4">
                 {loyaltyTabs.map((loyaltyTab) => {

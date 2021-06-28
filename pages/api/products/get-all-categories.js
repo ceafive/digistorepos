@@ -27,9 +27,9 @@ export default function handler(req, res) {
       const authData = `${appID}:${stringedTimestamp}`;
       const authSecret = getHash(authData, appKey);
 
-      const { user: userDetails, outletSelected } = req.body;
+      const { user: userDetails } = req.body;
       const iPayResponse = await axiosIPAY({
-        url: `/stores/merchant/${userDetails["user_merchant_id"]}/store/outlet/${userDetails?.user_assigned_outlets[0]}/product/category`,
+        url: `/products/category/${userDetails["user_merchant_id"]}/list`,
         method: "get",
         headers: {
           Application: appID,

@@ -27,12 +27,10 @@ export default function handler(req, res) {
       const authData = `${appID}:${stringedTimestamp}`;
       const authSecret = getHash(authData, appKey);
 
-      const userDetails = req.body.user;
-      const category = req.body.category;
-      const outletSelected = req.body.outletSelected;
-
+      const { user: userDetails } = req.body;
       const iPayResponse = await axiosIPAY({
-        url: `/stores/merchant/${userDetails["user_merchant_id"]}/store/outlet/${userDetails?.user_assigned_outlets[0]}/category/${category}/products`,
+        // url: `/stores/merchant/${userDetails["user_merchant_id"]}/store/outlet/${userDetails?.user_assigned_outlets[0]}/products`,
+        url: `/products/product/${userDetails["user_merchant_id"]}/mobile/list`,
         method: "get",
         headers: {
           Application: appID,

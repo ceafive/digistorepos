@@ -61,7 +61,7 @@ const AddCustomer = () => {
 
   return (
     <>
-      <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)}>
+      <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)} maxWidth="sm">
         <AddCustomerModal onClose={() => setOpenAddCustomerModal(false)} setStep={setStep} />
       </Modal>
       <div className="w-full">
@@ -117,10 +117,11 @@ const AddCustomer = () => {
               >
                 {allCustomers.length > 0 ? (
                   allCustomers?.map((customer) => {
+                    // console.log(customer);
                     return (
                       <div
                         className="w-full py-2 cursor-pointer"
-                        key={customer.id}
+                        key={customer.customer_id}
                         onClick={() => {
                           dispatch(addCustomer(customer));
                           setStep(2);
@@ -128,7 +129,7 @@ const AddCustomer = () => {
                           // console.log(customer);
                         }}
                       >
-                        <div className="flex items-center" key={customer.id}>
+                        <div className="flex items-center" key={customer.customer_id}>
                           <div className="flex items-center w-full">
                             <div className="flex justify-between items-center w-full px-4">
                               <div className="flex items-center">

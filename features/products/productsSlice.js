@@ -11,10 +11,11 @@ const initialState = {
   customers: [],
   productCategories: [],
   categorySelected: {
-    category_id: "ALL",
-    category_name: "ALL",
-    category_description: "All Categories",
+    product_category_id: "ALL",
+    product_category: "ALL",
+    product_category_description: "All Categories",
   },
+  categoryProductsCount: [],
 };
 
 const actionCreator = (key, state, payload) => {
@@ -25,6 +26,9 @@ const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
+    setCategoryProductsCount(state, action) {
+      state.categoryProductsCount = action.payload;
+    },
     setAllOutlets(state, action) {
       actionCreator("outlets", state, action.payload);
     },
@@ -69,5 +73,6 @@ export const {
   openInventoryModal,
   setOutletSelected,
   setAllOutlets,
+  setCategoryProductsCount,
 } = productsSlice.actions;
 export default productsSlice.reducer;
