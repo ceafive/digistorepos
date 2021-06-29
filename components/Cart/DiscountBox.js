@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { onClickToCheckout, onAddCartNote, onChangeCartDiscountType, setDiscount, applyDiscount } from "features/cart/cartSlice";
+import { onChangeCartDiscountType, setDiscount } from "features/cart/cartSlice";
 
 const DiscountBox = ({ setShowDiscountBox }) => {
   const dispatch = useDispatch();

@@ -5,14 +5,16 @@ import {
   currentSearchTerm,
   onSelectCategory,
   openProductModal,
+  setAllOutlets,
   setCategoryProductsCount,
+  setOutletSelected,
   setProductToView,
 } from "features/products/productsSlice";
-import { increaseTotalItemsInCart, addItemToCart } from "features/cart/cartSlice";
+import { increaseTotalItemsInCart, addItemToCart, setActivePayments } from "features/cart/cartSlice";
 import Modal from "components/Modal";
 
 import ReactPaginate from "react-paginate";
-import { filter, take } from "lodash";
+import { filter, intersectionWith, take } from "lodash";
 import axios from "axios";
 
 import ProductDetails from "./Product/ProductDetails";
@@ -45,6 +47,7 @@ const productColors = [
   "#59b1bf",
   "#dc8394",
   "#b1ccfe",
+  "#2df5b0",
 ];
 
 const SearchResults = () => {
@@ -55,6 +58,7 @@ const SearchResults = () => {
   const categorySelected = useSelector((state) => state.products.categorySelected);
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
   const categoryProductsCount = useSelector((state) => state.products.categoryProductsCount);
+  const outlets = useSelector((state) => state.products.outlets);
 
   const perPage = 12; // product number to display per page
 
@@ -96,26 +100,55 @@ const SearchResults = () => {
 
   React.useEffect(() => {
     if (categorySelected.product_category !== "ALL") {
-      // console.log("hit here");
-      // const getCategoryProducts = async () => {
-      //   let user = sessionStorage.getItem("IPAYPOSUSER");
-      //   user = JSON.parse(user);
-      //   const res = await axios.post("/api/products/get-category-products", {
-      //     user,
-      //     category: categorySelected.category_id,
-      //   });
-      //   const { data } = await res.data;
-      //   // console.log("getCategoryProducts", data);
-      // };
-      // getCategoryProducts();
       const filtered = filter(products, (o) => Boolean(o) && o?.product_category === categorySelected.product_category);
       setProductsDisplay(take([...filtered].slice(offset), perPage));
     } else {
-      // console.log("hit there");
       const filtered = filter(products, (o) => Boolean(o));
       setProductsDisplay(take([...filtered].slice(offset), perPage));
     }
   }, [categorySelected.product_category, offset, products]);
+
+  React.useEffect(() => {
+    const fetchOutlets = async () => {
+      try {
+        let user = sessionStorage.getItem("IPAYPOSUSER");
+        user = JSON.parse(user);
+
+        const res = await axios.post("/api/products/get-outlets", user);
+        const { data } = await res.data;
+        const { user_assigned_outlets } = user;
+
+        const response = intersectionWith(data, user_assigned_outlets ?? [], (arrVal, othVal) => {
+          return arrVal.outlet_id === othVal;
+        });
+        dispatch(setAllOutlets(user_assigned_outlets ? response : data));
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    };
+
+    const fetchActivePayments = async () => {
+      try {
+        const res = await axios.post("/api/products/get-active-payments");
+        const { data } = await res.data;
+
+        dispatch(setActivePayments(data));
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    };
+
+    fetchOutlets();
+    fetchActivePayments();
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    if (outlets.length === 1) {
+      dispatch(setOutletSelected(outlets[0]));
+    }
+  }, [dispatch, outlets]);
 
   const handlePageClick = (data) => {
     let selected = data.selected;

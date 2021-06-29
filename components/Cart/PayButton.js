@@ -5,33 +5,90 @@ import {
   setDiscount,
   applyDiscount,
   onResetCart,
+  setPromoAmount,
+  applyPromoAmount,
 } from "features/cart/cartSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DiscountBox from "./DiscountBox";
+import PromoCodeBox from "./PromoCodeBox";
 import NoteBox from "./NoteBox";
+import Spinner from "components/Spinner";
+import axios from "axios";
+import { upperCase } from "lodash";
 
 const PayButton = () => {
   const dispatch = useDispatch();
   const totalItemsInCart = useSelector((state) => state.cart.totalItemsInCart);
   const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
-  const cartNote = useSelector((state) => state.cart.cartNote);
-  const cartDiscountType = useSelector((state) => state.cart.cartDiscountType);
   const cartDiscount = useSelector((state) => state.cart.cartDiscount);
   const totalTaxes = useSelector((state) => state.cart.totalTaxes);
   const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
   const cartTotalMinusDiscount = useSelector((state) => state.cart.cartTotalMinusDiscount);
   const cartDiscountOnCartTotal = useSelector((state) => state.cart.cartDiscountOnCartTotal);
+  const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const productsInCart = useSelector((state) => state.cart.productsInCart);
 
+  // Componet State
   const [showAddNoteInput, setShowAddNoteInput] = React.useState(false);
   const [showDiscountBox, setShowDiscountBox] = React.useState(false);
+  const [showPromoCodeBox, setShowPromoCodeBox] = React.useState(false);
+  const [checking, setProcessing] = React.useState(false);
+  const [promoCode, setPromoCode] = React.useState("");
 
+  // Variables
   const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
 
   React.useEffect(() => {
     dispatch(applyDiscount());
     return () => {};
-  }, [totalPriceInCart, totalItemsInCart, cartDiscount, dispatch]);
+  }, [totalPriceInCart, totalItemsInCart, cartDiscount, cartPromoDiscount, dispatch]);
+
+  const checkingPromoCode = async () => {
+    try {
+      setProcessing(true);
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      let orderItems = {};
+
+      productsInCart.forEach((product, index) => {
+        orderItems[index] = {
+          order_item_no: product?.uniqueId,
+          order_item_qty: product?.quantity,
+          order_item: product?.title,
+          order_item_amt: product?.price,
+        };
+      });
+
+      const userData = {
+        code: upperCase(promoCode),
+        amount: totalPriceInCart,
+        merchant: user["user_merchant_id"],
+        order_items: JSON.stringify(orderItems),
+        customer: currentCustomer,
+        outlet: outletSelected,
+      };
+
+      // console.log(userData);
+      // return;
+
+      const response = await axios.post("/api/products/add-discount", userData);
+      const { status, message, discount } = await response.data;
+
+      // console.log({ status, message, discount });
+      dispatch(setPromoAmount(discount));
+    } catch (error) {
+      console.log(error);
+      setProcessing(false);
+    } finally {
+      setPromoCode("");
+      setProcessing(false);
+      setShowPromoCodeBox(false);
+    }
+  };
 
   return (
     <div className="">
@@ -47,6 +104,18 @@ const PayButton = () => {
             <NoteBox setShowAddNoteInput={setShowAddNoteInput} />
           </div>
         )}
+        {showPromoCodeBox && (
+          <div className="absolute bottom-0 left-0 w-2/3">
+            <PromoCodeBox
+              checking={checking}
+              setShowPromoCodeBox={setShowPromoCodeBox}
+              promoCode={promoCode}
+              setPromoCode={setPromoCode}
+              checkingPromoCode={checkingPromoCode}
+            />
+          </div>
+        )}
+
         <div className="flex justify-end w-full mb-2">
           <button
             className="font-bold text-red-500 focus:outline-none"
@@ -59,7 +128,7 @@ const PayButton = () => {
         </div>
         <div className="flex justify-between w-full">
           <p className="font-bold">ADD</p>
-          <div className="flex justify-end w-2/3 font-bold text-blue-500">
+          <div className="flex justify-end w-4/5 font-bold text-blue-500">
             {!cartDiscountOnCartTotal && (
               <button
                 className="font-bold text-blue-500 mr-4 focus:outline-none"
@@ -70,7 +139,16 @@ const PayButton = () => {
                 Discount
               </button>
             )}
-            {/* <button className="font-bold text-blue-500 mr-4 focus:outline-none">Promo Code</button> */}
+            {!cartPromoDiscount && (
+              <button
+                className="font-bold text-blue-500 mr-4 focus:outline-none"
+                onClick={() => {
+                  setShowPromoCodeBox(true);
+                }}
+              >
+                Promo Code
+              </button>
+            )}
             <button
               className="font-bold text-blue-500 focus:outline-none"
               onClick={() => {
@@ -107,12 +185,32 @@ const PayButton = () => {
           <p className="font-medium ">Discount</p>
 
           <div className="flex items-center">
-            <p className="mr-2">GHC{cartDiscountOnCartTotal}</p>
+            <p className="mr-2">-GHC{cartDiscountOnCartTotal}</p>
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
                 dispatch(onChangeCartDiscountType("percent"));
                 dispatch(setDiscount(""));
+              }}
+            >
+              <i className="fas fa-trash-alt text-red-500 text-sm"></i>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
+
+      {cartPromoDiscount ? (
+        <div className="flex justify-between font-medium py-2 px-4">
+          <p className="font-medium ">Promo</p>
+
+          <div className="flex items-center">
+            <p className="mr-2">-GHC{cartPromoDiscount}</p>
+            <button
+              className="justify-self-end focus:outline-none"
+              onClick={() => {
+                dispatch(setPromoAmount(0));
               }}
             >
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>

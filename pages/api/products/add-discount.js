@@ -1,6 +1,7 @@
 import { axiosIPAY } from "services/axios";
 const cors = require("cors")({ origin: true });
 const crypto = require("crypto");
+const qs = require("querystring");
 
 function microtime(getAsFloat) {
   return (Date.now ? Date.now() : new Date().getTime()) / 1000;
@@ -27,10 +28,12 @@ export default function handler(req, res) {
       const authData = `${appID}:${stringedTimestamp}`;
       const authSecret = getHash(authData, appKey);
 
-      const { user: userDetails } = req.body;
+      const data = req.body;
+
       const iPayResponse = await axiosIPAY({
-        url: `/products/category/${userDetails["user_merchant_id"]}/list`,
-        method: "get",
+        url: `/discounts/discount/apply`,
+        method: "post",
+        data: qs.stringify(data),
         headers: {
           Application: appID,
           Time: stringedTimestamp,

@@ -15,6 +15,7 @@ const initialState = {
   partPaymentAmount: "",
   cartNote: "",
   cartDiscount: "",
+  cartPromoDiscount: 0,
   cartDiscountOnCartTotal: 0,
   cartDiscountType: "percent",
   cartTotalMinusDiscount: 0,
@@ -56,6 +57,18 @@ const calculateDiscount = (valueToApplyOn, discountType, discountValue) => {
     discountAmount: discount,
     valueReturn: Number(parseFloat(valueAfterDiscount).toFixed(2)),
   };
+};
+
+const calculatePromoAmount = (valueToApplyOn, discountValue) => {
+  let valueAfterDiscount = valueToApplyOn;
+
+  if (!discountValue) {
+    valueAfterDiscount = valueToApplyOn;
+  } else {
+    valueAfterDiscount = valueToApplyOn - discountValue;
+  }
+
+  return Number(parseFloat(valueAfterDiscount).toFixed(2));
 };
 
 const cartSlice = createSlice({
@@ -109,8 +122,11 @@ const cartSlice = createSlice({
       const { discountAmount, valueReturn } = calculateDiscount(state.totalPriceInCart, state.cartDiscountType, state.cartDiscount);
 
       state.cartDiscountOnCartTotal = discountAmount;
-      state.cartTotalMinusDiscount = valueReturn;
+      state.cartTotalMinusDiscount = valueReturn - state.cartPromoDiscount;
       state.cartTotalMinusDiscountPlusTax = Number(parseFloat(valueReturn + valueReturn * state.totalTaxes).toFixed(2));
+    },
+    setPromoAmount: (state, action) => {
+      state.cartPromoDiscount = action.payload;
     },
     onClickToCheckout: (state, action) => {
       state.clickToCheckout = action?.payload || !state.clickToCheckout;
@@ -258,6 +274,8 @@ export const {
   onRemovePaymentMethod,
   addCustomer,
   setTransactionFeeCharges,
-  setActivePayments
+  setActivePayments,
+  setPromoAmount,
+  applyPromoAmount,
 } = cartSlice.actions;
 export default cartSlice.reducer;

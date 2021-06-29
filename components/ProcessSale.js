@@ -91,6 +91,7 @@ const ProcessSale = () => {
   const totalItemsInCart = useSelector((state) => state.cart.totalItemsInCart);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
   const activePayments = useSelector((state) => state.cart.activePayments);
+  const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
 
   // console.log(activePayments);
 
@@ -130,48 +131,6 @@ const ProcessSale = () => {
       )
     );
   }, [amountReceivedFromPayer, cartTotalMinusDiscountPlusTax]);
-
-  React.useEffect(() => {
-    const fetchOutlets = async () => {
-      try {
-        let user = sessionStorage.getItem("IPAYPOSUSER");
-        user = JSON.parse(user);
-
-        const res = await axios.post("/api/products/get-outlets", user);
-        const { data } = await res.data;
-        const { user_assigned_outlets } = user;
-
-        const response = intersectionWith(data, user_assigned_outlets ?? [], (arrVal, othVal) => {
-          return arrVal.outlet_id === othVal;
-        });
-        dispatch(setAllOutlets(user_assigned_outlets ? response : data));
-      } catch (error) {
-        console.log(error);
-      } finally {
-      }
-    };
-
-    const fetchActivePayments = async () => {
-      try {
-        const res = await axios.post("/api/products/get-active-payments");
-        const { data } = await res.data;
-
-        dispatch(setActivePayments(data));
-      } catch (error) {
-        console.log(error);
-      } finally {
-      }
-    };
-
-    fetchOutlets();
-    fetchActivePayments();
-  }, [dispatch]);
-
-  React.useEffect(() => {
-    if (outlets.length === 1) {
-      dispatch(setOutletSelected(outlets[0]));
-    }
-  }, [dispatch, outlets]);
 
   const fetchFeeCharges = async (userPaymentMethods) => {
     try {
@@ -291,6 +250,11 @@ const ProcessSale = () => {
             <div className="flex justify-between">
               <p>Discount</p>
               <p>GHC{cartDiscountOnCartTotal}</p>
+            </div>
+
+            <div className="flex justify-between">
+              <p>Promo Amount</p>
+              <p>GHC{cartPromoDiscount}</p>
             </div>
 
             <div className="flex justify-between pt-4">

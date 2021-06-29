@@ -54,8 +54,10 @@ const SellPage = () => {
 
   if (fetching) {
     return (
-      <div className="min-h-screen flex-col justify-center items-center w-full h-full">
-        <Spinner type="TailSpin" />
+      <div className="min-h-screen flex-col justify-center items-center">
+        <div className=" w-full h-full">
+          <Spinner type="TailSpin" width="10" height="10" />
+        </div>
       </div>
     );
   }
