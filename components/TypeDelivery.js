@@ -1,6 +1,6 @@
 import axios from "axios";
-import { setDeliveryCharge } from "features/cart/cartSlice";
-import { get } from "lodash";
+import { setDeliveryCharge, setDeliveryTypes } from "features/cart/cartSlice";
+import { filter, get } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import GooglePlaces from "./GooglePlaces";
@@ -199,7 +199,35 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
 };
 
 const TypeDelivery = () => {
+  const dispatch = useDispatch();
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
+  const [fetching, setFetching] = React.useState(false);
+
+  console.log(deliveryTypes);
+
+  React.useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        setFetching(true);
+        let user = sessionStorage.getItem("IPAYPOSUSER");
+        user = JSON.parse(user);
+
+        const deliveryTypesRes = await axios.post("/api/products/get-delivery-type", { user });
+        const { data: deliveryTypesResData } = await deliveryTypesRes.data;
+        dispatch(setDeliveryTypes(deliveryTypesResData));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchItems();
+  }, [dispatch]);
+
+  if (fetching) {
+    return null;
+  }
 
   if (deliveryTypes["option_delivery"] === "MERCHANT") {
     return <MerchantDeliveryType />;

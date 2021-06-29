@@ -46,11 +46,11 @@ const SellPage = () => {
 
         dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
         dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
-        dispatch(setDeliveryTypes(filter(deliveryTypesResData, (o) => Boolean(o))));
+        dispatch(setDeliveryTypes(deliveryTypesResData));
+        setFetching(false);
       } catch (error) {
         console.log(error);
       } finally {
-        setFetching(false);
       }
     };
 
