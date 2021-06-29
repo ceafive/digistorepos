@@ -14,9 +14,9 @@ const Admin = ({ children }) => {
   return (
     <>
       <Sidebar />
-      <div className={`app-main ${openSidebarSecondpane ? "ml-48 xl:ml-64" : "ml-20 xl:ml-28"} bg-blueGray-100 min-h-screen`}>
+      <div className={`admin-main ${openSidebarSecondpane ? "ml-48 xl:ml-64" : "ml-20 xl:ml-28"} bg-blueGray-100 min-h-screen`}>
         <AdminNavbar />
-        <div className="px-10 mx-auto w-full">
+        <div className="admin-children px-5 mx-auto w-full">
           {children}
           <FooterAdmin />
         </div>

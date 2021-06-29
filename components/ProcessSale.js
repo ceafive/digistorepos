@@ -204,7 +204,7 @@ const ProcessSale = () => {
           onClose={() => setOpenPhoneNumberInputModal(false)}
         />
       </Modal>
-      <div className="flex m-4 divide-x divide-gray-200 bg-white rounded shadow">
+      <div className="flex divide-x divide-gray-200 bg-white rounded shadow">
         <div className="w-2/5 p-6">
           <div className="flex items-center font-semibold text-xl">
             <p className="">Sale Summary</p>
@@ -382,7 +382,7 @@ const ProcessSale = () => {
                     }}
                     type="number"
                     placeholder="Enter an amount"
-                    className="border border-blue-500 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded shadow focus:outline-none text-right text-2xl"
+                    className="border border-blue-500 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded shadow focus:outline-none text-2xl"
                   />
                   {/* <button className="ml-2 bg-green-500 px-2 py-1 text-white rounded">Give Change</button> */}
                 </div>
