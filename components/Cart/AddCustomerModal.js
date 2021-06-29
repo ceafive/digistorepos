@@ -66,7 +66,7 @@ const AddCustomerModal = ({ onClose, setStep }) => {
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
             {...register("fullName", { required: "Please enter a name" })}
             type="text"
-            placeholder="Jane"
+            placeholder="Kofi Adomah"
           />
           <p className="text-red-500 text-xs italic">{errors?.fullName?.message}</p>
         </div>
@@ -76,7 +76,7 @@ const AddCustomerModal = ({ onClose, setStep }) => {
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             {...register("email", { required: "Please enter an email" })}
             type="email"
-            placeholder="jane_doe@mail.com"
+            placeholder="kofi_adomah@mail.com"
           />
           <p className="text-red-500 text-xs italic">{errors?.email?.message}</p>
         </div>
@@ -89,7 +89,7 @@ const AddCustomerModal = ({ onClose, setStep }) => {
             {...register("phone", { required: "Please enter a phone number" })}
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             type="number"
-            placeholder="Albuquerque"
+            placeholder="0222442455"
           />
           <p className="text-red-500 text-xs italic">{errors?.phone?.message}</p>
         </div>
@@ -99,7 +99,7 @@ const AddCustomerModal = ({ onClose, setStep }) => {
             {...register("dob", { required: "Please enter a date of birth" })}
             className="appearance-none block w-full text-sm bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             type="date"
-            placeholder="Albuquerque"
+            placeholder="06/06/1957"
           />
           <p className="text-red-500 text-xs italic">{errors?.dob?.message}</p>
         </div>
