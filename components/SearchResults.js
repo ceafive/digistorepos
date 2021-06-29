@@ -100,11 +100,10 @@ const SearchResults = () => {
 
   React.useEffect(() => {
     if (categorySelected.product_category !== "ALL") {
-      const filtered = filter(products, (o) => Boolean(o) && o?.product_category === categorySelected.product_category);
+      const filtered = filter(products, (o) => o?.product_category === categorySelected.product_category);
       setProductsDisplay(take([...filtered].slice(offset), perPage));
     } else {
-      const filtered = filter(products, (o) => Boolean(o));
-      setProductsDisplay(take([...filtered].slice(offset), perPage));
+      setProductsDisplay(take([...products].slice(offset), perPage));
     }
   }, [categorySelected.product_category, offset, products]);
 
@@ -211,7 +210,7 @@ const SearchResults = () => {
                           className="w-full p-2 cursor-pointer border border-gray-400"
                           key={product.product_id}
                           onClick={() => {
-                            if (product?.product_properties?.length > 0) {
+                            if (product?.product_properties) {
                               dispatch(setProductToView(product));
                               dispatch(openProductModal());
                             } else {
@@ -231,7 +230,11 @@ const SearchResults = () => {
                           <div className="flex items-center text-black font-medium" key={product.product_id}>
                             <div className="flex items-center w-full">
                               <div className="w-48 h-20">
-                                <img className="w-full h-full object-cover" src={product.product_image} alt={product.product_name} />
+                                <img
+                                  className="w-full h-full object-cover"
+                                  src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
+                                  alt={product.product_name}
+                                />
                               </div>
 
                               <div className="px-4 w-full">

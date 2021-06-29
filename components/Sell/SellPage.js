@@ -17,6 +17,7 @@ import {
 } from "features/products/productsSlice";
 import axios from "axios";
 import { setDeliveryTypes } from "features/cart/cartSlice";
+import { filter } from "lodash";
 
 const SellPage = () => {
   const dispatch = useDispatch();
@@ -43,9 +44,9 @@ const SellPage = () => {
 
         // console.log({ allProductsResData, allCategoriesResData, deliveryTypesResData });
 
-        dispatch(productsAdded(allProductsResData));
-        dispatch(onSetProductCategories(allCategoriesResData));
-        dispatch(setDeliveryTypes(deliveryTypesResData));
+        dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
+        dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
+        dispatch(setDeliveryTypes(filter(deliveryTypesResData, (o) => Boolean(o))));
       } catch (error) {
         console.log(error);
       } finally {
