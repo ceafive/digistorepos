@@ -8,7 +8,7 @@ import {
   setTotalAmountToBePaidByBuyer,
   setTransactionFeeCharges,
 } from "features/cart/cartSlice";
-import { find, get, intersectionWith, isEqual, reduce, upperCase } from "lodash";
+import { find, get, intersectionWith, isEqual, reduce, uniqueId, upperCase } from "lodash";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -73,7 +73,7 @@ const ProcessSale = () => {
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
   const totalAmountToBePaidByBuyer = useSelector((state) => state.cart.totalAmountToBePaidByBuyer);
   const deliveryTypeSelected = useSelector((state) => state.cart.deliveryTypeSelected);
-
+  const cart = useSelector((state) => state.cart);
   // console.log(activePayments);
 
   // Component State
@@ -368,6 +368,26 @@ const ProcessSale = () => {
               >
                 <i className="fas fa-arrow-left mr-1 "></i>
                 <span>Back to Sale</span>
+              </button>
+            )}
+            {step === 1 && (
+              <button
+                className="font-bold text-lg focus:outline-none"
+                onClick={() => {
+                  console.log("parked", cart);
+                  localStorage.setItem(
+                    "IPAYPARKSALE",
+                    JSON.stringify({
+                      parkID: uniqueId(),
+                      ...cart,
+                    })
+                  );
+                  dispatch(onClickToCheckout(false));
+                  dispatch(onResetCart());
+                }}
+              >
+                <i className="fas fa-history mr-2"></i>
+                <span>Park Sale</span>
               </button>
             )}
           </p>
