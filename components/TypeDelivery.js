@@ -224,7 +224,11 @@ const TypeDelivery = () => {
   }, [dispatch]);
 
   if (fetching) {
-    return null;
+    return (
+      <div className="flex flex-col justify-center items-center w-full mt-2">
+        <Spinner type="TailSpin" width={30} height={30} />;
+      </div>
+    );
   }
 
   if (deliveryTypes["option_delivery"] === "MERCHANT") {

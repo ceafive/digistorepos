@@ -36,17 +36,14 @@ const SellPage = () => {
 
         const allProductsRes = await axios.post("/api/products/get-all-products", { user });
         const allCategoriesRes = await axios.post("/api/products/get-all-categories", { user });
-        const deliveryTypesRes = await axios.post("/api/products/get-delivery-type", { user });
 
         const { data: allProductsResData } = await allProductsRes.data;
         const { data: allCategoriesResData } = await allCategoriesRes.data;
-        const { data: deliveryTypesResData } = await deliveryTypesRes.data;
-
         // console.log({ allProductsResData, allCategoriesResData, deliveryTypesResData });
 
         dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
         dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
-        dispatch(setDeliveryTypes(deliveryTypesResData));
+
         setFetching(false);
       } catch (error) {
         console.log(error);
