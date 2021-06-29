@@ -17,6 +17,7 @@ import axios from "axios";
 import { forEach } from "p-iteration";
 import CollectUserDetail from "./Cart/CollectUserDetail";
 import AddCustomer from "./Cart/AddCustomer";
+import TypeDelivery from "./TypeDelivery";
 
 const paymentOptions = [
   { name: "CASH", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-CASH.png", showInput: false },
@@ -28,6 +29,8 @@ const paymentOptions = [
   { name: "VODAC", img: " https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-VODAC.png", showInput: true },
   { name: "GCBMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-GCBMM.png", showInput: true },
 ];
+
+const merchantUserDeliveryOptions = [{ name: "Dine-In" }, { name: "Pickup" }, { name: "Delivery" }];
 
 // const paymentOptions = [
 //   {
@@ -92,6 +95,7 @@ const ProcessSale = () => {
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
   const activePayments = useSelector((state) => state.cart.activePayments);
   const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
+  const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
 
   // console.log(activePayments);
 
@@ -102,6 +106,9 @@ const ProcessSale = () => {
   const [openCashModal, setOpenCashModal] = React.useState(false);
   const [fetching, setFetching] = React.useState(false);
   const [openPhoneNumberInputModal, setOpenPhoneNumberInputModal] = React.useState(false);
+  const [pickupOrDelivery, setPickupOrDelivery] = React.useState(null);
+
+  // console.log({ pickupOrDelivery });
 
   // Variables
   const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
@@ -270,14 +277,12 @@ const ProcessSale = () => {
 
           <hr className="mt-5 mb-5" />
 
-          <div className="">
-            <div className="flex justify-between items-center">
-              <p>
-                <span className="font-bold text-xl tracking-wide mr-4">SALE TOTAL</span>
-                <span className="text-sm">{totalItemsInCart} item(s)</span>
-              </p>
-              <p>GHC{cartTotalMinusDiscountPlusTax}</p>
-            </div>
+          <div className="flex justify-between items-center">
+            <p>
+              <span className="font-bold text-xl tracking-wide mr-4">SALE TOTAL</span>
+              <span className="text-sm">{totalItemsInCart} item(s)</span>
+            </p>
+            <p>GHC{cartTotalMinusDiscountPlusTax}</p>
           </div>
 
           <hr className="mt-5 mb-5" />
@@ -318,12 +323,27 @@ const ProcessSale = () => {
 
             {transactionFeeCharges.length > 0 ? (
               <>
-                <hr className="mt-5 mb-5" />
+                {paymentMethodsAndAmount.length > 0 && <hr className="mt-5 mb-5" />}
                 <div className="flex justify-between items-center">
                   <p className="font-bold text-xl tracking-wide mr-4">FEES</p>
                   <p>
                     GHC
                     {reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge)), 0)}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <> </>
+            )}
+
+            {deliveryCharge ? (
+              <>
+                {transactionFeeCharges.length > 0 && <hr className="mt-5 mb-5" />}
+                <div className="flex justify-between items-center">
+                  <p className="font-bold text-xl tracking-wide mr-4">DELIVERY FEE</p>
+                  <p>
+                    GHC
+                    {deliveryCharge?.price}
                   </p>
                 </div>
               </>
@@ -384,7 +404,7 @@ const ProcessSale = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 xl:grid-cols-5 gap-2 my-4 mt-8">
+              <div className="grid grid-cols-4 gap-2 my-4 mt-8">
                 {paymentButtons.map((paymentButton) => {
                   return (
                     <div key={paymentButton.name} className="">
@@ -406,7 +426,7 @@ const ProcessSale = () => {
               {outlets.length > 1 && (
                 <>
                   <h1 className="font-semibold mb-1">Outlets</h1>
-                  <div className="grid grid-cols-3 xl:grid-cols-5 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {outlets.map((outlet) => {
                       return (
                         <div key={outlet.outlet_name} className="">
@@ -425,8 +445,36 @@ const ProcessSale = () => {
                 </>
               )}
 
+              {/* Delivery Options */}
+              <div>
+                <h1 className="font-semibold mb-1">Pickup or Delivered?</h1>
+                <div className="grid grid-cols-4 gap-2">
+                  {merchantUserDeliveryOptions.map((option) => {
+                    return (
+                      <div key={option.name} className="">
+                        <button
+                          className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold"
+                          onClick={() => {
+                            setPickupOrDelivery(option.name);
+                          }}
+                        >
+                          {option.name}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {pickupOrDelivery === "Delivery" && (
+                  <div className="mt-4">
+                    <TypeDelivery />
+                  </div>
+                )}
+              </div>
+              {/* Delivery Options */}
+
               {currentCustomer ? (
-                <div className="w-full self-end">
+                <div className="w-full mt-4">
                   <h1 className="font-semibold mb-1 text-sm">Current Customer</h1>
                   <div className="flex items-center">
                     <span className="font-bold">{currentCustomer.customer_name}</span>
@@ -435,8 +483,8 @@ const ProcessSale = () => {
                   </div>
                 </div>
               ) : (
-                <div className="w-full">
-                  <div className="w-full z-10">
+                <div className="w-full mt-4">
+                  <div className="w-full  z-10">
                     <AddCustomer />
                   </div>
                   {/* <span className="z-10 absolute text-center text-blue-500 w-8 pl-3 py-3">
@@ -449,7 +497,6 @@ const ProcessSale = () => {
                   /> */}
                 </div>
               )}
-
               {/* 
               <div className="grid grid-cols-3 gap-2 my-4">
                 {loyaltyTabs.map((loyaltyTab) => {
@@ -465,7 +512,6 @@ const ProcessSale = () => {
                   );
                 })}
               </div> */}
-
               <div className="w-full self-end mt-20">
                 <button
                   // disabled={

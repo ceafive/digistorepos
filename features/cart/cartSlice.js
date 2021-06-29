@@ -26,6 +26,8 @@ const initialState = {
   currentCustomer: null,
   transactionFeeCharges: [],
   activePayments: [],
+  deliveryTypes: {},
+  deliveryCharge: null,
 };
 
 const initialProductProps = {
@@ -75,6 +77,12 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
   reducers: {
+    setDeliveryCharge(state, action) {
+      state.deliveryCharge = action.payload;
+    },
+    setDeliveryTypes(state, action) {
+      state.deliveryTypes = action.payload;
+    },
     setActivePayments(state, action) {
       state.activePayments = action.payload;
     },
@@ -121,9 +129,11 @@ const cartSlice = createSlice({
     applyDiscount(state) {
       const { discountAmount, valueReturn } = calculateDiscount(state.totalPriceInCart, state.cartDiscountType, state.cartDiscount);
 
+      const newvalue = valueReturn - state.cartPromoDiscount;
+
       state.cartDiscountOnCartTotal = discountAmount;
-      state.cartTotalMinusDiscount = valueReturn - state.cartPromoDiscount;
-      state.cartTotalMinusDiscountPlusTax = Number(parseFloat(valueReturn + valueReturn * state.totalTaxes).toFixed(2));
+      state.cartTotalMinusDiscount = newvalue;
+      state.cartTotalMinusDiscountPlusTax = Number(parseFloat(newvalue + newvalue * state.totalTaxes).toFixed(2));
     },
     setPromoAmount: (state, action) => {
       state.cartPromoDiscount = action.payload;
@@ -277,5 +287,7 @@ export const {
   setActivePayments,
   setPromoAmount,
   applyPromoAmount,
+  setDeliveryTypes,
+  setDeliveryCharge,
 } = cartSlice.actions;
 export default cartSlice.reducer;

@@ -16,6 +16,7 @@ import {
   setCategoryProductsCount,
 } from "features/products/productsSlice";
 import axios from "axios";
+import { setDeliveryTypes } from "features/cart/cartSlice";
 
 const SellPage = () => {
   const dispatch = useDispatch();
@@ -34,14 +35,17 @@ const SellPage = () => {
 
         const allProductsRes = await axios.post("/api/products/get-all-products", { user });
         const allCategoriesRes = await axios.post("/api/products/get-all-categories", { user });
+        const deliveryTypesRes = await axios.post("/api/products/get-delivery-type", { user });
 
         const { data: allProductsResData } = await allProductsRes.data;
         const { data: allCategoriesResData } = await allCategoriesRes.data;
+        const { data: deliveryTypesResData } = await deliveryTypesRes.data;
 
-        // console.log({productsAddedResData, onSetProductCategoriesResData});
+        // console.log({ allProductsResData, allCategoriesResData, deliveryTypesResData });
 
         dispatch(productsAdded(allProductsResData));
         dispatch(onSetProductCategories(allCategoriesResData));
+        dispatch(setDeliveryTypes(deliveryTypesResData));
       } catch (error) {
         console.log(error);
       } finally {
@@ -66,7 +70,7 @@ const SellPage = () => {
     <>
       <div className="min-h-screen">
         {!clickToCheckout && (
-          <motion.div className="flex">
+          <motion.div className="flex" initial={{ y: "-50vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
             <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
               <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
             </Modal>
