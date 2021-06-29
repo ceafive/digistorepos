@@ -301,7 +301,7 @@ const ProcessSale = () => {
               <>
                 {paymentMethodsAndAmount.length > 0 && <hr className="my-2" />}
                 <div className="flex justify-between items-center">
-                  <p className="font-bold text-xl tracking-wide mr-4">FEES</p>
+                  <p className="font-bold tracking-wide mr-4">FEES</p>
                   <p>
                     GHC
                     {fees}
@@ -316,7 +316,7 @@ const ProcessSale = () => {
               <>
                 {transactionFeeCharges.length > 0 && <hr className="my-2" />}
                 <div className="flex justify-between items-center">
-                  <p className="font-bold text-xl tracking-wide mr-4">DELIVERY FEE</p>
+                  <p className="font-bold tracking-wide mr-4">DELIVERY FEE</p>
                   <p>
                     GHC
                     {deliveryCharge?.price}
@@ -330,7 +330,7 @@ const ProcessSale = () => {
             <>
               <hr className="my-2" />
               <div className="flex justify-between items-center">
-                <p className="font-bold text-xl tracking-wide mr-4">SALE TOTAL</p>
+                <p className="font-bold tracking-wide mr-4">SALE TOTAL</p>
                 <p>
                   GHC
                   {saleTotal}
@@ -342,7 +342,7 @@ const ProcessSale = () => {
               <>
                 <hr className="my-2" />
                 <div className="flex justify-between items-center">
-                  <p className="font-bold text-xl tracking-wide mr-4">BALANCE</p>
+                  <p className="font-bold tracking-wide mr-4">BALANCE</p>
                   <p>
                     GHC
                     {balance}
