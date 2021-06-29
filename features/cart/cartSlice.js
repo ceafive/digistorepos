@@ -118,7 +118,12 @@ const cartSlice = createSlice({
         return n.method !== action.payload.method;
       });
 
+      var filteredCharges = remove(state.transactionFeeCharges, function (n) {
+        return n.service !== action.payload.method;
+      });
+
       state.paymentMethodsAndAmount = filtered;
+      state.transactionFeeCharges = filteredCharges;
       state.amountReceivedFromPayer = subtract(state.amountReceivedFromPayer, action.payload.amount);
     },
     calculateTaxes(state, action) {

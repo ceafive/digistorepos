@@ -58,10 +58,8 @@ const SellPage = () => {
 
   if (fetching) {
     return (
-      <div className="min-h-screen flex-col justify-center items-center">
-        <div className=" w-full h-full">
-          <Spinner type="TailSpin" width="10" height="10" />
-        </div>
+      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
+        <Spinner type="TailSpin" width={100} height={100} timeout={30000} />
       </div>
     );
   }
@@ -69,7 +67,7 @@ const SellPage = () => {
   return (
     <>
       {!clickToCheckout && (
-        <div className="flex" initial={{ y: "-50vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
+        <motion.div className="flex" initial={{ y: "-20vh" }} animate={{ y: 0 }} transition={{ duration: 0.1, type: "tween" }}>
           <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
             <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
           </Modal>
@@ -79,12 +77,12 @@ const SellPage = () => {
           <div className="w-6/12 xl:w-4/12  pb-6 pt-12 px-4">
             <Cart />
           </div>
-        </div>
+        </motion.div>
       )}
       {clickToCheckout && (
-        <div initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
+        <motion.div className="pb-6 pt-12" initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.1, type: "tween" }}>
           <ProcessSale />
-        </div>
+        </motion.div>
       )}
     </>
   );

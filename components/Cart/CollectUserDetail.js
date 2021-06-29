@@ -1,4 +1,5 @@
 import React from "react";
+import Spinner from "../Spinner";
 
 const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors }) => {
   return (
@@ -21,10 +22,10 @@ const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors })
             message: "Cannot be longer than 10 chars",
           },
         })}
-        placeholder="eg. 0547748484"
-        className="border border-blue-500 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm outline-none focus:outline-none w-full"
+        placeholder="0547748484"
+        className="border border-blue-500 px-3 4 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-lg outline-none focus:outline-none w-full"
       />
-      <p className="text-red-500 text-sm">{errors?.mobileMoneyNumber?.message}</p>
+      <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
     </div>
   );
 };
@@ -33,22 +34,22 @@ const OtherPaymentInput = ({ paymentMethodSet, register, errors }) => {
   return (
     <div className="my-3">
       <label className="mb-2 text-sm" htmlFor="">
-        Enter Customer Phone number Or Email Address
+        Enter Customer Phone number or Email Address
       </label>
       <input
         type="text"
         {...register(paymentMethodSet, {
           required: "Please enter details",
         })}
-        placeholder="eg. 0547748484 or jane_doe@mail.com"
-        className="border border-blue-500 px-3 py-3 placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded text-sm outline-none focus:outline-none w-full"
+        placeholder="0547748484 or jane_doe@mail.com"
+        className="border border-blue-500 px-3 4 text-lg placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded outline-none focus:outline-none w-full"
       />
-      <p className="text-red-500 text-sm">{errors?.phoneOrEmailAddress?.message}</p>
+      <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
     </div>
   );
 };
 
-const CollectUserDetail = ({ onAddPayment, paymentMethodSet, register, handleSubmit, lengthOfMobileNumber, errors, onClose }) => {
+const CollectUserDetail = ({ fetching, onAddPayment, paymentMethodSet, register, handleSubmit, lengthOfMobileNumber, errors, onClose }) => {
   //   console.log(errors);
   return (
     <>
@@ -59,14 +60,26 @@ const CollectUserDetail = ({ onAddPayment, paymentMethodSet, register, handleSub
       {(paymentMethodSet === "CASH" || paymentMethodSet === "VISAG" || paymentMethodSet === "QRPAY") && (
         <OtherPaymentInput paymentMethodSet={paymentMethodSet} register={register} errors={errors} />
       )}
-      <button
-        className="mb-2 bg-green-700 text-white px-4 py-2 rounded shadow font-semibold focus:outline-none"
-        onClick={() => {
-          handleSubmit(onAddPayment)();
-        }}
-      >
-        Add Payment
-      </button>
+
+      <div className="text-center">
+        <button
+          disabled={fetching}
+          className={`${
+            fetching ? "bg-gray-300 text-gray-200" : "bg-green-700 text-white"
+          } font-bold px-3 py-3  rounded focus:outline-none ease-linear transition-all duration-150`}
+          type="button"
+          onClick={() => {
+            handleSubmit(onAddPayment)();
+          }}
+        >
+          {fetching && (
+            <div className="inline-block mr-2">
+              <Spinner type={"TailSpin"} color="black" width="10" height="10" />
+            </div>
+          )}
+          Add Payment
+        </button>
+      </div>
     </>
   );
 };

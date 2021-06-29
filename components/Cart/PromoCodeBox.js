@@ -15,7 +15,7 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
               setPromoCode(e.target.value);
             }}
             type="text"
-            className="appearance-none border border-gray-200 text-right placeholder-blueGray-300 text-blueGray-600 rounded text-sm outline-none focus:outline-none w-full"
+            className="appearance-none border border-gray-200 placeholder-blueGray-300 text-blueGray-600 rounded text-sm outline-none focus:outline-none w-full"
           />
         </div>
 

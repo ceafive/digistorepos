@@ -74,7 +74,8 @@ const ProcessSale = () => {
   const totalAmountToBePaidByBuyer = useSelector((state) => state.cart.totalAmountToBePaidByBuyer);
   const deliveryTypeSelected = useSelector((state) => state.cart.deliveryTypeSelected);
   const cart = useSelector((state) => state.cart);
-  // console.log(activePayments);
+
+  // console.log(transactionFeeCharges);
 
   // Component State
   const [step, setStep] = React.useState(0);
@@ -147,9 +148,9 @@ const ProcessSale = () => {
     }
   };
 
-  const onAddPayment = () => {
+  const onAddPayment = async () => {
     try {
-      fetchFeeCharges([
+      await fetchFeeCharges([
         ...paymentMethodsAndAmount,
         {
           method: paymentMethodSet,
@@ -173,10 +174,7 @@ const ProcessSale = () => {
           })
         );
       }
-      // reset({
-      //   mobileMoneyNumber: "",
-      //   phoneOrEmailAddress: "",
-      // });
+
       setOpenPhoneNumberInputModal(false);
     } catch (error) {
       console.log(error);
@@ -196,6 +194,7 @@ const ProcessSale = () => {
       </Modal>
       <Modal open={openPhoneNumberInputModal} onClose={() => setOpenPhoneNumberInputModal(false)} maxWidth="sm">
         <CollectUserDetail
+          fetching={fetching}
           onAddPayment={onAddPayment}
           paymentMethodSet={paymentMethodSet}
           register={register}
@@ -358,42 +357,19 @@ const ProcessSale = () => {
 
         {/* Right part */}
         <div className="w-3/5 p-6 pt-0">
-          <p className="text-right mt-4 mb-4 ">
-            {step === 0 && (
-              <button
-                className="font-bold text-lg focus:outline-none"
-                onClick={() => {
-                  dispatch(onClickToCheckout());
-                }}
-              >
-                <i className="fas fa-arrow-left mr-1 "></i>
-                <span>Back to Sale</span>
-              </button>
-            )}
-            {step === 1 && (
-              <button
-                className="font-bold text-lg focus:outline-none"
-                onClick={() => {
-                  console.log("parked", cart);
-                  localStorage.setItem(
-                    "IPAYPARKSALE",
-                    JSON.stringify({
-                      parkID: uniqueId(),
-                      ...cart,
-                    })
-                  );
-                  dispatch(onClickToCheckout(false));
-                  dispatch(onResetCart());
-                }}
-              >
-                <i className="fas fa-history mr-2"></i>
-                <span>Park Sale</span>
-              </button>
-            )}
-          </p>
-
           {step === 0 && (
             <div>
+              <p className="text-right mt-4 mb-4 ">
+                <button
+                  className="font-bold text-lg focus:outline-none"
+                  onClick={() => {
+                    dispatch(onClickToCheckout());
+                  }}
+                >
+                  <i className="fas fa-arrow-left mr-1 "></i>
+                  <span>Back to Sale</span>
+                </button>{" "}
+              </p>
               <div className="flex justify-between items-center">
                 <p className="text-5xl">Pay</p>
                 <div>
@@ -411,7 +387,6 @@ const ProcessSale = () => {
                   {/* <button className="ml-2 bg-green-500 px-2 py-1 text-white rounded">Give Change</button> */}
                 </div>
               </div>
-
               <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2 my-4 mt-8">
                 {paymentButtons.map((paymentButton) => {
                   return (
@@ -430,7 +405,6 @@ const ProcessSale = () => {
                   );
                 })}
               </div>
-
               {outlets.length > 1 && (
                 <div className="mt-4">
                   <h1 className="font-semibold mb-1">Outlets</h1>
@@ -452,7 +426,6 @@ const ProcessSale = () => {
                   </div>
                 </div>
               )}
-
               {/* Delivery Options */}
               <div className="mt-4">
                 <h1 className="font-semibold mb-1">Pickup or Delivery?</h1>
@@ -482,7 +455,6 @@ const ProcessSale = () => {
                 )}
               </div>
               {/* Delivery Options */}
-
               {currentCustomer ? (
                 <div className="w-full mt-4">
                   <h1 className="font-semibold mb-1 text-sm">Current Customer</h1>
@@ -540,26 +512,48 @@ const ProcessSale = () => {
             </div>
           )}
           {step === 1 && (
-            <div className="p-20 text-center">
-              <p className="font-bold text-4xl">Awaiting Payment</p>
-              <div>
-                <p>
-                  <span>Instructions: </span>
-                  <span>Check phone to complete</span>
-                </p>
-              </div>
-
-              <div className="w-full self-end mt-20">
+            <>
+              <p className="text-right mt-4 mb-4 ">
                 <button
-                  className="bg-green-700 px-6 py-4 text-white font-semibold rounded focus:outline-none w-full text-center"
+                  className="font-bold text-lg focus:outline-none"
                   onClick={() => {
-                    setStep(2);
+                    console.log("parked", cart);
+                    localStorage.setItem(
+                      "IPAYPARKSALE",
+                      JSON.stringify({
+                        parkID: uniqueId(),
+                        ...cart,
+                      })
+                    );
+                    dispatch(onClickToCheckout(false));
+                    dispatch(onResetCart());
                   }}
                 >
-                  Confirm Payment
+                  <i className="fas fa-history mr-2"></i>
+                  <span>Park Sale</span>
                 </button>
+              </p>
+              <div className="p-20 text-center">
+                <p className="font-bold text-4xl">Awaiting Payment</p>
+                <div>
+                  <p>
+                    <span>Instructions: </span>
+                    <span>Check phone to complete</span>
+                  </p>
+                </div>
+
+                <div className="w-full self-end mt-20">
+                  <button
+                    className="bg-green-700 px-6 py-4 text-white font-semibold rounded focus:outline-none w-full text-center"
+                    onClick={() => {
+                      setStep(2);
+                    }}
+                  >
+                    Confirm Payment
+                  </button>
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           {step === 2 && (
