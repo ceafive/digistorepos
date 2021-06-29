@@ -30,7 +30,11 @@ const paymentOptions = [
   { name: "GCBMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-GCBMM.png", showInput: true },
 ];
 
-const merchantUserDeliveryOptions = [{ name: "Dine-In" }, { name: "Pickup" }, { name: "Delivery" }];
+const merchantUserDeliveryOptions = [
+  { name: "Dine-In" },
+  { name: "Pickup" },
+  { name: "DeliveryDeliveryDeliveryDeliveryDeliveryDeliveryDelivery" },
+];
 
 // const paymentOptions = [
 //   {
@@ -410,7 +414,7 @@ const ProcessSale = () => {
                     <div key={paymentButton.name} className="">
                       <button
                         disabled={!payerAmountEntered || payerAmountEntered === "0"}
-                        className="w-32 h-24 border border-gray-300 rounded shadow overflow-hidden"
+                        className="w-32 h-24 border border-gray-300 rounded shadow overflow-hidden whitespace-normal"
                         onClick={() => {
                           setPaymentMethodSet(paymentButton.name);
                           setOpenPhoneNumberInputModal(true);
@@ -431,7 +435,7 @@ const ProcessSale = () => {
                       return (
                         <div key={outlet.outlet_name} className="">
                           <button
-                            className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold"
+                            className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold whitespace-normal"
                             onClick={() => {
                               dispatch(setOutletSelected(outlet));
                             }}
@@ -453,7 +457,7 @@ const ProcessSale = () => {
                     return (
                       <div key={option.name} className="">
                         <button
-                          className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold"
+                          className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words"
                           onClick={() => {
                             setPickupOrDelivery(option.name);
                           }}

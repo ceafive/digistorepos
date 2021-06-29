@@ -48,9 +48,9 @@ const IPAYDeliveryType = ({ setFetching }) => {
 
   React.useEffect(() => {
     const getCoordinates = async () => {
-      const res = await axios.post("/api/products/get-coordinates", { description: value?.value?.description });
-      const data = await res.data;
-      const stringCoordinates = `${data["candidates"][0]["geometry"]["location"]["lat"]},${data["candidates"][0]["geometry"]["location"]["lng"]}`;
+      const response = await axios.post("/api/products/get-coordinates", { description: value?.value?.description });
+      const responsedata = await response.data;
+      const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
 
       const fetchItems = async (stringCoordinates) => {
         try {
@@ -67,7 +67,7 @@ const IPAYDeliveryType = ({ setFetching }) => {
           //   console.log({ payload });
 
           const res = await axios.post("/api/products/get-ipay-delivery-charge", payload);
-          //   console.log(res);
+          console.log(res);
 
           let { data } = await res.data;
           const price = get(data, "price", 0);
@@ -128,9 +128,9 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
 
   React.useEffect(() => {
     const getCoordinates = async () => {
-      const res = await axios.post("/api/products/get-coordinates", { description: value?.value?.description });
-      const data = await res.data;
-      const stringCoordinates = `${data["candidates"][0]["geometry"]["location"]["lat"]},${data["candidates"][0]["geometry"]["location"]["lng"]}`;
+      const response = await axios.post("/api/products/get-coordinates", { description: value?.value?.description });
+      const responsedata = await response.data;
+      const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
 
       const fetchItems = async (stringCoordinates) => {
         try {
@@ -148,12 +148,12 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
           const res = await axios.post("/api/products/get-merchant-dist-charge", payload);
           //   console.log(res);
 
-          let { data } = await res.data;
-          const price = get(data, "price", 0);
-          data = { ...data, price: Number(parseFloat(price)) };
-          //   console.log(data);
+          let { delivery } = await res.data;
+          const price = get(delivery, "delivery_price", 0);
+          delivery = { ...delivery, price: Number(parseFloat(price)) };
+          //   console.log(delivery);
 
-          dispatch(setDeliveryCharge(data));
+          dispatch(setDeliveryCharge(delivery));
         } catch (error) {
           console.log(error);
         } finally {
