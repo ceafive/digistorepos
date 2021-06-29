@@ -441,7 +441,9 @@ const ProcessSale = () => {
                     return (
                       <div key={option.name} className="">
                         <button
-                          className="w-32 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words"
+                          className={`${
+                            deliveryTypeSelected === option.name ? "ring-2" : ""
+                          } w-32 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
                           onClick={() => {
                             dispatch(setDeliveryTypeSelected(option.name));
                           }}
