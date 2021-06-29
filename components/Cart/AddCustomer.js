@@ -28,13 +28,6 @@ const AddCustomer = () => {
 
   const watchCustomerSearch = watch("searchCustomer", "");
 
-  // React.useEffect(() => {
-  //   const KEYS_TO_FILTERS = ["name", "username", "email"];
-  //   const filteredCustomers = customers.filter(createFilter(watchCustomerSearch ?? "", KEYS_TO_FILTERS));
-
-  //   setAllCustomers(filteredCustomers);
-  // }, [customers, watchCustomerSearch]);
-
   React.useEffect(() => {
     const fetchCustomerDetails = async () => {
       try {
@@ -60,13 +53,13 @@ const AddCustomer = () => {
   }, [watchCustomerSearch]);
 
   return (
-    <>
+    <div className="w-full">
       <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)} maxWidth="sm">
         <AddCustomerModal onClose={() => setOpenAddCustomerModal(false)} setStep={setStep} />
       </Modal>
       <div className="w-full">
         {step === 0 && (
-          <div className="text-sm py-2">
+          <div className="text-sm py-3">
             <span className="mr-2">
               <i className="fas fa-user-alt"></i>
             </span>
@@ -81,20 +74,20 @@ const AddCustomer = () => {
           </div>
         )}
         {step === 1 && (
-          <motion.div className="relative" initial={{ y: "-1vw" }} animate={{ y: 0 }}>
+          <div className="relative" initial={{ y: "-1vw" }} animate={{ y: 0 }}>
             <div>
-              <span className="z-10 absolute text-center text-blueGray-300 w-8 pl-3 py-2">
+              <span className="z-10 absolute text-center text-blueGray-300 w-8 pl-3 py-3">
                 <i className="fas fa-search"></i>
               </span>
               <input
                 {...register("searchCustomer")}
                 type="text"
                 placeholder="Search here..."
-                className="border-0 p-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
+                className="border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
               />
 
               <span
-                className="z-10 absolute right-0 text-center text-red-500 w-8 pr-3 py-2 cursor-pointer"
+                className="z-10 absolute right-0 text-center text-red-500 w-8 pr-3 py-3 cursor-pointer"
                 onClick={() => {
                   setStep(0);
                   setValue("searchCustomer", "");
@@ -159,10 +152,10 @@ const AddCustomer = () => {
                 )}
               </div>
             )}
-          </motion.div>
+          </div>
         )}
         {step === 2 && (
-          <div className="w-full flex justify-between items-center text-sm py-2">
+          <div className="w-full flex justify-between items-center text-sm py-3">
             <div>
               <span className="mr-2">
                 <i className="fas fa-user-alt"></i>
@@ -184,7 +177,7 @@ const AddCustomer = () => {
         )}
         <hr className="my-1" />
       </div>
-    </>
+    </div>
   );
 };
 

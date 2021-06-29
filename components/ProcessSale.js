@@ -4,9 +4,10 @@ import {
   onResetCart,
   setActivePayments,
   setAmountReceivedFromPayer,
+  setTotalAmountToBePaidByBuyer,
   setTransactionFeeCharges,
 } from "features/cart/cartSlice";
-import { find, intersectionWith, isEqual, reduce, upperCase } from "lodash";
+import { find, get, intersectionWith, isEqual, reduce, upperCase } from "lodash";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,40 +34,10 @@ const paymentOptions = [
 const merchantUserDeliveryOptions = [
   { name: "Dine-In" },
   { name: "Pickup" },
-  { name: "DeliveryDeliveryDeliveryDeliveryDeliveryDeliveryDelivery" },
+  {
+    name: "Delivery",
+  },
 ];
-
-// const paymentOptions = [
-//   {
-//     "Receive Payment": "RCPAYMT",
-//     "Cash Payment": "CASH",
-//     "Card Payment": "VISAG",
-//     "QR Payment": "QRPAY",
-//     "Bank Transfer": "BNKTR",
-//     "Mobile Money Payment": {
-//       "MTN Mobile Money": "MTNMM",
-//       "AirtelTigo Money": "TIGOC",
-//       "Vodafone Cash": "VODAC",
-//       "GCB Money": "GCBMM",
-//     },
-//   },
-// ];
-
-// const paymentButtons = [
-//   {
-//     name: "Mobile Money",
-//     children: [
-//       { name: "MTN", color: "black", bgColor: "yellow" },
-//       { name: "Vodafone", color: "white", bgColor: "red" },
-//       { name: "Airtel Tigo", color: "white", bgColor: "blue" },
-//     ],
-//   },
-//   { name: "Credit Card" },
-//   { name: "Cash" },
-//   { name: "Bank Transfer" },
-//   // "Cheque",
-//   // "Credit",
-// ];
 
 const loyaltyTabs = ["Loyalty", "Layby", "Store Credit", "On Account"];
 
@@ -92,7 +63,6 @@ const ProcessSale = () => {
   const cartDiscountOnCartTotal = useSelector((state) => state.cart.cartDiscountOnCartTotal);
   const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
   const paymentMethodsAndAmount = useSelector((state) => state.cart.paymentMethodsAndAmount);
-  const cartDiscount = useSelector((state) => state.cart.cartDiscount);
   const outlets = useSelector((state) => state.products.outlets);
   const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
   const totalItemsInCart = useSelector((state) => state.cart.totalItemsInCart);
@@ -100,6 +70,7 @@ const ProcessSale = () => {
   const activePayments = useSelector((state) => state.cart.activePayments);
   const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
+  const totalAmountToBePaidByBuyer = useSelector((state) => state.cart.totalAmountToBePaidByBuyer);
 
   // console.log(activePayments);
 
@@ -116,22 +87,29 @@ const ProcessSale = () => {
 
   // Variables
   const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
+  const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
+  const balance = Number(parseFloat(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(3));
   const lengthOfMobileNumber = 10;
-  const watchMobileMoneyNumber = watch("mobileMoneyNumber", "");
-  const watchPhoneOrEmailAddress = watch("phoneOrEmailAddress", "");
   const userDetails = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
   const paymentButtons = React.useMemo(() => {
     const intersected = intersectionWith(paymentOptions, userDetails?.user_permissions, (arrVal, othVal) => {
       return isEqual(arrVal.name, othVal);
     });
-
     const allIntersected = intersectionWith(intersected, activePayments, (arrVal, othVal) => {
       return isEqual(arrVal.name, othVal);
     });
     return allIntersected;
   }, [activePayments, userDetails?.user_permissions]);
 
-  // console.log(paymentButtons);
+  // const saleTotal = cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees;
+  const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3));
+  // console.log(cartTotalMinusDiscountPlusTax);
+  // console.log(fees);
+  // console.log(saleTotal);
+
+  React.useEffect(() => {
+    dispatch(setTotalAmountToBePaidByBuyer(saleTotal));
+  }, [dispatch, saleTotal]);
 
   React.useEffect(() => {
     setPayerAmountEntered(
@@ -158,7 +136,9 @@ const ProcessSale = () => {
           amount: paymentMethod.amount,
         });
         const response = await res.data;
-        feeCharges.push(response);
+
+        const charge = get(response, "charge", 0);
+        feeCharges.push({ ...response, charge: Number(parseFloat(charge).toFixed(3)) });
       });
       dispatch(setTransactionFeeCharges(feeCharges));
     } catch (error) {
@@ -254,7 +234,7 @@ const ProcessSale = () => {
           {/* Sub amount figures */}
           <div className="pl-5 xl:pl-20">
             <div className="flex justify-between">
-              <p>Sub-total</p>
+              <p>Order Amount</p>
               <p>GHC{totalPriceInCart}</p>
             </div>
 
@@ -279,35 +259,27 @@ const ProcessSale = () => {
             </div>
           </div>
 
-          <hr className="mt-5 mb-5" />
+          <hr className="my-2" />
 
           <div className="flex justify-between items-center">
             <p>
-              <span className="font-bold text-xl tracking-wide mr-4">SALE TOTAL</span>
+              <span className="font-bold text-xl tracking-wide mr-4">SUB TOTAL</span>
               <span className="text-sm">{totalItemsInCart} item(s)</span>
             </p>
             <p>GHC{cartTotalMinusDiscountPlusTax}</p>
           </div>
 
-          <hr className="mt-5 mb-5" />
+          <hr className="my-2" />
 
           <div className="pl-5 xl:pl-20">
             {paymentMethodsAndAmount.map((paymentMethod, index) => {
               const fee = find(transactionFeeCharges, { service: paymentMethod.method });
-              const showWatchMobileMoneyNumber =
-                paymentMethod.method === "MTNMM" || paymentMethod.method === "TIGOC" || paymentMethod.method === "VODAC";
-              const showWatchPhoneOrEmailAddress =
-                paymentMethod.method === "CASH" || paymentMethod.method === "VISAG" || paymentMethod.method === "QRPAY";
               return (
                 <div key={paymentMethod.method + index} className="flex justify-between my-4">
                   <div>
                     <p>{paymentMethod.method}</p>
                     {fee ? <p className="text-sm">Fee: GHC{fee?.charge}</p> : <></>}
-                    {watchMobileMoneyNumber || watchPhoneOrEmailAddress ? (
-                      <p className="text-sm">Contact: {showWatchMobileMoneyNumber ? watchMobileMoneyNumber : watchPhoneOrEmailAddress}</p>
-                    ) : (
-                      <></>
-                    )}
+                    {watch(paymentMethod.method) ? <p className="text-sm">Contact: {watch(paymentMethod.method)}</p> : <></>}
                     <p className="text-sm">{paymentMethod.date}</p>
                   </div>
                   <div>
@@ -327,12 +299,12 @@ const ProcessSale = () => {
 
             {transactionFeeCharges.length > 0 ? (
               <>
-                {paymentMethodsAndAmount.length > 0 && <hr className="mt-5 mb-5" />}
+                {paymentMethodsAndAmount.length > 0 && <hr className="my-2" />}
                 <div className="flex justify-between items-center">
                   <p className="font-bold text-xl tracking-wide mr-4">FEES</p>
                   <p>
                     GHC
-                    {reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge)), 0)}
+                    {fees}
                   </p>
                 </div>
               </>
@@ -342,7 +314,7 @@ const ProcessSale = () => {
 
             {deliveryCharge ? (
               <>
-                {transactionFeeCharges.length > 0 && <hr className="mt-5 mb-5" />}
+                {transactionFeeCharges.length > 0 && <hr className="my-2" />}
                 <div className="flex justify-between items-center">
                   <p className="font-bold text-xl tracking-wide mr-4">DELIVERY FEE</p>
                   <p>
@@ -355,14 +327,25 @@ const ProcessSale = () => {
               <> </>
             )}
 
+            <>
+              <hr className="my-2" />
+              <div className="flex justify-between items-center">
+                <p className="font-bold text-xl tracking-wide mr-4">SALE TOTAL</p>
+                <p>
+                  GHC
+                  {saleTotal}
+                </p>
+              </div>
+            </>
+
             {amountReceivedFromPayer ? (
               <>
-                <hr className="mt-5 mb-5" />
+                <hr className="my-2" />
                 <div className="flex justify-between items-center">
                   <p className="font-bold text-xl tracking-wide mr-4">BALANCE</p>
                   <p>
                     GHC
-                    {Number(parseFloat(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(2))}
+                    {balance}
                   </p>
                 </div>
               </>
@@ -373,9 +356,9 @@ const ProcessSale = () => {
         </div>
 
         {/* Right part */}
-        <div className="w-3/5 p-6 pt-0" style={{ height: 800 }}>
+        <div className="w-3/5 p-6 pt-0">
           <p className="text-right mt-4 mb-4 ">
-            {step !== 2 && (
+            {step === 0 && (
               <button
                 className="font-bold text-lg focus:outline-none"
                 onClick={() => {
@@ -408,13 +391,13 @@ const ProcessSale = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-2 my-4 mt-8">
+              <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2 my-4 mt-8">
                 {paymentButtons.map((paymentButton) => {
                   return (
                     <div key={paymentButton.name} className="">
                       <button
                         disabled={!payerAmountEntered || payerAmountEntered === "0"}
-                        className="w-32 h-24 border border-gray-300 rounded shadow overflow-hidden whitespace-normal"
+                        className="w-32 h-24 border border-gray-300 rounded shadow overflow-hidden px-2 break-words"
                         onClick={() => {
                           setPaymentMethodSet(paymentButton.name);
                           setOpenPhoneNumberInputModal(true);
@@ -428,14 +411,14 @@ const ProcessSale = () => {
               </div>
 
               {outlets.length > 1 && (
-                <>
+                <div className="mt-4">
                   <h1 className="font-semibold mb-1">Outlets</h1>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2 ">
                     {outlets.map((outlet) => {
                       return (
                         <div key={outlet.outlet_name} className="">
                           <button
-                            className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold whitespace-normal"
+                            className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words"
                             onClick={() => {
                               dispatch(setOutletSelected(outlet));
                             }}
@@ -446,18 +429,18 @@ const ProcessSale = () => {
                       );
                     })}
                   </div>
-                </>
+                </div>
               )}
 
               {/* Delivery Options */}
-              <div>
-                <h1 className="font-semibold mb-1">Pickup or Delivered?</h1>
-                <div className="grid grid-cols-4 gap-2">
+              <div className="mt-4">
+                <h1 className="font-semibold mb-1">Pickup or Delivery?</h1>
+                <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2">
                   {merchantUserDeliveryOptions.map((option) => {
                     return (
                       <div key={option.name} className="">
                         <button
-                          className="w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words"
+                          className="w-32 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words"
                           onClick={() => {
                             setPickupOrDelivery(option.name);
                           }}
@@ -518,19 +501,9 @@ const ProcessSale = () => {
               </div> */}
               <div className="w-full self-end mt-20">
                 <button
-                  // disabled={
-                  //   !amountReceivedFromPayer ||
-                  //   (paymentMethodSet !== "CASH" && (!watchMobileMoneyNumber || watchMobileMoneyNumber?.length !== lengthOfMobileNumber))
-                  // }
-                  // className={`${
-                  //   !amountReceivedFromPayer ||
-                  //   (paymentMethodSet !== "CASH" && (!watchMobileMoneyNumber || watchMobileMoneyNumber?.length !== lengthOfMobileNumber))
-                  //     ? "bg-gray-400 text-gray-300"
-                  //     : "bg-green-700 text-white"
-                  // } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}
-                  disabled={!amountReceivedFromPayer}
+                  disabled={!fetching || !amountReceivedFromPayer || balance > 0}
                   className={`${
-                    !amountReceivedFromPayer ? "bg-gray-400 text-gray-300" : "bg-green-700 text-white"
+                    !fetching || !amountReceivedFromPayer || balance > 0 ? "bg-gray-400 text-gray-300" : "bg-green-700 text-white"
                   } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}
                   onClick={() => {
                     if (paymentMethodSet === "CASH") {

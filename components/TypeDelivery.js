@@ -20,6 +20,7 @@ const MerchantDeliveryType = ({ setFetching }) => {
         const res = await axios.post("/api/products/get-delivery-lov", { user });
         const { data } = await res.data;
         console.log({ data });
+        setListOfValues(data);
       } catch (error) {
         console.log(error);
       } finally {
@@ -44,7 +45,7 @@ const IPAYDeliveryType = ({ setFetching }) => {
   const outletSelected = useSelector((state) => state.products.outletSelected);
   //   console.log(outletSelected);
   const [value, setValue] = React.useState(null);
-  //   console.log(value);
+  // console.log(value);
 
   React.useEffect(() => {
     const getCoordinates = async () => {
@@ -67,12 +68,12 @@ const IPAYDeliveryType = ({ setFetching }) => {
           //   console.log({ payload });
 
           const res = await axios.post("/api/products/get-ipay-delivery-charge", payload);
-          console.log(res);
+          //   console.log(res);
 
           let { data } = await res.data;
           const price = get(data, "price", 0);
           data = { ...data, price: Number(parseFloat(price)) };
-          console.log(data);
+          //   console.log(data);
 
           dispatch(setDeliveryCharge(data));
         } catch (error) {
@@ -102,15 +103,13 @@ const IPAYDeliveryType = ({ setFetching }) => {
           styles: {
             input: (provided) => ({
               ...provided,
-              color: "blue",
+              padding: "10px 0",
             }),
             option: (provided) => ({
               ...provided,
-              color: "blue",
             }),
             singleValue: (provided) => ({
               ...provided,
-              color: "green",
             }),
           },
         }}

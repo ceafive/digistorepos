@@ -10,7 +10,7 @@ const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors })
       </label>
       <input
         type="text"
-        {...register("mobileMoneyNumber", {
+        {...register(paymentMethodSet, {
           required: "Please enter a phone number",
           minLength: {
             value: lengthOfMobileNumber,
@@ -37,7 +37,7 @@ const OtherPaymentInput = ({ paymentMethodSet, register, errors }) => {
       </label>
       <input
         type="text"
-        {...register("phoneOrEmailAddress", {
+        {...register(paymentMethodSet, {
           required: "Please enter details",
         })}
         placeholder="eg. 0547748484 or jane_doe@mail.com"

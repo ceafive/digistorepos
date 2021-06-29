@@ -14,8 +14,8 @@ const Cart = () => {
   const salesHistory = useSelector((state) => state.sales.salesHistory);
 
   return (
-    <>
-      <div className="flex flex-wrap justify-between items-center text-sm">
+    <div id="cart-section">
+      {/* <div className="flex flex-wrap justify-between items-center text-sm">
         <div className="py-1">
           <span className="mr-2">
             <i className="fas fa-history"></i>
@@ -43,23 +43,16 @@ const Cart = () => {
             <span>Park Sale</span>
           </button>
         </div>
-      </div>
+      </div> */}
       <div
-        className="flex flex-wrap justify-between bg-white w-full h-full mb-6 shadow-lg rounded p-2 min-h-screen-75"
-        style={{ height: "auto" }}
+        className="flex flex-wrap justify-between bg-white w-full h-full shadow-lg rounded p-1 xl:p-2 min-h-screen-75"
+        // style={{ height: "auto" }}
       >
-        <div className="w-full z-10">
-          <AddCustomer />
-        </div>
-        <div className="w-full">
-          <ShowItems />
-        </div>
-
-        <div className="w-full">
-          <PayButton />
-        </div>
+        <AddCustomer />
+        <ShowItems />
+        <PayButton />
       </div>
-    </>
+    </div>
   );
 };
 

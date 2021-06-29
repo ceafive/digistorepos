@@ -91,7 +91,7 @@ const PayButton = () => {
   };
 
   return (
-    <div className="">
+    <div className="w-full">
       <hr />
       <div className="relative py-2 px-4">
         {showDiscountBox && (

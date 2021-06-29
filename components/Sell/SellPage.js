@@ -68,9 +68,9 @@ const SellPage = () => {
 
   return (
     <>
-      <div className="min-h-screen">
+      <div className="">
         {!clickToCheckout && (
-          <motion.div className="flex" initial={{ y: "-50vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
+          <div className="flex" initial={{ y: "-50vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
             <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
               <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
             </Modal>
@@ -80,12 +80,12 @@ const SellPage = () => {
             <div className="w-6/12 xl:w-4/12 pb-6 pt-6 px-4">
               <Cart />
             </div>
-          </motion.div>
+          </div>
         )}
         {clickToCheckout && (
-          <motion.div initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
+          <div initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
             <ProcessSale />
-          </motion.div>
+          </div>
         )}
       </div>
     </>
