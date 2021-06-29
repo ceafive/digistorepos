@@ -68,26 +68,24 @@ const SellPage = () => {
 
   return (
     <>
-      <div className="">
-        {!clickToCheckout && (
-          <div className="flex" initial={{ y: "-50vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
-            <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
-              <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
-            </Modal>
-            <div className="w-6/12 xl:w-8/12 pb-6 pt-12 px-4">
-              <SearchResults />
-            </div>
-            <div className="w-6/12 xl:w-4/12 pb-6 pt-6 px-4">
-              <Cart />
-            </div>
+      {!clickToCheckout && (
+        <div className="flex" initial={{ y: "-50vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
+          <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
+            <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
+          </Modal>
+          <div className="w-6/12 xl:w-8/12  pb-6 pt-12 px-4">
+            <SearchResults />
           </div>
-        )}
-        {clickToCheckout && (
-          <div initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
-            <ProcessSale />
+          <div className="w-6/12 xl:w-4/12  pb-6 pt-12 px-4">
+            <Cart />
           </div>
-        )}
-      </div>
+        </div>
+      )}
+      {clickToCheckout && (
+        <div initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
+          <ProcessSale />
+        </div>
+      )}
     </>
   );
 };

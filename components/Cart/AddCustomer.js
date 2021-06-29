@@ -53,7 +53,7 @@ const AddCustomer = () => {
   }, [watchCustomerSearch]);
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)} maxWidth="sm">
         <AddCustomerModal onClose={() => setOpenAddCustomerModal(false)} setStep={setStep} />
       </Modal>

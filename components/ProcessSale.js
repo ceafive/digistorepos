@@ -4,6 +4,7 @@ import {
   onResetCart,
   setActivePayments,
   setAmountReceivedFromPayer,
+  setDeliveryTypeSelected,
   setTotalAmountToBePaidByBuyer,
   setTransactionFeeCharges,
 } from "features/cart/cartSlice";
@@ -71,6 +72,7 @@ const ProcessSale = () => {
   const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
   const totalAmountToBePaidByBuyer = useSelector((state) => state.cart.totalAmountToBePaidByBuyer);
+  const deliveryTypeSelected = useSelector((state) => state.cart.deliveryTypeSelected);
 
   // console.log(activePayments);
 
@@ -81,9 +83,6 @@ const ProcessSale = () => {
   const [openCashModal, setOpenCashModal] = React.useState(false);
   const [fetching, setFetching] = React.useState(false);
   const [openPhoneNumberInputModal, setOpenPhoneNumberInputModal] = React.useState(false);
-  const [pickupOrDelivery, setPickupOrDelivery] = React.useState(null);
-
-  // console.log({ pickupOrDelivery });
 
   // Variables
   const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
@@ -183,6 +182,8 @@ const ProcessSale = () => {
       console.log(error);
     }
   };
+
+  // console.log({ fetching, amountReceivedFromPayer, balance });
 
   return (
     <>
@@ -442,7 +443,7 @@ const ProcessSale = () => {
                         <button
                           className="w-32 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words"
                           onClick={() => {
-                            setPickupOrDelivery(option.name);
+                            dispatch(setDeliveryTypeSelected(option.name));
                           }}
                         >
                           {option.name}
@@ -452,7 +453,7 @@ const ProcessSale = () => {
                   })}
                 </div>
 
-                {pickupOrDelivery === "Delivery" && (
+                {deliveryTypeSelected === "Delivery" && (
                   <div className="mt-4">
                     <TypeDelivery />
                   </div>
@@ -501,9 +502,9 @@ const ProcessSale = () => {
               </div> */}
               <div className="w-full self-end mt-20">
                 <button
-                  disabled={!fetching || !amountReceivedFromPayer || balance > 0}
+                  disabled={fetching || !amountReceivedFromPayer || balance > 0}
                   className={`${
-                    !fetching || !amountReceivedFromPayer || balance > 0 ? "bg-gray-400 text-gray-300" : "bg-green-700 text-white"
+                    fetching || !amountReceivedFromPayer || balance > 0 ? "bg-gray-400 text-gray-300" : "bg-green-700 text-white"
                   } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}
                   onClick={() => {
                     if (paymentMethodSet === "CASH") {

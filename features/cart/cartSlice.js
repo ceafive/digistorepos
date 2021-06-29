@@ -29,6 +29,7 @@ const initialState = {
   deliveryTypes: {},
   deliveryCharge: null,
   totalAmountToBePaidByBuyer: 0,
+  deliveryTypeSelected: null,
 };
 
 const initialProductProps = {
@@ -78,6 +79,9 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
   reducers: {
+    setDeliveryTypeSelected(state, action) {
+      state.deliveryTypeSelected = action.payload;
+    },
     setTotalAmountToBePaidByBuyer(state, action) {
       state.totalAmountToBePaidByBuyer = action.payload;
     },
@@ -91,7 +95,7 @@ const cartSlice = createSlice({
       state.activePayments = action.payload;
     },
     setTransactionFeeCharges(state, action) {
-      state.transactionFeeCharges =action.payload
+      state.transactionFeeCharges = action.payload;
       // state.transactionFeeCharges = Number(parseFloat(action.payload));
     },
     onResetCart: (state) => {
@@ -295,5 +299,6 @@ export const {
   setDeliveryTypes,
   setDeliveryCharge,
   setTotalAmountToBePaidByBuyer,
+  setDeliveryTypeSelected,
 } = cartSlice.actions;
 export default cartSlice.reducer;

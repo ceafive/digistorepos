@@ -6,41 +6,64 @@ import { useDispatch, useSelector } from "react-redux";
 import GooglePlaces from "./GooglePlaces";
 import Spinner from "./Spinner";
 
-const MerchantDeliveryType = ({ setFetching }) => {
+const Box = ({ option }) => {
+  const dispatch = useDispatch();
+  return (
+    <div key={option.delivery_location}>
+      <button
+        key={option.delivery_location}
+        className="w-48 h-48 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words"
+        onClick={() => {
+          const price = get(option, "delivery_price", 0);
+          const data = { ...option, delivery_price: Number(parseFloat(price)) };
+          //   console.log(data);
+
+          dispatch(setDeliveryCharge(data));
+        }}
+      >
+        {option?.delivery_location} {" - "} {option?.delivery_price}
+      </button>
+    </div>
+  );
+};
+
+const MerchantDeliveryType = () => {
   const dispatch = useDispatch();
   const [listOfValues, setListOfValues] = React.useState([]);
 
   React.useEffect(() => {
     const fetchItems = async () => {
       try {
-        setFetching(true);
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
         const res = await axios.post("/api/products/get-delivery-lov", { user });
         const { data } = await res.data;
         console.log({ data });
+
         setListOfValues(data);
       } catch (error) {
         console.log(error);
       } finally {
-        setFetching(false);
       }
     };
 
     fetchItems();
-  }, [dispatch, setFetching]);
+  }, [dispatch]);
 
   return (
-    <div>
-      {listOfValues.map((value) => {
-        return <p key={value}>{value}</p>;
-      })}
+    <div className="mt-4">
+      <h1 className="font-semibold mb-1">Select Delivery Location</h1>
+      <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2">
+        {listOfValues.map((option, index) => {
+          return <Box key={index} option={option} />;
+        })}
+      </div>
     </div>
   );
 };
 
-const IPAYDeliveryType = ({ setFetching }) => {
+const IPAYDeliveryType = () => {
   const dispatch = useDispatch();
   const outletSelected = useSelector((state) => state.products.outletSelected);
   //   console.log(outletSelected);
@@ -55,8 +78,6 @@ const IPAYDeliveryType = ({ setFetching }) => {
 
       const fetchItems = async (stringCoordinates) => {
         try {
-          setFetching(true);
-
           const payload = {
             pickup_id: outletSelected?.outlet_id,
             pickup_gps: outletSelected?.outlet_gps,
@@ -79,7 +100,6 @@ const IPAYDeliveryType = ({ setFetching }) => {
         } catch (error) {
           console.log(error);
         } finally {
-          setFetching(false);
         }
       };
 
@@ -91,7 +111,7 @@ const IPAYDeliveryType = ({ setFetching }) => {
     if (value?.value?.description) {
       getCoordinates();
     }
-  }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, setFetching, value]);
+  }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, value]);
 
   return (
     <div>
@@ -181,26 +201,19 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
 const TypeDelivery = () => {
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
 
-  // Compnent State
-  const [fetching, setFetching] = React.useState(false);
-
-  //   if (!fetching) {
-  //     return <Spinner type="TailSpin" width={50} height={50} />;
-  //   }
-
   if (deliveryTypes["option_delivery"] === "MERCHANT") {
     return <MerchantDeliveryType />;
   }
 
   if (deliveryTypes["option_delivery"] === "IPAY") {
-    return <IPAYDeliveryType setFetching={setFetching} />;
+    return <IPAYDeliveryType />;
   }
 
   if (deliveryTypes["option_delivery"] === "MERCHANT-DIST") {
-    return <MerchantDistDeliveryType setFetching={setFetching} />;
+    return <MerchantDistDeliveryType />;
   }
 
-  return <div>Type Delivery</div>;
+  return null;
 };
 
 export default TypeDelivery;
