@@ -203,8 +203,6 @@ const TypeDelivery = () => {
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
   const [fetching, setFetching] = React.useState(false);
 
-  console.log(deliveryTypes);
-
   React.useEffect(() => {
     const fetchItems = async () => {
       try {
