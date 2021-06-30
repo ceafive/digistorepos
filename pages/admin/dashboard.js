@@ -6,7 +6,7 @@ import Admin from "layouts/Admin.js";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { productsAdded } from "features/products/productsSlice";
-import SearchResults from "components/SearchResults";
+import ProductsSelection from "components/ProductsSelection";
 import Cart from "components/Cart/Cart";
 import Modal from "components/Modal";
 import ProductDetails from "components/Product/InventoryDetails";
@@ -31,7 +31,7 @@ export default function Dashboard() {
           <ProductDetails />
         </Modal>
         <div className="w-full xl:w-8/12 pb-6 pt-12 px-4">
-          <SearchResults />
+          <ProductsSelection />
         </div>
         <div className="w-full xl:w-4/12 pb-6 pt-6 px-4">
           <Cart />

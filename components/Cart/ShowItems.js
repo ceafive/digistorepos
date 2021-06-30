@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 const ShowItems = () => {
   const productsInCart = useSelector((state) => state.cart.productsInCart);
+  // console.log(productsInCart);
   return (
     <div className="w-full overflow-x-hidden overflow-scroll" style={{ height: 400 }}>
       {productsInCart.map((product, index) => {

@@ -1,17 +1,17 @@
 import { openProductModal } from "features/products/productsSlice";
-import { camelCase, get, lowerCase, map, reduce, upperCase } from "lodash";
+import { camelCase, get, lowerCase, map, reduce, snakeCase, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Carousel from "components/Carousel";
 import { useForm } from "react-hook-form";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
 
-const RenderTap = ({ item, setProductPrice, step, setStep, setFormData }) => {
+const RenderTap = ({ item, propertyName, setProductPrice, step, setStep, setFormData }) => {
   return (
     <button
       className="font-bold border border-gray-200 focus:outline-none w-32 h-32"
       onClick={() => {
-        setFormData((data) => ({ ...data, [item.property_id]: item.property_value }));
+        setFormData((data) => ({ ...data, [propertyName]: item.property_value }));
         if (item?.property_price_set === "YES") {
           setProductPrice(Number(parseFloat(item?.property_price).toFixed(2)));
         }
@@ -31,12 +31,14 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
     const res = reduce(
       values,
       function (result, value, key) {
-        return { ...result, [lowerCase(key)]: value };
+        return { ...result, [snakeCase(lowerCase(key))]: value };
       },
       {}
     );
+
     const { quantity, ...rest } = res;
     const data = {
+      ...product,
       id: product.product_id,
       title: product.product_name,
       price: Number(parseFloat(productPrice).toFixed(2)),
@@ -95,6 +97,9 @@ const ProductDetails = ({ onClose }) => {
   const [formData, setFormData] = React.useState({});
   const [step, setStep] = React.useState(0);
   const [currentStep, setCurrentStep] = React.useState([allVariants[step]]);
+
+  // console.log(currentStep);
+  // console.log(formData);
 
   const reset = () => {
     onClose();
@@ -157,6 +162,7 @@ const ProductDetails = ({ onClose }) => {
                         return (
                           <RenderTap
                             key={item?.property_value}
+                            propertyName={variant[0]}
                             item={item}
                             setProductPrice={setProductPrice}
                             setStep={setStep}

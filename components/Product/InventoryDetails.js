@@ -6,7 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 const InventoryDetails = ({ onClose }) => {
   const dispatch = useDispatch();
   const product = useSelector((state) => state.products.productToView);
+  const outletSelected = useSelector((state) => state.products.outletSelected);
   // console.log({ product });
+  // console.log({ outletSelected });
 
   return (
     <div className="relative flex w-full bg-white rounded-lg overflow-hidden">
@@ -29,23 +31,23 @@ const InventoryDetails = ({ onClose }) => {
         <div className="w-full px-10 text-center">
           <div className="flex justify-between ">
             <div>
-              <p className="font-semibold">Type</p>
-              <p>LED LIGHT</p>
+              <p className="font-semibold">Merchant Name</p>
+              <p>{product?.merchant_name}</p>
             </div>
 
             <div>
-              <p className="font-semibold">Supplier</p>
-              <p>Philips</p>
+              <p className="font-semibold">Category</p>
+              <p>{product?.product_category}</p>
             </div>
 
             <div>
-              <p className="font-semibold">Brand</p>
-              <p>PHILIPS</p>
+              <p className="font-semibold">Description</p>
+              <p>{product?.product_description?.slice(0, 30)}</p>
             </div>
 
             <div>
-              <p className="font-semibold">Supplier Price</p>
-              <p>GHC13.00</p>
+              <p className="font-semibold">Unit Cost</p>
+              <p>GHS{product?.product_unit_cost}</p>
             </div>
           </div>
         </div>
@@ -56,8 +58,8 @@ const InventoryDetails = ({ onClose }) => {
             <p>Inventory Count</p>
           </div>
           <div className="flex justify-between p-2 bg-gray-200 rounded font-semibold">
-            <p>Main Outlet</p>
-            <p>2245</p>
+            <p>{outletSelected ? outletSelected?.outlet_name : "Main Outlet"}</p>
+            <p>{product?.product_stock_level}</p>
           </div>
         </div>
       </div>

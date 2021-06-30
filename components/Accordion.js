@@ -31,8 +31,10 @@ const Accordion = ({ product, index }) => {
         <div className="mr-2 font-bold cursor-pointer" onClick={() => setIsActive(!isActive)}>
           {isActive ? <i className="fas fa-chevron-down"></i> : <i className="fas fa-chevron-right"></i>}
         </div>
+
         <div className="flex justify-between w-full">
-          <div className="flex ">
+          {/* Item Name */}
+          <div className="flex cursor-pointer" onClick={() => setIsActive(!isActive)}>
             <span className="mr-1">{index + 1}.</span>
             <div>
               <span className="font-bold">{product.title.substring(0, 20)}</span>
@@ -41,7 +43,8 @@ const Accordion = ({ product, index }) => {
                   {Object.entries(product.variants).map((variant, index) => {
                     return (
                       <p key={variant[0]} className="text-xs font-semibold m-0 p-0">
-                        <span>{capitalize(variant[1])}</span> {index !== Object.entries(product.variants).length - 1 && <span> / </span>}
+                        <span>{capitalize(variant[1])}</span>
+                        {index !== Object.entries(product.variants).length - 1 && <span>/ </span>}
                       </p>
                     );
                   })}
@@ -49,6 +52,9 @@ const Accordion = ({ product, index }) => {
               )}
             </div>
           </div>
+          {/* Item Name */}
+
+          {/* Amount and Delete */}
           <div className="font-bold">
             <span className="mr-1">GHS{Number(parseFloat(product.totalPrice).toFixed(2))}</span>
             <button
@@ -60,6 +66,8 @@ const Accordion = ({ product, index }) => {
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>
             </button>
           </div>
+
+          {/* Amount and Delete */}
         </div>
       </div>
 
@@ -67,7 +75,7 @@ const Accordion = ({ product, index }) => {
         <div className="accordion-content pb-4 px-2">
           <div className="flex flex-between">
             <div className="mr-2">
-              <label htmlFor="quantity" className="font-bold">
+              <label htmlFor="quantity" className="text-sm font-bold">
                 Quantity
               </label>
               <input
@@ -79,12 +87,12 @@ const Accordion = ({ product, index }) => {
                 }}
                 type="number"
                 placeholder="eg. 0"
-                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
+                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
               />
             </div>
 
             <div className="mr-2">
-              <label htmlFor="price" className="font-bold">
+              <label htmlFor="price" className="text-sm font-bold">
                 Price
               </label>
               <input
@@ -94,11 +102,11 @@ const Accordion = ({ product, index }) => {
                 value={product.price}
                 type="number"
                 placeholder="eg. 0"
-                className="border-0 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
+                className="border-0 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
               />
             </div>
 
-            {/* <div className="">
+            <div className="">
               <label htmlFor="discount" className="font-bold">
                 Discount %
               </label>
@@ -115,35 +123,25 @@ const Accordion = ({ product, index }) => {
                 placeholder="eg. 0"
                 className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
               />
-            </div> */}
+            </div>
           </div>
 
-          {/* <div className="mt-2">
+          <div className="mt-2">
             <label htmlFor="notes" className="font-bold">
               Notes
             </label>
             <input
+              value={product.notes}
+              onChange={(e) => {
+                e.persist();
+                handleOnChange("notes", e.target.value);
+              }}
               id="notes"
               type="text"
-              placeholder="eg. 0"
-              className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
+              className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full"
             />
-          </div> */}
+          </div>
 
-          {/* {product.variants && (
-            <div className="mt-2">
-              <p className="">Variants</p>
-              <div className="flex flex-wrap justify-between items-center">
-                {Object.entries(product.variants).map((variant) => {
-                  return (
-                    <p key={variant[0]} className="mr-1">
-                      <span>{capitalize(lowerCase(variant[0]))}:</span> <span className="font-bold">{variant[1]}</span>
-                    </p>
-                  );
-                })}
-              </div>
-            </div>
-          )} */}
           <div className="text-right">
             <button
               className="text-xs text-blue-500 focus:outline-none"
@@ -155,7 +153,7 @@ const Accordion = ({ product, index }) => {
               <span>
                 <i className="fas fa-info-circle mr-1"></i>
               </span>
-              <span>Show inventory &amp; details</span>
+              <span>Show details</span>
             </button>
           </div>
         </div>

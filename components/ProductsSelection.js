@@ -50,7 +50,7 @@ const productColors = [
   "#2df5b0",
 ];
 
-const SearchResults = () => {
+const ProductsSelection = () => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.products.products);
   const productCategories = useSelector((state) => state.products.productCategories);
@@ -217,6 +217,7 @@ const SearchResults = () => {
                               dispatch(increaseTotalItemsInCart());
                               dispatch(
                                 addItemToCart({
+                                  ...product,
                                   id: product.product_id,
                                   title: product.product_name,
                                   price: Number(parseFloat(product.product_price).toFixed(2)),
@@ -260,7 +261,7 @@ const SearchResults = () => {
 
               {/* Categories */}
               <div className="flex justify-start items-center w-full mt-4">
-                <div className="grid grid-cols-3 xl:grid-cols-6 gap-3">
+                <div className="grid grid-cols-3 xl:grid-cols-7 gap-3">
                   <button
                     className={`shadow rounded text-black font-semibold border-t-8 ${
                       categorySelected?.product_category === "ALL" ? "border-green-300" : "border-gray-400"
@@ -319,6 +320,7 @@ const SearchResults = () => {
                     className={`shadow rounded text-black font-semibold px-2 py-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
                     style={{ backgroundColor: productTabColors[index] }}
                     onClick={() => {
+                      // console.log(product);
                       if (product?.product_properties) {
                         dispatch(setProductToView(product));
                         dispatch(openProductModal());
@@ -326,6 +328,7 @@ const SearchResults = () => {
                         dispatch(increaseTotalItemsInCart());
                         dispatch(
                           addItemToCart({
+                            ...product,
                             id: product.product_id,
                             title: product.product_name,
                             price: Number(parseFloat(product.product_price).toFixed(2)),
@@ -338,37 +341,6 @@ const SearchResults = () => {
                   >
                     {product.product_name}
                   </button>
-                  // <div
-                  //     key={product.product_id}
-                  //     className="rounded cursor-pointer"
-                  //     // className="w-40 h-40 shadow-lg rounded cursor-pointer"
-                  //     onClick={() => {
-                  //       if (product?.product_properties?.length > 0) {
-                  //         dispatch(setProductToView(product));
-                  //         dispatch(openProductModal());
-                  //       } else {
-                  //         dispatch(increaseTotalItemsInCart());
-                  //         dispatch(
-                  //           addItemToCart({
-                  //             id: product.product_id,
-                  //             title: product.product_name,
-                  //             price: Number(parseFloat(product.product_price).toFixed(2)),
-                  //             imgURL: product.product_image,
-                  //             variants: { type: "normal" },
-                  //           })
-                  //         );
-                  //       }
-                  //     }}
-                  //   >
-                  //     <div className="h-full rounded overflow-hidden w-20 xl:w-36">
-                  //       <div className="relative" style={{ paddingBottom: "70%" }}>
-                  //         <img className="absolute object-cover w-full h-full" src={product.product_image} alt={product.product_name} />
-                  //       </div>
-                  //       <div className="bg-white text-black text-center px-2 font-medium">
-                  //         <p className="truncate"></p>
-                  //       </div>
-                  //     </div>
-                  //   </div>
                 );
               })}
             </div>
@@ -407,4 +379,4 @@ const SearchResults = () => {
   );
 };
 
-export default SearchResults;
+export default ProductsSelection;

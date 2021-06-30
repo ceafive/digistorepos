@@ -203,33 +203,33 @@ const TypeDelivery = () => {
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
   const [fetching, setFetching] = React.useState(false);
 
-  React.useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        setFetching(true);
-        let user = sessionStorage.getItem("IPAYPOSUSER");
-        user = JSON.parse(user);
+  // React.useEffect(() => {
+  //   const fetchItems = async () => {
+  //     try {
+  //       setFetching(true);
+  //       let user = sessionStorage.getItem("IPAYPOSUSER");
+  //       user = JSON.parse(user);
 
-        const deliveryTypesRes = await axios.post("/api/products/get-delivery-type", { user });
-        const { data: deliveryTypesResData } = await deliveryTypesRes.data;
-        dispatch(setDeliveryTypes(deliveryTypesResData));
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setFetching(false);
-      }
-    };
+  //       const deliveryTypesRes = await axios.post("/api/products/get-delivery-type", { user });
+  //       const { data: deliveryTypesResData } = await deliveryTypesRes.data;
+  //       dispatch(setDeliveryTypes(deliveryTypesResData));
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       setFetching(false);
+  //     }
+  //   };
 
-    fetchItems();
-  }, [dispatch]);
+  //   fetchItems();
+  // }, [dispatch]);
 
-  if (fetching) {
-    return (
-      <div className="flex flex-col justify-center items-center w-full mt-2">
-        <Spinner type="TailSpin" width={30} height={30} />;
-      </div>
-    );
-  }
+  // if (fetching) {
+  //   return (
+  //     <div className="flex flex-col justify-center items-center w-full mt-2">
+  //       <Spinner type="TailSpin" width={30} height={30} />;
+  //     </div>
+  //   );
+  // }
 
   if (deliveryTypes["option_delivery"] === "MERCHANT") {
     return <MerchantDeliveryType />;

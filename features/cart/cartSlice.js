@@ -37,6 +37,7 @@ const initialProductProps = {
   price: 0,
   discount: "",
   variants: { type: "normal" },
+  notes: "",
 };
 
 const calculateDiscount = (valueToApplyOn, discountType, discountValue) => {
@@ -187,23 +188,26 @@ const cartSlice = createSlice({
             return newQuantity * newPrice;
           }
 
-          const newDiscount = newQuantity * newPrice * (discount / 100);
-          return newQuantity * newPrice - newDiscount;
+          const calcualteDiscount = discount / 100;
+          const newDiscount = newQuantity * newPrice * calcualteDiscount;
+          const newTotalPrice = newQuantity * newPrice - newDiscount;
+          return Number(parseFloat(newTotalPrice).toFixed(2));
         };
 
         const newQuantity = action.payload.quantity ? Number(parseFloat(action.payload.quantity).toFixed(2)) : "";
         const newPrice = action.payload.price ? Number(parseFloat(action.payload.price).toFixed(2)) : "";
         const discount = action.payload.discount ? Number(parseFloat(action.payload.discount).toFixed(2)) : "";
+        const notes = action.payload.notes ? action.payload.notes : "";
 
         foundItem.quantity = newQuantity;
         foundItem.price = newPrice;
         foundItem.discount = discount;
+        foundItem.notes = notes;
 
         foundItem.totalPrice = setDiscount(newQuantity, newPrice, discount);
       }
 
       const totalPrice = state.productsInCart.reduce((acc, val) => acc + val.totalPrice, 0);
-
       const totalQuantity = state.productsInCart.reduce((acc, val) => acc + val.quantity, 0);
 
       state.totalPriceInCart = Number(parseFloat(totalPrice).toFixed(2));

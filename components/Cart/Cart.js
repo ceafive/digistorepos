@@ -45,7 +45,7 @@ const Cart = () => {
         </div>
       </div> */}
       <div
-        className="flex flex-wrap justify-between bg-white w-full h-full shadow-lg rounded p-1 xl:p-2 min-h-screen-75"
+        className="flex flex-wrap bg-white w-full h-full shadow-lg rounded p-1 xl:p-2"
         // style={{ height: "auto" }}
       >
         <AddCustomer />
