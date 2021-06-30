@@ -4,6 +4,7 @@ import {
   onResetCart,
   setActivePayments,
   setAmountReceivedFromPayer,
+  setDeliveryCharge,
   setDeliveryTypeSelected,
   setTotalAmountToBePaidByBuyer,
   setTransactionFeeCharges,
@@ -438,6 +439,9 @@ const ProcessSale = () => {
                             deliveryTypeSelected === option.name ? "ring-2" : ""
                           } w-32 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
                           onClick={() => {
+                            if (option.name !== "Delivery") {
+                              dispatch(setDeliveryCharge(null));
+                            }
                             dispatch(setDeliveryTypeSelected(option.name));
                           }}
                         >
