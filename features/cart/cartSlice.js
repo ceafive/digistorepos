@@ -166,7 +166,7 @@ const cartSlice = createSlice({
     onChangeCartDiscountType(state, action) {
       state.cartDiscountType = action.payload;
       state.cartDiscount = 0;
-      state.cartTotalMinusDiscount = state.totalPriceInCart;
+      state.cartTotalMinusDiscount = Number(parseFloat(state.totalPriceInCart).toFixed(2));
     },
     setDiscount: (state, action) => {
       const { payload } = action;
@@ -180,7 +180,7 @@ const cartSlice = createSlice({
       const newvalue = valueReturn - state.cartPromoDiscount;
 
       state.cartDiscountOnCartTotal = discountAmount;
-      state.cartTotalMinusDiscount = newvalue;
+      state.cartTotalMinusDiscount = Number(parseFloat(newvalue).toFixed(2));
       state.cartTotalMinusDiscountPlusTax = Number(parseFloat(newvalue + newvalue * state.totalTaxes).toFixed(2));
     },
     setPromoAmount: (state, action) => {
