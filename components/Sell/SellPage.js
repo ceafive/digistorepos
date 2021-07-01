@@ -8,10 +8,16 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import ProcessSale from "components/ProcessSale";
 import { motion } from "framer-motion";
-import { productsAdded, onSetProductCategories, openInventoryModal } from "features/products/productsSlice";
+import {
+  productsAdded,
+  onSetProductCategories,
+  openInventoryModal,
+  setAllOutlets,
+  setOutletSelected,
+} from "features/products/productsSlice";
 import axios from "axios";
-import { setDeliveryTypes } from "features/cart/cartSlice";
-import { filter } from "lodash";
+import { setActivePayments, setDeliveryTypes } from "features/cart/cartSlice";
+import { filter, intersectionWith } from "lodash";
 
 const SellPage = () => {
   const dispatch = useDispatch();
@@ -31,20 +37,33 @@ const SellPage = () => {
         const allProductsRes = await axios.post("/api/products/get-all-products", { user });
         const allCategoriesRes = await axios.post("/api/products/get-all-categories", { user });
         const deliveryTypesRes = await axios.post("/api/products/get-delivery-type", { user });
+        const activePaymentsRes = await axios.post("/api/products/get-active-payments");
+        const outletsRes = await axios.post("/api/products/get-outlets", { user });
 
         const { data: allProductsResData } = await allProductsRes.data;
         const { data: allCategoriesResData } = await allCategoriesRes.data;
         const { data: deliveryTypesResData } = await deliveryTypesRes.data;
-        // console.log({ allProductsResData, allCategoriesResData, deliveryTypesResData });
+        const { data: activePaymentsResData } = await activePaymentsRes.data;
+        const { data: outletsResData } = await outletsRes.data;
+        // console.log({ outletsResData, user_assigned_outlets, response });
 
         dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
         dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
         dispatch(setDeliveryTypes(deliveryTypesResData));
+        dispatch(setActivePayments(activePaymentsResData));
 
-        setFetching(false);
+        const { user_assigned_outlets } = user;
+        const response = intersectionWith(outletsResData, user_assigned_outlets ?? [], (arrVal, othVal) => {
+          return arrVal.outlet_id === othVal;
+        });
+        dispatch(setAllOutlets(user_assigned_outlets ? response : outletsResData));
+        if (response.length === 1) {
+          dispatch(setOutletSelected(response[0]));
+        }
       } catch (error) {
         console.log(error);
       } finally {
+        setFetching(false);
       }
     };
 

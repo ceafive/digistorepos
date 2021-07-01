@@ -74,7 +74,7 @@ const CollectUserDetail = ({ fetching, onAddPayment, paymentMethodSet, register,
         >
           {fetching && (
             <div className="inline-block mr-2">
-              <Spinner type={"TailSpin"} color="black" width="10" height="10" />
+              <Spinner type={"TailSpin"} color="black" width={10} height={10} />
             </div>
           )}
           Add Payment

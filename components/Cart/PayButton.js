@@ -7,6 +7,7 @@ import {
   onResetCart,
   setPromoAmount,
   applyPromoAmount,
+  setCartPromoCode,
 } from "features/cart/cartSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -79,6 +80,7 @@ const PayButton = () => {
       const { status, message, discount } = await response.data;
 
       // console.log({ status, message, discount });
+      dispatch(setCartPromoCode(upperCase(promoCode)));
       dispatch(setPromoAmount(discount));
     } catch (error) {
       console.log(error);

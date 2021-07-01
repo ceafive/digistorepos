@@ -16,6 +16,7 @@ const initialState = {
   cartNote: "",
   cartDiscount: "",
   cartPromoDiscount: 0,
+  cartPromoCode: null,
   cartDiscountOnCartTotal: 0,
   cartDiscountType: "percent",
   cartTotalMinusDiscount: 0,
@@ -30,6 +31,10 @@ const initialState = {
   deliveryCharge: null,
   totalAmountToBePaidByBuyer: 0,
   deliveryTypeSelected: null,
+  deliveryNotes: "",
+  paymentMethodSet: "",
+  deliveryLocationInputted: null,
+  deliveryGPS: null,
 };
 
 const initialProductProps = {
@@ -80,6 +85,28 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
   reducers: {
+    setCartPromoCode(state, action) {
+      state.cartPromoCode = action.payload;
+    },
+    onResetCart: (state) => {
+      const resetState = { ...initialState };
+      resetState.activePayments = state.activePayments;
+      resetState.deliveryTypes = state.deliveryTypes;
+
+      return resetState;
+    },
+    setDeliveryGPS(state, action) {
+      state.deliveryGPS = action.payload;
+    },
+    setDeliveryLocationInputted(state, action) {
+      state.deliveryLocationInputted = action.payload;
+    },
+    setDeliveryNotes(state, action) {
+      state.deliveryNotes = action.payload;
+    },
+    setPaymentMethodSet(state, action) {
+      state.paymentMethodSet = action.payload;
+    },
     setDeliveryTypeSelected(state, action) {
       state.deliveryTypeSelected = action.payload;
     },
@@ -99,33 +126,30 @@ const cartSlice = createSlice({
       state.transactionFeeCharges = action.payload;
       // state.transactionFeeCharges = Number(parseFloat(action.payload));
     },
-    onResetCart: (state) => {
-      return initialState;
-    },
+
     addCustomer(state, action) {
       state.currentCustomer = action.payload;
     },
     setAmountReceivedFromPayer(state, action) {
-      state.amountReceivedFromPayer += action.payload.amount;
+      state.amountReceivedFromPayer += action?.payload?.amount;
 
       state.paymentMethodsAndAmount.push({
-        method: action.payload.method,
-        amount: action.payload.amount,
+        ...action.payload,
         date: format(new Date(), "iii, d MMM yy h:mmaaa"),
       });
     },
     onRemovePaymentMethod(state, action) {
       var filtered = remove(state.paymentMethodsAndAmount, function (n) {
-        return n.method !== action.payload.method;
+        return n.method !== action.payload?.method;
       });
 
       var filteredCharges = remove(state.transactionFeeCharges, function (n) {
-        return n.service !== action.payload.method;
+        return n.service !== action.payload?.method;
       });
 
       state.paymentMethodsAndAmount = filtered;
       state.transactionFeeCharges = filteredCharges;
-      state.amountReceivedFromPayer = subtract(state.amountReceivedFromPayer, action.payload.amount);
+      state.amountReceivedFromPayer = subtract(state.amountReceivedFromPayer, action.payload?.amount);
     },
     calculateTaxes(state, action) {
       state.totalTaxes += action.payload;
@@ -176,7 +200,7 @@ const cartSlice = createSlice({
       state.partPaymentAmount = amount;
     },
     changeItemPropsInCart: function (state, action) {
-      const foundItem = state.productsInCart.find((product) => product.uniqueId === action.payload.uniqueId);
+      const foundItem = state.productsInCart.find((product) => product.uniqueId === action.payload?.uniqueId);
 
       if (foundItem) {
         const setDiscount = (newQuantity, newPrice, discount) => {
@@ -194,10 +218,10 @@ const cartSlice = createSlice({
           return Number(parseFloat(newTotalPrice).toFixed(2));
         };
 
-        const newQuantity = action.payload.quantity ? Number(parseFloat(action.payload.quantity).toFixed(2)) : "";
-        const newPrice = action.payload.price ? Number(parseFloat(action.payload.price).toFixed(2)) : "";
-        const discount = action.payload.discount ? Number(parseFloat(action.payload.discount).toFixed(2)) : "";
-        const notes = action.payload.notes ? action.payload.notes : "";
+        const newQuantity = action.payload?.quantity ? Number(parseFloat(action.payload?.quantity).toFixed(2)) : "";
+        const newPrice = action.payload?.price ? Number(parseFloat(action.payload?.price).toFixed(2)) : "";
+        const discount = action.payload?.discount ? Number(parseFloat(action.payload?.discount).toFixed(2)) : "";
+        const notes = action.payload?.notes ? action.payload?.notes : "";
 
         foundItem.quantity = newQuantity;
         foundItem.price = newPrice;
@@ -223,7 +247,7 @@ const cartSlice = createSlice({
     addItemToCart: (state, action) => {
       const productsInCart = state.productsInCart;
       // console.log("productsInCart", JSON.parse(JSON.stringify(productsInCart)));
-      const foundItems = productsInCart.filter((product) => product.title === action.payload.title);
+      const foundItems = productsInCart.filter((product) => product.title === action.payload?.title);
 
       let foundItem = null;
       if (foundItems) {
@@ -244,7 +268,7 @@ const cartSlice = createSlice({
             ...initialProductProps,
             uniqueId: uuidv4(),
             quantity: newQuantity,
-            totalPrice: Number(parseFloat(action.payload.price * newQuantity).toFixed(2)),
+            totalPrice: Number(parseFloat(action.payload?.price * newQuantity).toFixed(2)),
             ...action.payload,
           });
         } else {
@@ -260,7 +284,7 @@ const cartSlice = createSlice({
           ...initialProductProps,
           uniqueId: uuidv4(),
           quantity: newQuantity,
-          totalPrice: Number(parseFloat(action.payload.price * newQuantity).toFixed(2)),
+          totalPrice: Number(parseFloat(action.payload?.price * newQuantity).toFixed(2)),
           ...action.payload,
         });
       }
@@ -309,5 +333,10 @@ export const {
   setDeliveryCharge,
   setTotalAmountToBePaidByBuyer,
   setDeliveryTypeSelected,
+  setPaymentMethodSet,
+  setDeliveryNotes,
+  setDeliveryLocationInputted,
+  setDeliveryGPS,
+  setCartPromoCode,
 } = cartSlice.actions;
 export default cartSlice.reducer;

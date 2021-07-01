@@ -1,7 +1,14 @@
 import axios from "axios";
-import { setDeliveryCharge, setDeliveryTypes } from "features/cart/cartSlice";
+import {
+  setDeliveryCharge,
+  setDeliveryGPS,
+  setDeliveryLocationInputted,
+  setDeliveryNotes,
+  setDeliveryTypes,
+} from "features/cart/cartSlice";
 import { filter, get } from "lodash";
 import React from "react";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import GooglePlaces from "./GooglePlaces";
 import Spinner from "./Spinner";
@@ -27,7 +34,7 @@ const Box = ({ option }) => {
   );
 };
 
-const MerchantDeliveryType = () => {
+const MerchantDeliveryType = ({ setFetching }) => {
   const dispatch = useDispatch();
   const [listOfValues, setListOfValues] = React.useState([]);
 
@@ -53,7 +60,7 @@ const MerchantDeliveryType = () => {
 
   return (
     <div className="mt-4">
-      <h1 className="font-semibold mb-1">Select Delivery Location</h1>
+      <p>Select Delivery Location</p>
       <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2">
         {listOfValues.map((option, index) => {
           return <Box key={index} option={option} />;
@@ -63,15 +70,21 @@ const MerchantDeliveryType = () => {
   );
 };
 
-const IPAYDeliveryType = () => {
+const IPAYDeliveryType = ({ setFetching }) => {
   const dispatch = useDispatch();
   const outletSelected = useSelector((state) => state.products.outletSelected);
+  const deliveryLocationInputted = useSelector((state) => state.products.deliveryLocationInputted);
   //   console.log(outletSelected);
   const [value, setValue] = React.useState(null);
   // console.log(value);
 
   React.useEffect(() => {
+    dispatch(setDeliveryLocationInputted(value));
+  }, [dispatch, value]);
+
+  React.useEffect(() => {
     const getCoordinates = async () => {
+      setFetching(true);
       const response = await axios.post("/api/products/get-coordinates", { description: value?.value?.description });
       const responsedata = await response.data;
       const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
@@ -104,14 +117,17 @@ const IPAYDeliveryType = () => {
       };
 
       if (stringCoordinates) {
-        fetchItems(stringCoordinates);
+        dispatch(setDeliveryGPS(stringCoordinates));
+        await fetchItems(stringCoordinates);
       }
+
+      setFetching(false);
     };
 
-    if (value?.value?.description) {
+    if (value?.label) {
       getCoordinates();
     }
-  }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, value]);
+  }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, setFetching, value]);
 
   return (
     <div>
@@ -146,14 +162,18 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
   //   console.log(value);
 
   React.useEffect(() => {
+    dispatch(setDeliveryLocationInputted(value));
+  }, [dispatch, value]);
+
+  React.useEffect(() => {
     const getCoordinates = async () => {
+      setFetching(true);
       const response = await axios.post("/api/products/get-coordinates", { description: value?.value?.description });
       const responsedata = await response.data;
       const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
 
       const fetchItems = async (stringCoordinates) => {
         try {
-          setFetching(true);
           let user = sessionStorage.getItem("IPAYPOSUSER");
           user = JSON.parse(user);
 
@@ -176,13 +196,14 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
         } catch (error) {
           console.log(error);
         } finally {
-          setFetching(false);
         }
       };
 
       if (stringCoordinates) {
-        fetchItems(stringCoordinates);
+        dispatch(setDeliveryGPS(stringCoordinates));
+        await fetchItems(stringCoordinates);
       }
+      setFetching(false);
     };
 
     if (value?.value?.description) {
@@ -198,10 +219,29 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
   );
 };
 
-const TypeDelivery = () => {
+const DeliveryNumber = ({ register }) => {
+  const dispatch = useDispatch();
+  const deliveryNotes = useSelector((state) => state.cart.deliveryNotes);
+  return (
+    <div className="mt-2">
+      <p>Delivery Notes</p>
+      <input
+        value={deliveryNotes}
+        onChange={(e) => {
+          e.persist();
+          dispatch(setDeliveryNotes(e.target.value));
+        }}
+        type="text"
+        placeholder="Enter delivery notes here..."
+        className="p-2 py-3 text-lg placeholder-blueGray-300 text-blueGray-600 border border-gray-300 bg-white rounded outline-none focus:outline-none focus:ring-1 w-full"
+      />
+    </div>
+  );
+};
+
+const TypeDelivery = ({ setFetching }) => {
   const dispatch = useDispatch();
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
-  const [fetching, setFetching] = React.useState(false);
 
   // React.useEffect(() => {
   //   const fetchItems = async () => {
@@ -232,15 +272,25 @@ const TypeDelivery = () => {
   // }
 
   if (deliveryTypes["option_delivery"] === "MERCHANT") {
-    return <MerchantDeliveryType />;
+    return <MerchantDeliveryType setFetching={setFetching} />;
   }
 
   if (deliveryTypes["option_delivery"] === "IPAY") {
-    return <IPAYDeliveryType />;
+    return (
+      <>
+        <IPAYDeliveryType setFetching={setFetching} />
+        <DeliveryNumber />
+      </>
+    );
   }
 
   if (deliveryTypes["option_delivery"] === "MERCHANT-DIST") {
-    return <MerchantDistDeliveryType />;
+    return (
+      <>
+        <MerchantDistDeliveryType setFetching={setFetching} />
+        <DeliveryNumber />
+      </>
+    );
   }
 
   return null;

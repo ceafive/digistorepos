@@ -6,7 +6,6 @@ import {
   onSelectCategory,
   openProductModal,
   setAllOutlets,
-  setCategoryProductsCount,
   setOutletSelected,
   setProductToView,
 } from "features/products/productsSlice";
@@ -16,6 +15,7 @@ import Modal from "components/Modal";
 import ReactPaginate from "react-paginate";
 import { filter, intersectionWith, take } from "lodash";
 import axios from "axios";
+import Spinner from "./Spinner";
 
 import ProductDetails from "./Product/ProductDetails";
 
@@ -57,11 +57,11 @@ const ProductsSelection = () => {
   const searchTerm = useSelector((state) => state.products.searchTerm);
   const categorySelected = useSelector((state) => state.products.categorySelected);
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
-  const categoryProductsCount = useSelector((state) => state.products.categoryProductsCount);
   const outlets = useSelector((state) => state.products.outlets);
 
   const perPage = 12; // product number to display per page
 
+  // Compnent State
   const [searchProductsDisplay, setSearchProductsDisplay] = React.useState(products);
   const [productsDisplay, setProductsDisplay] = React.useState([]);
   const [pageCount, setPageCount] = React.useState(0);
@@ -106,48 +106,6 @@ const ProductsSelection = () => {
       setProductsDisplay(take([...products].slice(offset), perPage));
     }
   }, [categorySelected.product_category, offset, products]);
-
-  React.useEffect(() => {
-    const fetchOutlets = async () => {
-      try {
-        let user = sessionStorage.getItem("IPAYPOSUSER");
-        user = JSON.parse(user);
-
-        const res = await axios.post("/api/products/get-outlets", user);
-        const { data } = await res.data;
-        const { user_assigned_outlets } = user;
-
-        const response = intersectionWith(data, user_assigned_outlets ?? [], (arrVal, othVal) => {
-          return arrVal.outlet_id === othVal;
-        });
-        dispatch(setAllOutlets(user_assigned_outlets ? response : data));
-      } catch (error) {
-        console.log(error);
-      } finally {
-      }
-    };
-
-    const fetchActivePayments = async () => {
-      try {
-        const res = await axios.post("/api/products/get-active-payments");
-        const { data } = await res.data;
-
-        dispatch(setActivePayments(data));
-      } catch (error) {
-        console.log(error);
-      } finally {
-      }
-    };
-
-    fetchOutlets();
-    fetchActivePayments();
-  }, [dispatch]);
-
-  React.useEffect(() => {
-    if (outlets.length === 1) {
-      dispatch(setOutletSelected(outlets[0]));
-    }
-  }, [dispatch, outlets]);
 
   const handlePageClick = (data) => {
     let selected = data.selected;
