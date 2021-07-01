@@ -96,12 +96,12 @@ export default function Login() {
                     <input
                       {...register("pin", {
                         required: "PIN is required",
-                        min: {
+                        minLength: {
                           value: 4,
                           message: "PIN must be longer than 3 chars",
                         },
                       })}
-                      type="number"
+                      type="password"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="1234"
                     />
