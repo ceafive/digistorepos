@@ -31,7 +31,7 @@ const AddCustomer = () => {
   React.useEffect(() => {
     const fetchCustomerDetails = async () => {
       try {
-        const response = await axios.post("/api/products/get-customer", { phoneNumber: watchCustomerSearch });
+        const response = await axios.post("/api/sell/get-customer", { phoneNumber: watchCustomerSearch });
         const { data } = await response.data;
 
         if (data) {
@@ -48,7 +48,7 @@ const AddCustomer = () => {
     };
 
     if (watchCustomerSearch) {
-      debounce(fetchCustomerDetails, 250, { maxWait: 1000 })();
+      debounce(fetchCustomerDetails, 250, { maxWait: 500 })();
     }
   }, [watchCustomerSearch]);
 
@@ -171,7 +171,7 @@ const AddCustomer = () => {
                 setAllCustomers([]);
               }}
             >
-              <i className="fas fa-trash-alt"></i>
+              <i className="fas fa-trash-alt text-red-500"></i>
             </button>
           </div>
         )}

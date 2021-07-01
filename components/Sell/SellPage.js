@@ -34,11 +34,11 @@ const SellPage = () => {
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
-        const allProductsRes = await axios.post("/api/products/get-all-products", { user });
-        const allCategoriesRes = await axios.post("/api/products/get-all-categories", { user });
-        const deliveryTypesRes = await axios.post("/api/products/get-delivery-type", { user });
-        const activePaymentsRes = await axios.post("/api/products/get-active-payments");
-        const outletsRes = await axios.post("/api/products/get-outlets", { user });
+        const allProductsRes = await axios.post("/api/sell/get-all-products", { user });
+        const allCategoriesRes = await axios.post("/api/sell/get-all-categories", { user });
+        const deliveryTypesRes = await axios.post("/api/sell/get-delivery-type", { user });
+        const activePaymentsRes = await axios.post("/api/sell/get-active-payments");
+        const outletsRes = await axios.post("/api/sell/get-outlets", { user });
 
         const { data: allProductsResData } = await allProductsRes.data;
         const { data: allCategoriesResData } = await allCategoriesRes.data;

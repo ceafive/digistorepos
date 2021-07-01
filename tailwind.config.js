@@ -10,6 +10,9 @@ module.exports = {
       width: {
         34: "8.5rem",
       },
+      fontFamily: {
+        print: ["Castoro", "serif"],
+      },
       colors: {
         ...colors,
       },

@@ -1,4 +1,3 @@
-import { onRemovePaymentMethod } from "features/cart/cartSlice";
 import { find, reduce, upperCase } from "lodash";
 import React from "react";
 
@@ -43,7 +42,7 @@ const PrintComponent = React.forwardRef((props, ref) => {
   const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3));
 
   return (
-    <>
+    <div className="font-print">
       <div className="page-break" />
       <div className="w-full p-6" ref={ref}>
         <div className="flex items-center font-semibold text-xl">
@@ -169,7 +168,7 @@ const PrintComponent = React.forwardRef((props, ref) => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 });
 

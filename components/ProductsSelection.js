@@ -180,7 +180,6 @@ const ProductsSelection = () => {
                                   title: product.product_name,
                                   price: Number(parseFloat(product.product_price).toFixed(2)),
                                   imgURL: product.product_image,
-                                  variants: { type: "normal" },
                                 })
                               );
                             }
@@ -291,7 +290,6 @@ const ProductsSelection = () => {
                             title: product.product_name,
                             price: Number(parseFloat(product.product_price).toFixed(2)),
                             imgURL: product.product_image,
-                            variants: { type: "normal" },
                           })
                         );
                       }

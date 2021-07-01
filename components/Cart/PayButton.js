@@ -76,7 +76,7 @@ const PayButton = () => {
       // console.log(userData);
       // return;
 
-      const response = await axios.post("/api/products/add-discount", userData);
+      const response = await axios.post("/api/sell/add-discount", userData);
       const { status, message, discount } = await response.data;
 
       // console.log({ status, message, discount });

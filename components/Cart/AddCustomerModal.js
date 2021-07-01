@@ -32,11 +32,11 @@ const AddCustomerModal = ({ onClose, setStep }) => {
         mod_by: user?.login,
       };
 
-      const response = await axios.post("/api/products/add-customer", userData);
+      const response = await axios.post("/api/sell/add-customer", userData);
       const { status, message } = await response.data;
 
       if (status === 0 || status === 91) {
-        const getCustomerRes = await axios.post("/api/products/get-customer", { phoneNumber: userData?.client_phone });
+        const getCustomerRes = await axios.post("/api/sell/get-customer", { phoneNumber: userData?.client_phone });
         const { data } = await getCustomerRes.data;
         dispatch(addCustomer(data));
         setStep(2);

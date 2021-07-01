@@ -44,7 +44,7 @@ const MerchantDeliveryType = ({ setFetching }) => {
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
-        const res = await axios.post("/api/products/get-delivery-lov", { user });
+        const res = await axios.post("/api/sell/get-delivery-lov", { user });
         const { data } = await res.data;
         console.log({ data });
 
@@ -85,7 +85,7 @@ const IPAYDeliveryType = ({ setFetching }) => {
   React.useEffect(() => {
     const getCoordinates = async () => {
       setFetching(true);
-      const response = await axios.post("/api/products/get-coordinates", { description: value?.value?.description });
+      const response = await axios.post("/api/sell/get-coordinates", { description: value?.value?.description });
       const responsedata = await response.data;
       const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
 
@@ -101,7 +101,7 @@ const IPAYDeliveryType = ({ setFetching }) => {
 
           //   console.log({ payload });
 
-          const res = await axios.post("/api/products/get-ipay-delivery-charge", payload);
+          const res = await axios.post("/api/sell/get-ipay-delivery-charge", payload);
           //   console.log(res);
 
           let { data } = await res.data;
@@ -168,7 +168,7 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
   React.useEffect(() => {
     const getCoordinates = async () => {
       setFetching(true);
-      const response = await axios.post("/api/products/get-coordinates", { description: value?.value?.description });
+      const response = await axios.post("/api/sell/get-coordinates", { description: value?.value?.description });
       const responsedata = await response.data;
       const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
 
@@ -184,7 +184,7 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
           };
           //   console.log({ payload });
 
-          const res = await axios.post("/api/products/get-merchant-dist-charge", payload);
+          const res = await axios.post("/api/sell/get-merchant-dist-charge", payload);
           //   console.log(res);
 
           let { delivery } = await res.data;
@@ -250,7 +250,7 @@ const TypeDelivery = ({ setFetching }) => {
   //       let user = sessionStorage.getItem("IPAYPOSUSER");
   //       user = JSON.parse(user);
 
-  //       const deliveryTypesRes = await axios.post("/api/products/get-delivery-type", { user });
+  //       const deliveryTypesRes = await axios.post("/api/sell/get-delivery-type", { user });
   //       const { data: deliveryTypesResData } = await deliveryTypesRes.data;
   //       dispatch(setDeliveryTypes(deliveryTypesResData));
   //     } catch (error) {

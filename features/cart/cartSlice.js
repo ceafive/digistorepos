@@ -35,13 +35,16 @@ const initialState = {
   paymentMethodSet: "",
   deliveryLocationInputted: null,
   deliveryGPS: null,
+  invoiceDetails: null,
+  verifyTransactionResponse: null,
 };
 
 const initialProductProps = {
   quantity: 0,
   price: 0,
   discount: "",
-  variants: { type: "normal" },
+  variants: {},
+  // variants: { type: "normal" },
   notes: "",
 };
 
@@ -85,6 +88,12 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
   reducers: {
+    setVerifyTransactionResponse(state, action) {
+      state.verifyTransactionResponse = action.payload;
+    },
+    setInvoiceDetails(state, action) {
+      state.invoiceDetails = action.payload;
+    },
     setCartPromoCode(state, action) {
       state.cartPromoCode = action.payload;
     },
@@ -186,15 +195,7 @@ const cartSlice = createSlice({
     selectPaymentMethod: (state, action) => {
       state.paymentMethodSelected = action.payload;
     },
-    addPaymentMethodAndAmount: (state, action) => {
-      state.paymentMethodsAndAmount.push({
-        method: action.payload,
-        amount: state.partPaymentAmount,
-        date: format(new Date(), "iii, d MMM yy h:mmaaa"),
-      });
 
-      state.totalPartPaymentAmount += state.partPaymentAmount;
-    },
     setPartPaymentAmount: (state, action) => {
       const amount = action.payload ? parseFloat(action.payload) : "";
       state.partPaymentAmount = amount;
@@ -313,7 +314,6 @@ export const {
   removeItemFromCart,
   changeItemPropsInCart,
   onClickToCheckout,
-  addPaymentMethodAndAmount,
   selectPaymentMethod,
   setPartPaymentAmount,
   onResetCart,
@@ -338,5 +338,7 @@ export const {
   setDeliveryLocationInputted,
   setDeliveryGPS,
   setCartPromoCode,
+  setInvoiceDetails,
+  setVerifyTransactionResponse,
 } = cartSlice.actions;
 export default cartSlice.reducer;

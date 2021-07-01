@@ -1,5 +1,11 @@
-import { setAmountReceivedFromPayer, setTotalAmountToBePaidByBuyer, setTransactionFeeCharges } from "features/cart/cartSlice";
-import { get, intersectionWith, isEqual, reduce, replace, upperCase } from "lodash";
+import {
+  setAmountReceivedFromPayer,
+  setInvoiceDetails,
+  setTotalAmountToBePaidByBuyer,
+  setTransactionFeeCharges,
+  setVerifyTransactionResponse,
+} from "features/cart/cartSlice";
+import { get, capitalize, reduce, replace, upperCase } from "lodash";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,6 +19,7 @@ import RaiseOrderSection from "./Sell/RaiseOrderSection";
 import PrintComponent from "./Sell/PrintComponent";
 
 import ReactToPrint, { useReactToPrint } from "react-to-print";
+import { addSeconds, isAfter } from "date-fns";
 
 const paymentOptions = [
   { name: "CASH", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-CASH.png", showInput: false },
@@ -50,8 +57,9 @@ const ProcessSale = () => {
   const paymentMethodSet = useSelector((state) => state.cart.paymentMethodSet);
   const cart = useSelector((state) => state.cart);
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
+  const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
 
-  console.log(cart);
+  // console.log(cart);
 
   // Component State
   const [step, setStep] = React.useState(0);
@@ -60,6 +68,10 @@ const ProcessSale = () => {
   const [fetching, setFetching] = React.useState(false);
   const [openPhoneNumberInputModal, setOpenPhoneNumberInputModal] = React.useState(false);
   const [printing, setPrinting] = React.useState(false);
+  const [sendingNotification, setSendingNotification] = React.useState(false);
+  const [processError, setProcessError] = React.useState(false);
+  const [confirmPaymentText, setConfirmPaymentText] = React.useState("");
+  const [confirmButtonText, setConfirmButtonText] = React.useState("");
 
   // Variables
   const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
@@ -90,7 +102,7 @@ const ProcessSale = () => {
       const feeCharges = [];
 
       await forEach(userPaymentMethods, async (paymentMethod) => {
-        const res = await axios.post("/api/products/get-transaction-fee-charges", {
+        const res = await axios.post("/api/sell/get-transaction-fee-charges", {
           merchant: user["user_merchant_id"],
           channel: paymentMethod.method,
           amount: paymentMethod.amount,
@@ -152,14 +164,41 @@ const ProcessSale = () => {
 
   const handleRaiseOrder = async () => {
     try {
-      if (paymentMethodSet === "CASH") {
-        setStep(2);
-      } else setStep(1);
+      // if (paymentMethodSet === "CASH") {
 
-      return;
+      // } else setStep(1);
+
+      // return;
+      setFetching(true);
+      setProcessError(false);
+      const productsInCart = cart?.productsInCart;
+      const productsJSON = productsInCart.reduce((acc, curr, index) => {
+        const variants = Object.values(curr?.variants).map((variant, index) => {
+          return `${capitalize(variant)}`;
+        });
+
+        const properties = Object.entries(curr?.variants).reduce((acc, variant, index) => {
+          return { ...acc, [upperCase(variant[0])]: [variant[1]][0] };
+        }, {});
+
+        const addVariants = variants.length > 0 ? `( ${variants.join(", ")} )` : "";
+
+        return {
+          ...acc,
+          [index]: {
+            order_item_no: curr?.product_id,
+            order_item_qty: curr?.quantity,
+            order_item: `${curr?.product_name} ${addVariants}`,
+            order_item_amt: curr?.totalPrice,
+            order_item_prop: properties,
+          },
+        };
+      }, {});
+
+      // return;
       const payload = {
         order_notes: cart?.cartNote,
-        order_items: "",
+        order_items: JSON.stringify(productsJSON),
         order_outlet: outletSelected?.outlet_id,
         delivery_type: replace(upperCase(cart?.deliveryTypeSelected), " ", "-"),
         delivery_notes: cart?.deliveryNotes,
@@ -174,10 +213,10 @@ const ProcessSale = () => {
         delivery_name: cart?.currentCustomer?.customer_name ?? "",
         delivery_contact: cart?.currentCustomer?.customer_phone ?? "",
         delivery_email: cart?.currentCustomer?.customer_email ?? "",
-        order_discount_code: cart?.cartPromoCode,
-        order_amount: cart?.totalPriceInCart,
+        order_discount_code: cart?.cartPromoCode ?? "",
+        order_amount: cart?.totalPriceInCart ?? 0,
         order_discount: cart?.cartDiscountOnCartTotal + cart?.cartPromoDiscount,
-        delivery_charge: cart?.deliveryCharge?.price ?? "",
+        delivery_charge: cart?.deliveryCharge?.price ?? 0,
         service_charge: fees,
         total_amount: saleTotal,
         payment_type:
@@ -196,15 +235,49 @@ const ProcessSale = () => {
         mod_by: userDetails["login"],
       };
 
-      console.log({ payload });
+      // console.log({ payload });
 
-      const res = await axios.post("/api/products/raise-order", payload);
-      const { data } = await res.data;
+      const res = await axios.post("/api/sell/raise-order", payload);
+      const data = await res.data;
+      // console.log(data);
 
-      console.log(res);
-      console.log(data);
+      if (data?.status !== 0) {
+        setProcessError(data?.message);
+      }
+      if (data?.status === 0 && cart?.paymentMethodSet === "CASH") {
+        dispatch(setInvoiceDetails(data));
+        setStep(2);
+      }
+
+      if (Number(data?.status) === 0 && cart?.paymentMethodSet !== "CASH") {
+        dispatch(setInvoiceDetails(data));
+        setConfirmPaymentText(data?.message);
+        setStep(1);
+      }
     } catch (error) {
       console.log(error.response.data);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  const handleSendNotification = async (type = "SMS") => {
+    try {
+      setSendingNotification(type);
+      const payload = {
+        tran_id: invoiceDetails?.invoice,
+        tran_type: "ORDER",
+        notify_type: type,
+        merchant: userDetails["user_merchant_id"],
+        mod_by: userDetails["login"],
+      };
+      const res = await axios.post("/api/sell/send-notification", payload);
+      const data = await res.data;
+      // console.log(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSendingNotification(false);
     }
   };
 
@@ -239,10 +312,10 @@ const ProcessSale = () => {
         <PrintComponent ref={componentRef} />
       </div>
       <div className="flex divide-x divide-gray-200 bg-white rounded shadow">
-        <div className={`${step === 0 ? "w-2/5" : "w-3/5"} p-6 transition-all`}>
-          <ReceiptsSection />
+        <div className={`${step !== 2 ? "w-2/5 xl:w-1/2" : "w-3/5 xl:w-1/2"} p-6 transition-all`}>
+          <ReceiptsSection step={step} />
         </div>
-        <div className={`${step === 0 ? "w-3/5" : "w-2/5"} p-6 pt-0 transition-all`}>
+        <div className={`${step !== 2 ? "w-3/5 xl:w-1/2" : "w-2/5 xl:w-1/2"} p-6 pt-0 transition-all`}>
           <RaiseOrderSection
             handleRaiseOrder={handleRaiseOrder}
             setOpenPhoneNumberInputModal={setOpenPhoneNumberInputModal}
@@ -254,6 +327,14 @@ const ProcessSale = () => {
             setPayerAmountEntered={setPayerAmountEntered}
             fetching={fetching}
             setFetching={setFetching}
+            processError={processError}
+            handleSendNotification={handleSendNotification}
+            sendingNotification={sendingNotification}
+            confirmPaymentText={confirmPaymentText}
+            confirmButtonText={confirmButtonText}
+            setConfirmButtonText={setConfirmButtonText}
+            setProcessError={setProcessError}
+            userDetails={userDetails}
           />
         </div>
       </div>

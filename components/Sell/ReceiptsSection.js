@@ -13,7 +13,7 @@ const ListItem = ({ text, value, className }) => {
   );
 };
 
-const ReceiptsSection = () => {
+const ReceiptsSection = ({ step }) => {
   const dispatch = useDispatch();
 
   // Selectors
@@ -100,17 +100,19 @@ const ReceiptsSection = () => {
               <div className="justify-self-end justify-end justify-items-end">
                 <div>
                   <span>GHC{paymentMethod.amount}</span>
-                  <button
-                    className="focus:outline-none"
-                    onClick={() => {
-                      // reset({
-                      //   [paymentMethod.method]: "",
-                      // });
-                      dispatch(onRemovePaymentMethod(paymentMethod));
-                    }}
-                  >
-                    <i className="fas fa-minus-circle ml-2 text-red-500"></i>
-                  </button>
+                  {step === 0 && (
+                    <button
+                      className="focus:outline-none"
+                      onClick={() => {
+                        // reset({
+                        //   [paymentMethod.method]: "",
+                        // });
+                        dispatch(onRemovePaymentMethod(paymentMethod));
+                      }}
+                    >
+                      <i className="fas fa-minus-circle ml-2 text-red-500"></i>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
