@@ -28,7 +28,7 @@ const ConfirmPayment = ({
   const [loading, setLoading] = React.useState(false);
   const [throttledFn, setThrottledFn] = React.useState(() => {});
 
-  // console.log(loading);
+  // console.log(fetching);
 
   const sleep = (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -44,7 +44,7 @@ const ConfirmPayment = ({
           return data;
         };
 
-        await sleep(30000);
+        await sleep(5000);
         const data = await getResData();
         console.log(data);
         dispatch(setVerifyTransactionResponse(data));
@@ -71,42 +71,6 @@ const ConfirmPayment = ({
         }
 
         setLoading(false);
-        // if (data?.status !== 0) {
-        //   setProcessError(data?.message);
-        // }
-        // console.log(data);
-
-        // if (Number(data?.status) === 0) {
-
-        //   if (message === "new" || message === "awaiting_payment") {
-        //     var startTime = new Date().getTime();
-        //     const isAfter = new Date().getTime() - startTime > 30000;
-        //     var interval = setInterval(async function () {
-        //       console.log("running 1", isAfter);
-        //       setIsAfter(isAfter);
-        //       if (isAfter) {
-        //         clearInterval(interval);
-        //         return;
-        //       }
-        //       //do whatever here..
-        //       const data = await getResData();
-        //       console.log("running 2", isAfter);
-        //       console.log("data", data);
-        //       dispatch(setVerifyTransactionResponse(data));
-        //     }, 2000);
-
-        //     setInterval(interval);
-        //   } else {
-        //     if (message === "paid") {
-        //       setStep(2);
-        //       dispatch(setVerifyTransactionResponse(data));
-        //     } else {
-        //       dispatch(setVerifyTransactionResponse(data));
-        //       setConfirmButtonText("Start New Sale");
-        //       setProcessError(`${upperCase(message)} TRANSACTION`);
-        //     }
-        //   }
-        // }
       } catch (error) {
         console.log(error.response);
       } finally {
@@ -189,7 +153,7 @@ const ConfirmPayment = ({
           >
             {fetching && (
               <div className="inline-block mr-2">
-                <Spinner type={"TailSpin"} color="black" width={20} height={20} />
+                <Spinner type={"TailSpin"} color="green" width={20} height={20} timeout={3000000} />
               </div>
             )}
             {confirmButtonText ? confirmButtonText : "Confirm Payment"}

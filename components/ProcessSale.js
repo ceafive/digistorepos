@@ -312,10 +312,10 @@ const ProcessSale = () => {
         <PrintComponent ref={componentRef} />
       </div>
       <div className="flex divide-x divide-gray-200 bg-white rounded shadow">
-        <div className={`${step !== 2 ? "w-2/5 xl:w-1/2" : "w-3/5 xl:w-1/2"} p-6 transition-all`}>
+        <div className={`${step !== 2 ? "w-2/5 xl:w-1/2" : "w-1/2 xl:w-1/2"} p-6 transition-all`}>
           <ReceiptsSection step={step} />
         </div>
-        <div className={`${step !== 2 ? "w-3/5 xl:w-1/2" : "w-2/5 xl:w-1/2"} p-6 pt-0 transition-all`}>
+        <div className={`${step !== 2 ? "w-3/5 xl:w-1/2" : "w-1/2 xl:w-1/2"} p-6 pt-0 transition-all`}>
           <RaiseOrderSection
             handleRaiseOrder={handleRaiseOrder}
             setOpenPhoneNumberInputModal={setOpenPhoneNumberInputModal}
