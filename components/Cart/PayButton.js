@@ -236,7 +236,7 @@ const PayButton = () => {
         <button
           disabled={!totalPriceInCart}
           className={`w-full ${
-            totalPriceInCart ? "bg-green-600 text-white" : "bg-gray-400 text-gray-300"
+            totalPriceInCart ? "bg-green-700 text-white" : "bg-gray-400 text-gray-300"
           } py-3 px-6  font-medium text-xl rounded`}
           onClick={() => {
             dispatch(onClickToCheckout());

@@ -26,7 +26,10 @@ const Accordion = ({ product, index }) => {
     try {
       // console.log(productsInCart);
       let status = true;
-      const stock_level = parseInt(product?.product_quantity) - parseInt(product?.product_quantity_sold);
+      const stock_level =
+        product?.product_quantity === "-99"
+          ? 10000000000000
+          : parseInt(product?.product_quantity) - parseInt(product?.product_quantity_sold);
       const productSoldOut = stock_level <= 0;
 
       if (productSoldOut) {

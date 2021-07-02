@@ -122,7 +122,10 @@ const ProductsSelection = () => {
     try {
       if (productSelected) {
         // console.log(productsInCart);
-        const stock_level = parseInt(product?.product_quantity) - parseInt(product?.product_quantity_sold);
+        const stock_level =
+          product?.product_quantity === "-99"
+            ? 10000000000000
+            : parseInt(product?.product_quantity) - parseInt(product?.product_quantity_sold);
         const productSoldOut = stock_level <= 0;
 
         if (productSoldOut) {
@@ -130,12 +133,12 @@ const ProductsSelection = () => {
         }
 
         const foundProduct = productsInCart?.find((productInCart) => productInCart?.product_id === product?.product_id);
-        console.log(foundProduct);
+        // console.log(foundProduct);
 
         //if not found continue
         if (foundProduct) {
           const isQuantitySelectedUnAvailable = foundProduct?.quantity + 1 > stock_level;
-          console.log(isQuantitySelectedUnAvailable);
+          // console.log(isQuantitySelectedUnAvailable);
 
           if (isQuantitySelectedUnAvailable) {
             return addToast(`Quantity is not availble, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true });
@@ -158,7 +161,7 @@ const ProductsSelection = () => {
   };
 
   React.useEffect(() => {
-    const status = checkProductQuantity(productSelected);
+    checkProductQuantity(productSelected);
   }, [productSelected]);
 
   return (
@@ -216,21 +219,31 @@ const ProductsSelection = () => {
                           className="w-full p-2 cursor-pointer border border-gray-400"
                           key={product.product_id}
                           onClick={() => {
+                            const data = {
+                              ...product,
+                              id: product.product_id,
+                              title: product.product_name,
+                              price: Number(parseFloat(product.product_price).toFixed(2)),
+                              imgURL: product.product_image,
+                              variants: { type: "normal" },
+                            };
+
                             if (product?.product_has_property === "YES") {
                               dispatch(setProductToView(product));
                               dispatch(openProductModal());
                             } else {
-                              dispatch(increaseTotalItemsInCart());
-                              dispatch(
-                                addItemToCart({
-                                  ...product,
-                                  id: product.product_id,
-                                  title: product.product_name,
-                                  price: Number(parseFloat(product.product_price).toFixed(2)),
-                                  imgURL: product.product_image,
-                                  variants: { type: "normal" },
-                                })
-                              );
+                              setProductSelected(data);
+                              // dispatch(increaseTotalItemsInCart());
+                              // dispatch(
+                              //   addItemToCart({
+                              //     ...product,
+                              //     id: product.product_id,
+                              //     title: product.product_name,
+                              //     price: Number(parseFloat(product.product_price).toFixed(2)),
+                              //     imgURL: product.product_image,
+                              //     variants: { type: "normal" },
+                              //   })
+                              // );
                             }
                           }}
                         >
@@ -318,13 +331,13 @@ const ProductsSelection = () => {
           {/* Products Display */}
           <div className="justify-center mt-4 w-full">
             <h1 className="text-center my-1">Products</h1>
-            <div className="grid grid-cols-3 xl:grid-cols-6 gap-3">
+            <div className="grid grid-cols-3 xl:grid-cols-5 gap-5">
               {productsDisplay.map((product, index) => {
+                const imgUrlBase = "https://payments.ipaygh.com/app/webroot/img/products/";
                 return (
-                  <button
+                  <div
                     key={product.product_id}
-                    className={`shadow rounded text-black font-semibold px-2 py-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
-                    style={{ backgroundColor: productTabColors[index] }}
+                    className="bg-white rounded-lg overflow-hidden cursor-pointer"
                     onClick={() => {
                       const data = {
                         ...product,
@@ -343,8 +356,51 @@ const ProductsSelection = () => {
                       }
                     }}
                   >
-                    {product.product_name}
-                  </button>
+                    <div key={product.product_id} className="relative " style={{ paddingBottom: "85%" }}>
+                      <img
+                        className="absolute h-full w-full object-cover"
+                        src={`${imgUrlBase}${product.product_image}`}
+                        alt={product.product_image}
+                      />
+                    </div>
+                    <div className="p-2 text-sm">
+                      <p className="font-semibold">{product.product_name}</p>
+                      <p className="text-xs pt-1 ">{product.product_category}</p>
+                      <p className="font-bold pt-4">GHS{product.product_price}</p>
+                      <p className="text-xs pt-1">
+                        Quantity:{" "}
+                        {product?.product_quantity === "-99"
+                          ? "Unlimited"
+                          : parseInt(product?.product_quantity) - parseInt(product?.product_quantity_sold) < 0
+                          ? 0
+                          : parseInt(product?.product_quantity) - parseInt(product?.product_quantity_sold)}
+                      </p>
+                    </div>
+                  </div>
+                  // <button
+                  //   key={product.product_id}
+                  //   className={`shadow rounded text-black font-semibold px-2 py-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
+                  //   style={{ backgroundColor: productTabColors[index] }}
+                  //   onClick={() => {
+                  //     const data = {
+                  //       ...product,
+                  //       id: product.product_id,
+                  //       title: product.product_name,
+                  //       price: Number(parseFloat(product.product_price).toFixed(2)),
+                  //       imgURL: product.product_image,
+                  //       variants: { type: "normal" },
+                  //     };
+
+                  //     if (product?.product_has_property === "YES") {
+                  //       dispatch(setProductToView(product));
+                  //       dispatch(openProductModal());
+                  //     } else {
+                  //       setProductSelected(data);
+                  //     }
+                  //   }}
+                  // >
+                  //   {product.product_name}
+                  // </button>
                 );
               })}
             </div>
