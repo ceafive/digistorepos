@@ -245,13 +245,13 @@ const ProcessSale = () => {
         mod_by: userDetails["login"],
       };
 
-      console.log({ cart });
-      console.log({ payload });
+      // console.log({ cart });
+      // console.log({ payload });
       // return;
 
       const res = await axios.post("/api/sell/raise-order", payload);
       const data = await res.data;
-      // console.log(data);
+      console.log(data);
 
       if (data?.status !== 0) {
         setProcessError(data?.message);
