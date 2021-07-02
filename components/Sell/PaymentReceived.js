@@ -1,8 +1,10 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { onClickToCheckout, onResetCart } from "features/cart/cartSlice";
+import { useToasts } from "react-toast-notifications";
 
 const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendingNotification }) => {
+  const { addToast } = useToasts();
   const dispatch = useDispatch();
   // Selectors
   const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
@@ -19,7 +21,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
           ).toFixed(2)
         ) > 0 && (
           <p>
-            <span>Change to give to customer: </span>
+            <span className="font-bold">Change to give to customer: </span>
             <span>
               GHS
               {Number(
@@ -35,14 +37,15 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
       <div className="flex justify-center mt-24 text-sm font-semibold">
         <div className="flex justify-center w-full">
           <button disabled={printing} className="focus:outline-none text-gray-800  xl:text-lg 2xl:text-3xl  mr-6" onClick={handlePrint}>
-            <span className="w-6  mr-1">
+            <span className="w-6 mr-1">
               <i className="fas fa-print"></i>
             </span>
-            <span>{printing ? "Printing...." : "Print"}</span>
+            <span>{"Print"}</span>
           </button>
 
           {currentCustomer?.customer_phone && (
             <button
+              disabled={sendingNotification}
               className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-3xl  mr-6"
               onClick={() => {
                 handleSendNotification("SMS");
@@ -51,12 +54,13 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
               <span className="w-6 mr-1">
                 <i className="fas fa-sms"></i>
               </span>
-              <span>{sendingNotification === "SMS" ? "Sending" : "SMS Receipt"}</span>
+              <span>{"SMS Receipt"}</span>
             </button>
           )}
 
           {currentCustomer?.customer_email && (
             <button
+              disabled={sendingNotification}
               className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-3xl"
               onClick={() => {
                 handleSendNotification("EMAIL");
@@ -65,7 +69,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
               <span className="w-6 mr-1">
                 <i className="fas fa-envelope"></i>
               </span>
-              <span>{sendingNotification === "EMAIL" ? "Sending" : "Email Receipt"}</span>
+              <span>{"Email Receipt"}</span>
             </button>
           )}
         </div>

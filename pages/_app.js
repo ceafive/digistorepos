@@ -4,7 +4,7 @@ import App from "next/app";
 import Head from "next/head";
 import Router from "next/router";
 import { Box, LinearProgress } from "@material-ui/core";
-
+import { ToastProvider } from "react-toast-notifications";
 import { Provider } from "react-redux";
 import { store } from "../app/store";
 
@@ -65,7 +65,6 @@ export default class MyApp extends App {
 
   render() {
     const { Component, pageProps } = this.props;
-
     const Layout = Component.layout || (({ children }) => <>{children}</>);
 
     return (
@@ -74,22 +73,24 @@ export default class MyApp extends App {
           <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
           <title>POS - iPay</title>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-          <link href="https://fonts.googleapis.com/css2?family=Castoro&display=swap" rel="stylesheet"></link>
+          <link rel="preconnect" href="https://fonts.gstatic.com" />
+          <link href="https://fonts.googleapis.com/css2?family=Castoro&display=swap" rel="stylesheet" />
           <script
             type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZxtyoPfteFDtEe0avkN0u3jdWuYiDC0U&libraries=places&v=weekly&region=GH"
           />
         </Head>
         <Provider store={store}>
-          {this.state.loading && (
-            <Box style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 2002 }}>
-              <LinearProgress />
-            </Box>
-          )}
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <ToastProvider placement="top-center">
+            {this.state.loading && (
+              <Box style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 2002 }}>
+                <LinearProgress />
+              </Box>
+            )}
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ToastProvider>
         </Provider>
       </React.Fragment>
     );

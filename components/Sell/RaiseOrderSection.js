@@ -43,6 +43,7 @@ const RaiseOrderSection = ({
           step={step}
         />
       )}
+
       {step === 1 && (
         <ConfirmPayment
           setStep={setStep}

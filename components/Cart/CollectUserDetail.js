@@ -1,6 +1,26 @@
 import React from "react";
 import Spinner from "../Spinner";
 
+const CashPaymentInput = ({ paymentMethodSet, register, errors, cartTotalMinusDiscountPlusTax }) => {
+  return (
+    <div className="my-3">
+      <label className="mb-2 text-sm" htmlFor="">
+        Enter Cash Received
+      </label>
+      <input
+        type="number"
+        {...register(paymentMethodSet, {
+          required: "Enter Cash Received",
+          validate: (value) =>
+            Number(value) >= cartTotalMinusDiscountPlusTax || `Amount entered cannot be be less than GHS${cartTotalMinusDiscountPlusTax}`,
+        })}
+        className="border border-blue-500 px-3 4 text-lg placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded outline-none focus:outline-none w-full"
+      />
+      <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
+    </div>
+  );
+};
+
 const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors }) => {
   return (
     <div className="my-3">
@@ -49,15 +69,33 @@ const OtherPaymentInput = ({ paymentMethodSet, register, errors }) => {
   );
 };
 
-const CollectUserDetail = ({ fetching, onAddPayment, paymentMethodSet, register, handleSubmit, lengthOfMobileNumber, errors, onClose }) => {
-  //   console.log(errors);
+const CollectUserDetail = ({
+  fetching,
+  onAddPayment,
+  paymentMethodSet,
+  register,
+  handleSubmit,
+  lengthOfMobileNumber,
+  errors,
+  cartTotalMinusDiscountPlusTax,
+}) => {
+  // console.log(errors);
+  // console.log(cartTotalMinusDiscountPlusTax);
   return (
     <>
       {(paymentMethodSet === "MTNMM" || paymentMethodSet === "TIGOC" || paymentMethodSet === "VODAC") && (
         <MoMoInput paymentMethodSet={paymentMethodSet} register={register} lengthOfMobileNumber={lengthOfMobileNumber} errors={errors} />
       )}
 
-      {(paymentMethodSet === "CASH" || paymentMethodSet === "VISAG" || paymentMethodSet === "QRPAY") && (
+      {paymentMethodSet === "CASH" && (
+        <CashPaymentInput
+          paymentMethodSet={paymentMethodSet}
+          register={register}
+          errors={errors}
+          cartTotalMinusDiscountPlusTax={cartTotalMinusDiscountPlusTax}
+        />
+      )}
+      {(paymentMethodSet === "VISAG" || paymentMethodSet === "QRPAY") && (
         <OtherPaymentInput paymentMethodSet={paymentMethodSet} register={register} errors={errors} />
       )}
 

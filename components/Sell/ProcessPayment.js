@@ -4,6 +4,7 @@ import {
   setDeliveryTypeSelected,
   setPaymentMethodSet,
   setDeliveryNotes,
+  addCustomer,
 } from "features/cart/cartSlice";
 import { intersectionWith, isEqual } from "lodash";
 import React from "react";
@@ -199,10 +200,22 @@ const ProcessPayment = ({
       {currentCustomer ? (
         <div className="w-full mt-4">
           <h1 className="font-semibold mb-1 text-sm">Current Customer</h1>
-          <div className="flex items-center">
-            <span className="font-bold">{currentCustomer.customer_name}</span>
-            <span className="text-xs ml-2">{currentCustomer.customer_email}</span>
-            <span className="text-xs ml-2">{currentCustomer.customer_phone}</span>
+          <div className="flex justify-between items-center">
+            <div>
+              <span className="font-bold">{currentCustomer.customer_name}</span>
+              <span className="text-xs ml-2">{currentCustomer.customer_email}</span>
+              <span className="text-xs ml-2">{currentCustomer.customer_phone}</span>
+            </div>
+            <div>
+              <button
+                className=" focus:outline-none font-bold"
+                onClick={() => {
+                  dispatch(addCustomer(null));
+                }}
+              >
+                <i className="fas fa-trash-alt text-red-500"></i>
+              </button>
+            </div>
           </div>
         </div>
       ) : (

@@ -43,8 +43,7 @@ const initialProductProps = {
   quantity: 0,
   price: 0,
   discount: "",
-  variants: {},
-  // variants: { type: "normal" },
+  variants: { type: "normal" },
   notes: "",
 };
 

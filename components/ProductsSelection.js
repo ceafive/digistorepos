@@ -18,6 +18,7 @@ import axios from "axios";
 import Spinner from "./Spinner";
 
 import ProductDetails from "./Product/ProductDetails";
+import { useToasts } from "react-toast-notifications";
 
 const categoryColors = [
   "#fedede",
@@ -52,12 +53,14 @@ const productColors = [
 
 const ProductsSelection = () => {
   const dispatch = useDispatch();
+  const { addToast } = useToasts();
   const products = useSelector((state) => state.products.products);
   const productCategories = useSelector((state) => state.products.productCategories);
   const searchTerm = useSelector((state) => state.products.searchTerm);
   const categorySelected = useSelector((state) => state.products.categorySelected);
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
   const outlets = useSelector((state) => state.products.outlets);
+  const productsInCart = useSelector((state) => state.cart.productsInCart);
 
   const perPage = 12; // product number to display per page
 
@@ -66,6 +69,8 @@ const ProductsSelection = () => {
   const [productsDisplay, setProductsDisplay] = React.useState([]);
   const [pageCount, setPageCount] = React.useState(0);
   const [offset, setOffset] = React.useState(Math.ceil(0 * perPage));
+  const [productSelected, setProductSelected] = React.useState(null);
+  const [productDisabled, setProductDisabled] = React.useState(null);
 
   // console.log(categoryProductsCount);
   // console.log(products);
@@ -112,6 +117,49 @@ const ProductsSelection = () => {
     let offset = Math.ceil(selected * perPage);
     setOffset(offset);
   };
+
+  const checkProductQuantity = (product) => {
+    try {
+      if (productSelected) {
+        // console.log(productsInCart);
+        const stock_level = parseInt(product?.product_quantity) - parseInt(product?.product_quantity_sold);
+        const productSoldOut = stock_level <= 0;
+
+        if (productSoldOut) {
+          return addToast(`Product sold out`, { appearance: "error", autoDismiss: true });
+        }
+
+        const foundProduct = productsInCart?.find((productInCart) => productInCart?.product_id === product?.product_id);
+        console.log(foundProduct);
+
+        //if not found continue
+        if (foundProduct) {
+          const isQuantitySelectedUnAvailable = foundProduct?.quantity + 1 > stock_level;
+          console.log(isQuantitySelectedUnAvailable);
+
+          if (isQuantitySelectedUnAvailable) {
+            return addToast(`Quantity is not availble, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true });
+          }
+
+          dispatch(increaseTotalItemsInCart());
+          dispatch(addItemToCart(product));
+        } else {
+          if (productSoldOut) {
+            return addToast(`Product sold out, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true });
+          }
+
+          dispatch(increaseTotalItemsInCart());
+          dispatch(addItemToCart(product));
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    const status = checkProductQuantity(productSelected);
+  }, [productSelected]);
 
   return (
     <>
@@ -168,7 +216,7 @@ const ProductsSelection = () => {
                           className="w-full p-2 cursor-pointer border border-gray-400"
                           key={product.product_id}
                           onClick={() => {
-                            if (product?.product_properties) {
+                            if (product?.product_has_property === "YES") {
                               dispatch(setProductToView(product));
                               dispatch(openProductModal());
                             } else {
@@ -180,6 +228,7 @@ const ProductsSelection = () => {
                                   title: product.product_name,
                                   price: Number(parseFloat(product.product_price).toFixed(2)),
                                   imgURL: product.product_image,
+                                  variants: { type: "normal" },
                                 })
                               );
                             }
@@ -218,10 +267,10 @@ const ProductsSelection = () => {
 
               {/* Categories */}
               <div className="flex justify-start items-center w-full mt-4">
-                <div className="grid grid-cols-3 xl:grid-cols-7 gap-3">
+                <div className="grid grid-cols-4 xl:grid-cols-7 gap-3">
                   <button
                     className={`shadow rounded text-black font-semibold border-t-8 ${
-                      categorySelected?.product_category === "ALL" ? "border-green-300" : "border-gray-400"
+                      categorySelected?.product_category === "ALL" ? "border-green-600" : "border-gray-400"
                     } p-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
                     style={{ backgroundColor: categoryTabColors[0] }}
                     onClick={() => {
@@ -246,7 +295,7 @@ const ProductsSelection = () => {
                           key={productCatergory?.product_category_id}
                           className={`shadow rounded text-black font-semibold border-t-8 ${
                             categorySelected?.product_category === productCatergory?.product_category
-                              ? "border-green-300"
+                              ? "border-green-600"
                               : "border-gray-400"
                           } p-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
                           style={{ backgroundColor: categoryTabColors.slice(1)[index] }}
@@ -277,21 +326,20 @@ const ProductsSelection = () => {
                     className={`shadow rounded text-black font-semibold px-2 py-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
                     style={{ backgroundColor: productTabColors[index] }}
                     onClick={() => {
-                      // console.log(product);
-                      if (product?.product_properties) {
+                      const data = {
+                        ...product,
+                        id: product.product_id,
+                        title: product.product_name,
+                        price: Number(parseFloat(product.product_price).toFixed(2)),
+                        imgURL: product.product_image,
+                        variants: { type: "normal" },
+                      };
+
+                      if (product?.product_has_property === "YES") {
                         dispatch(setProductToView(product));
                         dispatch(openProductModal());
                       } else {
-                        dispatch(increaseTotalItemsInCart());
-                        dispatch(
-                          addItemToCart({
-                            ...product,
-                            id: product.product_id,
-                            title: product.product_name,
-                            price: Number(parseFloat(product.product_price).toFixed(2)),
-                            imgURL: product.product_image,
-                          })
-                        );
+                        setProductSelected(data);
                       }
                     }}
                   >

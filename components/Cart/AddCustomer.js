@@ -58,7 +58,7 @@ const AddCustomer = () => {
         <AddCustomerModal onClose={() => setOpenAddCustomerModal(false)} setStep={setStep} />
       </Modal>
       <div className="w-full">
-        {step === 0 && (
+        {!currentCustomer && step === 0 && (
           <div className="text-sm py-3">
             <span className="mr-2">
               <i className="fas fa-user-alt"></i>
@@ -73,6 +73,7 @@ const AddCustomer = () => {
             </button>
           </div>
         )}
+
         {step === 1 && (
           <div className="relative" initial={{ y: "-1vw" }} animate={{ y: 0 }}>
             <div>
@@ -154,7 +155,8 @@ const AddCustomer = () => {
             )}
           </div>
         )}
-        {step === 2 && (
+
+        {(currentCustomer || step === 2) && (
           <div className="w-full flex justify-between items-center text-sm py-3">
             <div>
               <span className="mr-2">

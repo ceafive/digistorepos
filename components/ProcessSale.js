@@ -17,9 +17,11 @@ import CollectUserDetail from "./Cart/CollectUserDetail";
 import ReceiptsSection from "./Sell/ReceiptsSection";
 import RaiseOrderSection from "./Sell/RaiseOrderSection";
 import PrintComponent from "./Sell/PrintComponent";
+import { useToasts } from "react-toast-notifications";
 
-import ReactToPrint, { useReactToPrint } from "react-to-print";
+import { useReactToPrint } from "react-to-print";
 import { addSeconds, isAfter } from "date-fns";
+import CollectCashGiveBalance from "./Cart/CollectCashGiveBalance";
 
 const paymentOptions = [
   { name: "CASH", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-CASH.png", showInput: false },
@@ -36,6 +38,7 @@ const loyaltyTabs = ["Loyalty", "Layby", "Store Credit", "On Account"];
 
 const ProcessSale = () => {
   const dispatch = useDispatch();
+  const { addToast, removeAllToasts, removeToast, toastStack, updateToast } = useToasts();
   const componentRef = React.useRef();
   const {
     formState: { errors },
@@ -58,6 +61,7 @@ const ProcessSale = () => {
   const cart = useSelector((state) => state.cart);
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
   const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
 
   // console.log(cart);
 
@@ -131,15 +135,21 @@ const ProcessSale = () => {
         },
       ]);
       if (paymentMethodSet === "CASH") {
-        if (payerAmountEntered === cartTotalMinusDiscountPlusTax) {
-          dispatch(
-            setAmountReceivedFromPayer({
-              method: paymentMethodSet,
-              amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
-              payment_number: values[paymentMethodSet],
-            })
-          );
-        } else setOpenCashModal(true);
+        dispatch(
+          setAmountReceivedFromPayer({
+            method: paymentMethodSet,
+            amount: Number(parseFloat(values[paymentMethodSet]).toFixed(2)),
+          })
+        );
+        // if (payerAmountEntered === cartTotalMinusDiscountPlusTax) {
+        //   dispatch(
+        //     setAmountReceivedFromPayer({
+        //       method: paymentMethodSet,
+        //       amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
+        //       payment_number: values[paymentMethodSet],
+        //     })
+        //   );
+        // } else setOpenCashModal(true);
       } else {
         dispatch(
           setAmountReceivedFromPayer({
@@ -186,7 +196,7 @@ const ProcessSale = () => {
         return {
           ...acc,
           [index]: {
-            order_item_no: curr?.product_id,
+            order_item_no: curr?.uniqueId,
             order_item_qty: curr?.quantity,
             order_item: `${curr?.product_name} ${addVariants}`,
             order_item_amt: curr?.totalPrice,
@@ -227,7 +237,7 @@ const ProcessSale = () => {
             : cart?.paymentMethodSet === "MTNMM" || cart?.paymentMethodSet === "TIGOC" || cart?.paymentMethodSet === "VODAC"
             ? "MOMO"
             : "",
-        payment_number: cart?.paymentMethodsAndAmount[0]?.payment_number ?? "",
+        payment_number: cart?.paymentMethodsAndAmount[0]?.payment_number ?? currentCustomer?.customer_phone ?? "",
         payment_network: cart?.paymentMethodSet,
         merchant: userDetails["user_merchant_id"],
         source: "INSHP",
@@ -235,7 +245,9 @@ const ProcessSale = () => {
         mod_by: userDetails["login"],
       };
 
-      // console.log({ payload });
+      console.log({ cart });
+      console.log({ payload });
+      // return;
 
       const res = await axios.post("/api/sell/raise-order", payload);
       const data = await res.data;
@@ -264,6 +276,7 @@ const ProcessSale = () => {
   const handleSendNotification = async (type = "SMS") => {
     try {
       setSendingNotification(type);
+      addToast(`Sending ${type}`, { appearance: "info", id: "notif-sending" });
       const payload = {
         tran_id: invoiceDetails?.invoice,
         tran_type: "ORDER",
@@ -274,8 +287,16 @@ const ProcessSale = () => {
       const res = await axios.post("/api/sell/send-notification", payload);
       const data = await res.data;
       // console.log(data);
+
+      removeToast("notif-sending");
+      if (Number(data?.status) === 0) {
+        addToast(data?.message, { appearance: "success", autoDismiss: true });
+      } else {
+        addToast(data?.message, { appearance: "error", autoDismiss: true });
+      }
     } catch (error) {
       console.log(error);
+      addToast(error.message, { appearance: "error" });
     } finally {
       setSendingNotification(false);
     }
@@ -297,6 +318,15 @@ const ProcessSale = () => {
         />
       </Modal>
       <Modal open={openPhoneNumberInputModal} onClose={() => setOpenPhoneNumberInputModal(false)} maxWidth="sm">
+        {/* <CollectCashGiveBalance
+          fetching={fetching}
+          register={register}
+          handleSubmit={handleSubmit}
+          errors={errors}
+          cartTotalMinusDiscountPlusTax={cartTotalMinusDiscountPlusTax}
+          onClose={() => setOpenPhoneNumberInputModal(false)}
+        /> */}
+
         <CollectUserDetail
           fetching={fetching}
           onAddPayment={onAddPayment}
@@ -305,6 +335,7 @@ const ProcessSale = () => {
           handleSubmit={handleSubmit}
           lengthOfMobileNumber={lengthOfMobileNumber}
           errors={errors}
+          cartTotalMinusDiscountPlusTax={cartTotalMinusDiscountPlusTax}
           onClose={() => setOpenPhoneNumberInputModal(false)}
         />
       </Modal>

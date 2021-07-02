@@ -1,12 +1,16 @@
 import { changeItemPropsInCart, removeItemFromCart } from "features/cart/cartSlice";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { openInventoryModal, setProductToView } from "features/products/productsSlice";
 import { capitalize, lowerCase } from "lodash";
+import { useToasts } from "react-toast-notifications";
+import { increaseTotalItemsInCart, addItemToCart, setActivePayments } from "features/cart/cartSlice";
 
 const Accordion = ({ product, index }) => {
   // console.log(product);
+  const { addToast } = useToasts();
+
   const {
     register,
     handleSubmit,
@@ -14,19 +18,66 @@ const Accordion = ({ product, index }) => {
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
+  const productsInCart = useSelector((state) => state.cart.productsInCart);
+
   const [isActive, setIsActive] = useState(false);
 
+  const checkProductQuantity = (product, value) => {
+    try {
+      // console.log(productsInCart);
+      let status = true;
+      const stock_level = parseInt(product?.product_quantity) - parseInt(product?.product_quantity_sold);
+      const productSoldOut = stock_level <= 0;
+
+      if (productSoldOut) {
+        addToast(`Product sold out`, { appearance: "error", autoDismiss: true });
+        status = false;
+      }
+
+      const isQuantitySelectedUnAvailable = value > stock_level;
+      // console.log(isQuantitySelectedUnAvailable);
+
+      if (isQuantitySelectedUnAvailable) {
+        addToast(`Quantity is not availble, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true });
+        status = false;
+      }
+      return { status, stock_level };
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleOnChange = (field, value) => {
-    dispatch(
-      changeItemPropsInCart({
-        ...product,
-        [field]: value,
-      })
-    );
+    if (field === "quantity") {
+      const { status, stock_level } = checkProductQuantity(product, parseInt(value));
+
+      if (status) {
+        dispatch(
+          changeItemPropsInCart({
+            ...product,
+            [field]: value,
+          })
+        );
+      } else {
+        dispatch(
+          changeItemPropsInCart({
+            ...product,
+            [field]: stock_level,
+          })
+        );
+      }
+    } else {
+      dispatch(
+        changeItemPropsInCart({
+          ...product,
+          [field]: value,
+        })
+      );
+    }
   };
 
   return (
-    <div className={`${isActive ? "border-l-2 border-green-500 bg-gray-100" : ""} `}>
+    <div className={`${isActive ? "border-l-2 border-green-700 bg-gray-100" : ""} `}>
       <div className="w-full flex py-3 px-2">
         <div className="mr-2 font-bold cursor-pointer" onClick={() => setIsActive(!isActive)}>
           {isActive ? <i className="fas fa-chevron-down"></i> : <i className="fas fa-chevron-right"></i>}
@@ -37,14 +88,14 @@ const Accordion = ({ product, index }) => {
           <div className="flex cursor-pointer" onClick={() => setIsActive(!isActive)}>
             <span className="mr-1">{index + 1}.</span>
             <div>
-              <span className="font-bold">{product.title.substring(0, 20)}</span>
+              <span className="font-bold">{product.title?.substring(0, 20)}</span>
               {product.variants && (
                 <div className="flex">
-                  {Object.entries(product.variants).map((variant, index) => {
+                  {Object.entries(product?.variants).map((variant, index) => {
                     return (
                       <p key={variant[0]} className="text-xs font-semibold m-0 p-0">
                         <span>{capitalize(variant[1])}</span>
-                        {index !== Object.entries(product.variants).length - 1 && <span>/ </span>}
+                        {index !== Object.entries(product?.variants).length - 1 && <span>/ </span>}
                       </p>
                     );
                   })}
@@ -60,7 +111,7 @@ const Accordion = ({ product, index }) => {
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
-                dispatch(removeItemFromCart(product.uniqueId));
+                dispatch(removeItemFromCart(product?.uniqueId));
               }}
             >
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>
@@ -107,7 +158,7 @@ const Accordion = ({ product, index }) => {
             </div>
 
             <div className="">
-              <label htmlFor="discount" className="font-bold">
+              <label htmlFor="price" className="text-sm font-bold">
                 Discount %
               </label>
               <input
@@ -121,13 +172,13 @@ const Accordion = ({ product, index }) => {
                 max={100}
                 maxLength={3}
                 placeholder="eg. 0"
-                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring w-full "
+                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
               />
             </div>
           </div>
 
-          <div className="mt-2">
-            <label htmlFor="notes" className="font-bold">
+          {/* <div className="mt-2">
+            <label htmlFor="price" className="text-sm font-bold">
               Notes
             </label>
             <input
@@ -140,7 +191,7 @@ const Accordion = ({ product, index }) => {
               type="text"
               className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full"
             />
-          </div>
+          </div> */}
 
           <div className="text-right">
             <button
