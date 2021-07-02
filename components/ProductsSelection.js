@@ -27,12 +27,13 @@ const categoryColors = [
   "#4362ce",
   "#a0b5c3",
   "#aaa385",
-  "#0a4585",
+
   "#49a397",
   "#d8af11",
   "#59b1bf",
   "#dc8394",
   "#b1ccfe",
+  "#ff000f",
 ];
 
 const productColors = [
@@ -166,7 +167,7 @@ const ProductsSelection = () => {
 
   return (
     <>
-      <Modal open={productModalOpen} onClose={() => dispatch(openProductModal())} maxWidth="lg">
+      <Modal open={productModalOpen} onClose={() => dispatch(openProductModal())} maxWidth="md">
         <ProductDetails onClose={() => dispatch(openProductModal())} />
       </Modal>
       <div className="relative w-full h-full">

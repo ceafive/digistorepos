@@ -14,6 +14,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import "../styles/index.css";
+import MyCustomToast from "components/Misc/CustomToast";
 
 // Router.events.on("routeChangeStart", (url) => {
 //   console.log(`Loading: ${url}`);
