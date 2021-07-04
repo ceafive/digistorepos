@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 import NotificationDropdown from "components/Dropdowns/NotificationDropdown.js";
 import UserDropdown from "components/Dropdowns/UserDropdown.js";
-import { sidebarRoutes } from "utils/routes";
+import { sidebarRoutes } from "utils";
 import { useDispatch, useSelector } from "react-redux";
 import { setSecondPaneOpenPath, setSidebarSecondPaneOpen } from "features/app/appSlice";
 import { onSelectCategory } from "features/products/productsSlice";
@@ -73,14 +73,23 @@ const ChildNavLink = ({ childLink }) => {
 export default function Sidebar() {
   const dispatch = useDispatch();
   const router = useRouter();
-
-  React.useEffect(() => {
-    // dispatch(setSecondPaneOpenPath());
-    return () => {};
-  }, []);
-
   const secondPaneOpenPathname = useSelector((state) => state.app.secondPaneOpenPathname);
   const openSidebarSecondpane = useSelector((state) => state.app.openSidebarSecondpane);
+
+  // console.log(router);
+
+  React.useEffect(() => {
+    const slug = router?.pathname?.split("/")[1];
+    slug &&
+      dispatch(
+        setSecondPaneOpenPath({
+          name: slug,
+        })
+      );
+  }, []);
+
+  // console.log(openSidebarSecondpane);
+  // console.log(secondPaneOpenPathname);
 
   const { childLinks } = sidebarRoutes.find((sidebarRoute) => sidebarRoute.slug === secondPaneOpenPathname);
 

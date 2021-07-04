@@ -15,62 +15,77 @@ import Spinner from "./Spinner";
 
 const Box = ({ option }) => {
   const dispatch = useDispatch();
+  const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
+  // console.log(deliveryCharge);
+
   return (
     <div key={option.delivery_location}>
       <button
         key={option.delivery_location}
-        className="w-48 h-48 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words"
+        className={`${
+          deliveryCharge?.delivery_code === option?.delivery_code ? "ring-1" : ""
+        } w-full h-10 border border-gray-300 rounded overflow-hidden font-bold px-2 break-words focus:outline-none`}
         onClick={() => {
           const price = get(option, "delivery_price", 0);
-          const data = { ...option, delivery_price: Number(parseFloat(price)) };
-          //   console.log(data);
+          const data = { ...option, price: Number(parseFloat(price)) };
+          // console.log(data);
 
           dispatch(setDeliveryCharge(data));
         }}
       >
-        {option?.delivery_location} {" - "} {option?.delivery_price}
+        {option?.delivery_location} {" - "} GHS{option?.delivery_price}
       </button>
     </div>
   );
 };
 
-const MerchantDeliveryType = ({ setFetching }) => {
+const MerchantDeliveryType = ({ fetching, setFetching }) => {
   const dispatch = useDispatch();
+
   const [listOfValues, setListOfValues] = React.useState([]);
 
   React.useEffect(() => {
     const fetchItems = async () => {
       try {
+        setFetching(true);
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
         const res = await axios.post("/api/sell/get-delivery-lov", { user });
         const { data } = await res.data;
-        console.log({ data });
+        // console.log({ data });
 
-        setListOfValues(data);
+        const cleanData = Array.isArray(data) ? data.filter((eachData) => Boolean(eachData)) : [];
+        setListOfValues(cleanData);
       } catch (error) {
         console.log(error);
       } finally {
+        setFetching(false);
       }
     };
 
     fetchItems();
   }, [dispatch]);
 
+  if (fetching) {
+    return (
+      <div className="flex flex-col justify-center items-center w-full mt-2">
+        <Spinner type="TailSpin" width={30} height={30} />
+      </div>
+    );
+  }
+
   return (
     <div className="mt-4">
       <p>Select Delivery Location</p>
-      <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2">
-        {listOfValues.map((option, index) => {
-          return <Box key={index} option={option} />;
-        })}
-      </div>
+      {listOfValues.map((option, index) => {
+        return <Box key={index} option={option} />;
+      })}
     </div>
   );
 };
 
-const IPAYDeliveryType = ({ setFetching }) => {
+const IPAYDeliveryType = ({ fetching, setFetching }) => {
   const dispatch = useDispatch();
   const outletSelected = useSelector((state) => state.products.outletSelected);
   const deliveryLocationInputted = useSelector((state) => state.products.deliveryLocationInputted);
@@ -129,6 +144,14 @@ const IPAYDeliveryType = ({ setFetching }) => {
     }
   }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, setFetching, value]);
 
+  if (fetching) {
+    return (
+      <div className="flex flex-col justify-center items-center w-full mt-2">
+        <Spinner type="TailSpin" width={30} height={30} />
+      </div>
+    );
+  }
+
   return (
     <div>
       <p>Select Delivery Location</p>
@@ -154,7 +177,7 @@ const IPAYDeliveryType = ({ setFetching }) => {
   );
 };
 
-const MerchantDistDeliveryType = ({ setFetching }) => {
+const MerchantDistDeliveryType = ({ fetching, setFetching }) => {
   const dispatch = useDispatch();
   const outletSelected = useSelector((state) => state.products.outletSelected);
   //   console.log(outletSelected);
@@ -211,6 +234,14 @@ const MerchantDistDeliveryType = ({ setFetching }) => {
     }
   }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, setFetching, value]);
 
+  if (fetching) {
+    return (
+      <div className="flex flex-col justify-center items-center w-full mt-2">
+        <Spinner type="TailSpin" width={30} height={30} />
+      </div>
+    );
+  }
+
   return (
     <div>
       <p>Select Delivery Location</p>
@@ -239,46 +270,19 @@ const DeliveryNumber = ({ register }) => {
   );
 };
 
-const TypeDelivery = ({ setFetching }) => {
+const TypeDelivery = () => {
   const dispatch = useDispatch();
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
-
-  // React.useEffect(() => {
-  //   const fetchItems = async () => {
-  //     try {
-  //       setFetching(true);
-  //       let user = sessionStorage.getItem("IPAYPOSUSER");
-  //       user = JSON.parse(user);
-
-  //       const deliveryTypesRes = await axios.post("/api/sell/get-delivery-type", { user });
-  //       const { data: deliveryTypesResData } = await deliveryTypesRes.data;
-  //       dispatch(setDeliveryTypes(deliveryTypesResData));
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setFetching(false);
-  //     }
-  //   };
-
-  //   fetchItems();
-  // }, [dispatch]);
-
-  // if (fetching) {
-  //   return (
-  //     <div className="flex flex-col justify-center items-center w-full mt-2">
-  //       <Spinner type="TailSpin" width={30} height={30} />;
-  //     </div>
-  //   );
-  // }
+  const [fetching, setFetching] = React.useState(false);
 
   if (deliveryTypes["option_delivery"] === "MERCHANT") {
-    return <MerchantDeliveryType setFetching={setFetching} />;
+    return <MerchantDeliveryType fetching={fetching} setFetching={setFetching} />;
   }
 
   if (deliveryTypes["option_delivery"] === "IPAY") {
     return (
       <>
-        <IPAYDeliveryType setFetching={setFetching} />
+        <IPAYDeliveryType fetching={fetching} setFetching={setFetching} />
         <DeliveryNumber />
       </>
     );
@@ -287,7 +291,7 @@ const TypeDelivery = ({ setFetching }) => {
   if (deliveryTypes["option_delivery"] === "MERCHANT-DIST") {
     return (
       <>
-        <MerchantDistDeliveryType setFetching={setFetching} />
+        <MerchantDistDeliveryType fetching={fetching} setFetching={setFetching} />
         <DeliveryNumber />
       </>
     );

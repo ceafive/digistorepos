@@ -3,9 +3,8 @@ import {
   setInvoiceDetails,
   setTotalAmountToBePaidByBuyer,
   setTransactionFeeCharges,
-  setVerifyTransactionResponse,
 } from "features/cart/cartSlice";
-import { get, capitalize, reduce, replace, upperCase } from "lodash";
+import { get, capitalize, replace, upperCase, has } from "lodash";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,30 +19,16 @@ import PrintComponent from "./Sell/PrintComponent";
 import { useToasts } from "react-toast-notifications";
 
 import { useReactToPrint } from "react-to-print";
-import { addSeconds, isAfter } from "date-fns";
-import CollectCashGiveBalance from "./Cart/CollectCashGiveBalance";
-
-const paymentOptions = [
-  { name: "CASH", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-CASH.png", showInput: false },
-  { name: "VISAG", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-VISAG.png", showInput: true },
-  { name: "QRPAY", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-QRPAY.png", showInput: true },
-  { name: "BNKTR", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-BNKTR.png", showInput: true },
-  { name: "MTNMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-MTNMM.png", showInput: true },
-  { name: "TIGOC", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-TIGOC.png", showInput: true },
-  { name: "VODAC", img: " https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-VODAC.png", showInput: true },
-  { name: "GCBMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-GCBMM.png", showInput: true },
-];
-
-const loyaltyTabs = ["Loyalty", "Layby", "Store Credit", "On Account"];
+import { configureVariables } from "utils";
 
 const ProcessSale = () => {
   const dispatch = useDispatch();
-  const { addToast, removeAllToasts, removeToast, toastStack, updateToast } = useToasts();
+  const { addToast, removeToast } = useToasts();
   const componentRef = React.useRef();
   const {
     formState: { errors },
     register,
-    watch,
+
     handleSubmit,
     reset,
   } = useForm({
@@ -78,10 +63,9 @@ const ProcessSale = () => {
   const [confirmButtonText, setConfirmButtonText] = React.useState("");
 
   // Variables
-  const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
-  const lengthOfMobileNumber = 10;
   const userDetails = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
-  const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3));
+  const lengthOfMobileNumber = 10;
+  const { fees, saleTotal } = configureVariables(transactionFeeCharges, cartTotalMinusDiscountPlusTax, deliveryCharge);
 
   React.useEffect(() => {
     dispatch(setTotalAmountToBePaidByBuyer(saleTotal));
@@ -191,6 +175,7 @@ const ProcessSale = () => {
           return { ...acc, [upperCase(variant[0])]: [variant[1]][0] };
         }, {});
 
+        const typeIsNormal = has(properties, "TYPE");
         const addVariants = variants.length > 0 ? `( ${variants.join(", ")} )` : "";
 
         return {
@@ -198,9 +183,9 @@ const ProcessSale = () => {
           [index]: {
             order_item_no: curr?.product_id,
             order_item_qty: curr?.quantity,
-            order_item: `${curr?.product_name} ${addVariants}`,
+            order_item: `${curr?.product_name}${!typeIsNormal ? addVariants : ""}`,
             order_item_amt: curr?.totalPrice,
-            order_item_prop: properties,
+            order_item_prop: !typeIsNormal ? properties : {},
           },
         };
       }, {});
