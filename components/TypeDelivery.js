@@ -29,7 +29,7 @@ const Box = ({ option }) => {
           const price = get(option, "delivery_price", 0);
           const data = { ...option, price: Number(parseFloat(price)) };
           // console.log(data);
-
+          dispatch(setDeliveryLocationInputted(option.delivery_location));
           dispatch(setDeliveryCharge(data));
         }}
       >

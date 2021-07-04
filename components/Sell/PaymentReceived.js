@@ -36,7 +36,14 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
 
       <div className="flex justify-center mt-24 text-sm font-semibold">
         <div className="flex justify-center w-full">
-          <button disabled={printing} className="focus:outline-none text-gray-800  xl:text-lg 2xl:text-3xl  mr-6" onClick={handlePrint}>
+          <button
+            disabled={printing}
+            className="focus:outline-none text-gray-800  xl:text-lg 2xl:text-xl  mr-6"
+            onClick={() => {
+              addToast(`Opening print dialog`, { appearance: "info", autoDismiss: true });
+              handlePrint();
+            }}
+          >
             <span className="w-6 mr-1">
               <i className="fas fa-print"></i>
             </span>

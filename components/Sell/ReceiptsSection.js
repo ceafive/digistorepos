@@ -94,7 +94,7 @@ const ReceiptsSection = ({ step }) => {
               <div>
                 <p>{paymentMethod.method}</p>
                 {fee ? <p className="text-sm">Fee: GHC{fee?.charge}</p> : <></>}
-                <p className="text-sm">Contact: {paymentMethod?.payment_number}</p>
+                {paymentMethod?.payment_number && <p className="text-sm">Contact: {paymentMethod?.payment_number}</p>}
                 <p className="text-sm">{paymentMethod.date}</p>
               </div>
               <div className="justify-self-end justify-end justify-items-end">

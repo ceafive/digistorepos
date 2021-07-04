@@ -1,4 +1,4 @@
 import { sidebarRoutes } from "./routes";
-import { configureVariables } from "./components/processSale";
+import { configureVariables, fetchFeeCharges, onAddPayment, onSendNotification, onRaiseOrder } from "./components/processSale";
 
-export { sidebarRoutes, configureVariables };
+export { sidebarRoutes, configureVariables, fetchFeeCharges, onAddPayment, onSendNotification, onRaiseOrder };

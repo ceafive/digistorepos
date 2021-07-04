@@ -78,6 +78,8 @@ const ProcessPayment = ({
   }, [activePayments, userDetails?.user_permissions]);
   const deliveryLocationIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryLocationInputted;
 
+  // console.log(fetching, deliveryTypeSelected, deliveryLocationIsEmpty, amountReceivedFromPayer, balance);
+
   return (
     <div>
       {/* Back To sale */}
