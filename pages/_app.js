@@ -1,20 +1,20 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "next/app";
-import Head from "next/head";
-import Router from "next/router";
-import { Box, LinearProgress } from "@material-ui/core";
-import { ToastProvider } from "react-toast-notifications";
-import { Provider } from "react-redux";
-import { store } from "../app/store";
-
-import PageChange from "components/PageChange/PageChange.js";
-
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import "../styles/index.css";
+
+import { Box, LinearProgress } from "@material-ui/core";
 import MyCustomToast from "components/Misc/CustomToast";
+import PageChange from "components/PageChange/PageChange.js";
+import App from "next/app";
+import Head from "next/head";
+import Router from "next/router";
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { ToastProvider } from "react-toast-notifications";
+
+import { store } from "../app/store";
 
 // Router.events.on("routeChangeStart", (url) => {
 //   console.log(`Loading: ${url}`);

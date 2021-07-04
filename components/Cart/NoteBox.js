@@ -1,6 +1,6 @@
+import { onAddCartNote } from "features/cart/cartSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { onAddCartNote } from "features/cart/cartSlice";
 
 const NoteBox = ({ setShowAddNoteInput }) => {
   const dispatch = useDispatch();

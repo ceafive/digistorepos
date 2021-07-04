@@ -1,7 +1,5 @@
 import React from "react";
-
 // components
-
 import { useDispatch, useSelector } from "react-redux";
 
 export default function HeaderStats() {

@@ -1,10 +1,10 @@
+import Carousel from "components/Carousel";
+import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
 import { openProductModal } from "features/products/productsSlice";
 import { camelCase, get, lowerCase, map, reduce, snakeCase, upperCase } from "lodash";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import Carousel from "components/Carousel";
 import { useForm } from "react-hook-form";
-import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
 const RenderTap = ({ item, propertyName, setProductPrice, step, setStep, setFormData, variantName, setStepsClicked }) => {

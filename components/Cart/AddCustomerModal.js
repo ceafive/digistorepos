@@ -1,10 +1,10 @@
 import axios from "axios";
-import React from "react";
-import { useForm } from "react-hook-form";
 import Spinner from "components/Spinner";
 import { format } from "date-fns";
-import { useDispatch } from "react-redux";
 import { addCustomer } from "features/cart/cartSlice";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 
 const AddCustomerModal = ({ onClose, setStep }) => {
   const dispatch = useDispatch();

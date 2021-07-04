@@ -1,15 +1,13 @@
-import React from "react";
-
-// layout for page
-
-import Admin from "layouts/Admin.js";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { productsAdded } from "features/products/productsSlice";
-import ProductsSelection from "components/ProductsSelection";
 import Cart from "components/Cart/Cart";
 import Modal from "components/Modal";
 import ProductDetails from "components/Product/InventoryDetails";
+import ProductsSelection from "components/ProductsSelection";
+import { productsAdded } from "features/products/productsSlice";
+// layout for page
+import Admin from "layouts/Admin.js";
+import React from "react";
+import { useDispatch } from "react-redux";
 
 export default function Dashboard() {
   const dispatch = useDispatch();

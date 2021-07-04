@@ -1,6 +1,6 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { createFilter } from "react-search-input";
+import axios from "axios";
+import Modal from "components/Modal";
+import { addItemToCart, increaseTotalItemsInCart, setActivePayments } from "features/cart/cartSlice";
 import {
   currentSearchTerm,
   onSelectCategory,
@@ -9,16 +9,15 @@ import {
   setOutletSelected,
   setProductToView,
 } from "features/products/productsSlice";
-import { increaseTotalItemsInCart, addItemToCart, setActivePayments } from "features/cart/cartSlice";
-import Modal from "components/Modal";
-
-import ReactPaginate from "react-paginate";
 import { filter, intersectionWith, take } from "lodash";
-import axios from "axios";
-import Spinner from "./Spinner";
+import React from "react";
+import ReactPaginate from "react-paginate";
+import { useDispatch, useSelector } from "react-redux";
+import { createFilter } from "react-search-input";
+import { useToasts } from "react-toast-notifications";
 
 import ProductDetails from "./Product/ProductDetails";
-import { useToasts } from "react-toast-notifications";
+import Spinner from "./Spinner";
 
 const categoryColors = ["#eefefd", "#aeffff", "#a0b5c3", "#49a397", "#59b1bf", "#b1ccfe"];
 

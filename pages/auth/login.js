@@ -1,10 +1,10 @@
-import React from "react";
-import Link from "next/link";
-import Auth from "layouts/Auth.js";
-import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
 import axios from "axios";
 import Spinner from "components/Spinner";
+import Auth from "layouts/Auth.js";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React from "react";
+import { useForm } from "react-hook-form";
 import { verifyToken } from "services";
 
 export default function Login() {

@@ -51,7 +51,7 @@ const onAddPayment = async function (
   currentCustomer,
   values
 ) {
-  console.log(values);
+  // console.log(values);
   try {
     await fetchFeeCharges(dispatch, setTransactionFeeCharges, setFetching, user, [
       ...paymentMethodsAndAmount,

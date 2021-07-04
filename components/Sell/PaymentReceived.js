@@ -1,6 +1,6 @@
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { onClickToCheckout, onResetCart } from "features/cart/cartSlice";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
 const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendingNotification }) => {

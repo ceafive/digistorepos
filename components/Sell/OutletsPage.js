@@ -1,10 +1,10 @@
 import axios from "axios";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Spinner from "components/Spinner";
+import { onResetCart } from "features/cart/cartSlice";
 import { onSelectCategory, setAllOutlets, setOutletSelected } from "features/products/productsSlice";
 import { intersectionWith } from "lodash";
-import { onResetCart } from "features/cart/cartSlice";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const Outlet = ({ outlet }) => {
   const dispatch = useDispatch();

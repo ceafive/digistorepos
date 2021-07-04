@@ -1,12 +1,10 @@
-import React from "react";
-
-// components
-
-import AdminNavbar from "components/Navbars/AdminNavbar.js";
-import Sidebar from "components/Sidebar/Sidebar.js";
-import HeaderStats from "components/Headers/HeaderStats.js";
 import FooterAdmin from "components/Footers/FooterAdmin.js";
+import HeaderStats from "components/Headers/HeaderStats.js";
+// components
+import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import withAuth from "components/ProtectRoute";
+import Sidebar from "components/Sidebar/Sidebar.js";
+import React from "react";
 import { useSelector } from "react-redux";
 
 const Admin = ({ children }) => {

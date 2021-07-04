@@ -1,6 +1,6 @@
+import { onChangeCartDiscountType, setDiscount } from "features/cart/cartSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { onChangeCartDiscountType, setDiscount } from "features/cart/cartSlice";
 
 const DiscountBox = ({ setShowDiscountBox }) => {
   const dispatch = useDispatch();

@@ -2,11 +2,11 @@ import { onResetCart } from "features/cart/cartSlice";
 import { setSalesHistoryitem } from "features/sales/salesSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
+
 import AddCustomer from "./AddCustomer";
 import PayButton from "./PayButton";
 import ShowItems from "./ShowItems";
-
-import { v4 as uuidv4 } from "uuid";
 
 const Cart = () => {
   const dispatch = useDispatch();

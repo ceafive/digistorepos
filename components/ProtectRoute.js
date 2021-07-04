@@ -2,6 +2,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { verifyToken } from "services";
+
 import Spinner from "./Spinner";
 
 const withAuth = (WrappedComponent) => {

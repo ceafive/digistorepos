@@ -1,23 +1,22 @@
-import React from "react";
-import ProductsSelection from "components/ProductsSelection";
+import axios from "axios";
 import Cart from "components/Cart/Cart";
 import Modal from "components/Modal";
-import InventoryDetails from "components/Product/InventoryDetails";
-import Spinner from "components/Spinner";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
 import ProcessSale from "components/ProcessSale";
-import { motion } from "framer-motion";
+import InventoryDetails from "components/Product/InventoryDetails";
+import ProductsSelection from "components/ProductsSelection";
+import Spinner from "components/Spinner";
+import { setActivePayments, setDeliveryTypes } from "features/cart/cartSlice";
 import {
-  productsAdded,
   onSetProductCategories,
   openInventoryModal,
+  productsAdded,
   setAllOutlets,
   setOutletSelected,
 } from "features/products/productsSlice";
-import axios from "axios";
-import { setActivePayments, setDeliveryTypes } from "features/cart/cartSlice";
+import { motion } from "framer-motion";
 import { filter, intersectionWith } from "lodash";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const SellPage = () => {
   const dispatch = useDispatch();

@@ -1,11 +1,9 @@
-import React from "react";
-
 // layout for page
-
 import Auth from "layouts/Auth.js";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/router";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import React from "react";
+import { useForm } from "react-hook-form";
 
 export default function Register() {
   const router = useRouter();
@@ -29,9 +27,7 @@ export default function Register() {
             <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0">
               <div className="rounded-t mb-0 px-6 py-6">
                 <div className="text-center mb-3">
-                  <h6 className="text-blueGray-500 text-sm font-bold">
-                    Sign up with
-                  </h6>
+                  <h6 className="text-blueGray-500 text-sm font-bold">Sign up with</h6>
                 </div>
 
                 <hr className="mt-6 border-b-1 border-blueGray-300" />
@@ -39,10 +35,7 @@ export default function Register() {
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
                 <form>
                   <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
+                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="grid-password">
                       Name
                     </label>
                     <input
@@ -53,16 +46,11 @@ export default function Register() {
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Name"
                     />
-                    <p className="text-sm text-red-500">
-                      {errors?.name?.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors?.name?.message}</p>
                   </div>
 
                   <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
+                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="grid-password">
                       Email
                     </label>
                     <input
@@ -73,16 +61,11 @@ export default function Register() {
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Email"
                     />
-                    <p className="text-sm text-red-500">
-                      {errors?.email?.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors?.email?.message}</p>
                   </div>
 
                   <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
+                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="grid-password">
                       Password
                     </label>
                     <input
@@ -97,9 +80,7 @@ export default function Register() {
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Password"
                     />
-                    <p className="text-sm text-red-500">
-                      {errors?.password?.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors?.password?.message}</p>
                   </div>
 
                   {/* <div>

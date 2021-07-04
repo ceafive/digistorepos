@@ -1,4 +1,5 @@
 import axios from "axios";
+
 const cors = require("cors")({ origin: true });
 
 export default function handler(req, res) {

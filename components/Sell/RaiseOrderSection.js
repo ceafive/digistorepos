@@ -1,6 +1,7 @@
 import React from "react";
-import PaymentReceived from "./PaymentReceived";
+
 import ConfirmPayment from "./ConfirmPayment";
+import PaymentReceived from "./PaymentReceived";
 import ProcessPayment from "./ProcessPayment";
 
 const RaiseOrderSection = ({

@@ -1,25 +1,21 @@
+import Modal from "components/Modal";
 import {
   setAmountReceivedFromPayer,
   setInvoiceDetails,
   setTotalAmountToBePaidByBuyer,
   setTransactionFeeCharges,
 } from "features/cart/cartSlice";
-import { get, capitalize, replace, upperCase, has } from "lodash";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import Modal from "components/Modal";
-import CashPaymentModal from "./Cart/CashPaymentModal";
-import axios from "axios";
-import { forEach } from "p-iteration";
-import CollectUserDetail from "./Cart/CollectUserDetail";
-import ReceiptsSection from "./Sell/ReceiptsSection";
-import RaiseOrderSection from "./Sell/RaiseOrderSection";
-import PrintComponent from "./Sell/PrintComponent";
-import { useToasts } from "react-toast-notifications";
-
 import { useReactToPrint } from "react-to-print";
-import { configureVariables, onAddPayment, onPrint, onRaiseOrder, onSendNotification } from "utils";
+import { useToasts } from "react-toast-notifications";
+import { configureVariables, onAddPayment, onRaiseOrder, onSendNotification } from "utils";
+import CashPaymentModal from "./Cart/CashPaymentModal";
+import CollectUserDetail from "./Cart/CollectUserDetail";
+import PrintComponent from "./Sell/PrintComponent";
+import RaiseOrderSection from "./Sell/RaiseOrderSection";
+import ReceiptsSection from "./Sell/ReceiptsSection";
 
 const ProcessSale = () => {
   const dispatch = useDispatch();

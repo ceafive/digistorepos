@@ -1,7 +1,6 @@
-import React from "react";
-
 import UserDropdown from "components/Dropdowns/UserDropdown.js";
 import { useRouter } from "next/router";
+import React from "react";
 
 export default function Navbar() {
   const router = useRouter();

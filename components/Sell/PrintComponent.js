@@ -1,6 +1,5 @@
 import { find, reduce, upperCase } from "lodash";
 import React from "react";
-
 import { useDispatch, useSelector } from "react-redux";
 
 const ListItem = ({ text, value, className }) => {

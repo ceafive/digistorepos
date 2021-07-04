@@ -1,22 +1,23 @@
+import axios from "axios";
+import Spinner from "components/Spinner";
 import {
-  onClickToCheckout,
+  applyDiscount,
+  applyPromoAmount,
   onAddCartNote,
   onChangeCartDiscountType,
-  setDiscount,
-  applyDiscount,
+  onClickToCheckout,
   onResetCart,
-  setPromoAmount,
-  applyPromoAmount,
   setCartPromoCode,
+  setDiscount,
+  setPromoAmount,
 } from "features/cart/cartSlice";
+import { upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import DiscountBox from "./DiscountBox";
-import PromoCodeBox from "./PromoCodeBox";
 import NoteBox from "./NoteBox";
-import Spinner from "components/Spinner";
-import axios from "axios";
-import { upperCase } from "lodash";
+import PromoCodeBox from "./PromoCodeBox";
 
 const PayButton = () => {
   const dispatch = useDispatch();

@@ -1,7 +1,7 @@
 import Accordion from "components/Accordion";
+import { motion } from "framer-motion";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { motion } from "framer-motion";
 
 const ShowItems = () => {
   const productsInCart = useSelector((state) => state.cart.productsInCart);

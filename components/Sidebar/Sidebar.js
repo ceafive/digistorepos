@@ -1,14 +1,13 @@
-import React from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-
 import NotificationDropdown from "components/Dropdowns/NotificationDropdown.js";
 import UserDropdown from "components/Dropdowns/UserDropdown.js";
-import { sidebarRoutes } from "utils";
-import { useDispatch, useSelector } from "react-redux";
 import { setSecondPaneOpenPath, setSidebarSecondPaneOpen } from "features/app/appSlice";
-import { onSelectCategory } from "features/products/productsSlice";
 import { onResetCart } from "features/cart/cartSlice";
+import { onSelectCategory } from "features/products/productsSlice";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { sidebarRoutes } from "utils";
 
 const NavLink = ({ sidebarRoute }) => {
   const { name, slug, path, icon, iconColor } = sidebarRoute;

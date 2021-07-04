@@ -1,18 +1,18 @@
+import AddCustomer from "components/Cart/AddCustomer";
+import Spinner from "components/Spinner";
+import TypeDelivery from "components/TypeDelivery";
 import {
+  addCustomer,
   onClickToCheckout,
   setDeliveryCharge,
+  setDeliveryNotes,
   setDeliveryTypeSelected,
   setPaymentMethodSet,
-  setDeliveryNotes,
-  addCustomer,
 } from "features/cart/cartSlice";
+import { setOutletSelected } from "features/products/productsSlice";
 import { intersectionWith, isEqual } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setOutletSelected } from "features/products/productsSlice";
-import AddCustomer from "components/Cart/AddCustomer";
-import TypeDelivery from "components/TypeDelivery";
-import Spinner from "components/Spinner";
 
 const paymentOptions = [
   { name: "CASH", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-CASH.png", showInput: false },

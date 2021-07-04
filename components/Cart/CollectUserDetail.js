@@ -1,4 +1,5 @@
 import React from "react";
+
 import Spinner from "../Spinner";
 
 const CashPaymentInput = ({ paymentMethodSet, register, errors, cartTotalMinusDiscountPlusTax }) => {

@@ -1,11 +1,16 @@
-import { changeItemPropsInCart, removeItemFromCart } from "features/cart/cartSlice";
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useForm } from "react-hook-form";
+import {
+  addItemToCart,
+  changeItemPropsInCart,
+  increaseTotalItemsInCart,
+  removeItemFromCart,
+  setActivePayments,
+} from "features/cart/cartSlice";
 import { openInventoryModal, setProductToView } from "features/products/productsSlice";
 import { capitalize, lowerCase } from "lodash";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
-import { increaseTotalItemsInCart, addItemToCart, setActivePayments } from "features/cart/cartSlice";
 
 const Accordion = ({ product, index }) => {
   // console.log(product);

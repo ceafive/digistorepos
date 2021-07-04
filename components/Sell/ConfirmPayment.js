@@ -1,10 +1,9 @@
-import React, { Fragment } from "react";
-import Spinner from "components/Spinner";
-import { useSelector, useDispatch } from "react-redux";
-import { onClickToCheckout, onResetCart } from "features/cart/cartSlice";
-import { setVerifyTransactionResponse } from "features/cart/cartSlice";
 import axios from "axios";
-import { get, capitalize, reduce, replace, upperCase, throttle, stubTrue } from "lodash";
+import Spinner from "components/Spinner";
+import { onClickToCheckout, onResetCart, setVerifyTransactionResponse } from "features/cart/cartSlice";
+import { throttle, upperCase } from "lodash";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const ConfirmPayment = ({
   setStep,
@@ -46,22 +45,22 @@ const ConfirmPayment = ({
 
         await sleep(5000);
         const data = await getResData();
-        console.log(data);
+        // console.log(data);
         dispatch(setVerifyTransactionResponse(data));
         const { message } = data; // new, awaiting_payment, paid, cancelled, failed, expired   ie message values
 
         if (message === "new" || message === "awaiting_payment") {
-          console.log("hit 1");
+          // console.log("hit 1");
           setLoading(true);
         } else {
           if (message === "paid") {
-            console.log("hit 2");
+            // console.log("hit 2");
             setFetching(false);
             setLoading(false);
             setStep(2);
             // await throttledFn.cancel();
           } else if (message === "cancelled" || message === "failed" || message === "new" || message === "expired") {
-            console.log("hit 3");
+            // console.log("hit 3");
             setLoading(false);
             setFetching(false);
             // await throttledFn.cancel();
