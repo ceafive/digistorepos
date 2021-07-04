@@ -58,7 +58,7 @@ const InventoryDetails = ({ onClose }) => {
           </div>
           <div className="flex justify-between p-2 bg-gray-200 rounded font-semibold">
             <p>{outletSelected ? outletSelected?.outlet_name : "Main Outlet"}</p>
-            <p>{product?.product_stock_level}</p>
+            <p>{product?.product_quantity === '=99' ? 'Unlimited':product?.product_quantity }</p>
           </div>
         </div>
       </div>

@@ -79,6 +79,7 @@ const ProcessPayment = ({
   const deliveryLocationIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryLocationInputted
 
   // console.log(fetching, deliveryTypeSelected, deliveryLocationIsEmpty, amountReceivedFromPayer, balance);
+  // console.log(outletSelected);
 
   return (
     <div>
@@ -147,7 +148,7 @@ const ProcessPayment = ({
                 <button
                   key={outlet.outlet_name}
                   className={`${
-                    outletSelected === outlet.outlet_name ? "ring-2" : ""
+                    outletSelected?.outlet_name === outlet.outlet_name ? "ring-2" : ""
                   } w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words`}
                   onClick={() => {
                     dispatch(setOutletSelected(outlet))

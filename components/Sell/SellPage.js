@@ -22,6 +22,7 @@ const SellPage = () => {
   const dispatch = useDispatch()
   const clickToCheckout = useSelector((state) => state.cart.clickToCheckout)
   const inventoryModalOpen = useSelector((state) => state.products.inventoryModalOpen)
+  const productsOnHold = useSelector((state) => state.products.productsOnHold)
 
   // Compnent State
   const [fetching, setFetching] = React.useState(null)
@@ -67,7 +68,7 @@ const SellPage = () => {
     }
 
     fetchItems()
-  }, [dispatch])
+  }, [dispatch,productsOnHold])
 
   if (fetching || fetching === null) {
     return (
