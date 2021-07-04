@@ -1,62 +1,62 @@
-import axios from "axios"
-import Spinner from "components/Spinner"
-import Auth from "layouts/Auth.js"
-import { useRouter } from "next/router"
-import React from "react"
-import { useForm } from "react-hook-form"
-import { verifyToken } from "services"
+import axios from "axios";
+import Spinner from "components/Spinner";
+import Auth from "layouts/Auth.js";
+import { useRouter } from "next/router";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { verifyToken } from "services";
 
 export default function Login() {
-  const router = useRouter()
+  const router = useRouter();
   const {
     control,
     register,
     handleSubmit,
     setError,
-    formState: { errors }
-  } = useForm()
+    formState: { errors },
+  } = useForm();
 
-  const [processing, setProcessing] = React.useState(false)
+  const [processing, setProcessing] = React.useState(false);
   const [loginError, setLoginError] = React.useState({
     status: false,
-    message: ""
-  })
+    message: "",
+  });
 
   const handleUserSignIn = async (values) => {
     try {
-      setProcessing(true)
+      setProcessing(true);
       setLoginError({
         status: false,
-        message: ""
-      })
-      const res = await axios.post("/api/auth/login", values)
-      const data = await res.data
+        message: "",
+      });
+      const res = await axios.post("/api/auth/login", values);
+      const data = await res.data;
 
-      const { success, error } = verifyToken(JSON.stringify(data))
+      const { success, error } = verifyToken(JSON.stringify(data));
 
       if (error) {
         setLoginError({
           status: true,
-          message: error
-        })
+          message: error,
+        });
       }
-      if (success) router.push("/")
+      if (success) router.push("/");
     } catch (error) {
       setLoginError({
         status: false,
-        message: "ERROR"
-      })
+        message: "ERROR",
+      });
       if (error.response) {
-        console.log(error.response.data)
+        console.log(error.response.data);
       } else if (error.request) {
-        console.log(error.request)
+        console.log(error.request);
       } else {
-        console.log("Error", error.message)
+        console.log("Error", error.message);
       }
     } finally {
-      setProcessing(false)
+      setProcessing(false);
     }
-  }
+  };
 
   return (
     <>
@@ -79,7 +79,7 @@ export default function Login() {
                     </label>
                     <input
                       {...register("username", {
-                        required: "Username is required"
+                        required: "Username is required",
                       })}
                       type="text"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -97,10 +97,12 @@ export default function Login() {
                         required: "PIN is required",
                         minLength: {
                           value: 4,
-                          message: "PIN must be longer than 3 chars"
-                        }
+                          message: "PIN must be longer than 3 chars",
+                        },
                       })}
                       type="password"
+                      pattern="[0-9]*"
+                      novalidate
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="1234"
                     />
@@ -115,7 +117,8 @@ export default function Login() {
                         processing ? "bg-gray-300 text-gray-200" : "bg-blueGray-800 text-white"
                       } active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150`}
                       type="button"
-                      onClick={handleSubmit(handleUserSignIn)}>
+                      onClick={handleSubmit(handleUserSignIn)}
+                    >
                       {processing && (
                         <div className="inline-block mr-2">
                           <Spinner type={"TailSpin"} color="black" width="10" height="10" />
@@ -131,7 +134,7 @@ export default function Login() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-Login.layout = Auth
+Login.layout = Auth;

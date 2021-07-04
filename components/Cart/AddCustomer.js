@@ -80,7 +80,9 @@ const AddCustomer = () => {
               </span>
               <input
                 {...register("searchCustomer")}
-                type="text"
+                type="number"
+                pattern="[0-9]*"
+                novalidate
                 placeholder="Search here..."
                 className="border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
               />
