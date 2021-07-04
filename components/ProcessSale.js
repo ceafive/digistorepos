@@ -196,7 +196,7 @@ const ProcessSale = () => {
         return {
           ...acc,
           [index]: {
-            order_item_no: curr?.uniqueId,
+            order_item_no: curr?.product_id,
             order_item_qty: curr?.quantity,
             order_item: `${curr?.product_name} ${addVariants}`,
             order_item_amt: curr?.totalPrice,
@@ -251,7 +251,7 @@ const ProcessSale = () => {
 
       const res = await axios.post("/api/sell/raise-order", payload);
       const data = await res.data;
-      console.log(data);
+      // console.log(data);
 
       if (data?.status !== 0) {
         setProcessError(data?.message);

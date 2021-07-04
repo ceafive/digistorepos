@@ -20,23 +20,10 @@ import Spinner from "./Spinner";
 import ProductDetails from "./Product/ProductDetails";
 import { useToasts } from "react-toast-notifications";
 
-const categoryColors = [
-  "#fedede",
-  "#eefefd",
-  "#aeffff",
-  "#4362ce",
-  "#a0b5c3",
-  "#aaa385",
-
-  "#49a397",
-  "#d8af11",
-  "#59b1bf",
-  "#dc8394",
-  "#b1ccfe",
-  "#ff000f",
-];
+const categoryColors = ["#eefefd", "#aeffff", "#a0b5c3", "#49a397", "#59b1bf", "#b1ccfe"];
 
 const productColors = [
+  "#ff000f",
   "#fedede",
   "#eefefd",
   "#aeffff",
@@ -357,7 +344,7 @@ const ProductsSelection = () => {
                       }
                     }}
                   >
-                    <div key={product.product_id} className="relative " style={{ paddingBottom: "85%" }}>
+                    <div key={product.product_id} className="relative " style={{ paddingBottom: "95%" }}>
                       <img
                         className="absolute h-full w-full object-cover"
                         src={`${imgUrlBase}${product.product_image}`}
@@ -365,7 +352,7 @@ const ProductsSelection = () => {
                       />
                     </div>
                     <div className="p-2 text-sm">
-                      <p className="font-semibold">{product.product_name}</p>
+                      <p className="font-semibold leading-none">{product.product_name}</p>
                       <p className="text-xs pt-1 ">{product.product_category}</p>
                       <p className="font-bold pt-4">GHS{product.product_price}</p>
                       <p className="text-xs pt-1">
