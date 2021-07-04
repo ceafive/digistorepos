@@ -27,8 +27,8 @@ const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
-    setProductsOnHold(state, action) {
-      state.productsOnHold = action.payload;
+    setProductsOnHold(state) {
+      state.productsOnHold = !state.productsOnHold;
     },
     setCategoryProductsCount(state, action) {
       state.categoryProductsCount = action.payload;
