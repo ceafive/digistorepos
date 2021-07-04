@@ -12,7 +12,7 @@ const Box = ({ option }) => {
   // console.log(deliveryCharge);
 
   return (
-    <div key={option.delivery_location}>
+    <div key={option.delivery_location} className='mb-1 w-full'>
       <button
         key={option.delivery_location}
         className={`${
