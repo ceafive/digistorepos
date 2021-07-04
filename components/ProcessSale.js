@@ -1,71 +1,71 @@
-import Modal from "components/Modal";
+import Modal from "components/Modal"
 import {
   setAmountReceivedFromPayer,
   setInvoiceDetails,
   setTotalAmountToBePaidByBuyer,
-  setTransactionFeeCharges,
-} from "features/cart/cartSlice";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
-import { useReactToPrint } from "react-to-print";
-import { useToasts } from "react-toast-notifications";
-import { configureVariables, onAddPayment, onRaiseOrder, onSendNotification } from "utils";
-import CashPaymentModal from "./Cart/CashPaymentModal";
-import CollectUserDetail from "./Cart/CollectUserDetail";
-import PrintComponent from "./Sell/PrintComponent";
-import RaiseOrderSection from "./Sell/RaiseOrderSection";
-import ReceiptsSection from "./Sell/ReceiptsSection";
+  setTransactionFeeCharges
+} from "features/cart/cartSlice"
+import React from "react"
+import { useForm } from "react-hook-form"
+import { useDispatch, useSelector } from "react-redux"
+import { useReactToPrint } from "react-to-print"
+import { useToasts } from "react-toast-notifications"
+import { configureVariables, onAddPayment, onRaiseOrder, onSendNotification } from "utils"
+import CashPaymentModal from "./Cart/CashPaymentModal"
+import CollectUserDetail from "./Cart/CollectUserDetail"
+import PrintComponent from "./Sell/PrintComponent"
+import RaiseOrderSection from "./Sell/RaiseOrderSection"
+import ReceiptsSection from "./Sell/ReceiptsSection"
 
 const ProcessSale = () => {
-  const dispatch = useDispatch();
-  const { addToast, removeToast } = useToasts();
-  const componentRef = React.useRef();
+  const dispatch = useDispatch()
+  const { addToast, removeToast } = useToasts()
+  const componentRef = React.useRef()
   const {
     formState: { errors },
     register,
 
     handleSubmit,
-    reset,
+    reset
   } = useForm({
-    mode: "all",
-  });
+    mode: "all"
+  })
 
   // Selectors
-  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
-  const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
-  const paymentMethodsAndAmount = useSelector((state) => state.cart.paymentMethodsAndAmount);
-  const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
-  const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
-  const paymentMethodSet = useSelector((state) => state.cart.paymentMethodSet);
-  const cart = useSelector((state) => state.cart);
-  const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
-  const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
-  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax)
+  const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer)
+  const paymentMethodsAndAmount = useSelector((state) => state.cart.paymentMethodsAndAmount)
+  const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges)
+  const deliveryCharge = useSelector((state) => state.cart.deliveryCharge)
+  const outletSelected = useSelector((state) => state.products.outletSelected)
+  const paymentMethodSet = useSelector((state) => state.cart.paymentMethodSet)
+  const cart = useSelector((state) => state.cart)
+  const deliveryTypes = useSelector((state) => state.cart.deliveryTypes)
+  const invoiceDetails = useSelector((state) => state.cart.invoiceDetails)
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer)
 
   // console.log(cart);
 
   // Component State
-  const [step, setStep] = React.useState(0);
-  const [payerAmountEntered, setPayerAmountEntered] = React.useState(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer);
-  const [openCashModal, setOpenCashModal] = React.useState(false);
-  const [fetching, setFetching] = React.useState(false);
-  const [openPhoneNumberInputModal, setOpenPhoneNumberInputModal] = React.useState(false);
-  const [printing, setPrinting] = React.useState(false);
-  const [sendingNotification, setSendingNotification] = React.useState(false);
-  const [processError, setProcessError] = React.useState(false);
-  const [confirmPaymentText, setConfirmPaymentText] = React.useState("");
-  const [confirmButtonText, setConfirmButtonText] = React.useState("");
+  const [step, setStep] = React.useState(0)
+  const [payerAmountEntered, setPayerAmountEntered] = React.useState(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer)
+  const [openCashModal, setOpenCashModal] = React.useState(false)
+  const [fetching, setFetching] = React.useState(false)
+  const [openPhoneNumberInputModal, setOpenPhoneNumberInputModal] = React.useState(false)
+  const [printing, setPrinting] = React.useState(false)
+  const [sendingNotification, setSendingNotification] = React.useState(false)
+  const [processError, setProcessError] = React.useState(false)
+  const [confirmPaymentText, setConfirmPaymentText] = React.useState("")
+  const [confirmButtonText, setConfirmButtonText] = React.useState("")
 
   // Variables
-  const user = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
-  const lengthOfMobileNumber = 10;
-  const { fees, saleTotal } = configureVariables(transactionFeeCharges, cartTotalMinusDiscountPlusTax, deliveryCharge);
+  const user = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"))
+  const lengthOfMobileNumber = 10
+  const { fees, saleTotal } = configureVariables(transactionFeeCharges, cartTotalMinusDiscountPlusTax, deliveryCharge)
 
   React.useEffect(() => {
-    dispatch(setTotalAmountToBePaidByBuyer(saleTotal));
-  }, [dispatch, saleTotal]);
+    dispatch(setTotalAmountToBePaidByBuyer(saleTotal))
+  }, [dispatch, saleTotal])
 
   React.useEffect(() => {
     setPayerAmountEntered(
@@ -74,8 +74,8 @@ const ProcessSale = () => {
           amountReceivedFromPayer >= cartTotalMinusDiscountPlusTax ? 0 : cartTotalMinusDiscountPlusTax - amountReceivedFromPayer
         ).toFixed(2)
       )
-    );
-  }, [amountReceivedFromPayer, cartTotalMinusDiscountPlusTax]);
+    )
+  }, [amountReceivedFromPayer, cartTotalMinusDiscountPlusTax])
 
   // console.log({ fetching, amountReceivedFromPayer, balance });
 
@@ -93,15 +93,15 @@ const ProcessSale = () => {
       reset,
       currentCustomer,
       values
-    );
+    )
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
     onBeforeGetContent: () => setPrinting(true),
-    onAfterPrint: () => setPrinting(false),
-  });
+    onAfterPrint: () => setPrinting(false)
+  })
 
-  const handleSendNotification = (type) => onSendNotification(type, setSendingNotification, addToast, removeToast, invoiceDetails, user);
+  const handleSendNotification = (type) => onSendNotification(type, setSendingNotification, addToast, removeToast, invoiceDetails, user)
 
   const handleRaiseOrder = () =>
     onRaiseOrder(
@@ -118,7 +118,7 @@ const ProcessSale = () => {
       saleTotal,
       currentCustomer,
       user
-    );
+    )
 
   return (
     <>
@@ -173,7 +173,7 @@ const ProcessSale = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default ProcessSale;
+export default ProcessSale

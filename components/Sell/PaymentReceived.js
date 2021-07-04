@@ -1,15 +1,15 @@
-import { onClickToCheckout, onResetCart } from "features/cart/cartSlice";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useToasts } from "react-toast-notifications";
+import { onClickToCheckout, onResetCart } from "features/cart/cartSlice"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useToasts } from "react-toast-notifications"
 
 const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendingNotification }) => {
-  const { addToast } = useToasts();
-  const dispatch = useDispatch();
+  const { addToast } = useToasts()
+  const dispatch = useDispatch()
   // Selectors
-  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
-  const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
-  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax)
+  const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer)
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer)
 
   return (
     <div className="mt-10 py-20 text-center">
@@ -40,10 +40,9 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             disabled={printing}
             className="focus:outline-none text-gray-800  xl:text-lg 2xl:text-xl  mr-6"
             onClick={() => {
-              addToast(`Opening print dialog`, { appearance: "info", autoDismiss: true });
-              handlePrint();
-            }}
-          >
+              addToast(`Opening print dialog`, { appearance: "info", autoDismiss: true })
+              handlePrint()
+            }}>
             <span className="w-6 mr-1">
               <i className="fas fa-print"></i>
             </span>
@@ -53,11 +52,10 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
           {currentCustomer?.customer_phone && (
             <button
               disabled={sendingNotification}
-              className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-3xl  mr-6"
+              className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-xxl  mr-6"
               onClick={() => {
-                handleSendNotification("SMS");
-              }}
-            >
+                handleSendNotification("SMS")
+              }}>
               <span className="w-6 mr-1">
                 <i className="fas fa-sms"></i>
               </span>
@@ -68,11 +66,10 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
           {currentCustomer?.customer_email && (
             <button
               disabled={sendingNotification}
-              className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-3xl"
+              className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-xxl"
               onClick={() => {
-                handleSendNotification("EMAIL");
-              }}
-            >
+                handleSendNotification("EMAIL")
+              }}>
               <span className="w-6 mr-1">
                 <i className="fas fa-envelope"></i>
               </span>
@@ -98,15 +95,14 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
         <button
           className="bg-green-700 px-6 py-4 text-white font-semibold rounded focus:outline-none w-full text-center"
           onClick={() => {
-            dispatch(onClickToCheckout(false));
-            dispatch(onResetCart());
-          }}
-        >
+            dispatch(onClickToCheckout(false))
+            dispatch(onResetCart())
+          }}>
           Close Sale
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PaymentReceived;
+export default PaymentReceived

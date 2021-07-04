@@ -1,17 +1,13 @@
-import { onResetCart } from "features/cart/cartSlice";
-import { setSalesHistoryitem } from "features/sales/salesSlice";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
-
-import AddCustomer from "./AddCustomer";
-import PayButton from "./PayButton";
-import ShowItems from "./ShowItems";
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
+import AddCustomer from "./AddCustomer"
+import PayButton from "./PayButton"
+import ShowItems from "./ShowItems"
 
 const Cart = () => {
-  const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart);
-  const salesHistory = useSelector((state) => state.sales.salesHistory);
+  const dispatch = useDispatch()
+  const cart = useSelector((state) => state.cart)
+  const salesHistory = useSelector((state) => state.sales.salesHistory)
 
   return (
     <div id="cart-section">
@@ -53,7 +49,7 @@ const Cart = () => {
         <PayButton />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Cart;
+export default Cart

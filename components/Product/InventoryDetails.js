@@ -1,12 +1,11 @@
-import { openProductModal } from "features/products/productsSlice";
-import { upperCase } from "lodash";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { upperCase } from "lodash"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
 
 const InventoryDetails = ({ onClose }) => {
-  const dispatch = useDispatch();
-  const product = useSelector((state) => state.products.productToView);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const dispatch = useDispatch()
+  const product = useSelector((state) => state.products.productToView)
+  const outletSelected = useSelector((state) => state.products.outletSelected)
   // console.log({ product });
   // console.log({ outletSelected });
 
@@ -64,7 +63,7 @@ const InventoryDetails = ({ onClose }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default InventoryDetails;
+export default InventoryDetails

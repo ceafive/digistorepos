@@ -1,11 +1,11 @@
-import { onAddCartNote } from "features/cart/cartSlice";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { onAddCartNote } from "features/cart/cartSlice"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
 
 const NoteBox = ({ setShowAddNoteInput }) => {
-  const dispatch = useDispatch();
-  const cartNote = useSelector((state) => state.cart.cartNote);
-  const [note, setNote] = React.useState(cartNote);
+  const dispatch = useDispatch()
+  const cartNote = useSelector((state) => state.cart.cartNote)
+  const [note, setNote] = React.useState(cartNote)
 
   return (
     <div className="font-medium bg-white z-10 w-full h-38 rounded shadow border border-gray-500 overflow-hidden">
@@ -18,8 +18,8 @@ const NoteBox = ({ setShowAddNoteInput }) => {
           <input
             value={note}
             onChange={(e) => {
-              e.persist();
-              setNote(e.target.value);
+              e.persist()
+              setNote(e.target.value)
             }}
             type="text"
             placeholder="Add a note to this sale"
@@ -28,10 +28,9 @@ const NoteBox = ({ setShowAddNoteInput }) => {
           <span
             className="z-10 absolute right-0 text-center text-red-500 w-8 pr-3 py-3 cursor-pointer"
             onClick={() => {
-              setNote("");
-              dispatch(onAddCartNote(""));
-            }}
-          >
+              setNote("")
+              dispatch(onAddCartNote(""))
+            }}>
             <i className="fas fa-times-circle"></i>
           </span>
         </div>
@@ -39,24 +38,22 @@ const NoteBox = ({ setShowAddNoteInput }) => {
           <button
             className="text-white font-bold bg-red-700 px-3 py-1 mr-2 rounded"
             onClick={() => {
-              setShowAddNoteInput(false);
-            }}
-          >
+              setShowAddNoteInput(false)
+            }}>
             Cancel
           </button>
           <button
             className="text-white font-bold bg-green-500 px-3 py-1 rounded"
             onClick={() => {
-              dispatch(onAddCartNote(note));
-              setShowAddNoteInput(false);
-            }}
-          >
+              dispatch(onAddCartNote(note))
+              setShowAddNoteInput(false)
+            }}>
             Add
           </button>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NoteBox;
+export default NoteBox

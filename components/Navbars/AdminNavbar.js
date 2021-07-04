@@ -1,9 +1,9 @@
-import UserDropdown from "components/Dropdowns/UserDropdown.js";
-import { useRouter } from "next/router";
-import React from "react";
+import UserDropdown from "components/Dropdowns/UserDropdown.js"
+import { useRouter } from "next/router"
+import React from "react"
 
 export default function Navbar() {
-  const router = useRouter();
+  const router = useRouter()
   return (
     <>
       {/* Navbar */}
@@ -16,10 +16,9 @@ export default function Navbar() {
             <button
               className="mr-3 focus:outline-none"
               onClick={() => {
-                sessionStorage.removeItem("IPAYPOSUSER");
-                router.push("/auth/login");
-              }}
-            >
+                sessionStorage.removeItem("IPAYPOSUSER")
+                router.push("/auth/login")
+              }}>
               Logout
             </button>
             <ul className="flex-col md:flex-row list-none items-center hidden md:flex">
@@ -30,5 +29,5 @@ export default function Navbar() {
       </nav>
       {/* End Navbar */}
     </>
-  );
+  )
 }

@@ -1,7 +1,5 @@
-import FooterSmall from "components/Footers/FooterSmall.js";
-// components
-import Navbar from "components/Navbars/AuthNavbar.js";
-import React from "react";
+import FooterSmall from "components/Footers/FooterSmall.js"
+import React from "react"
 
 export default function Auth({ children }) {
   return (
@@ -11,13 +9,12 @@ export default function Auth({ children }) {
           <div
             className="absolute top-0 w-full h-full bg-blueGray-800 bg-no-repeat bg-full"
             style={{
-              backgroundImage: "url('/img/register_bg_2.png')",
-            }}
-          ></div>
+              backgroundImage: "url('/img/register_bg_2.png')"
+            }}></div>
           {children}
           <FooterSmall absolute />
         </section>
       </main>
     </>
-  );
+  )
 }

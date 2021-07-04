@@ -1,5 +1,5 @@
-import Admin from "layouts/Admin.js";
-import React from "react";
+import Admin from "layouts/Admin.js"
+import React from "react"
 
 export default function Dashboard() {
   return (
@@ -8,7 +8,7 @@ export default function Dashboard() {
         <p className="font-bold text-6xl">Welcome</p>
       </div>
     </>
-  );
+  )
 }
 
-Dashboard.layout = Admin;
+Dashboard.layout = Admin

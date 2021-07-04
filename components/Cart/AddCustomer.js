@@ -1,13 +1,10 @@
 import axios from "axios";
 import Modal from "components/Modal";
 import { addCustomer } from "features/cart/cartSlice";
-import { motion } from "framer-motion";
 import debounce from "lodash.debounce";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { createFilter } from "react-search-input";
-
 import AddCustomerModal from "./AddCustomerModal";
 
 const AddCustomer = () => {

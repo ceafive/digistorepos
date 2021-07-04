@@ -1,9 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
   openSidebarSecondpane: false,
-  secondPaneOpenPathname: "home",
-};
+  secondPaneOpenPathname: "home"
+}
 
 const appSlice = createSlice({
   name: "app",
@@ -11,13 +11,13 @@ const appSlice = createSlice({
   reducers: {
     setSidebarSecondPaneOpen(state, action) {
       // state.openSidebarSecondpane = !state.openSidebarSecondpane;
-      state.openSidebarSecondpane = action.payload;
+      state.openSidebarSecondpane = action.payload
     },
     setSecondPaneOpenPath(state, action) {
-      state.secondPaneOpenPathname = action.payload.name;
-    },
-  },
-});
+      state.secondPaneOpenPathname = action.payload.name
+    }
+  }
+})
 
-export const { setSidebarSecondPaneOpen, setSecondPaneOpenPath } = appSlice.actions;
-export default appSlice.reducer;
+export const { setSidebarSecondPaneOpen, setSecondPaneOpenPath } = appSlice.actions
+export default appSlice.reducer

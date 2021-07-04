@@ -1,6 +1,5 @@
-import React from "react";
-
-import Spinner from "../Spinner";
+import React from "react"
+import Spinner from "../Spinner"
 
 const CashPaymentInput = ({ register, errors, cartTotalMinusDiscountPlusTax }) => {
   return (
@@ -13,14 +12,14 @@ const CashPaymentInput = ({ register, errors, cartTotalMinusDiscountPlusTax }) =
         {...register("cashReceived", {
           required: "Enter Cash Received",
           validate: (value) =>
-            Number(value) >= cartTotalMinusDiscountPlusTax || `Amount entered cannot be be less than GHS${cartTotalMinusDiscountPlusTax}`,
+            Number(value) >= cartTotalMinusDiscountPlusTax || `Amount entered cannot be be less than GHS${cartTotalMinusDiscountPlusTax}`
         })}
         className="border border-blue-500 px-3 4 text-lg placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded outline-none focus:outline-none w-full"
       />
       <p className="text-red-500 text-sm">{errors["cashReceived"]?.message}</p>
     </div>
-  );
-};
+  )
+}
 
 const CollectCashGiveBalance = ({ fetching, register, handleSubmit, errors, cartTotalMinusDiscountPlusTax }) => {
   return (
@@ -36,9 +35,8 @@ const CollectCashGiveBalance = ({ fetching, register, handleSubmit, errors, cart
           type="button"
           onClick={() => {
             // handleSubmit(onAddPayment)();
-            handleSubmit((values) => console.log(values))();
-          }}
-        >
+            handleSubmit((values) => console.log(values))()
+          }}>
           {fetching && (
             <div className="inline-block mr-2">
               <Spinner type={"TailSpin"} color="black" width={10} height={10} />
@@ -48,7 +46,7 @@ const CollectCashGiveBalance = ({ fetching, register, handleSubmit, errors, cart
         </button>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default CollectCashGiveBalance;
+export default CollectCashGiveBalance

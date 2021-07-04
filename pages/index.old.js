@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-no-target-blank */
-import Footer from "components/Footers/Footer.js";
-import IndexNavbar from "components/Navbars/IndexNavbar.js";
-import Link from "next/link";
-import React from "react";
+import Footer from "components/Footers/Footer.js"
+import IndexNavbar from "components/Navbars/IndexNavbar.js"
+import Link from "next/link"
+import React from "react"
 
 export default function Index() {
   return (
@@ -24,15 +24,13 @@ export default function Index() {
                 <a
                   href="https://www.creative-tim.com/learning-lab/tailwind/nextjs/overview/notus?ref=nnjs-index"
                   target="_blank"
-                  className="get-started text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-400 active:bg-blueGray-500 uppercase text-sm shadow hover:shadow-lg ease-linear transition-all duration-150"
-                >
+                  className="get-started text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-400 active:bg-blueGray-500 uppercase text-sm shadow hover:shadow-lg ease-linear transition-all duration-150">
                   Get started
                 </a>
                 <a
                   href="https://github.com/creativetimofficial/notus-nextjs?ref=nnjs-index"
                   className="github-star ml-1 text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-700 active:bg-blueGray-600 uppercase text-sm shadow hover:shadow-lg"
-                  target="_blank"
-                >
+                  target="_blank">
                   Github Star
                 </a>
               </div>
@@ -55,8 +53,7 @@ export default function Index() {
             version="1.1"
             viewBox="0 0 2560 100"
             x="0"
-            y="0"
-          >
+            y="0">
             <polygon className="text-blueGray-100 fill-current" points="2560 0 2560 100 0 100"></polygon>
           </svg>
         </div>
@@ -74,8 +71,7 @@ export default function Index() {
                     preserveAspectRatio="none"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 583 95"
-                    className="absolute left-0 w-full block h-95-px -top-94-px"
-                  >
+                    className="absolute left-0 w-full block h-95-px -top-94-px">
                     <polygon points="-30,95 583,95 583,65" className="text-blueGray-700 fill-current"></polygon>
                   </svg>
                   <h4 className="text-xl font-bold text-white">Great for your awesome project</h4>
@@ -178,8 +174,7 @@ export default function Index() {
               <a
                 href="https://www.creative-tim.com/learning-lab/tailwind/nextjs/alerts/notus?ref=nnjs-index"
                 target="_blank"
-                className="font-bold text-blueGray-700 hover:text-blueGray-500 ease-linear transition-all duration-150"
-              >
+                className="font-bold text-blueGray-700 hover:text-blueGray-500 ease-linear transition-all duration-150">
                 View All <i className="fa fa-angle-double-right ml-1 leading-relaxed"></i>
               </a>
             </div>
@@ -331,8 +326,7 @@ export default function Index() {
               <a
                 href="https://www.creative-tim.com/learning-lab/tailwind/nextjs/alerts/notus?ref=nnjs-index"
                 target="_blank"
-                className="font-bold text-blueGray-700 hover:text-blueGray-500 ease-linear transition-all duration-150"
-              >
+                className="font-bold text-blueGray-700 hover:text-blueGray-500 ease-linear transition-all duration-150">
                 View all <i className="fa fa-angle-double-right ml-1 leading-relaxed"></i>
               </a>
             </div>
@@ -397,7 +391,7 @@ export default function Index() {
                 alt="..."
                 className="max-w-full rounded-lg shadow-xl"
                 style={{
-                  transform: "scale(1) perspective(1040px) rotateY(-11deg) rotateX(2deg) rotate(2deg)",
+                  transform: "scale(1) perspective(1040px) rotateY(-11deg) rotateX(2deg) rotate(2deg)"
                 }}
                 src="/img/documentation.png"
               />
@@ -475,8 +469,7 @@ export default function Index() {
               <a
                 href="https://github.com/creativetimofficial/notus-nextjs?ref=nnjs-index"
                 target="_blank"
-                className="github-star mt-4 inline-block text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-700 active:bg-blueGray-600 uppercase text-sm shadow hover:shadow-lg"
-              >
+                className="github-star mt-4 inline-block text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-700 active:bg-blueGray-600 uppercase text-sm shadow hover:shadow-lg">
                 Github Star
               </a>
             </div>
@@ -497,8 +490,7 @@ export default function Index() {
             version="1.1"
             viewBox="0 0 2560 100"
             x="0"
-            y="0"
-          >
+            y="0">
             <polygon className="text-blueGray-200 fill-current" points="2560 0 2560 100 0 100"></polygon>
           </svg>
         </div>
@@ -520,15 +512,13 @@ export default function Index() {
                 <a
                   href="https://www.creative-tim.com/learning-lab/tailwind/nextjs/overview/notus?ref=nnjs-index"
                   target="_blank"
-                  className="get-started text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-2 bg-blueGray-400 active:bg-blueGray-500 uppercase text-sm shadow hover:shadow-lg ease-linear transition-all duration-150"
-                >
+                  className="get-started text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-2 bg-blueGray-400 active:bg-blueGray-500 uppercase text-sm shadow hover:shadow-lg ease-linear transition-all duration-150">
                   Get started
                 </a>
                 <a
                   href="https://github.com/creativetimofficial/notus-nextjs?ref=nnjs-index"
                   target="_blank"
-                  className="github-star sm:ml-1 text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-700 active:bg-blueGray-600 uppercase text-sm shadow hover:shadow-lg"
-                >
+                  className="github-star sm:ml-1 text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-700 active:bg-blueGray-600 uppercase text-sm shadow hover:shadow-lg">
                   <i className="fab fa-github text-lg mr-1"></i>
                   <span>Help With a Star</span>
                 </a>
@@ -540,5 +530,5 @@ export default function Index() {
       </section>
       <Footer />
     </>
-  );
+  )
 }

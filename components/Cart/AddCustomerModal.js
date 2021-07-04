@@ -1,27 +1,27 @@
-import axios from "axios";
-import Spinner from "components/Spinner";
-import { format } from "date-fns";
-import { addCustomer } from "features/cart/cartSlice";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import axios from "axios"
+import Spinner from "components/Spinner"
+import { format } from "date-fns"
+import { addCustomer } from "features/cart/cartSlice"
+import React from "react"
+import { useForm } from "react-hook-form"
+import { useDispatch } from "react-redux"
 
 const AddCustomerModal = ({ onClose, setStep }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const {
     register,
     reset,
     formState: { errors },
-    handleSubmit,
-  } = useForm();
+    handleSubmit
+  } = useForm()
 
-  const [processing, setProcessing] = React.useState(false);
+  const [processing, setProcessing] = React.useState(false)
 
   const sumbitToServer = async (values) => {
     try {
-      setProcessing(true);
-      let user = sessionStorage.getItem("IPAYPOSUSER");
-      user = JSON.parse(user);
+      setProcessing(true)
+      let user = sessionStorage.getItem("IPAYPOSUSER")
+      user = JSON.parse(user)
 
       const userData = {
         client_name: values?.fullName,
@@ -29,33 +29,33 @@ const AddCustomerModal = ({ onClose, setStep }) => {
         client_dob: format(new Date(values?.dob), "dd-MM"),
         client_phone: values?.phone,
         client_merchant: user?.user_merchant_id,
-        mod_by: user?.login,
-      };
+        mod_by: user?.login
+      }
 
-      const response = await axios.post("/api/sell/add-customer", userData);
-      const { status, message } = await response.data;
+      const response = await axios.post("/api/sell/add-customer", userData)
+      const { status, message } = await response.data
 
       if (status === 0 || status === 91) {
-        const getCustomerRes = await axios.post("/api/sell/get-customer", { phoneNumber: userData?.client_phone });
-        const { data } = await getCustomerRes.data;
-        dispatch(addCustomer(data));
-        setStep(2);
+        const getCustomerRes = await axios.post("/api/sell/get-customer", { phoneNumber: userData?.client_phone })
+        const { data } = await getCustomerRes.data
+        dispatch(addCustomer(data))
+        setStep(2)
       }
 
       reset({
         fullName: "",
         email: "",
         dob: "",
-        phone: "",
-      });
+        phone: ""
+      })
     } catch (error) {
-      console.log(error);
-      setProcessing(false);
+      console.log(error)
+      setProcessing(false)
     } finally {
-      setProcessing(false);
-      onClose();
+      setProcessing(false)
+      onClose()
     }
-  };
+  }
 
   return (
     <div className="w-full p-5">
@@ -112,9 +112,8 @@ const AddCustomerModal = ({ onClose, setStep }) => {
             processing ? "bg-gray-300 text-gray-200" : "bg-green-800 text-white"
           } active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-5 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150`}
           onClick={() => {
-            handleSubmit(sumbitToServer)();
-          }}
-        >
+            handleSubmit(sumbitToServer)()
+          }}>
           {processing && (
             <div className="inline-block mr-2">
               <Spinner type={"TailSpin"} color="black" width="10" height="10" />
@@ -124,7 +123,7 @@ const AddCustomerModal = ({ onClose, setStep }) => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AddCustomerModal;
+export default AddCustomerModal

@@ -1,8 +1,7 @@
-import React from "react";
-
-import ConfirmPayment from "./ConfirmPayment";
-import PaymentReceived from "./PaymentReceived";
-import ProcessPayment from "./ProcessPayment";
+import React from "react"
+import ConfirmPayment from "./ConfirmPayment"
+import PaymentReceived from "./PaymentReceived"
+import ProcessPayment from "./ProcessPayment"
 
 const RaiseOrderSection = ({
   handleRaiseOrder,
@@ -23,7 +22,7 @@ const RaiseOrderSection = ({
   confirmButtonText,
   setConfirmButtonText,
   setProcessError,
-  userDetails,
+  userDetails
 }) => {
   return (
     <>
@@ -69,7 +68,7 @@ const RaiseOrderSection = ({
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default RaiseOrderSection;
+export default RaiseOrderSection

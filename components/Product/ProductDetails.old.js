@@ -1,46 +1,45 @@
-import Carousel from "components/Carousel";
-import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
-import { openProductModal } from "features/products/productsSlice";
-import { camelCase, get, lowerCase, map, reduce, upperCase } from "lodash";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import Carousel from "components/Carousel"
+import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice"
+import { camelCase, get, lowerCase, reduce, upperCase } from "lodash"
+import React from "react"
+import { useForm } from "react-hook-form"
+import { useDispatch, useSelector } from "react-redux"
 
-const initialFormData = {};
+const initialFormData = {}
 
 const ProductDetails = ({ onClose }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const {
     register,
     watch,
     setValue,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm({
     mode: "all",
     defaultValues: {
-      quantity: 0,
-    },
-  });
-  const product = useSelector((state) => state.products.productToView);
-  const [productPrice, setProductPrice] = React.useState(0);
-  const [formData, setFormData] = React.useState({});
+      quantity: 0
+    }
+  })
+  const product = useSelector((state) => state.products.productToView)
+  const [productPrice, setProductPrice] = React.useState(0)
+  const [formData, setFormData] = React.useState({})
 
-  const variants = Object.values(product.product_properties);
+  const variants = Object.values(product.product_properties)
   const groupVariants = variants.reduce((acc, variant) => {
-    const found = acc[variant.property_id] || [];
-    return { ...acc, [variant.property_id]: [...found, variant] };
-  }, {});
+    const found = acc[variant.property_id] || []
+    return { ...acc, [variant.property_id]: [...found, variant] }
+  }, {})
 
-  const allVariants = Object.entries(groupVariants);
+  const allVariants = Object.entries(groupVariants)
 
   function IsJsonString(str) {
     try {
-      var json = JSON.parse(str);
-      return typeof json === "object";
+      var json = JSON.parse(str)
+      return typeof json === "object"
     } catch (e) {
-      return false;
+      return false
     }
   }
 
@@ -48,14 +47,14 @@ const ProductDetails = ({ onClose }) => {
     const res = reduce(
       values,
       function (result, value, key) {
-        return { ...result, [key]: IsJsonString(value) ? get(JSON.parse(value), "value") : value };
+        return { ...result, [key]: IsJsonString(value) ? get(JSON.parse(value), "value") : value }
       },
       {}
-    );
-    const { quantity, ...rest } = res;
-    console.log({ res });
+    )
+    const { quantity, ...rest } = res
+    console.log({ res })
 
-    dispatch(increaseTotalItemsInCart(Math.round(Number(res?.quantity))));
+    dispatch(increaseTotalItemsInCart(Math.round(Number(res?.quantity))))
     dispatch(
       addItemToCart({
         id: product.product_id,
@@ -63,11 +62,11 @@ const ProductDetails = ({ onClose }) => {
         price: Number(parseFloat(productPrice).toFixed(2)),
         imgURL: product.product_image,
         quantity: Number(quantity),
-        variants: rest,
+        variants: rest
       })
-    );
-    onClose();
-  };
+    )
+    onClose()
+  }
 
   return (
     <div className="relative flex w-full max-w-6xl rounded-lg  bg-white border border-gray-200" style={{ height: 600 }}>
@@ -83,7 +82,7 @@ const ProductDetails = ({ onClose }) => {
                   <div key={product_image} className="overflow-hidden">
                     <img className="" key={product_image} src={product_image} alt={product_image} style={{ maxHeight: 400 }} />
                   </div>
-                );
+                )
               })}
             </Carousel>
           </div>
@@ -107,8 +106,8 @@ const ProductDetails = ({ onClose }) => {
               <div className="flex flex-wrap justify-between">
                 {allVariants?.map((groupVariant) => {
                   const setVariant = {
-                    ...register(camelCase(groupVariant[0]), { required: `Please select a ${lowerCase(groupVariant[0])}` }),
-                  };
+                    ...register(camelCase(groupVariant[0]), { required: `Please select a ${lowerCase(groupVariant[0])}` })
+                  }
                   return (
                     <div key={groupVariant[0]} className="px-3 mb-6">
                       <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">{groupVariant[0]}</label>
@@ -116,24 +115,23 @@ const ProductDetails = ({ onClose }) => {
                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                         {...setVariant}
                         onChange={(e) => {
-                          const value = JSON.parse(e.target.value);
+                          const value = JSON.parse(e.target.value)
 
                           const target = {
                             ...e.target,
-                            value: value?.value,
-                          };
+                            value: value?.value
+                          }
 
                           // setValue(camelCase(groupVariant[0]), value?.value);
 
-                          e = { ...e, target };
+                          e = { ...e, target }
                           // console.log(e.target.value);
                           // setVariant.onChange(e);
 
                           if (value?.price) {
-                            setProductPrice(Number(parseFloat(value?.price).toFixed(2)));
+                            setProductPrice(Number(parseFloat(value?.price).toFixed(2)))
                           }
-                        }}
-                      >
+                        }}>
                         <option value={""}></option>
                         {groupVariant[1].map((variant) => {
                           return (
@@ -143,8 +141,7 @@ const ProductDetails = ({ onClose }) => {
                                 variant?.property_price_set === "YES"
                                   ? JSON.stringify({ value: variant?.property_value, price: variant?.property_price })
                                   : JSON.stringify({ value: variant?.property_value, price: null })
-                              }
-                            >
+                              }>
                               {variant?.property_value}{" "}
                               {`${
                                 variant?.property_price_set === "YES"
@@ -152,12 +149,12 @@ const ProductDetails = ({ onClose }) => {
                                   : ""
                               }`}
                             </option>
-                          );
+                          )
                         })}
                       </select>
                       <p className="text-xs text-red-500">{errors[camelCase(groupVariant[0])]?.message}</p>
                     </div>
-                  );
+                  )
                 })}
                 <div className="px-3 mb-6">
                   <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Quantity</label>
@@ -167,8 +164,8 @@ const ProductDetails = ({ onClose }) => {
                       required: true,
                       min: {
                         value: 1,
-                        message: "Quantity must be more than 0",
-                      },
+                        message: "Quantity must be more than 0"
+                      }
                     })}
                     type="number"
                     className="appearance-none bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -182,9 +179,8 @@ const ProductDetails = ({ onClose }) => {
               <button
                 className={`${true ? "bg-green-600 text-white" : "bg-gray-400 text-gray-300"} py-2 px-6 font-semibold text-lg rounded`}
                 onClick={() => {
-                  handleSubmit(submitFormData)();
-                }}
-              >
+                  handleSubmit(submitFormData)()
+                }}>
                 Add to Cart
               </button>
             </div>
@@ -192,7 +188,7 @@ const ProductDetails = ({ onClose }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProductDetails;
+export default ProductDetails

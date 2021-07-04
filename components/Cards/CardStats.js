@@ -1,5 +1,5 @@
-import PropTypes from "prop-types";
-import React from "react";
+import PropTypes from "prop-types"
+import React from "react"
 
 export default function CardStats({
   statSubtitle,
@@ -9,7 +9,7 @@ export default function CardStats({
   statPercentColor,
   statDescripiron,
   statIconName,
-  statIconColor,
+  statIconColor
 }) {
   return (
     <>
@@ -24,8 +24,7 @@ export default function CardStats({
               <div
                 className={
                   "text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full " + statIconColor
-                }
-              >
+                }>
                 <i className={statIconName}></i>
               </div>
             </div>
@@ -39,7 +38,7 @@ export default function CardStats({
         </div>
       </div>
     </>
-  );
+  )
 }
 
 CardStats.defaultProps = {
@@ -50,8 +49,8 @@ CardStats.defaultProps = {
   statPercentColor: "text-emerald-500",
   statDescripiron: "Since last month",
   statIconName: "far fa-chart-bar",
-  statIconColor: "bg-red-500",
-};
+  statIconColor: "bg-red-500"
+}
 
 CardStats.propTypes = {
   statSubtitle: PropTypes.string,
@@ -65,5 +64,5 @@ CardStats.propTypes = {
   statIconName: PropTypes.string,
   // can be any of the background color utilities
   // from tailwindcss
-  statIconColor: PropTypes.string,
-};
+  statIconColor: PropTypes.string
+}

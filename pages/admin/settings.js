@@ -1,9 +1,9 @@
-import CardProfile from "components/Cards/CardProfile.js";
+import CardProfile from "components/Cards/CardProfile.js"
 // components
-import CardSettings from "components/Cards/CardSettings.js";
+import CardSettings from "components/Cards/CardSettings.js"
 // layout for page
-import Admin from "layouts/Admin.js";
-import React from "react";
+import Admin from "layouts/Admin.js"
+import React from "react"
 
 export default function Settings() {
   return (
@@ -17,7 +17,7 @@ export default function Settings() {
         </div>
       </div>
     </>
-  );
+  )
 }
 
-Settings.layout = Admin;
+Settings.layout = Admin

@@ -1,18 +1,18 @@
-import AddCustomer from "components/Cart/AddCustomer";
-import Spinner from "components/Spinner";
-import TypeDelivery from "components/TypeDelivery";
+import AddCustomer from "components/Cart/AddCustomer"
+import Spinner from "components/Spinner"
+import TypeDelivery from "components/TypeDelivery"
 import {
   addCustomer,
   onClickToCheckout,
   setDeliveryCharge,
   setDeliveryNotes,
   setDeliveryTypeSelected,
-  setPaymentMethodSet,
-} from "features/cart/cartSlice";
-import { setOutletSelected } from "features/products/productsSlice";
-import { intersectionWith, isEqual } from "lodash";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+  setPaymentMethodSet
+} from "features/cart/cartSlice"
+import { setOutletSelected } from "features/products/productsSlice"
+import { intersectionWith, isEqual } from "lodash"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
 
 const paymentOptions = [
   { name: "CASH", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-CASH.png", showInput: false },
@@ -22,18 +22,18 @@ const paymentOptions = [
   { name: "MTNMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-MTNMM.png", showInput: true },
   { name: "TIGOC", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-TIGOC.png", showInput: true },
   { name: "VODAC", img: " https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-VODAC.png", showInput: true },
-  { name: "GCBMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-GCBMM.png", showInput: true },
-];
+  { name: "GCBMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-GCBMM.png", showInput: true }
+]
 
 const merchantUserDeliveryOptions = [
   { name: "Dine In" },
   { name: "Pickup" },
   {
-    name: "Delivery",
-  },
-];
+    name: "Delivery"
+  }
+]
 
-const loyaltyTabs = ["Loyalty", "Layby", "Store Credit", "On Account"];
+const loyaltyTabs = ["Loyalty", "Layby", "Store Credit", "On Account"]
 
 const ProcessPayment = ({
   handleRaiseOrder,
@@ -48,35 +48,35 @@ const ProcessPayment = ({
   setFetching,
   processError,
   handleSendNotification,
-  sendingNotification,
+  sendingNotification
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   // Selectors
-  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
-  const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
-  const outlets = useSelector((state) => state.products.outlets);
-  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
-  const activePayments = useSelector((state) => state.cart.activePayments);
-  const deliveryTypeSelected = useSelector((state) => state.cart.deliveryTypeSelected);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
-  const paymentMethodSet = useSelector((state) => state.cart.paymentMethodSet);
-  const deliveryLocationInputted = useSelector((state) => state.cart.deliveryLocationInputted);
-  const cart = useSelector((state) => state.cart);
+  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax)
+  const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer)
+  const outlets = useSelector((state) => state.products.outlets)
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer)
+  const activePayments = useSelector((state) => state.cart.activePayments)
+  const deliveryTypeSelected = useSelector((state) => state.cart.deliveryTypeSelected)
+  const outletSelected = useSelector((state) => state.products.outletSelected)
+  const paymentMethodSet = useSelector((state) => state.cart.paymentMethodSet)
+  const deliveryLocationInputted = useSelector((state) => state.cart.deliveryLocationInputted)
+  const cart = useSelector((state) => state.cart)
 
   // Variables
-  const balance = Number(parseFloat(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(3));
-  const userDetails = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
+  const balance = Number(parseFloat(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(3))
+  const userDetails = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"))
   const paymentButtons = React.useMemo(() => {
     const intersected = intersectionWith(paymentOptions, userDetails?.user_permissions, (arrVal, othVal) => {
-      return isEqual(arrVal.name, othVal);
-    });
+      return isEqual(arrVal.name, othVal)
+    })
     const allIntersected = intersectionWith(intersected, activePayments, (arrVal, othVal) => {
-      return isEqual(arrVal.name, othVal);
-    });
-    return allIntersected;
-  }, [activePayments, userDetails?.user_permissions]);
-  const deliveryLocationIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryLocationInputted;
+      return isEqual(arrVal.name, othVal)
+    })
+    return allIntersected
+  }, [activePayments, userDetails?.user_permissions])
+  const deliveryLocationIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryLocationInputted
 
   // console.log(fetching, deliveryTypeSelected, deliveryLocationIsEmpty, amountReceivedFromPayer, balance);
 
@@ -87,9 +87,8 @@ const ProcessPayment = ({
         <button
           className="font-bold text-lg focus:outline-none"
           onClick={() => {
-            dispatch(onClickToCheckout());
-          }}
-        >
+            dispatch(onClickToCheckout())
+          }}>
           <i className="fas fa-arrow-left mr-1 "></i>
           <span>Back to Sale</span>
         </button>{" "}
@@ -105,8 +104,8 @@ const ProcessPayment = ({
             readOnly={true}
             // readOnly={amountReceivedFromPayer >= cartTotalMinusDiscountPlusTax}
             onChange={(e) => {
-              e.persist();
-              setPayerAmountEntered(e.target.value);
+              e.persist()
+              setPayerAmountEntered(e.target.value)
             }}
             type="number"
             placeholder="Enter an amount"
@@ -127,14 +126,13 @@ const ProcessPayment = ({
                   paymentMethodSet === paymentButton.name ? "ring-2" : ""
                 }  w-32 h-28 border border-gray-100 rounded shadow-sm overflow-hidden focus:outline-none px-2 break-words`}
                 onClick={() => {
-                  dispatch(setPaymentMethodSet(paymentButton.name));
-                  setOpenPhoneNumberInputModal(true);
-                }}
-              >
+                  dispatch(setPaymentMethodSet(paymentButton.name))
+                  setOpenPhoneNumberInputModal(true)
+                }}>
                 <img className="w-full" src={paymentButton.img} alt={paymentButton.name} />
               </button>
             </div>
-          );
+          )
         })}
       </div>
       {/* Payment Buttons */}
@@ -152,12 +150,11 @@ const ProcessPayment = ({
                     outletSelected === outlet.outlet_name ? "ring-2" : ""
                   } w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words`}
                   onClick={() => {
-                    dispatch(setOutletSelected(outlet));
-                  }}
-                >
+                    dispatch(setOutletSelected(outlet))
+                  }}>
                   {outlet.outlet_name}
                 </button>
-              );
+              )
             })}
           </div>
         </div>
@@ -177,16 +174,15 @@ const ProcessPayment = ({
                   } w-32 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
                   onClick={() => {
                     if (option.name !== "Delivery") {
-                      dispatch(setDeliveryCharge(null));
-                      dispatch(setDeliveryNotes(""));
+                      dispatch(setDeliveryCharge(null))
+                      dispatch(setDeliveryNotes(""))
                     }
-                    dispatch(setDeliveryTypeSelected(option.name));
-                  }}
-                >
+                    dispatch(setDeliveryTypeSelected(option.name))
+                  }}>
                   {option.name}
                 </button>
               </div>
-            );
+            )
           })}
         </div>
 
@@ -212,9 +208,8 @@ const ProcessPayment = ({
               <button
                 className=" focus:outline-none font-bold"
                 onClick={() => {
-                  dispatch(addCustomer(null));
-                }}
-              >
+                  dispatch(addCustomer(null))
+                }}>
                 <i className="fas fa-trash-alt text-red-500"></i>
               </button>
             </div>
@@ -250,8 +245,7 @@ const ProcessPayment = ({
               ? "bg-gray-400 text-gray-300"
               : "bg-green-700 text-white"
           } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}
-          onClick={handleRaiseOrder}
-        >
+          onClick={handleRaiseOrder}>
           {fetching && (
             <div className="inline-block mr-2">
               <Spinner type={"TailSpin"} color="black" width={20} height={20} />
@@ -262,7 +256,7 @@ const ProcessPayment = ({
         {processError && <p className="text-center text-red-500 text-sm">{processError}</p>}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProcessPayment;
+export default ProcessPayment

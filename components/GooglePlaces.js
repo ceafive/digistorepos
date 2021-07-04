@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import React from "react"
+import GooglePlacesAutocomplete from "react-google-places-autocomplete"
 
 const GooglePlaces = ({ value, setValue, selectProps }) => {
   return (
@@ -8,11 +8,11 @@ const GooglePlaces = ({ value, setValue, selectProps }) => {
         selectProps={{
           ...selectProps,
           value,
-          onChange: setValue,
+          onChange: setValue
         }}
       />
     </div>
-  );
-};
+  )
+}
 
-export default GooglePlaces;
+export default GooglePlaces

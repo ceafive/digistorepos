@@ -1,23 +1,23 @@
 // layout for page
-import Auth from "layouts/Auth.js";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React from "react";
-import { useForm } from "react-hook-form";
+import Auth from "layouts/Auth.js"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import React from "react"
+import { useForm } from "react-hook-form"
 
 export default function Register() {
-  const router = useRouter();
+  const router = useRouter()
   const {
     control,
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm();
+    formState: { errors }
+  } = useForm()
 
   const handleUserSignUp = (values) => {
-    localStorage.setItem("ipayUser", JSON.stringify(values));
-    router.push("/");
-  };
+    localStorage.setItem("ipayUser", JSON.stringify(values))
+    router.push("/")
+  }
 
   return (
     <>
@@ -40,7 +40,7 @@ export default function Register() {
                     </label>
                     <input
                       {...register("name", {
-                        required: "Name is required",
+                        required: "Name is required"
                       })}
                       type="text"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -55,7 +55,7 @@ export default function Register() {
                     </label>
                     <input
                       {...register("email", {
-                        required: "Email address is required",
+                        required: "Email address is required"
                       })}
                       type="email"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -73,8 +73,8 @@ export default function Register() {
                         required: "Password is required",
                         minLength: {
                           value: 6,
-                          message: "Password must be longer than 5 chars",
-                        },
+                          message: "Password must be longer than 5 chars"
+                        }
                       })}
                       type="password"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -103,8 +103,7 @@ export default function Register() {
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"
-                      onClick={handleSubmit(handleUserSignUp)}
-                    >
+                      onClick={handleSubmit(handleUserSignUp)}>
                       Create Account
                     </button>
                   </div>
@@ -124,7 +123,7 @@ export default function Register() {
         </div>
       </div>
     </>
-  );
+  )
 }
 
-Register.layout = Auth;
+Register.layout = Auth

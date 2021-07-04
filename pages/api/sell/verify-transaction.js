@@ -1,61 +1,8 @@
-import { axiosIPAY } from "services/axios";
+import { getHandler } from "utils"
 
-const cors = require("cors")({ origin: true });
-const crypto = require("crypto");
-const qs = require("querystring");
+export default async function handler(req, res) {
+  const { user: userDetails, trxID } = req.body
 
-function microtime(getAsFloat) {
-  return (Date.now ? Date.now() : new Date().getTime()) / 1000;
-  // return now - 74545;
-}
-
-function getHash(string, key) {
-  var hmac = crypto.createHmac("sha512", key);
-  hmac.update(string);
-  return hmac.digest("hex");
-}
-
-export default function handler(req, res) {
-  return cors(req, res, async () => {
-    if (req.method !== "POST") {
-      return res.status(200).json({ success: false, message: "Invalid request" });
-    }
-
-    try {
-      const timestamp = Math.round(microtime());
-      const stringedTimestamp = String(timestamp);
-      const appID = process.env.APP_ID;
-      const appKey = process.env.APP_KEY;
-      const authData = `${appID}:${stringedTimestamp}`;
-      const authSecret = getHash(authData, appKey);
-
-      const { user: userDetails, trxID } = req.body;
-
-      const iPayResponse = await axiosIPAY({
-        url: `/paybills/payment/gateway/status/${userDetails["user_merchant_key"]}/${trxID}`,
-        method: "get",
-        headers: {
-          Application: appID,
-          Time: stringedTimestamp,
-          Authentication: authSecret,
-          Accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
-
-      const iPayData = await iPayResponse.data;
-      console.log(iPayData);
-      return res.status(200).json(iPayData);
-    } catch (error) {
-      let errorResponse = "";
-      if (error.response) {
-        errorResponse = error.response.data;
-      } else if (error.request) {
-        errorResponse = error.request;
-      } else {
-        errorResponse = { error: error.message };
-      }
-      return res.status(error.response.status).json(errorResponse);
-    }
-  });
+  const url = `/paybills/payment/gateway/status/${userDetails["user_merchant_key"]}/${trxID}`
+  await getHandler(req, res, url)
 }

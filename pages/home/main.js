@@ -1,5 +1,5 @@
-import Admin from "layouts/Admin.js";
-import React from "react";
+import Admin from "layouts/Admin.js"
+import React from "react"
 
 export default function HomeMain() {
   return (
@@ -8,7 +8,7 @@ export default function HomeMain() {
         <p className="font-bold text-6xl">Welcome</p>
       </div>
     </>
-  );
+  )
 }
 
-HomeMain.layout = Admin;
+HomeMain.layout = Admin

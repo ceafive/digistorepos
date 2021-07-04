@@ -1,6 +1,5 @@
-import React from "react";
-
-import Spinner from "../Spinner";
+import React from "react"
+import Spinner from "../Spinner"
 
 const CashPaymentInput = ({ paymentMethodSet, register, errors, cartTotalMinusDiscountPlusTax }) => {
   return (
@@ -13,14 +12,14 @@ const CashPaymentInput = ({ paymentMethodSet, register, errors, cartTotalMinusDi
         {...register(paymentMethodSet, {
           required: "Enter Cash Received",
           validate: (value) =>
-            Number(value) >= cartTotalMinusDiscountPlusTax || `Amount entered cannot be be less than GHS${cartTotalMinusDiscountPlusTax}`,
+            Number(value) >= cartTotalMinusDiscountPlusTax || `Amount entered cannot be be less than GHS${cartTotalMinusDiscountPlusTax}`
         })}
         className="border border-blue-500 px-3 4 text-lg placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded outline-none focus:outline-none w-full"
       />
       <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
     </div>
-  );
-};
+  )
+}
 
 const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors }) => {
   return (
@@ -36,20 +35,20 @@ const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors })
           required: "Please enter a phone number",
           minLength: {
             value: lengthOfMobileNumber,
-            message: "Cannot be shorter than 10 chars",
+            message: "Cannot be shorter than 10 chars"
           },
           maxLength: {
             value: lengthOfMobileNumber,
-            message: "Cannot be longer than 10 chars",
-          },
+            message: "Cannot be longer than 10 chars"
+          }
         })}
         placeholder="0547748484"
         className="border border-blue-500 px-3 4 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-lg outline-none focus:outline-none w-full"
       />
       <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
     </div>
-  );
-};
+  )
+}
 
 const OtherPaymentInput = ({ paymentMethodSet, register, errors }) => {
   return (
@@ -60,15 +59,15 @@ const OtherPaymentInput = ({ paymentMethodSet, register, errors }) => {
       <input
         type="text"
         {...register(paymentMethodSet, {
-          required: "Please enter details",
+          required: "Please enter details"
         })}
         placeholder="0547748484 or jane_doe@mail.com"
         className="border border-blue-500 px-3 4 text-lg placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded outline-none focus:outline-none w-full"
       />
       <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
     </div>
-  );
-};
+  )
+}
 
 const CollectUserDetail = ({
   fetching,
@@ -78,7 +77,7 @@ const CollectUserDetail = ({
   handleSubmit,
   lengthOfMobileNumber,
   errors,
-  cartTotalMinusDiscountPlusTax,
+  cartTotalMinusDiscountPlusTax
 }) => {
   // console.log(errors);
   // console.log(cartTotalMinusDiscountPlusTax);
@@ -108,9 +107,8 @@ const CollectUserDetail = ({
           } font-bold px-3 py-3  rounded focus:outline-none ease-linear transition-all duration-150`}
           type="button"
           onClick={() => {
-            handleSubmit(onAddPayment)();
-          }}
-        >
+            handleSubmit(onAddPayment)()
+          }}>
           {fetching && (
             <div className="inline-block mr-2">
               <Spinner type={"TailSpin"} color="black" width={10} height={10} />
@@ -120,7 +118,7 @@ const CollectUserDetail = ({
         </button>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default CollectUserDetail;
+export default CollectUserDetail

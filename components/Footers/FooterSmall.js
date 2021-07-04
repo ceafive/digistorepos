@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 export default function FooterSmall(props) {
   return (
@@ -12,8 +12,7 @@ export default function FooterSmall(props) {
                 Copyright © {new Date().getFullYear()}{" "}
                 <a
                   href="https://www.creative-tim.com?ref=nnjs-footer-small"
-                  className="text-white hover:text-blueGray-300 text-sm font-semibold py-1"
-                >
+                  className="text-white hover:text-blueGray-300 text-sm font-semibold py-1">
                   iPay Ghana
                 </a>
               </div>
@@ -22,5 +21,5 @@ export default function FooterSmall(props) {
         </div>
       </footer>
     </>
-  );
+  )
 }

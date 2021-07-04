@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 export default function FooterAdmin() {
   return (
@@ -14,8 +14,7 @@ export default function FooterAdmin() {
                   href="https://www.ipaygh.com/"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-blueGray-500 hover:text-blueGray-700 text-sm font-semibold py-1"
-                >
+                  className="text-blueGray-500 hover:text-blueGray-700 text-sm font-semibold py-1">
                   iPay Ghana
                 </a>
               </div>
@@ -38,5 +37,5 @@ export default function FooterAdmin() {
         </div>
       </footer>
     </>
-  );
+  )
 }

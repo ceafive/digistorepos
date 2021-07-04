@@ -1,20 +1,20 @@
-import { setAmountReceivedFromPayer } from "features/cart/cartSlice";
-import React from "react";
-import { useDispatch } from "react-redux";
+import { setAmountReceivedFromPayer } from "features/cart/cartSlice"
+import React from "react"
+import { useDispatch } from "react-redux"
 
 const CashPaymentModal = ({ onClose, payerAmountEntered, cartTotalMinusDiscountPlusTax }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const setAmount = () => {
     dispatch(
       setAmountReceivedFromPayer({
         method: "CASH",
-        amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
+        amount: Number(parseFloat(payerAmountEntered).toFixed(2))
       })
-    );
+    )
 
-    onClose();
-  };
+    onClose()
+  }
 
   return (
     <>
@@ -24,7 +24,7 @@ const CashPaymentModal = ({ onClose, payerAmountEntered, cartTotalMinusDiscountP
         GHS{payerAmountEntered}
       </button>
     </>
-  );
-};
+  )
+}
 
-export default CashPaymentModal;
+export default CashPaymentModal

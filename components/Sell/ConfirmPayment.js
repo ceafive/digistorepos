@@ -1,9 +1,9 @@
-import axios from "axios";
-import Spinner from "components/Spinner";
-import { onClickToCheckout, onResetCart, setVerifyTransactionResponse } from "features/cart/cartSlice";
-import { throttle, upperCase } from "lodash";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import axios from "axios"
+import Spinner from "components/Spinner"
+import { onClickToCheckout, onResetCart, setVerifyTransactionResponse } from "features/cart/cartSlice"
+import { throttle, upperCase } from "lodash"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
 
 const ConfirmPayment = ({
   setStep,
@@ -14,76 +14,76 @@ const ConfirmPayment = ({
   setProcessError,
   confirmButtonText,
   userDetails,
-  setConfirmButtonText,
+  setConfirmButtonText
 }) => {
-  const dispatch = useDispatch();
-  const verifyTransactionResponse = useSelector((state) => state.cart.verifyTransactionResponse);
-  const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
+  const dispatch = useDispatch()
+  const verifyTransactionResponse = useSelector((state) => state.cart.verifyTransactionResponse)
+  const invoiceDetails = useSelector((state) => state.cart.invoiceDetails)
 
-  const [interval, setInterval] = React.useState(() => {});
-  const [isAfter, setIsAfter] = React.useState(false);
-  const [confirmPaymentClicked, setConfirmPaymentClicked] = React.useState(false);
-  const [ticking, setTicking] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [throttledFn, setThrottledFn] = React.useState(() => {});
+  const [interval, setInterval] = React.useState(() => {})
+  const [isAfter, setIsAfter] = React.useState(false)
+  const [confirmPaymentClicked, setConfirmPaymentClicked] = React.useState(false)
+  const [ticking, setTicking] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+  const [throttledFn, setThrottledFn] = React.useState(() => {})
 
   // console.log(fetching);
 
   const sleep = (ms) => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  };
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
 
   React.useEffect(() => {
     const verifyTransaction = async () => {
       try {
-        setFetching(true);
+        setFetching(true)
         const getResData = async () => {
-          const res = await axios.post("/api/sell/verify-transaction", { user: userDetails, trxID: invoiceDetails?.invoice });
-          const data = await res.data;
-          return data;
-        };
+          const res = await axios.post("/api/sell/verify-transaction", { user: userDetails, trxID: invoiceDetails?.invoice })
+          const data = await res.data
+          return data
+        }
 
-        await sleep(5000);
-        const data = await getResData();
+        await sleep(5000)
+        const data = await getResData()
         // console.log(data);
-        dispatch(setVerifyTransactionResponse(data));
-        const { message } = data; // new, awaiting_payment, paid, cancelled, failed, expired   ie message values
+        dispatch(setVerifyTransactionResponse(data))
+        const { message } = data // new, awaiting_payment, paid, cancelled, failed, expired   ie message values
 
         if (message === "new" || message === "awaiting_payment") {
           // console.log("hit 1");
-          setLoading(true);
+          setLoading(true)
         } else {
           if (message === "paid") {
             // console.log("hit 2");
-            setFetching(false);
-            setLoading(false);
-            setStep(2);
+            setFetching(false)
+            setLoading(false)
+            setStep(2)
             // await throttledFn.cancel();
           } else if (message === "cancelled" || message === "failed" || message === "new" || message === "expired") {
             // console.log("hit 3");
-            setLoading(false);
-            setFetching(false);
+            setLoading(false)
+            setFetching(false)
             // await throttledFn.cancel();
-            setConfirmButtonText("Start New Sale");
-            setProcessError(`${upperCase(message)} TRANSACTION`);
+            setConfirmButtonText("Start New Sale")
+            setProcessError(`${upperCase(message)} TRANSACTION`)
           }
         }
 
-        setLoading(false);
+        setLoading(false)
       } catch (error) {
-        console.log(error.response);
+        console.log(error.response)
       } finally {
       }
-    };
+    }
 
     if (ticking) {
-      const throttledFn = throttle(verifyTransaction, 10000, { trailing: false })();
+      const throttledFn = throttle(verifyTransaction, 10000, { trailing: false })()
       // !loading &&
       //   verifyTransactionResponse &&
       //   (verifyTransactionResponse?.message !== "new" || verifyTransactionResponse?.message !== "awaiting_payment") &&
       //   throttledFn.cancel();
     }
-  }, [loading, ticking]);
+  }, [loading, ticking])
 
   // React.useEffect(() => {
   //   console.log("hit here", verifyTransactionResponse);
@@ -144,12 +144,11 @@ const ConfirmPayment = ({
             onClick={() => {
               confirmButtonText
                 ? (() => {
-                    dispatch(onClickToCheckout(false));
-                    dispatch(onResetCart());
+                    dispatch(onClickToCheckout(false))
+                    dispatch(onResetCart())
                   })()
-                : setTicking(true);
-            }}
-          >
+                : setTicking(true)
+            }}>
             {fetching && (
               <div className="inline-block mr-2">
                 <Spinner type={"TailSpin"} color="green" width={20} height={20} timeout={3000000} />
@@ -161,7 +160,7 @@ const ConfirmPayment = ({
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default ConfirmPayment;
+export default ConfirmPayment

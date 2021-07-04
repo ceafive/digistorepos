@@ -1,7 +1,7 @@
 // components
-import TableDropdown from "components/Dropdowns/TableDropdown.js";
-import PropTypes from "prop-types";
-import React from "react";
+import TableDropdown from "components/Dropdowns/TableDropdown.js"
+import PropTypes from "prop-types"
+import React from "react"
 
 export default function CardTable({ color }) {
   return (
@@ -10,8 +10,7 @@ export default function CardTable({ color }) {
         className={
           "relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded " +
           (color === "light" ? "bg-white" : "bg-blueGray-700 text-white")
-        }
-      >
+        }>
         <div className="rounded-t mb-0 px-4 py-3 border-0">
           <div className="flex flex-wrap items-center">
             <div className="relative w-full px-4 max-w-full flex-grow flex-1">
@@ -30,8 +29,7 @@ export default function CardTable({ color }) {
                     (color === "light"
                       ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
                       : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                  }
-                >
+                  }>
                   Project
                 </th>
                 <th
@@ -40,8 +38,7 @@ export default function CardTable({ color }) {
                     (color === "light"
                       ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
                       : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                  }
-                >
+                  }>
                   Budget
                 </th>
                 <th
@@ -50,8 +47,7 @@ export default function CardTable({ color }) {
                     (color === "light"
                       ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
                       : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                  }
-                >
+                  }>
                   Status
                 </th>
                 <th
@@ -60,8 +56,7 @@ export default function CardTable({ color }) {
                     (color === "light"
                       ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
                       : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                  }
-                >
+                  }>
                   Users
                 </th>
                 <th
@@ -70,8 +65,7 @@ export default function CardTable({ color }) {
                     (color === "light"
                       ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
                       : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                  }
-                >
+                  }>
                   Completion
                 </th>
                 <th
@@ -80,8 +74,7 @@ export default function CardTable({ color }) {
                     (color === "light"
                       ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
                       : "bg-blueGray-600 text-blueGray-200 border-blueGray-500")
-                  }
-                ></th>
+                  }></th>
               </tr>
             </thead>
             <tbody>
@@ -99,23 +92,19 @@ export default function CardTable({ color }) {
                     <img
                       src="/img/team-1-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"></img>
                     <img
                       src="/img/team-2-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-3-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-4-470x470.png"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                   </div>
                 </td>
                 <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
@@ -125,8 +114,7 @@ export default function CardTable({ color }) {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-red-200">
                         <div
                           style={{ width: "60%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"
-                        ></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"></div>
                       </div>
                     </div>
                   </div>
@@ -151,23 +139,19 @@ export default function CardTable({ color }) {
                     <img
                       src="/img/team-1-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"></img>
                     <img
                       src="/img/team-2-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-3-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-4-470x470.png"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                   </div>
                 </td>
                 <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
@@ -177,8 +161,7 @@ export default function CardTable({ color }) {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-emerald-200">
                         <div
                           style={{ width: "100%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"
-                        ></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"></div>
                       </div>
                     </div>
                   </div>
@@ -203,23 +186,19 @@ export default function CardTable({ color }) {
                     <img
                       src="/img/team-1-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"></img>
                     <img
                       src="/img/team-2-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-3-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-4-470x470.png"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                   </div>
                 </td>
                 <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
@@ -229,8 +208,7 @@ export default function CardTable({ color }) {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-red-200">
                         <div
                           style={{ width: "73%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"
-                        ></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"></div>
                       </div>
                     </div>
                   </div>
@@ -255,23 +233,19 @@ export default function CardTable({ color }) {
                     <img
                       src="/img/team-1-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"></img>
                     <img
                       src="/img/team-2-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-3-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-4-470x470.png"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                   </div>
                 </td>
                 <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
@@ -281,8 +255,7 @@ export default function CardTable({ color }) {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-teal-200">
                         <div
                           style={{ width: "90%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500"
-                        ></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500"></div>
                       </div>
                     </div>
                   </div>
@@ -307,23 +280,19 @@ export default function CardTable({ color }) {
                     <img
                       src="/img/team-1-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow"></img>
                     <img
                       src="/img/team-2-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-3-800x800.jpg"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                     <img
                       src="/img/team-4-470x470.png"
                       alt="..."
-                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"
-                    ></img>
+                      className="w-10 h-10 rounded-full border-2 border-blueGray-50 shadow -ml-4"></img>
                   </div>
                 </td>
                 <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
@@ -333,8 +302,7 @@ export default function CardTable({ color }) {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-emerald-200">
                         <div
                           style={{ width: "100%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"
-                        ></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"></div>
                       </div>
                     </div>
                   </div>
@@ -348,13 +316,13 @@ export default function CardTable({ color }) {
         </div>
       </div>
     </>
-  );
+  )
 }
 
 CardTable.defaultProps = {
-  color: "light",
-};
+  color: "light"
+}
 
 CardTable.propTypes = {
-  color: PropTypes.oneOf(["light", "dark"]),
-};
+  color: PropTypes.oneOf(["light", "dark"])
+}
