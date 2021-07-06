@@ -1,7 +1,8 @@
-import { capitalize, filter, map, split, trim } from "lodash";
+import { capitalize, filter, intersectionWith, isEqual, map, omit, split, trim } from "lodash";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 import { v4 as uuidv4 } from "uuid";
 
 const VariantsSection = () => {
@@ -9,6 +10,7 @@ const VariantsSection = () => {
 };
 
 const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
+  const { addToast } = useToasts();
   const {
     control,
     register,
@@ -24,6 +26,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
     reset: submitFormReset,
     watch: submitFormWatch,
     formState: { errors: submitFormErrors },
+    setError: submitFormSetError,
+    clearErrors: submitFormClearErrors,
     handleSubmit: submitFormHandleSubmit,
   } = useForm({});
 
@@ -36,8 +40,27 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
   const [varianceDistribution, setVarianceDistribution] = React.useState({});
 
   const addVariantRow = (values) => {
-    // console.log({ values });
     try {
+      // console.log({ values });
+      const copyObject = Object.assign({}, varianceDistribution);
+      const objectValues = Object.values({ ...copyObject });
+
+      const mappedValues = objectValues.map((objectValue) => {
+        const newValue = { ...objectValue };
+        delete newValue?.Quantity;
+        delete newValue?.Price;
+
+        return newValue;
+      });
+
+      const res = intersectionWith(mappedValues, [values], isEqual);
+      // console.log(mappedValues);
+      // console.log(res);
+
+      if (res.length > 0) {
+        return addToast(`Variant already added`, { appearance: "error", autoDismiss: true });
+      }
+
       setVarianceDistribution((varianceData) => ({ ...varianceData, [uuidv4()]: { ...values, Quantity: "", Price: "" } }));
     } catch (error) {
       console.log(error);
@@ -50,27 +73,42 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
 
   const handleCreateProduct = async () => {
     try {
-      let noError = true;
-      let noErrorID = "";
-      // const res = Object.entries(varianceDistribution);
-      // console.log(varianceDistribution);
-      // console.log(res);
+      submitFormClearErrors();
+      const errorObjects = [];
 
       for (const [key, value] of Object.entries(varianceDistribution)) {
-        for (const valueOfValue of Object.values(value)) {
-          console.log({ key, valueOfValue });
+        for (const [keyOfKey, valueOfValue] of Object.entries(value)) {
+          // console.log({ keyOfKey, valueOfValue });
           if (!valueOfValue) {
-            noError = false;
-            noErrorID = key;
+            errorObjects.push({
+              error: true,
+              errorID: key,
+              errorKey: keyOfKey,
+            });
           }
         }
       }
 
-      console.log({ noError, noErrorID });
+      errorObjects.forEach((errorObject) => {
+        submitFormSetError(errorObject?.errorID, {
+          type: "manual",
+          message: `${errorObject?.errorKey} is required`,
+          errorID: errorObject?.errorID,
+          errorKey: errorObject?.errorKey,
+        });
+      });
+
+      if (errorObjects.length === 0) {
+        console.log(varianceDistribution);
+      } else {
+        addToast("Please fix errors", { appearance: "error", autoDismiss: true });
+      }
     } catch (error) {
       console.log(error);
     }
   };
+
+  // console.log(submitFormErrors);
 
   return (
     <div className="px-4">
@@ -144,12 +182,14 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                 </div>
 
                 <div className="my-2">
-                  {allVarianceDistribution.map((variance, index) => {
-                    // console.log(variance[0]);
+                  {allVarianceDistribution.map((variance) => {
+                    const formattedVarianceKey = variance[0];
                     const formattedVarianceEntries = Object.entries(variance[1]);
+                    const errorObject = submitFormErrors[formattedVarianceKey];
+
                     return (
-                      <div key={index} className={`grid grid-cols-${formattedVarianceEntries.length + 1} gap-3 my-2`}>
-                        {formattedVarianceEntries.map(([key, value], index) => {
+                      <div key={variance[0]} className={`grid grid-cols-${formattedVarianceEntries.length + 1} gap-3 my-2`}>
+                        {formattedVarianceEntries.map(([key, value]) => {
                           if (key === "Quantity" || key === "Price") {
                             return (
                               <div key={key} className="self-center ">
@@ -166,6 +206,9 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                                   placeholder="10"
                                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
                                 />
+                                {errorObject?.errorID === formattedVarianceKey && key === errorObject?.errorKey && (
+                                  <p className="text-xs text-red-500">{errorObject?.message}</p>
+                                )}
                               </div>
                             );
                           } else {
@@ -180,7 +223,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                         <div
                           className="flex justify-center ittems-center font-bold bg-red-500 rounded py-1 cursor-pointer w-1/3"
                           onClick={() => {
-                            console.log(index);
+                            const result = omit(varianceDistribution, [formattedVarianceKey]);
+                            setVarianceDistribution(result);
                           }}
                         >
                           <button className="focus:outline-none">
@@ -211,7 +255,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
             </div>
             <div>
               <button
-                className="bg-green-700 text-white px-4 py-2 rounded font-bold focus:outline-none"
+                className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded font-bold focus:outline-none"
                 onClick={() => {
                   handleCreateProduct();
                 }}

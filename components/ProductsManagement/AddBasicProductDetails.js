@@ -43,8 +43,9 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   };
 
   React.useEffect(() => {
-    if (productHasVariants) append({});
-    else remove();
+    if (productHasVariants) {
+      if (fields.length === 0) append({});
+    } else remove();
     return () => {};
   }, [productHasVariants]);
 
@@ -83,7 +84,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       <div className="flex w-full h-full">
         <div className="w-7/12 xl:w-8/12 pb-6 pt-12 px-4">
           <div>
-            <h1>Product Details</h1>
+            <h1 className="font-bold text-blue-700">Product Details</h1>
             <div className="flex w-full justify-between items-center">
               <div className="w-1/2 mr-2">
                 <label className="text-sm leading-none  font-bold">Product Name</label>
@@ -98,12 +99,16 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
 
               <div className="w-1/2">
                 <label className="text-sm leading-none  font-bold">Product Category</label>
-                <input
+                <select
                   {...register("productCategory", { required: "Product category is required" })}
-                  type="text"
-                  placeholder="Pizza"
-                  className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
-                />
+                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white"
+                >
+                  <option value="">{`Select Category`}</option>
+                  <option value="Pizza">Pizza</option>
+                  <option value="Pizza">Ice Cream</option>
+                  <option value="Pizza">Meat</option>
+                  <option value="Pizza">Bakery</option>
+                </select>
                 <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
               </div>
             </div>
@@ -120,7 +125,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
           </div>
 
           <div>
-            <h1>Pricing</h1>
+            <h1 className="font-bold text-blue-700">Pricing</h1>
             <div className="flex w-full justify-between items-center">
               <div className="w-1/2 mr-2">
                 <label className="text-sm leading-none  font-bold">Selling Price</label>
