@@ -42,6 +42,12 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
     }
   };
 
+  React.useEffect(() => {
+    if (productHasVariants) append({});
+    else remove();
+    return () => {};
+  }, [productHasVariants]);
+
   const createProductWithVariants = (values) => {
     try {
       dispatch(setProductWithVariants(values));
@@ -132,7 +138,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                   Cost Per Item <span className="text-xs">(Your customers won't see this)</span>
                 </label>
                 <input
-                  {...register("costPerItem", { required: "Cost per item is required" })}
+                  {...register("costPerItem")}
                   type="number"
                   placeholder="Enter cost of product"
                   className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
@@ -163,7 +169,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
               <div className="w-1/2 mt-6">
                 <label className="text-sm leading-none  font-bold">SKU (Stock Keeping Unit)</label>
                 <input
-                  {...register("sku", { required: "SKU is required" })}
+                  {...register("sku")}
                   type="text"
                   placeholder=""
                   className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
@@ -176,7 +182,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
               <div className="w-1/2 mr-2">
                 <label className="text-sm leading-none  font-bold">Barcode (ISBN,UPC,GTIN, etc)</label>
                 <input
-                  {...register("barcode", { required: "Barcode is required" })}
+                  {...register("barcode")}
                   type="text"
                   placeholder="Click and scan product barcode in here"
                   className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
@@ -208,7 +214,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
             </div>
 
             {/* Variants */}
-            <div className="w-full mr-2 mt-2 bg-gray-200 py-6 px-2 rounded">
+            <div className="w-full mr-2 mt-2 bg-gray-200 p-6 rounded">
               <div className="flex justify-between items-center w-full">
                 <h1 className="font-bold text-blue-700">Does your product have variants?</h1>
                 <div
@@ -233,86 +239,19 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
               <h1>Multiple options of the same product which customers can choose from</h1>
               <hr className="text-blue-500 bg-blue-500" />
               {productHasVariants && (
-                // <div className="mt-2">
-                //   <div className="flex flex-wrap justify-center items-center w-full">
-                //     {variantsArray.map((variant, index) => {
-                //       return (
-                //         <div key={variant} className="w-full my-3">
-                //           <div key={variant} className="flex w-full justify-between items-center">
-                //             <div className="mr-2">
-                //               <label className="text-xs leading-none font-bold">Variant Name</label>
-                //               <input
-                //                 // {...register("variant", { required: "Weight is required" })}
-                //                 type="text"
-                //                 placeholder="eg. Size"
-                //                 className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
-                //               />
-                //               {/* <p className="text-xs text-red-500">{errors["weight"]?.message}</p> */}
-                //             </div>
-
-                //             <div className="">
-                //               <label className="text-xs leading-none font-bold">
-                //                 Variant Values
-                //                 <span className="text-xs">(Separated by comma ",")</span>
-                //               </label>
-                //               <input
-                //                 // {...register("weight", { required: "Weight is required" })}
-                //                 type="text"
-                //                 placeholder="eg. Small,Medium,Large"
-                //                 className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
-                //               />
-                //               {/* <p className="text-xs text-red-500">{errors["weight"]?.message}</p> */}
-                //             </div>
-
-                //             <div className="flex">
-                //               {variantsArray.length > 1 && (
-                //                 <div
-                //                   className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-6 cursor-pointer"
-                //                   onClick={() => {
-                //                     const res = filter(variantsArray, (o, i) => o !== variant);
-                //                     setVariantsArray(res);
-                //                     // setVariantsRow((data) => data - 1);
-                //                     // setVariantsRow(res);
-                //                   }}
-                //                 >
-                //                   <button className="justify-self-end focus:outline-none">
-                //                     <i className="fas fa-trash-alt text-white"></i>
-                //                   </button>
-                //                 </div>
-                //               )}
-
-                //               {index === variantsArray.length - 1 && (
-                //                 <div
-                //                   className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-6 cursor-pointer"
-                //                   onClick={() => {
-                //                     setVariantsRow((data) => data + 1);
-                //                   }}
-                //                 >
-                //                   <button className="justify-self-end focus:outline-none">
-                //                     <i className="fas fa-plus text-white"></i>
-                //                   </button>
-                //                 </div>
-                //               )}
-                //             </div>
-                //           </div>
-                //           <hr />
-                //         </div>
-                //       );
-                //     })}
-                //   </div>
-                // </div>
-
                 <div className="mt-2">
                   <div className="flex flex-wrap justify-center items-center w-full">
                     {fields.map(({ id }, index) => {
-                      const name = (productWithVariants?.variants ?? [])?.find((variant, variantIndex) => variantIndex === index)?.name;
-                      const values = (productWithVariants?.variants ?? [])?.find((variant, variantIndex) => variantIndex === index)?.values;
+                      const name =
+                        (productWithVariants?.variants ?? [])?.find((variant, variantIndex) => variantIndex === index)?.name ?? "";
+                      const values =
+                        (productWithVariants?.variants ?? [])?.find((variant, variantIndex) => variantIndex === index)?.values ?? "";
 
                       // console.log({ name, values });
                       return (
                         <div key={id} className="w-full my-3">
                           <div key={id} className="flex w-full justify-between items-center">
-                            <div className="mr-2">
+                            <div className=" mr-2">
                               <label className="text-xs leading-none font-bold">Variant Name</label>
                               <input
                                 {...register(`variants[${index}].name`, {
@@ -328,8 +267,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
 
                             <div className="">
                               <label className="text-xs leading-none font-bold">
-                                Variant Values
-                                <span className="text-xs">(Separated by comma ",")</span>
+                                Variant Values <span className="text-xs">(Separated by comma ",")</span>
                               </label>
                               <input
                                 {...register(`variants[${index}].values`)}
@@ -341,33 +279,38 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                               {/* <p className="text-xs text-red-500">{errors["weight"]?.message}</p> */}
                             </div>
 
-                            <div className="flex">
-                              <div
-                                className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-6 cursor-pointer"
-                                onClick={() => {
-                                  remove(index);
-                                }}
-                              >
-                                <button className="justify-self-end focus:outline-none">
-                                  <i className="fas fa-trash-alt text-white"></i>
-                                </button>
-                              </div>
+                            <div className="w-1/5 flex">
+                              {fields.length > 1 && (
+                                <div
+                                  className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-6 cursor-pointer"
+                                  onClick={() => {
+                                    remove(index);
+                                  }}
+                                >
+                                  <button className="justify-self-end focus:outline-none">
+                                    <i className="fas fa-trash-alt text-white"></i>
+                                  </button>
+                                </div>
+                              )}
+
+                              {fields?.length < 5 && index === fields.length - 1 && (
+                                <div
+                                  className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-6 cursor-pointer"
+                                  onClick={() => {
+                                    append({});
+                                  }}
+                                >
+                                  <button className="justify-self-end focus:outline-none">
+                                    <i className="fas fa-plus text-white"></i>
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                           <hr />
                         </div>
                       );
                     })}
-                    <div
-                      className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-6 cursor-pointer justify-self-end"
-                      onClick={() => {
-                        append({});
-                      }}
-                    >
-                      <button className="justify-self-end focus:outline-none" name="">
-                        <i className="fas fa-plus text-white"></i>
-                      </button>
-                    </div>
                   </div>
                 </div>
               )}
