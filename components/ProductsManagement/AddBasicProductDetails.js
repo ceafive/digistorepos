@@ -1,14 +1,18 @@
-import { filter } from "lodash";
+import { setProductHasVariants, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import UploadImage from "./UploadImage";
 
 const VariantsSection = () => {
   return <div></div>;
 };
 
-const AddProductDetails = () => {
+const AddProductDetails = ({ setGoToVarianceConfig }) => {
+  const dispatch = useDispatch();
+  const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
   const {
+    control,
     register,
     reset,
     watch,
@@ -17,14 +21,17 @@ const AddProductDetails = () => {
   } = useForm({
     defaultValues: {
       applyTax: false,
+      ...productWithVariants,
     },
   });
 
-  const [isHasVariantsActive, setIsHasVariantsActive] = React.useState(false);
-  const [variantsRow, setVariantsRow] = React.useState(0);
-  const [variantsArray, setVariantsArray] = React.useState([]);
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variants",
+  });
 
-  const watchHasVariants = watch("");
+  const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
+  // console.log(productWithVariants);
 
   const createProduct = (values) => {
     try {
@@ -34,25 +41,25 @@ const AddProductDetails = () => {
     }
   };
 
-  React.useEffect(() => {
-    const variantsArray = Array.from({ length: variantsRow }, (x, index) => index);
+  const createProductWithVariants = (values) => {
+    try {
+      dispatch(setProductWithVariants(values));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    setVariantsArray(variantsArray);
-  }, [variantsRow]);
-
-  React.useEffect(() => {
-    if (!isHasVariantsActive) setVariantsRow(0);
-    else setVariantsRow(1);
-  }, [isHasVariantsActive]);
-
-  console.log({ variantsArray });
+  // console.log({ variantsArray });
 
   const buttonParams = React.useMemo(() => {
-    switch (isHasVariantsActive) {
+    switch (productHasVariants) {
       case true:
         return {
           buttonText: "Proceed",
-          buttonAction: console.log,
+          buttonAction: () => {
+            handleSubmit(createProductWithVariants)();
+            setGoToVarianceConfig(true);
+          },
         };
 
       case false:
@@ -61,7 +68,7 @@ const AddProductDetails = () => {
           buttonAction: handleSubmit(createProduct),
         };
     }
-  }, [isHasVariantsActive]);
+  }, [productHasVariants]);
 
   // console.log(buttonParams);
 
@@ -208,17 +215,17 @@ const AddProductDetails = () => {
                 <div
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => {
-                    setIsHasVariantsActive((data) => !data);
+                    dispatch(setProductHasVariants());
                   }}
                 >
                   <div
                     className={`${
-                      isHasVariantsActive && "bg-green-400"
+                      productHasVariants && "bg-green-400"
                     } w-10 h-6 flex items-center bg-gray-300 rounded-full p-1 duration-300 ease-in-out`}
                   >
                     <div
                       className={`${
-                        isHasVariantsActive && "translate-x-4"
+                        productHasVariants && "translate-x-4"
                       } bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out`}
                     />
                   </div>
@@ -226,17 +233,93 @@ const AddProductDetails = () => {
               </div>
               <h1>Multiple options of the same product which customers can choose from</h1>
               <hr className="text-blue-500 bg-blue-500" />
-              {isHasVariantsActive && (
+              {productHasVariants && (
+                // <div className="mt-2">
+                //   <div className="flex flex-wrap justify-center items-center w-full">
+                //     {variantsArray.map((variant, index) => {
+                //       return (
+                //         <div key={variant} className="w-full my-3">
+                //           <div key={variant} className="flex w-full justify-between items-center">
+                //             <div className="mr-2">
+                //               <label className="text-xs leading-none font-bold">Variant Name</label>
+                //               <input
+                //                 // {...register("variant", { required: "Weight is required" })}
+                //                 type="text"
+                //                 placeholder="eg. Size"
+                //                 className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                //               />
+                //               {/* <p className="text-xs text-red-500">{errors["weight"]?.message}</p> */}
+                //             </div>
+
+                //             <div className="">
+                //               <label className="text-xs leading-none font-bold">
+                //                 Variant Values
+                //                 <span className="text-xs">(Separated by comma ",")</span>
+                //               </label>
+                //               <input
+                //                 // {...register("weight", { required: "Weight is required" })}
+                //                 type="text"
+                //                 placeholder="eg. Small,Medium,Large"
+                //                 className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                //               />
+                //               {/* <p className="text-xs text-red-500">{errors["weight"]?.message}</p> */}
+                //             </div>
+
+                //             <div className="flex">
+                //               {variantsArray.length > 1 && (
+                //                 <div
+                //                   className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-6 cursor-pointer"
+                //                   onClick={() => {
+                //                     const res = filter(variantsArray, (o, i) => o !== variant);
+                //                     setVariantsArray(res);
+                //                     // setVariantsRow((data) => data - 1);
+                //                     // setVariantsRow(res);
+                //                   }}
+                //                 >
+                //                   <button className="justify-self-end focus:outline-none">
+                //                     <i className="fas fa-trash-alt text-white"></i>
+                //                   </button>
+                //                 </div>
+                //               )}
+
+                //               {index === variantsArray.length - 1 && (
+                //                 <div
+                //                   className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-6 cursor-pointer"
+                //                   onClick={() => {
+                //                     setVariantsRow((data) => data + 1);
+                //                   }}
+                //                 >
+                //                   <button className="justify-self-end focus:outline-none">
+                //                     <i className="fas fa-plus text-white"></i>
+                //                   </button>
+                //                 </div>
+                //               )}
+                //             </div>
+                //           </div>
+                //           <hr />
+                //         </div>
+                //       );
+                //     })}
+                //   </div>
+                // </div>
+
                 <div className="mt-2">
                   <div className="flex flex-wrap justify-center items-center w-full">
-                    {variantsArray.map((variant, index) => {
+                    {fields.map(({ id }, index) => {
+                      const name = (productWithVariants?.variants ?? [])?.find((variant, variantIndex) => variantIndex === index)?.name;
+                      const values = (productWithVariants?.variants ?? [])?.find((variant, variantIndex) => variantIndex === index)?.values;
+
+                      // console.log({ name, values });
                       return (
-                        <div key={variant} className="w-full my-3">
-                          <div key={variant} className="flex w-full justify-between items-center">
+                        <div key={id} className="w-full my-3">
+                          <div key={id} className="flex w-full justify-between items-center">
                             <div className="mr-2">
                               <label className="text-xs leading-none font-bold">Variant Name</label>
                               <input
-                                // {...register("variant", { required: "Weight is required" })}
+                                {...register(`variants[${index}].name`, {
+                                  validate: (value) => (productHasVariants ? Boolean(value) : true) || "Variant must be entered",
+                                })}
+                                defaultValue={name}
                                 type="text"
                                 placeholder="eg. Size"
                                 className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
@@ -250,7 +333,8 @@ const AddProductDetails = () => {
                                 <span className="text-xs">(Separated by comma ",")</span>
                               </label>
                               <input
-                                // {...register("weight", { required: "Weight is required" })}
+                                {...register(`variants[${index}].values`)}
+                                defaultValue={values}
                                 type="text"
                                 placeholder="eg. Small,Medium,Large"
                                 className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
@@ -259,40 +343,32 @@ const AddProductDetails = () => {
                             </div>
 
                             <div className="flex">
-                              {variant !== variantsArray[0] && (
-                                <div
-                                  className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-6"
-                                  onClick={() => {
-                                    const res = filter(variantsArray, (o, i) => o !== variant);
-                                    setVariantsArray(res);
-                                    // setVariantsRow((data) => data - 1);
-                                    // setVariantsRow(res);
-                                  }}
-                                >
-                                  <button className="justify-self-end focus:outline-none">
-                                    <i className="fas fa-trash-alt text-white"></i>
-                                  </button>
-                                </div>
-                              )}
-
-                              {index === variantsArray.length - 1 && (
-                                <div
-                                  className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-6"
-                                  onClick={() => {
-                                    setVariantsRow((data) => data + 1);
-                                  }}
-                                >
-                                  <button className="justify-self-end focus:outline-none">
-                                    <i className="fas fa-plus text-white"></i>
-                                  </button>
-                                </div>
-                              )}
+                              <div
+                                className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-6 cursor-pointer"
+                                onClick={() => {
+                                  remove(index);
+                                }}
+                              >
+                                <button className="justify-self-end focus:outline-none">
+                                  <i className="fas fa-trash-alt text-white"></i>
+                                </button>
+                              </div>
                             </div>
                           </div>
                           <hr />
                         </div>
                       );
                     })}
+                    <div
+                      className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-6 cursor-pointer justify-self-end"
+                      onClick={() => {
+                        append({});
+                      }}
+                    >
+                      <button className="justify-self-end focus:outline-none" name="">
+                        <i className="fas fa-plus text-white"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

@@ -1,10 +1,12 @@
 import AddBasicProductDetails from "components/ProductsManagement/AddBasicProductDetails";
 import Spinner from "components/Spinner";
 import React from "react";
+import VarianceConfiguaration from "./VarianceConfiguaration";
 
 const CreateAProduct = () => {
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
+  const [goToVarianceConfig, setGoToVarianceConfig] = React.useState(false);
 
   if (fetching || fetching === null) {
     return (
@@ -16,7 +18,8 @@ const CreateAProduct = () => {
 
   return (
     <>
-      <AddBasicProductDetails />
+      {!goToVarianceConfig && <AddBasicProductDetails setGoToVarianceConfig={setGoToVarianceConfig} />}
+      {goToVarianceConfig && <VarianceConfiguaration setGoToVarianceConfig={setGoToVarianceConfig} />}
     </>
   );
 };
