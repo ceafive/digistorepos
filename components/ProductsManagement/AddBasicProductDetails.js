@@ -16,6 +16,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
     register,
     reset,
     watch,
+    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm({
@@ -387,7 +388,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
             <div className="bg-white m-2" style={{ height: 200 }}>
               <div className="flex flex-col justify-center items-center border border-gray-200 h-full w-full">
                 {/* <h1 className="">Drag &amp; drop files here or click to add files</h1> */}
-                <UploadImage classes="" />
+                <UploadImage classes="" setValue={setValue} />
               </div>
             </div>
           </div>
