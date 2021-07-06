@@ -1,82 +1,79 @@
-import { changeItemPropsInCart, removeItemFromCart } from "features/cart/cartSlice"
-import { openInventoryModal, setProductToView } from "features/products/productsSlice"
-import { capitalize } from "lodash"
-import React, { useState } from "react"
-import { useForm } from "react-hook-form"
-import { useDispatch, useSelector } from "react-redux"
-import { useToasts } from "react-toast-notifications"
+import { changeItemPropsInCart, removeItemFromCart } from "features/cart/cartSlice";
+import { openInventoryModal, setProductToView } from "features/products/productsSlice";
+import { capitalize } from "lodash";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 
 const Accordion = ({ product, index }) => {
   // console.log(product);
-  const { addToast } = useToasts()
+  const { addToast } = useToasts();
 
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors }
-  } = useForm()
-  const dispatch = useDispatch()
-  const productsInCart = useSelector((state) => state.cart.productsInCart)
+    formState: { errors },
+  } = useForm();
+  const dispatch = useDispatch();
+  const productsInCart = useSelector((state) => state.cart.productsInCart);
 
-  const [isActive, setIsActive] = useState(false)
+  const [isActive, setIsActive] = useState(false);
 
   const checkProductQuantity = (product, value) => {
     try {
       // console.log(productsInCart);
-      let status = true
-      const stock_level =
-        product?.product_quantity === "-99"
-          ? 10000000000000
-          : parseInt(product?.product_quantity) 
-      const productSoldOut = stock_level <= 0
+      let status = true;
+      const stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
+      const productSoldOut = stock_level <= 0;
 
       if (productSoldOut) {
-        addToast(`Product sold out`, { appearance: "error", autoDismiss: true })
-        status = false
+        addToast(`Product sold out`, { appearance: "error", autoDismiss: true });
+        status = false;
       }
 
-      const isQuantitySelectedUnAvailable = value > stock_level
+      const isQuantitySelectedUnAvailable = value > stock_level;
       // console.log(isQuantitySelectedUnAvailable);
 
       if (isQuantitySelectedUnAvailable) {
-        addToast(`Quantity is not availble, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true })
-        status = false
+        addToast(`Quantity is not availble, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true });
+        status = false;
       }
-      return { status, stock_level }
+      return { status, stock_level };
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleOnChange = (field, value) => {
     if (field === "quantity") {
-      const { status, stock_level } = checkProductQuantity(product, parseInt(value))
+      const { status, stock_level } = checkProductQuantity(product, parseInt(value));
 
       if (status) {
         dispatch(
           changeItemPropsInCart({
             ...product,
-            [field]: value
+            [field]: value,
           })
-        )
+        );
       } else {
         dispatch(
           changeItemPropsInCart({
             ...product,
-            [field]: stock_level
+            [field]: stock_level,
           })
-        )
+        );
       }
     } else {
       dispatch(
         changeItemPropsInCart({
           ...product,
-          [field]: value
+          [field]: value,
         })
-      )
+      );
     }
-  }
+  };
 
   return (
     <div className={`${isActive ? "border-l-2 border-green-700 bg-gray-100" : ""} `}>
@@ -90,7 +87,7 @@ const Accordion = ({ product, index }) => {
           <div className="flex cursor-pointer" onClick={() => setIsActive(!isActive)}>
             <span className="mr-1">{index + 1}.</span>
             <div>
-              <span className="font-bold">{product.title?.substring(0, 20)}</span>
+              <span className="font-bold">{product.title}</span>
               {product.variants && (
                 <div className="flex">
                   {Object.entries(product?.variants).map((variant, index) => {
@@ -99,7 +96,7 @@ const Accordion = ({ product, index }) => {
                         <span>{capitalize(variant[1])}</span>
                         {index !== Object.entries(product?.variants).length - 1 && <span>/ </span>}
                       </p>
-                    )
+                    );
                   })}
                 </div>
               )}
@@ -113,8 +110,9 @@ const Accordion = ({ product, index }) => {
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
-                dispatch(removeItemFromCart(product?.uniqueId))
-              }}>
+                dispatch(removeItemFromCart(product?.uniqueId));
+              }}
+            >
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>
             </button>
           </div>
@@ -134,8 +132,8 @@ const Accordion = ({ product, index }) => {
                 id="quantity"
                 value={product.quantity}
                 onChange={(e) => {
-                  e.persist()
-                  handleOnChange("quantity", e.target.value)
+                  e.persist();
+                  handleOnChange("quantity", e.target.value);
                 }}
                 type="number"
                 placeholder="eg. 0"
@@ -166,8 +164,8 @@ const Accordion = ({ product, index }) => {
                 id="discount"
                 value={product.discount}
                 onChange={(e) => {
-                  e.persist()
-                  handleOnChange("discount", e.target.value)
+                  e.persist();
+                  handleOnChange("discount", e.target.value);
                 }}
                 type="number"
                 max={100}
@@ -198,9 +196,10 @@ const Accordion = ({ product, index }) => {
             <button
               className="text-xs text-blue-500 focus:outline-none"
               onClick={() => {
-                dispatch(setProductToView(product))
-                dispatch(openInventoryModal())
-              }}>
+                dispatch(setProductToView(product));
+                dispatch(openInventoryModal());
+              }}
+            >
               <span>
                 <i className="fas fa-info-circle mr-1"></i>
               </span>
@@ -210,7 +209,7 @@ const Accordion = ({ product, index }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Accordion
+export default Accordion;

@@ -40,7 +40,7 @@ export default function Login() {
           message: error,
         });
       }
-      if (success) router.push("/");
+      if (success) router.push("/home/main");
     } catch (error) {
       setLoginError({
         status: false,
@@ -82,8 +82,8 @@ export default function Login() {
                         required: "Username is required",
                       })}
                       type="text"
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="john_doe"
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-1 w-full ease-linear transition-all duration-150"
+                      placeholder="kofi_amankwah"
                     />
                     <p className="text-sm text-red-500">{errors?.username?.message}</p>
                   </div>
@@ -103,7 +103,7 @@ export default function Login() {
                       type="password"
                       pattern="[0-9]*"
                       novalidate
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-1 w-full ease-linear transition-all duration-150"
                       placeholder="1234"
                     />
                     <p className="text-sm text-red-500">{errors?.pin?.message}</p>

@@ -76,7 +76,7 @@ const ProductsSelection = () => {
 
   const checkProductQuantity = (product) => {
     try {
-      console.log(product);
+      // console.log(product);
       if (productSelected) {
         // console.log(productsInCart);
         const stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
@@ -230,7 +230,7 @@ const ProductsSelection = () => {
 
               {/* Categories */}
               <div className="flex justify-start items-center w-full mt-4">
-                <div className="grid grid-cols-4 xl:grid-cols-7 gap-3">
+                <div className="grid grid-cols-4 xl:grid-cols-6 2xl:grid-cols-7 gap-3">
                   <button
                     className={`shadow rounded text-black font-semibold border-t-8 ${
                       categorySelected?.product_category === "ALL" ? "border-green-600" : "border-gray-400"
@@ -281,7 +281,7 @@ const ProductsSelection = () => {
           {/* Products Display */}
           <div className="justify-center mt-6 w-full">
             {/* <h1 className="text-center my-1">Products</h1> */}
-            <div className="grid grid-cols-3 xl:grid-cols-5 gap-5">
+            <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
               {productsDisplay.map((product, index) => {
                 const imgUrlBase = "https://payments.ipaygh.com/app/webroot/img/products/";
                 return (

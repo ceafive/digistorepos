@@ -9,7 +9,7 @@ import {
   setDeliveryTypeSelected,
   setPaymentMethodSet,
 } from "features/cart/cartSlice";
-import { setOutletSelected, setProductsOnHold } from "features/products/productsSlice";
+import { setOutletSelected } from "features/products/productsSlice";
 import { intersectionWith, isEqual } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -89,7 +89,7 @@ const ProcessPayment = ({
           className="font-bold text-lg focus:outline-none"
           onClick={() => {
             dispatch(onClickToCheckout());
-            dispatch(setProductsOnHold());
+            // dispatch(setProductsOnHold());
           }}
         >
           <i className="fas fa-arrow-left mr-1 "></i>

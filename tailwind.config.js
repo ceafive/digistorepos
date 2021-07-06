@@ -1,5 +1,5 @@
-const plugin = require("tailwindcss/plugin")
-const colors = require("tailwindcss/colors")
+const plugin = require("tailwindcss/plugin");
+const colors = require("tailwindcss/colors");
 
 module.exports = {
   // mode: "jit",
@@ -8,26 +8,26 @@ module.exports = {
   theme: {
     extend: {
       width: {
-        34: "8.5rem"
+        34: "8.5rem",
       },
       fontFamily: {
-        print: ["Castoro", "serif"]
+        print: ["Castoro", "serif"],
       },
       colors: {
-        ...colors
+        ...colors,
       },
       minHeight: {
-        "screen-75": "75vh"
+        "screen-75": "75vh",
       },
       fontSize: {
-        55: "55rem"
+        55: "55rem",
       },
       opacity: {
-        80: ".8"
+        80: ".8",
       },
       zIndex: {
         2: 2,
-        3: 3
+        3: 3,
       },
       inset: {
         "-100": "-100%",
@@ -44,17 +44,17 @@ module.exports = {
         "145-px": "145px",
         "195-px": "195px",
         "210-px": "210px",
-        "260-px": "260px"
+        "260-px": "260px",
       },
       height: {
         "95-px": "95px",
         "70-px": "70px",
         "350-px": "350px",
         "500-px": "500px",
-        "600-px": "600px"
+        "600-px": "600px",
       },
       maxHeight: {
-        "860-px": "860px"
+        "860-px": "860px",
       },
       maxWidth: {
         "100-px": "100px",
@@ -64,75 +64,84 @@ module.exports = {
         "200-px": "200px",
         "210-px": "210px",
         "580-px": "580px",
-        "4xl": "64rem"
+        "4xl": "64rem",
       },
       minWidth: {
         "140-px": "140px",
-        48: "12rem"
+        48: "12rem",
       },
       backgroundSize: {
-        full: "100%"
-      }
-    }
+        full: "100%",
+      },
+    },
   },
   variants: [
     "responsive",
-    // "group-hover",
-    // "focus-within",
-    // "first",
-    // "last",
-    // "odd",
-    // "even",
+    // // "group-hover",
+    // // "focus-within",
+    // // "first",
+    // // "last",
+    // // "odd",
+    // // "even",
     "hover",
-    "focus"
-    // "active",
-    // "visited",
-    // "disabled",
+    "focus",
+    // // "active",
+    // // "visited",
+    // // "disabled",
+    "checked",
   ],
+
+  // variants: {
+  //   extend: {
+  //     backgroundColor: ["checked"],
+  //     borderColor: ["checked"],
+  //     boxShadow: ["focus-within"],
+  //   },
+  // },
   plugins: [
     require("@tailwindcss/forms"),
     plugin(function ({ addComponents, theme }) {
-      const screens = theme("screens", {})
+      const screens = theme("screens", {});
       addComponents([
         {
-          ".container": { width: "100%" }
+          ".container": { width: "100%" },
         },
         {
           [`@media (min-width: ${screens.sm})`]: {
             ".container": {
-              "max-width": "640px"
-            }
-          }
+              "max-width": "640px",
+            },
+          },
         },
         {
           [`@media (min-width: ${screens.md})`]: {
             ".container": {
-              "max-width": "768px"
-            }
-          }
+              "max-width": "768px",
+            },
+          },
         },
         {
           [`@media (min-width: ${screens.lg})`]: {
             ".container": {
-              "max-width": "1024px"
-            }
-          }
+              "max-width": "1024px",
+            },
+          },
         },
         {
           [`@media (min-width: ${screens.xl})`]: {
             ".container": {
-              "max-width": "1280px"
-            }
-          }
+              "max-width": "1280px",
+            },
+          },
         },
         {
           [`@media (min-width: ${screens["2xl"]})`]: {
             ".container": {
-              "max-width": "1280px"
-            }
-          }
-        }
-      ])
-    })
-  ]
-}
+              "max-width": "1280px",
+            },
+          },
+        },
+      ]);
+    }),
+  ],
+};

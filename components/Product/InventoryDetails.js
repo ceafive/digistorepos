@@ -1,11 +1,11 @@
-import { upperCase } from "lodash"
-import React from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { upperCase } from "lodash";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const InventoryDetails = ({ onClose }) => {
-  const dispatch = useDispatch()
-  const product = useSelector((state) => state.products.productToView)
-  const outletSelected = useSelector((state) => state.products.outletSelected)
+  const dispatch = useDispatch();
+  const product = useSelector((state) => state.products.productToView);
+  const outletSelected = useSelector((state) => state.products.outletSelected);
   // console.log({ product });
   // console.log({ outletSelected });
 
@@ -53,17 +53,17 @@ const InventoryDetails = ({ onClose }) => {
 
         <div>
           <div className="flex justify-between mt-6 mb-2">
-            <p>Oulet</p>
+            <p>Outlet</p>
             <p>Inventory Count</p>
           </div>
           <div className="flex justify-between p-2 bg-gray-200 rounded font-semibold">
             <p>{outletSelected ? outletSelected?.outlet_name : "Main Outlet"}</p>
-            <p>{product?.product_quantity === '=99' ? 'Unlimited':product?.product_quantity }</p>
+            <p>{product?.product_quantity === "=99" ? "Unlimited" : product?.product_quantity}</p>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default InventoryDetails
+export default InventoryDetails;

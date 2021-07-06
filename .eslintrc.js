@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ["import"],
+  plugins: ["import", "simple-import-sort"],
   root: true, // Make sure eslint picks up the config at the root of the directory
   parserOptions: {
     ecmaVersion: 2020, // Use the latest ecmascript standard
@@ -19,19 +19,23 @@ module.exports = {
     node: true, // Enables Node.js global variables and Node.js scoping.
     es6: true,
   },
-  extends: ["eslint:recommended", "plugin:react/recommended"],
+  extends: ["eslint:recommended", "plugin:react/recommended", "plugin:prettier/recommended"], // Make this the last element so prettier config overrides other formatting rules],
   rules: {
+    "simple-import-sort/sort": "error",
+    "sort-imports": "off",
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/no-duplicates": "error",
+    "prettier/prettier": ["error", {}, { usePrettierrc: true }], // Use our .prettierrc file as source
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
   },
   overrides: [
     {
-      files: "api/**/*.js",
+      files: "pages/api/**/*.js",
       env: { node: true },
       rules: {
+        "simple-import-sort/imports": "off",
         "import/order": ["error", { "newlines-between": "always" }],
       },
     },
