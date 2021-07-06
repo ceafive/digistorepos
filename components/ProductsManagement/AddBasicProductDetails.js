@@ -44,6 +44,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   const createProductWithVariants = (values) => {
     try {
       dispatch(setProductWithVariants(values));
+      setGoToVarianceConfig(true);
     } catch (error) {
       console.log(error);
     }
@@ -56,10 +57,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       case true:
         return {
           buttonText: "Proceed",
-          buttonAction: () => {
-            handleSubmit(createProductWithVariants)();
-            setGoToVarianceConfig(true);
-          },
+          buttonAction: handleSubmit(createProductWithVariants),
         };
 
       case false:
