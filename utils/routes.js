@@ -59,7 +59,7 @@ export const sidebarRoutes = [
       },
       {
         id: 2,
-        name: "Open/Close",
+        name: "Manage",
         path: "/products/manage",
         slug: "products/manage",
       },

@@ -11,7 +11,7 @@ module.exports = {
         34: "8.5rem",
       },
       fontFamily: {
-        print: ["Castoro", "serif"],
+        print: ["Nunito Sans, sans-serif"],
       },
       colors: {
         ...colors,

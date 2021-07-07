@@ -1,15 +1,15 @@
-import { setSecondPaneOpenPath, setSidebarSecondPaneOpen } from "features/app/appSlice"
-import { useRouter } from "next/router"
-import React from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { sidebarRoutes } from "utils"
+import { setSecondPaneOpenPath, setSidebarSecondPaneOpen } from "features/app/appSlice";
+import { useRouter } from "next/router";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { sidebarRoutes } from "utils";
 
 const NavLink = ({ sidebarRoute }) => {
-  const { name, slug, path, icon, iconColor } = sidebarRoute
-  const router = useRouter()
-  const dispatch = useDispatch()
+  const { name, slug, path, icon, iconColor } = sidebarRoute;
+  const router = useRouter();
+  const dispatch = useDispatch();
 
-  const secondPaneOpenPathname = useSelector((state) => state.app.secondPaneOpenPathname)
+  const secondPaneOpenPathname = useSelector((state) => state.app.secondPaneOpenPathname);
 
   return (
     <li className={`text-center  ${secondPaneOpenPathname === slug ? "bg-white" : ""}`}>
@@ -18,11 +18,12 @@ const NavLink = ({ sidebarRoute }) => {
         onClick={() => {
           dispatch(
             setSecondPaneOpenPath({
-              name: slug
+              name: slug,
             })
-          )
-          dispatch(setSidebarSecondPaneOpen(true))
-        }}>
+          );
+          dispatch(setSidebarSecondPaneOpen(true));
+        }}
+      >
         <span className={"text-lg py-3 font-bold block " + "text-blueGray-700 hover:text-blueGray-500"}>
           <p>
             <i className={`fas fa-${icon} text-xl text-${iconColor}`}></i>
@@ -31,20 +32,20 @@ const NavLink = ({ sidebarRoute }) => {
         </span>
       </button>
     </li>
-  )
-}
+  );
+};
 
 const ChildNavLink = ({ childLink }) => {
-  const { name, path, slug } = childLink
-  const router = useRouter()
-  const dispatch = useDispatch()
+  const { name, path, slug } = childLink;
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleClick = (e, path) => {
-    e.preventDefault()
-    dispatch(setSidebarSecondPaneOpen(false))
+    e.preventDefault();
+    dispatch(setSidebarSecondPaneOpen(false));
 
-    router.push(path)
-  }
+    router.push(path);
+  };
 
   return (
     <li className={`text-left p-3 py-2`}>
@@ -54,48 +55,50 @@ const ChildNavLink = ({ childLink }) => {
             router.pathname.indexOf(path) !== -1
               ? "text-lightBlue-500 hover:text-lightBlue-600"
               : "text-blueGray-700 hover:text-blueGray-500"
-          }>
+          }
+        >
           {name}
         </span>
       </button>
     </li>
-  )
-}
+  );
+};
 
 export default function Sidebar() {
-  const dispatch = useDispatch()
-  const router = useRouter()
-  const secondPaneOpenPathname = useSelector((state) => state.app.secondPaneOpenPathname)
-  const openSidebarSecondpane = useSelector((state) => state.app.openSidebarSecondpane)
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const secondPaneOpenPathname = useSelector((state) => state.app.secondPaneOpenPathname);
+  const openSidebarSecondpane = useSelector((state) => state.app.openSidebarSecondpane);
 
   // console.log(router);
 
   React.useEffect(() => {
-    const slug = router?.pathname?.split("/")[1]
+    const slug = router?.pathname?.split("/")[1];
     slug &&
       dispatch(
         setSecondPaneOpenPath({
-          name: slug
+          name: slug,
         })
-      )
-  }, [])
+      );
+  }, []);
 
   // console.log(openSidebarSecondpane);
   // console.log(secondPaneOpenPathname);
 
-  const { childLinks } = sidebarRoutes.find((sidebarRoute) => sidebarRoute.slug === secondPaneOpenPathname)
+  const { childLinks } = sidebarRoutes.find((sidebarRoute) => sidebarRoute.slug === secondPaneOpenPathname);
 
   return (
     <>
       <nav
         className={`side-bar left-0 fixed top-0 bottom-0 overflow-y-auto flex-row overflow-hidden ${
-          openSidebarSecondpane ? "w-48 xl:w-64" : "w-20 xl:w-28"
-        } z-10`}>
+          openSidebarSecondpane ? "w-48 xl:w-64" : "w-24 xl:w-32"
+        } z-10`}
+      >
         <div className={"min-h-full px-0 mx-auto flex w-full shadow-none"}>
-          <div className={`first-pane ${openSidebarSecondpane ? "w-20 xl:w-28" : "w-20 xl:w-28"} bg-blueGray-100`}>
+          <div className={`first-pane w-24 xl:w-32 bg-blueGray-100`}>
             <ul className="flex-col min-w-full list-none">
               {sidebarRoutes.map((sidebarRoute) => {
-                return <NavLink key={sidebarRoute.id} sidebarRoute={sidebarRoute} />
+                return <NavLink key={sidebarRoute.id} sidebarRoute={sidebarRoute} />;
               })}
             </ul>
           </div>
@@ -143,12 +146,12 @@ export default function Sidebar() {
 
             <ul className="flex-col list-none">
               {childLinks.map((childLink) => {
-                return <ChildNavLink key={childLink.id} childLink={childLink} />
+                return <ChildNavLink key={childLink.id} childLink={childLink} />;
               })}
             </ul>
           </div>
         </div>
       </nav>
     </>
-  )
+  );
 }
