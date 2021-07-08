@@ -5,11 +5,13 @@ import { setManageProductCategories, setManageProductProducts } from "features/m
 import { filter } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import ManageCategories from "./ManageCategories";
 
 const ManageProducts = () => {
   const dispatch = useDispatch();
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
+  const [tabSelected, setTabSelected] = React.useState("products");
   // Compnent State
 
   React.useEffect(() => {
@@ -44,7 +46,46 @@ const ManageProducts = () => {
     );
   }
 
-  return <>{<ManageProductDetails />}</>;
+  return (
+    <div>
+      <h1>Products</h1>
+      <hr />
+      <p>
+        Setup and manage your products and inventory; assign products to your outlet(s) or shop(s) customers can buy from and manage∏
+        products/orders all in ONE ACCOUNT
+      </p>
+      <div className="mt-6 pl-6">
+        <button
+          className={`mx-4 font-bold ${tabSelected === "products" ? "text-green-600" : "text-blue-600"}  focus:outline-none`}
+          onClick={() => {
+            setTabSelected("products");
+          }}
+        >
+          Products
+        </button>{" "}
+        {"  | "}
+        <button
+          className={`mx-4 font-bold ${tabSelected === "categories" ? "text-green-600" : "text-blue-600"} focus:outline-none`}
+          onClick={() => {
+            setTabSelected("categories");
+          }}
+        >
+          Categories
+        </button>{" "}
+        {"  | "}
+        <button
+          className={`mx-4 font-bold ${tabSelected === "outlets" ? "text-green-600" : "text-blue-600"} focus:outline-none`}
+          onClick={() => {
+            setTabSelected("outlets");
+          }}
+        >
+          Outlet Products
+        </button>
+      </div>
+      {tabSelected === "products" && <ManageProductDetails />}
+      {tabSelected === "categories" && <ManageCategories />}
+    </div>
+  );
 };
 
 export default ManageProducts;

@@ -75,29 +75,29 @@ module.exports = {
       },
     },
   },
-  variants: [
-    "responsive",
-    // // "group-hover",
-    // // "focus-within",
-    // // "first",
-    // // "last",
-    // // "odd",
-    // // "even",
-    "hover",
-    "focus",
-    // // "active",
-    // // "visited",
-    "checked",
-    // // "disabled",
-  ],
+  // variants: [
+  //   "responsive",
+  //   // // "group-hover",
+  //   // // "focus-within",
+  //   // // "first",
+  //   // // "last",
+  //   // // "odd",
+  //   // // "even",
+  //   "hover",
+  //   "focus",
+  //   // // "active",
+  //   // // "visited",
+  //   "checked",
+  //   // // "disabled",
+  // ],
 
-  // variants: {
-  //   extend: {
-  //     backgroundColor: ["checked"],
-  //     borderColor: ["checked"],
-  //     boxShadow: ["focus-within"],
-  //   },
-  // },
+  variants: {
+    extend: {
+      backgroundColor: ["checked"],
+      borderColor: ["checked"],
+      boxShadow: ["focus-within"],
+    },
+  },
   plugins: [
     require("@tailwindcss/forms"),
     plugin(function ({ addComponents, theme }) {

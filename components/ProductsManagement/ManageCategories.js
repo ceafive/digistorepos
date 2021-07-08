@@ -42,7 +42,7 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
-const ManageProductDetails = ({ setGoToVarianceConfig }) => {
+const ManageCategories = ({ setGoToVarianceConfig }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const {
@@ -64,23 +64,21 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
+    setLoading(true);
     if (categorySelected !== "ALL") {
-      setLoading(true);
       const filtered = filter(manageProductProducts, (o) => {
         return o?.product_category === categorySelected;
       });
 
       setAllProducts(filtered);
-      setLoading(false);
     } else {
-      setLoading(true);
       setAllProducts(manageProductProducts);
-      setLoading(false);
     }
+    setLoading(false);
   }, [categorySelected]);
 
   const columns = [
-    { title: "Product ID", field: "product_id" },
+    { title: "No.", field: "product_id" },
     { title: "Name", field: "product_name" },
     { title: "Description", field: "product_category_description" },
     { title: "Price", field: "product_price" },
@@ -103,67 +101,14 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
         <div className="w-full pb-6 pt-12">
           <div>
             <div className="flex justify-between items-center w-full mb-6">
-              <h1 className="font-bold text-blue-700">Products</h1>
-              <button
-                className="bg-green-600 px-2 py-1 rounded text-white font-semibold focus:ring focus:outline-none focus:ring-green-500"
-                onClick={() => {
-                  router.push("/products/create");
-                }}
-              >
-                Create New Product
-              </button>
+              <h1 className="font-bold text-blue-700">Categories</h1>
             </div>
             <hr />
-            <div className="flex w-full items-center">
-              <div className="w-1/2">
-                <label className="text-sm leading-none  font-bold">Product Categories</label>
-                <select
-                  {...register("productCategory")}
-                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white"
-                >
-                  <option value="ALL">{`ALL`}</option>
-                  {manageProductCategories?.map((category) => {
-                    return (
-                      <option key={category?.product_category_id} value={category?.product_category}>
-                        {category?.product_category}
-                      </option>
-                    );
-                  })}
-                </select>
-                <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
-              </div>
-              {/* <div>
-                <button className="bg-green-500 px-4 py-1 text-white ml-2 rounded font-bold mt-6">View Variance</button>
-              </div> */}
-            </div>
           </div>
         </div>
-      </div>
-      <div>
-        <MaterialTable
-          isLoading={loading}
-          title={`Category: ${capitalize(categorySelected)}`}
-          icons={tableIcons}
-          columns={columns}
-          data={allProducts.map((o) => ({ ...o, tableData: {} }))}
-          components={{
-            Toolbar: (props) => (
-              <div>
-                <MTableToolbar {...props} />
-                <div style={{ padding: "0px 10px" }}>
-                  <p label="Chip 1" color="secondary" style={{ marginRight: 5 }} />
-                  <p label="Chip 2" color="secondary" style={{ marginRight: 5 }} />
-                  <p label="Chip 3" color="secondary" style={{ marginRight: 5 }} />
-                  <p label="Chip 4" color="secondary" style={{ marginRight: 5 }} />
-                  <p label="Chip 5" color="secondary" style={{ marginRight: 5 }} />
-                </div>
-              </div>
-            ),
-          }}
-        />
       </div>
     </>
   );
 };
 
-export default ManageProductDetails;
+export default ManageCategories;

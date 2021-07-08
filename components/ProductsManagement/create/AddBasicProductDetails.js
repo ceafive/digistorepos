@@ -19,8 +19,6 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
 
-  // console.log(manageProductCategories);
-
   const {
     control,
     register,
@@ -44,8 +42,6 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const isInventorySet = watch("setInventoryQuantity", false);
-
-  // console.log(productWithVariants);
 
   const createProduct = async (values) => {
     try {
@@ -76,7 +72,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
         name: productName,
         desc: productDescription,
         price: parseFloat(sellingPrice),
-        cost: parseFloat(costPerItem),
+        cost: costPerItem ? parseFloat(costPerItem) : "",
         quantity: setInventoryQuantity ? parseInt(inventoryQuantity) : -99,
         category: productCategory,
         tag: "NORMAL",
@@ -121,8 +117,6 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
     }
   };
 
-  // console.log({ variantsArray });
-
   const buttonParams = React.useMemo(() => {
     switch (productHasVariants) {
       case true:
@@ -138,8 +132,6 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
         };
     }
   }, [productHasVariants]);
-
-  // console.log(errors);
 
   return (
     <>
@@ -420,10 +412,10 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
               <span className="text-xs">(You can select multiple outlets)</span>
             </p>
 
-            <div className="bg-white m-2 p-2" style={{ height: 200 }}>
+            <div className="bg-white m-2 p-2 overflow-y-scroll overflow-x-hidden" style={{ height: 200 }}>
               <div className="w-full">
                 <input
-                  {...register("outlets", { required: true })}
+                  {...register("outlets", { required: "Outlet selection is required" })}
                   type="checkbox"
                   value="haatso"
                   className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
@@ -432,7 +424,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
               </div>
               <div className="w-full">
                 <input
-                  {...register("outlets", { required: true })}
+                  {...register("outlets", { required: "Outlet selection is required" })}
                   type="checkbox"
                   value="storage"
                   className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
@@ -440,6 +432,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                 <label className="text-sm leading-none  font-bold">Storage</label>
               </div>
             </div>
+            <p className="my-1 text-xs text-red-500">{errors?.outlets?.message}</p>
           </div>
 
           <div className="mt-4">

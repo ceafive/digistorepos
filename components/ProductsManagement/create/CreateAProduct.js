@@ -1,5 +1,5 @@
 import axios from "axios";
-import AddBasicProductDetails from "components/ProductsManagement/AddBasicProductDetails";
+import AddBasicProductDetails from "components/ProductsManagement/create/AddBasicProductDetails";
 import Spinner from "components/Spinner";
 import { setManageProductCategories } from "features/manageproducts/manageprodcutsSlice";
 import { filter } from "lodash";
