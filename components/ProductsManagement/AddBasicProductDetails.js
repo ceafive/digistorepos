@@ -1,8 +1,12 @@
+import axios from "axios";
+import ButtonSpinner from "components/ButtonSpinner";
+import Spinner from "components/Spinner";
 import { setProductHasVariants, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
 import { get } from "lodash";
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+
 import UploadImage from "./UploadImage";
 
 const VariantsSection = () => {
@@ -12,6 +16,11 @@ const VariantsSection = () => {
 const AddProductDetails = ({ setGoToVarianceConfig }) => {
   const dispatch = useDispatch();
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
+  const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
+  const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
+
+  // console.log(manageProductCategories);
+
   const {
     control,
     register,
@@ -28,22 +37,71 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
     },
   });
 
-  const setInventoryQuantity = watch("setInventoryQuantity", false);
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: "variants",
   });
 
-  const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const isInventorySet = watch("setInventoryQuantity", false);
+
   // console.log(productWithVariants);
 
-  const createProduct = (values) => {
+  const createProduct = async (values) => {
     try {
-      const applyTax = get(values, "applyTax");
-      console.log({ ...values, applyTax: applyTax ? "YES" : "NO" });
+      setIsProcessing(true);
+      const data = { ...values, applyTax: get(values, "applyTax") ? "YES" : "NO" };
+      const {
+        productName,
+        productCategory,
+        productDescription,
+        sku,
+        outlets,
+        weight,
+        barcode,
+        sellingPrice,
+        costPerItem,
+        productImages,
+        inventoryQuantity,
+        setInventoryQuantity,
+        applyTax,
+      } = data;
+
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      const imagesToUpload = productImages?.map((productImage) => productImage?.file) ?? [];
+
+      const payload = {
+        name: productName,
+        desc: productDescription,
+        price: parseFloat(sellingPrice),
+        cost: parseFloat(costPerItem),
+        quantity: setInventoryQuantity ? parseInt(inventoryQuantity) : -99,
+        category: productCategory,
+        tag: "NORMAL",
+        taxable: applyTax,
+        sku,
+        weight: weight ? parseFloat(weight) : "",
+        barcode,
+        is_price_global: "YES",
+        outlet_list: `1114,1061`,
+        $_FILES: imagesToUpload,
+        merchant: user["user_merchant_id"],
+        mod_by: user["login"],
+      };
+
+      // console.log(data);
+      console.log(payload);
+      const addProductRes = await axios.post("/api/products/create-product", payload);
+      const response = await addProductRes.data;
+      console.log(response);
+
+      if (Number(response?.status) === 0) reset();
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -81,7 +139,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
     }
   }, [productHasVariants]);
 
-  console.log(errors);
+  // console.log(errors);
 
   return (
     <>
@@ -109,10 +167,13 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                   className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2"
                 >
                   <option value="">{`Select Category`}</option>
-                  <option value="Pizza">Pizza</option>
-                  <option value="Pizza">Ice Cream</option>
-                  <option value="Pizza">Meat</option>
-                  <option value="Pizza">Bakery</option>
+                  {manageProductCategories?.map((category) => {
+                    return (
+                      <option key={category?.product_category_id} value={category?.product_category_id}>
+                        {category?.product_category}
+                      </option>
+                    );
+                  })}
                 </select>
                 <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
               </div>
@@ -135,8 +196,8 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
               <div className="w-1/2 mr-2">
                 <label className="text-sm leading-none  font-bold">Selling Price</label>
                 <input
-                  {...register("sellingPrice", { required: "Selling price is required", valueAsNumber: true })}
-                  type="text"
+                  {...register("sellingPrice", { required: "Selling price is required" })}
+                  type="number"
                   placeholder="12"
                   className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                 />
@@ -148,8 +209,8 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                   Cost Per Item <span className="text-xs">(Your customers won't see this)</span>
                 </label>
                 <input
-                  {...register("costPerItem", { valueAsNumber: true })}
-                  type="text"
+                  {...register("costPerItem")}
+                  type="number"
                   placeholder="Enter cost of product"
                   className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                 />
@@ -167,11 +228,11 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                   />
                   <label className="text-sm leading-none  font-bold">Set number of units in stock</label>
                 </div>
-                {setInventoryQuantity && (
+                {isInventorySet && (
                   <>
                     <input
                       {...register("inventoryQuantity", {
-                        validate: (value) => (setInventoryQuantity ? Boolean(value) && Number(value) > 0 : true) || "Quantity is required",
+                        validate: (value) => (isInventorySet ? Boolean(value) && Number(value) > 0 : true) || "Quantity is required",
                       })}
                       type="number"
                       placeholder="Quantity in stock"
@@ -211,8 +272,8 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                   Weight of the item in Kilograms <span className="text-xs">(Used to calculate shipping rates at checkout)</span>
                 </label>
                 <input
-                  {...register("weight", { valueAsNumber: true })}
-                  type="text"
+                  {...register("weight")}
+                  type="number"
                   placeholder=""
                   className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                 />
@@ -298,7 +359,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                             <div className="w-1/5 flex">
                               {fields.length > 1 && (
                                 <div
-                                  className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-6 cursor-pointer"
+                                  className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
                                   onClick={() => {
                                     remove(index);
                                   }}
@@ -311,7 +372,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
 
                               {fields?.length < 5 && index === fields.length - 1 && (
                                 <div
-                                  className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-6 cursor-pointer"
+                                  className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-4 cursor-pointer"
                                   onClick={() => {
                                     append({});
                                   }}
@@ -381,14 +442,21 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
             </div>
           </div>
 
-          <div className="w-full mt-2">
+          <div className="mt-4">
             <button
-              className="bg-green-600 px-6 py-3 w-full rounded text-white font-semibold uppercase"
+              className={`${
+                isProcessing ? "bg-gray-300 text-gray-200" : "bg-green-800  text-white"
+              }  px-6 py-3 w-full rounded font-semibold uppercase focus:outline-none`}
               onClick={() => {
                 buttonParams.buttonAction();
               }}
             >
-              {buttonParams.buttonText}
+              {isProcessing && (
+                <div className="inline-block mr-2">
+                  <Spinner type={"TailSpin"} color="black" width={10} height={10} />
+                </div>
+              )}
+              <span>{buttonParams.buttonText}</span>
             </button>
           </div>
         </div>

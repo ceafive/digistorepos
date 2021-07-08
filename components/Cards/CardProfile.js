@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 // components
 
@@ -65,5 +65,5 @@ export default function CardProfile() {
         </div>
       </div>
     </>
-  )
+  );
 }

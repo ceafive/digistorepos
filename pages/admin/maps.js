@@ -1,8 +1,8 @@
 // components
-import MapExample from "components/Maps/MapExample.js"
+import MapExample from "components/Maps/MapExample.js";
 // layout for page
-import Admin from "layouts/Admin.js"
-import React from "react"
+import Admin from "layouts/Admin.js";
+import React from "react";
 
 export default function Maps() {
   return (
@@ -15,7 +15,7 @@ export default function Maps() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-Maps.layout = Admin
+Maps.layout = Admin;

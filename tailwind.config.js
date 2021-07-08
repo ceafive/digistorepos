@@ -87,8 +87,8 @@ module.exports = {
     "focus",
     // // "active",
     // // "visited",
-    // // "disabled",
     "checked",
+    // // "disabled",
   ],
 
   // variants: {

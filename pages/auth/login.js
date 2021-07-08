@@ -102,7 +102,7 @@ export default function Login() {
                       })}
                       type="password"
                       pattern="[0-9]*"
-                      novalidate
+                      noValidate
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-1 w-full ease-linear transition-all duration-150"
                       placeholder="1234"
                     />

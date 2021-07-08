@@ -1,41 +1,41 @@
-import axios from "axios"
-import { forEach } from "p-iteration"
+import axios from "axios";
+import { forEach } from "p-iteration";
 
-const { reduce, get, capitalize, upperCase, has, replace } = require("lodash")
+const { reduce, get, capitalize, upperCase, has, replace } = require("lodash");
 
 const configureVariables = (transactionFeeCharges, cartTotalMinusDiscountPlusTax, deliveryCharge) => {
-  const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3))
-  const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3))
+  const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
+  const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3));
 
   return {
     fees,
-    saleTotal
-  }
-}
+    saleTotal,
+  };
+};
 
 const fetchFeeCharges = async (dispatch, setTransactionFeeCharges, setFetching, user, userPaymentMethods) => {
   try {
-    setFetching(true)
-    const feeCharges = []
+    setFetching(true);
+    const feeCharges = [];
 
     await forEach(userPaymentMethods, async (paymentMethod) => {
       const res = await axios.post("/api/sell/get-transaction-fee-charges", {
         merchant: user["user_merchant_id"],
         channel: paymentMethod.method,
-        amount: paymentMethod.amount
-      })
-      const response = await res.data
+        amount: paymentMethod.amount,
+      });
+      const response = await res.data;
 
-      const charge = get(response, "charge", 0)
-      feeCharges.push({ ...response, charge: Number(parseFloat(charge).toFixed(3)) })
-    })
-    dispatch(setTransactionFeeCharges(feeCharges))
+      const charge = get(response, "charge", 0);
+      feeCharges.push({ ...response, charge: Number(parseFloat(charge).toFixed(3)) });
+    });
+    dispatch(setTransactionFeeCharges(feeCharges));
   } catch (error) {
-    console.log(error)
+    console.log(error);
   } finally {
-    setFetching(false)
+    setFetching(false);
   }
-}
+};
 
 const onAddPayment = async function (
   dispatch,
@@ -57,17 +57,17 @@ const onAddPayment = async function (
       ...paymentMethodsAndAmount,
       {
         method: paymentMethodSet,
-        amount: Number(parseFloat(payerAmountEntered).toFixed(2))
-      }
-    ])
+        amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
+      },
+    ]);
     if (paymentMethodSet === "CASH") {
       dispatch(
         setAmountReceivedFromPayer({
           method: paymentMethodSet,
           amount: Number(parseFloat(values[paymentMethodSet]).toFixed(2)),
-          payment_number: currentCustomer?.customer_phone ?? ""
+          payment_number: currentCustomer?.customer_phone ?? "",
         })
-      )
+      );
       // if (payerAmountEntered === cartTotalMinusDiscountPlusTax) {
       //   dispatch(
       //     setAmountReceivedFromPayer({
@@ -82,49 +82,49 @@ const onAddPayment = async function (
         setAmountReceivedFromPayer({
           method: paymentMethodSet,
           amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
-          payment_number: values[paymentMethodSet]
+          payment_number: values[paymentMethodSet],
         })
-      )
+      );
     }
 
-    setOpenPhoneNumberInputModal(false)
+    setOpenPhoneNumberInputModal(false);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   } finally {
     reset({
-      [paymentMethodSet]: ""
-    })
+      [paymentMethodSet]: "",
+    });
   }
-}
+};
 
 const onSendNotification = async (type = "SMS", setSendingNotification, addToast, removeToast, invoiceDetails, user) => {
   try {
-    setSendingNotification(type)
-    addToast(`Sending ${type}`, { appearance: "info", id: "notif-sending" })
+    setSendingNotification(type);
+    addToast(`Sending ${type}`, { appearance: "info", id: "notif-sending" });
     const payload = {
       tran_id: invoiceDetails?.invoice,
       tran_type: "ORDER",
       notify_type: type,
       merchant: user["user_merchant_id"],
-      mod_by: user["login"]
-    }
-    const res = await axios.post("/api/sell/send-notification", payload)
-    const data = await res.data
+      mod_by: user["login"],
+    };
+    const res = await axios.post("/api/sell/send-notification", payload);
+    const data = await res.data;
     // console.log(data);
 
-    removeToast("notif-sending")
+    removeToast("notif-sending");
     if (Number(data?.status) === 0) {
-      addToast(data?.message, { appearance: "success", autoDismiss: true })
+      addToast(data?.message, { appearance: "success", autoDismiss: true });
     } else {
-      addToast(data?.message, { appearance: "error", autoDismiss: true })
+      addToast(data?.message, { appearance: "error", autoDismiss: true });
     }
   } catch (error) {
-    console.log(error)
-    addToast(error.message, { appearance: "error" })
+    console.log(error);
+    addToast(error.message, { appearance: "error" });
   } finally {
-    setSendingNotification(false)
+    setSendingNotification(false);
   }
-}
+};
 
 const onRaiseOrder = async (
   dispatch,
@@ -147,20 +147,20 @@ const onRaiseOrder = async (
     // } else setStep(1);
 
     // return;
-    setFetching(true)
-    setProcessError(false)
-    const productsInCart = cart?.productsInCart
+    setFetching(true);
+    setProcessError(false);
+    const productsInCart = cart?.productsInCart;
     const productsJSON = productsInCart.reduce((acc, curr, index) => {
       const variants = Object.values(curr?.variants).map((variant, index) => {
-        return `${capitalize(variant)}`
-      })
+        return `${capitalize(variant)}`;
+      });
 
       const properties = Object.entries(curr?.variants).reduce((acc, variant, index) => {
-        return { ...acc, [upperCase(variant[0])]: [variant[1]][0] }
-      }, {})
+        return { ...acc, [upperCase(variant[0])]: [variant[1]][0] };
+      }, {});
 
-      const typeIsNormal = has(properties, "TYPE")
-      const addVariants = variants.length > 0 ? `( ${variants.join(", ")} )` : ""
+      const typeIsNormal = has(properties, "TYPE");
+      const addVariants = variants.length > 0 ? `( ${variants.join(", ")} )` : "";
 
       return {
         ...acc,
@@ -169,10 +169,10 @@ const onRaiseOrder = async (
           order_item_qty: curr?.quantity,
           order_item: `${curr?.product_name}${!typeIsNormal ? addVariants : ""}`,
           order_item_amt: curr?.totalPrice,
-          order_item_prop: !typeIsNormal ? properties : {}
-        }
-      }
-    }, {})
+          order_item_prop: !typeIsNormal ? properties : {},
+        },
+      };
+    }, {});
 
     // return;
     const payload = {
@@ -211,35 +211,35 @@ const onRaiseOrder = async (
       merchant: user["user_merchant_id"],
       source: "INSHP",
       notify_source: "WEB",
-      mod_by: user["login"]
-    }
+      mod_by: user["login"],
+    };
 
     // console.log({ cart });
     // console.log({ payload });
     // return;
 
-    const res = await axios.post("/api/sell/raise-order", payload)
-    const data = await res.data
+    const res = await axios.post("/api/sell/raise-order", payload);
+    const data = await res.data;
     // console.log(data);
 
     if (data?.status !== 0) {
-      setProcessError(data?.message)
+      setProcessError(data?.message);
     }
     if (data?.status === 0 && cart?.paymentMethodSet === "CASH") {
-      dispatch(setInvoiceDetails(data))
-      setStep(2)
+      dispatch(setInvoiceDetails(data));
+      setStep(2);
     }
 
     if (Number(data?.status) === 0 && cart?.paymentMethodSet !== "CASH") {
-      dispatch(setInvoiceDetails(data))
-      setConfirmPaymentText(data?.message)
-      setStep(1)
+      dispatch(setInvoiceDetails(data));
+      setConfirmPaymentText(data?.message);
+      setStep(1);
     }
   } catch (error) {
-    console.log(error.response.data)
+    console.log(error.response.data);
   } finally {
-    setFetching(false)
+    setFetching(false);
   }
-}
+};
 
-export { fetchFeeCharges, onAddPayment, configureVariables, onSendNotification, onRaiseOrder }
+export { configureVariables, fetchFeeCharges, onAddPayment, onRaiseOrder, onSendNotification };

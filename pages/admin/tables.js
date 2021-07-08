@@ -1,8 +1,8 @@
 // components
-import CardTable from "components/Cards/CardTable.js"
+import CardTable from "components/Cards/CardTable.js";
 // layout for page
-import Admin from "layouts/Admin.js"
-import React from "react"
+import Admin from "layouts/Admin.js";
+import React from "react";
 
 export default function Tables() {
   return (
@@ -16,7 +16,7 @@ export default function Tables() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-Tables.layout = Admin
+Tables.layout = Admin;

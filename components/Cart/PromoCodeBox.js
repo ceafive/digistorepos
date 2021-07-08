@@ -1,5 +1,5 @@
-import Spinner from "components/Spinner"
-import React from "react"
+import Spinner from "components/Spinner";
+import React from "react";
 
 const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, setShowPromoCodeBox }) => {
   return (
@@ -11,8 +11,8 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
           <input
             value={promoCode}
             onChange={(e) => {
-              e.persist()
-              setPromoCode(e.target.value)
+              e.persist();
+              setPromoCode(e.target.value);
             }}
             type="text"
             className="appearance-none border border-gray-200 placeholder-blueGray-300 text-blueGray-600 rounded text-sm outline-none focus:outline-none w-full"
@@ -23,9 +23,10 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
           <button
             className="text-white font-bold bg-red-700 px-3 py-1 mr-2 rounded"
             onClick={() => {
-              setShowPromoCodeBox(false)
+              setShowPromoCodeBox(false);
               // dispatch(onChangeCartDiscountType("percent"));
-            }}>
+            }}
+          >
             Cancel
           </button>
           <div className="text-center">
@@ -36,8 +37,9 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
               } font-bold px-3 py-1  rounded focus:outline-none ease-linear transition-all duration-150`}
               type="button"
               onClick={() => {
-                checkingPromoCode()
-              }}>
+                checkingPromoCode();
+              }}
+            >
               {checking && (
                 <div className="inline-block mr-2">
                   <Spinner type={"TailSpin"} color="black" width="10" height="10" />
@@ -49,7 +51,7 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PromoCodeBox
+export default PromoCodeBox;

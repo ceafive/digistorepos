@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "axios";
 import {
   applyDiscount,
   onChangeCartDiscountType,
@@ -6,60 +6,61 @@ import {
   onResetCart,
   setCartPromoCode,
   setDiscount,
-  setPromoAmount
-} from "features/cart/cartSlice"
-import { upperCase } from "lodash"
-import React from "react"
-import { useDispatch, useSelector } from "react-redux"
-import DiscountBox from "./DiscountBox"
-import NoteBox from "./NoteBox"
-import PromoCodeBox from "./PromoCodeBox"
+  setPromoAmount,
+} from "features/cart/cartSlice";
+import { upperCase } from "lodash";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import DiscountBox from "./DiscountBox";
+import NoteBox from "./NoteBox";
+import PromoCodeBox from "./PromoCodeBox";
 
 const PayButton = () => {
-  const dispatch = useDispatch()
-  const totalItemsInCart = useSelector((state) => state.cart.totalItemsInCart)
-  const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart)
-  const cartDiscount = useSelector((state) => state.cart.cartDiscount)
-  const totalTaxes = useSelector((state) => state.cart.totalTaxes)
-  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax)
-  const cartTotalMinusDiscount = useSelector((state) => state.cart.cartTotalMinusDiscount)
-  const cartDiscountOnCartTotal = useSelector((state) => state.cart.cartDiscountOnCartTotal)
-  const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount)
-  const currentCustomer = useSelector((state) => state.cart.currentCustomer)
-  const outletSelected = useSelector((state) => state.products.outletSelected)
-  const productsInCart = useSelector((state) => state.cart.productsInCart)
+  const dispatch = useDispatch();
+  const totalItemsInCart = useSelector((state) => state.cart.totalItemsInCart);
+  const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
+  const cartDiscount = useSelector((state) => state.cart.cartDiscount);
+  const totalTaxes = useSelector((state) => state.cart.totalTaxes);
+  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
+  const cartTotalMinusDiscount = useSelector((state) => state.cart.cartTotalMinusDiscount);
+  const cartDiscountOnCartTotal = useSelector((state) => state.cart.cartDiscountOnCartTotal);
+  const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const productsInCart = useSelector((state) => state.cart.productsInCart);
 
   // Componet State
-  const [showAddNoteInput, setShowAddNoteInput] = React.useState(false)
-  const [showDiscountBox, setShowDiscountBox] = React.useState(false)
-  const [showPromoCodeBox, setShowPromoCodeBox] = React.useState(false)
-  const [checking, setProcessing] = React.useState(false)
-  const [promoCode, setPromoCode] = React.useState("")
+  const [showAddNoteInput, setShowAddNoteInput] = React.useState(false);
+  const [showDiscountBox, setShowDiscountBox] = React.useState(false);
+  const [showPromoCodeBox, setShowPromoCodeBox] = React.useState(false);
+  const [checking, setProcessing] = React.useState(false);
+  const [promoCode, setPromoCode] = React.useState("");
 
   // Variables
-  const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2))
+  const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
 
   React.useEffect(() => {
-    dispatch(applyDiscount())
-    return () => {}
-  }, [totalPriceInCart, totalItemsInCart, cartDiscount, cartPromoDiscount, dispatch])
+    dispatch(applyDiscount());
+    return () => {};
+  }, [totalPriceInCart, totalItemsInCart, cartDiscount, cartPromoDiscount, dispatch]);
 
   const checkingPromoCode = async () => {
     try {
-      setProcessing(true)
-      let user = sessionStorage.getItem("IPAYPOSUSER")
-      user = JSON.parse(user)
+      setProcessing(true);
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
 
-      let orderItems = {}
+      let orderItems = {};
 
       productsInCart.forEach((product, index) => {
         orderItems[index] = {
           order_item_no: product?.uniqueId,
           order_item_qty: product?.quantity,
           order_item: product?.title,
-          order_item_amt: product?.price
-        }
-      })
+          order_item_amt: product?.price,
+        };
+      });
 
       const userData = {
         code: upperCase(promoCode),
@@ -67,27 +68,27 @@ const PayButton = () => {
         merchant: user["user_merchant_id"],
         order_items: JSON.stringify(orderItems),
         customer: currentCustomer,
-        outlet: outletSelected
-      }
+        outlet: outletSelected,
+      };
 
       // console.log(userData);
       // return;
 
-      const response = await axios.post("/api/sell/add-discount", userData)
-      const { status, message, discount } = await response.data
+      const response = await axios.post("/api/sell/add-discount", userData);
+      const { status, message, discount } = await response.data;
 
       // console.log({ status, message, discount });
-      dispatch(setCartPromoCode(upperCase(promoCode)))
-      dispatch(setPromoAmount(discount))
+      dispatch(setCartPromoCode(upperCase(promoCode)));
+      dispatch(setPromoAmount(discount));
     } catch (error) {
-      console.log(error)
-      setProcessing(false)
+      console.log(error);
+      setProcessing(false);
     } finally {
-      setPromoCode("")
-      setProcessing(false)
-      setShowPromoCodeBox(false)
+      setPromoCode("");
+      setProcessing(false);
+      setShowPromoCodeBox(false);
     }
-  }
+  };
 
   return (
     <div className="w-full">
@@ -119,8 +120,9 @@ const PayButton = () => {
           <button
             className="font-bold text-red-500 focus:outline-none"
             onClick={() => {
-              dispatch(onResetCart())
-            }}>
+              dispatch(onResetCart());
+            }}
+          >
             Clear Cart
           </button>
         </div>
@@ -131,8 +133,9 @@ const PayButton = () => {
               <button
                 className="font-bold text-blue-500 mr-4 focus:outline-none"
                 onClick={() => {
-                  setShowDiscountBox(true)
-                }}>
+                  setShowDiscountBox(true);
+                }}
+              >
                 Discount
               </button>
             )}
@@ -140,16 +143,18 @@ const PayButton = () => {
               <button
                 className="font-bold text-blue-500 mr-4 focus:outline-none"
                 onClick={() => {
-                  setShowPromoCodeBox(true)
-                }}>
+                  setShowPromoCodeBox(true);
+                }}
+              >
                 Promo Code
               </button>
             )}
             <button
               className="font-bold text-blue-500 focus:outline-none"
               onClick={() => {
-                setShowAddNoteInput(true)
-              }}>
+                setShowAddNoteInput(true);
+              }}
+            >
               Note
             </button>
           </div>
@@ -184,9 +189,10 @@ const PayButton = () => {
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
-                dispatch(onChangeCartDiscountType("percent"))
-                dispatch(setDiscount(""))
-              }}>
+                dispatch(onChangeCartDiscountType("percent"));
+                dispatch(setDiscount(""));
+              }}
+            >
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>
             </button>
           </div>
@@ -204,8 +210,9 @@ const PayButton = () => {
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
-                dispatch(setPromoAmount(0))
-              }}>
+                dispatch(setPromoAmount(0));
+              }}
+            >
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>
             </button>
           </div>
@@ -230,8 +237,9 @@ const PayButton = () => {
             totalPriceInCart ? "bg-green-700 text-white" : "bg-gray-400 text-gray-300"
           } py-3 px-6  font-medium text-xl rounded`}
           onClick={() => {
-            dispatch(onClickToCheckout())
-          }}>
+            dispatch(onClickToCheckout());
+          }}
+        >
           <div className="flex justify-between">
             <p>
               <span>Pay</span>
@@ -245,7 +253,7 @@ const PayButton = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PayButton
+export default PayButton;

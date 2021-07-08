@@ -1,10 +1,4 @@
 /* eslint-disable react/display-name */
-import { setProductHasVariants, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
-import MaterialTable, { MTableToolbar } from "material-table";
-import React, { forwardRef } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
-
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import Check from "@material-ui/icons/Check";
@@ -20,7 +14,13 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
+import { setProductHasVariants, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
+import { capitalize, filter } from "lodash";
+import MaterialTable, { MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
+import React, { forwardRef } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -55,7 +55,45 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
     handleSubmit,
   } = useForm({});
 
-  // console.log({ variantsArray });
+  const categorySelected = watch("productCategory", "ALL");
+
+  const manageProductProducts = useSelector((state) => state.manageproducts.manageProductProducts);
+  const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
+
+  const [allProducts, setAllProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    setLoading(true);
+    if (categorySelected !== "ALL") {
+      const filtered = filter(manageProductProducts, (o) => {
+        return o?.product_category === categorySelected;
+      });
+
+      setAllProducts(filtered);
+    } else {
+      setAllProducts(manageProductProducts);
+    }
+    setLoading(false);
+  }, [categorySelected]);
+
+  const columns = [
+    { title: "No.", field: "product_id" },
+    { title: "Name", field: "product_name" },
+    { title: "Description", field: "product_category_description" },
+    { title: "Price", field: "product_price" },
+    {
+      title: "In Stock",
+      field: "inStock",
+      render(rowData) {
+        return <p>{rowData?.product_quantity === "-99" ? "Unlimited" : rowData?.product_quantity}</p>;
+      },
+    },
+    { title: "Qty. Sold", field: "product_quantity_sold" },
+    { title: "Date Added", field: "product_create_date" },
+    { title: "Category", field: "product_category" },
+    { title: "Actions", field: "actions" },
+  ];
 
   return (
     <>
@@ -84,43 +122,34 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
               <div className="w-1/2">
                 <label className="text-sm leading-none  font-bold">Product Categories</label>
                 <select
-                  {...register("productCategory", { required: "Product category is required" })}
+                  {...register("productCategory")}
                   className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white"
                 >
-                  <option value="">{`Select Category`}</option>
-                  <option value="Pizza">Pizza</option>
-                  <option value="Pizza">Ice Cream</option>
-                  <option value="Pizza">Meat</option>
-                  <option value="Pizza">Bakery</option>
+                  <option value="ALL">{`ALL`}</option>
+                  {manageProductCategories?.map((category) => {
+                    return (
+                      <option key={category?.product_category_id} value={category?.product_category}>
+                        {category?.product_category}
+                      </option>
+                    );
+                  })}
                 </select>
                 <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
               </div>
-              <div>
+              {/* <div>
                 <button className="bg-green-500 px-4 py-1 text-white ml-2 rounded font-bold mt-6">View Variance</button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
       </div>
       <div>
         <MaterialTable
-          title="Toolbar Overriding Preview"
+          loading={loading}
+          title={`Category: ${capitalize(categorySelected)}`}
           icons={tableIcons}
-          columns={[
-            { title: "No.", field: "number" },
-            { title: "Name", field: "name" },
-            { title: "Description", field: "description" },
-            { title: "Price", field: "price" },
-            { title: "In Stock", field: "inStock" },
-            { title: "Qty. Sold", field: "quantitySold" },
-            { title: "Date Added", field: "dateAdded" },
-            { title: "Category", field: "category" },
-            { title: "Actions", field: "actions" },
-          ]}
-          data={[
-            { name: "Mehmet", surname: "Baran", birthYear: 1987, birthCity: 63 },
-            { name: "Zerya Betül", surname: "Baran", birthYear: 2017, birthCity: 34 },
-          ]}
+          columns={columns}
+          data={allProducts.map((o) => ({ ...o, tableData: {} }))}
           components={{
             Toolbar: (props) => (
               <div>

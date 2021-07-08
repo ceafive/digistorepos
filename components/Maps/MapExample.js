@@ -1,13 +1,13 @@
-import React from "react"
+import React from "react";
 
 function MapExample() {
-  const mapRef = React.useRef(null)
+  const mapRef = React.useRef(null);
   React.useEffect(() => {
-    let google = window.google
-    let map = mapRef.current
-    let lat = "40.748817"
-    let lng = "-73.985428"
-    const myLatlng = new google.maps.LatLng(lat, lng)
+    let google = window.google;
+    let map = mapRef.current;
+    let lat = "40.748817";
+    let lng = "-73.985428";
+    const myLatlng = new google.maps.LatLng(lat, lng);
     const mapOptions = {
       zoom: 12,
       center: myLatlng,
@@ -17,74 +17,74 @@ function MapExample() {
         {
           featureType: "administrative",
           elementType: "labels.text.fill",
-          stylers: [{ color: "#444444" }]
+          stylers: [{ color: "#444444" }],
         },
         {
           featureType: "landscape",
           elementType: "all",
-          stylers: [{ color: "#f2f2f2" }]
+          stylers: [{ color: "#f2f2f2" }],
         },
         {
           featureType: "poi",
           elementType: "all",
-          stylers: [{ visibility: "off" }]
+          stylers: [{ visibility: "off" }],
         },
         {
           featureType: "road",
           elementType: "all",
-          stylers: [{ saturation: -100 }, { lightness: 45 }]
+          stylers: [{ saturation: -100 }, { lightness: 45 }],
         },
         {
           featureType: "road.highway",
           elementType: "all",
-          stylers: [{ visibility: "simplified" }]
+          stylers: [{ visibility: "simplified" }],
         },
         {
           featureType: "road.arterial",
           elementType: "labels.icon",
-          stylers: [{ visibility: "off" }]
+          stylers: [{ visibility: "off" }],
         },
         {
           featureType: "transit",
           elementType: "all",
-          stylers: [{ visibility: "off" }]
+          stylers: [{ visibility: "off" }],
         },
         {
           featureType: "water",
           elementType: "all",
-          stylers: [{ color: "#cbd5e0" }, { visibility: "on" }]
-        }
-      ]
-    }
+          stylers: [{ color: "#cbd5e0" }, { visibility: "on" }],
+        },
+      ],
+    };
 
-    map = new google.maps.Map(map, mapOptions)
+    map = new google.maps.Map(map, mapOptions);
 
     const marker = new google.maps.Marker({
       position: myLatlng,
       map: map,
       animation: google.maps.Animation.DROP,
-      title: "Notus NextJS!"
-    })
+      title: "Notus NextJS!",
+    });
 
     const contentString =
       '<div class="info-window-content"><h2>Notus NextJS</h2>' +
-      "<p>A free Admin for Tailwind CSS, React, React Hooks, and NextJS.</p></div>"
+      "<p>A free Admin for Tailwind CSS, React, React Hooks, and NextJS.</p></div>";
 
     const infowindow = new google.maps.InfoWindow({
-      content: contentString
-    })
+      content: contentString,
+    });
 
     google.maps.event.addListener(marker, "click", function () {
-      infowindow.open(map, marker)
-    })
-  })
+      infowindow.open(map, marker);
+    });
+  });
   return (
     <>
       <div className="relative w-full rounded h-600-px">
         <div className="rounded h-full" ref={mapRef} />
       </div>
     </>
-  )
+  );
 }
 
-export default MapExample
+export default MapExample;

@@ -5,6 +5,7 @@ import debounce from "lodash.debounce";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+
 import AddCustomerModal from "./AddCustomerModal";
 
 const AddCustomer = () => {
@@ -82,7 +83,7 @@ const AddCustomer = () => {
                 {...register("searchCustomer")}
                 type="number"
                 pattern="[0-9]*"
-                novalidate
+                noValidate
                 placeholder="Search here..."
                 className="border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
               />

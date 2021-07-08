@@ -1,6 +1,6 @@
-import Footer from "components/Footers/Footer.js"
-import Navbar from "components/Navbars/AuthNavbar.js"
-import React from "react"
+import Footer from "components/Footers/Footer.js";
+import Navbar from "components/Navbars/AuthNavbar.js";
+import React from "react";
 
 export default function Profile() {
   return (
@@ -12,13 +12,15 @@ export default function Profile() {
             className="absolute top-0 w-full h-full bg-center bg-cover"
             style={{
               backgroundImage:
-                "url('https://images.unsplash.com/photo-1499336315816-097655dcfbda?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2710&q=80')"
-            }}>
+                "url('https://images.unsplash.com/photo-1499336315816-097655dcfbda?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2710&q=80')",
+            }}
+          >
             <span id="blackOverlay" className="w-full h-full absolute opacity-50 bg-black"></span>
           </div>
           <div
             className="top-auto bottom-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden h-16"
-            style={{ transform: "translateZ(0)" }}>
+            style={{ transform: "translateZ(0)" }}
+          >
             <svg
               className="absolute bottom-0 overflow-hidden"
               xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +28,8 @@ export default function Profile() {
               version="1.1"
               viewBox="0 0 2560 100"
               x="0"
-              y="0">
+              y="0"
+            >
               <polygon className="text-blueGray-200 fill-current" points="2560 0 2560 100 0 100"></polygon>
             </svg>
           </div>
@@ -49,7 +52,8 @@ export default function Profile() {
                     <div className="py-6 px-3 mt-32 sm:mt-0">
                       <button
                         className="bg-blueGray-700 active:bg-blueGray-600 uppercase text-white font-bold hover:shadow-md shadow text-xs px-4 py-2 rounded outline-none focus:outline-none sm:mr-2 mb-1 ease-linear transition-all duration-150"
-                        type="button">
+                        type="button"
+                      >
                         Connect
                       </button>
                     </div>
@@ -106,5 +110,5 @@ export default function Profile() {
       </main>
       <Footer />
     </>
-  )
+  );
 }

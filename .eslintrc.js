@@ -21,7 +21,8 @@ module.exports = {
   },
   extends: ["eslint:recommended", "plugin:react/recommended", "plugin:prettier/recommended"], // Make this the last element so prettier config overrides other formatting rules],
   rules: {
-    "simple-import-sort/sort": "error",
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
     "sort-imports": "off",
     "import/first": "error",
     "import/newline-after-import": "error",

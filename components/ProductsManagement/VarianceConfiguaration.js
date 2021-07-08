@@ -1,4 +1,4 @@
-import { capitalize, filter, intersectionWith, isEqual, map, omit, split, trim } from "lodash";
+import { capitalize, filter, intersectionWith, isEqual, join, map, omit, split, trim } from "lodash";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -99,7 +99,106 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
       });
 
       if (errorObjects.length === 0) {
-        console.log(varianceDistribution);
+        let propertyListIndexIncrease = -1;
+        let variantOptionsIndexIncrease = -1;
+
+        const property_list = productWithVariants?.variants?.reduce((acc, val) => {
+          const values = Object.values(val);
+          const variantName = values[0];
+          const variantsStringArray = map(
+            filter(map(split(values[1], ","), trim), (o) => Boolean(o)),
+            capitalize
+          );
+
+          const entries = variantsStringArray.reduce((acc, value, index) => {
+            propertyListIndexIncrease += 1;
+            return {
+              ...acc,
+              [propertyListIndexIncrease]: {
+                propertyId: variantName,
+                propertyValue: value,
+                propertyPriceSet: "NO",
+                propertyPrice: "0",
+              },
+            };
+          }, {});
+
+          return {
+            ...acc,
+            ...entries,
+          };
+        }, {});
+
+        const varianceDistributionValues = Object.values(varianceDistribution);
+        const variants_options = varianceDistributionValues?.reduce((acc, val) => {
+          variantOptionsIndexIncrease += 1;
+          const newVal = { ...val };
+          delete newVal?.Price;
+          delete newVal?.Quantity;
+
+          const values = Object.entries(newVal);
+
+          const optionValues = values.reduce((acc, optionValue) => {
+            return {
+              ...acc,
+              [optionValue[0]]: optionValue[1],
+            };
+          }, {});
+          // console.log(values);
+          // console.log(optionValues);
+
+          return {
+            ...acc,
+            [variantOptionsIndexIncrease]: {
+              variantOptionValue: optionValues,
+              variantOptionPrice: val?.Price,
+              variantOptionQuantity: val?.Quantity,
+            },
+          };
+        }, {});
+
+        const {
+          productName,
+          productCategory,
+          productDescription,
+          sku,
+          outlets,
+          weight,
+          barcode,
+          sellingPrice,
+          costPerItem,
+          productImages,
+          inventoryQuantity,
+          setInventoryQuantity,
+          applyTax,
+        } = productWithVariants;
+
+        let user = sessionStorage.getItem("IPAYPOSUSER");
+        user = JSON.parse(user);
+        const imagesToUpload = productImages?.map((productImage) => productImage?.file) ?? [];
+
+        const payload = {
+          name: productName,
+          desc: productDescription,
+          price: parseFloat(sellingPrice),
+          cost: parseFloat(costPerItem),
+          quantity: setInventoryQuantity ? parseInt(inventoryQuantity) : -99,
+          category: productCategory,
+          tag: "NORMAL",
+          taxable: applyTax,
+          sku,
+          weight: parseFloat(weight),
+          barcode,
+          is_price_global: "YES",
+          outlet_list: outlets,
+          $_FILES: imagesToUpload,
+          merchant: user["user_merchant_id"],
+          mod_by: user["login"],
+          property_list,
+          variants_options,
+        };
+
+        console.log(payload);
       } else {
         addToast("Please fix errors", { appearance: "error", autoDismiss: true });
       }
@@ -122,7 +221,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           </div>
 
           {/* AddVariants Section */}
-          <div className="overflow-scroll" style={{ height: 500 }}>
+          <div className="overflow-scroll" style={{ height: 600 }}>
             <div className={`grid grid-cols-${productWithVariants?.variants.length + 1} gap-3 my-2`}>
               {productWithVariants?.variants?.map((variant, index) => {
                 const variantValues = map(

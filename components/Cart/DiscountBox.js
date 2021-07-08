@@ -1,13 +1,13 @@
-import { onChangeCartDiscountType, setDiscount } from "features/cart/cartSlice"
-import React from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { onChangeCartDiscountType, setDiscount } from "features/cart/cartSlice";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const DiscountBox = ({ setShowDiscountBox }) => {
-  const dispatch = useDispatch()
-  const cartDiscountType = useSelector((state) => state.cart.cartDiscountType)
-  const cartDiscount = useSelector((state) => state.cart.cartDiscount)
+  const dispatch = useDispatch();
+  const cartDiscountType = useSelector((state) => state.cart.cartDiscountType);
+  const cartDiscount = useSelector((state) => state.cart.cartDiscount);
 
-  const [amount, setAmount] = React.useState(0)
+  const [amount, setAmount] = React.useState(0);
 
   return (
     <div className="font-medium bg-white z-10 w-full h-38 rounded shadow border border-gray-500 overflow-hidden">
@@ -20,8 +20,9 @@ const DiscountBox = ({ setShowDiscountBox }) => {
               <button
                 className="focus:outline-none h-full w-full"
                 onClick={() => {
-                  dispatch(onChangeCartDiscountType("percent"))
-                }}>
+                  dispatch(onChangeCartDiscountType("percent"));
+                }}
+              >
                 %
               </button>
             </div>
@@ -29,8 +30,9 @@ const DiscountBox = ({ setShowDiscountBox }) => {
               <button
                 className="focus:outline-none h-full w-full"
                 onClick={() => {
-                  dispatch(onChangeCartDiscountType("amount"))
-                }}>
+                  dispatch(onChangeCartDiscountType("amount"));
+                }}
+              >
                 ₵
               </button>
             </div>
@@ -40,8 +42,8 @@ const DiscountBox = ({ setShowDiscountBox }) => {
             max={100}
             maxLength={3}
             onChange={(e) => {
-              e.persist()
-              setAmount(e.target.value)
+              e.persist();
+              setAmount(e.target.value);
             }}
             type="number"
             className="appearance-none border border-gray-200 placeholder-blueGray-300 text-blueGray-600 rounded text-sm outline-none focus:outline-none w-full"
@@ -52,23 +54,25 @@ const DiscountBox = ({ setShowDiscountBox }) => {
           <button
             className="text-white font-bold bg-red-700 px-3 py-1 mr-2 rounded"
             onClick={() => {
-              setShowDiscountBox(false)
-              dispatch(onChangeCartDiscountType("percent"))
-            }}>
+              setShowDiscountBox(false);
+              dispatch(onChangeCartDiscountType("percent"));
+            }}
+          >
             Cancel
           </button>
           <button
             className="text-white font-bold bg-green-500 px-3 py-1 rounded"
             onClick={() => {
-              dispatch(setDiscount(amount))
-              setShowDiscountBox(false)
-            }}>
+              dispatch(setDiscount(amount));
+              setShowDiscountBox(false);
+            }}
+          >
             Add
           </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DiscountBox
+export default DiscountBox;

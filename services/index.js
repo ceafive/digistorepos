@@ -1,24 +1,24 @@
 export const verifyToken = (response) => {
-  response = JSON.parse(response)
-  const { status, message } = response
+  response = JSON.parse(response);
+  const { status, message } = response;
 
   if (status && status === "99") {
     return {
       error: message,
-      success: false
-    }
+      success: false,
+    };
   }
 
   if (status && status === "0") {
-    sessionStorage.setItem("IPAYPOSUSER", JSON.stringify(response))
+    sessionStorage.setItem("IPAYPOSUSER", JSON.stringify(response));
     const returnData = {
       error: false,
-      success: message
-    }
+      success: message,
+    };
 
     if ("sid" in response) {
-      returnData["verified"] = true
+      returnData["verified"] = true;
     }
-    return returnData
+    return returnData;
   }
-}
+};

@@ -1,26 +1,26 @@
-import axios from "axios"
-import Cart from "components/Cart/Cart"
-import Modal from "components/Modal"
-import ProductDetails from "components/Product/InventoryDetails"
-import ProductsSelection from "components/ProductsSelection"
-import { productsAdded } from "features/products/productsSlice"
+import axios from "axios";
+import Cart from "components/Cart/Cart";
+import Modal from "components/Modal";
+import ProductDetails from "components/Product/InventoryDetails";
+import ProductsSelection from "components/ProductsSelection";
+import { productsAdded } from "features/products/productsSlice";
 // layout for page
-import Admin from "layouts/Admin.js"
-import React from "react"
-import { useDispatch } from "react-redux"
+import Admin from "layouts/Admin.js";
+import React from "react";
+import { useDispatch } from "react-redux";
 
 export default function Dashboard() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     const fetchProducts = async () => {
-      const res = await axios.get("https://jsonplaceholder.typicode.com/photos")
-      const data = await res.data
-      dispatch(productsAdded(data.slice(0, 100)))
-    }
+      const res = await axios.get("https://jsonplaceholder.typicode.com/photos");
+      const data = await res.data;
+      dispatch(productsAdded(data.slice(0, 100)));
+    };
 
-    fetchProducts()
-  }, [dispatch])
+    fetchProducts();
+  }, [dispatch]);
 
   return (
     <>
@@ -36,7 +36,7 @@ export default function Dashboard() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-Dashboard.layout = Admin
+Dashboard.layout = Admin;

@@ -1,4 +1,5 @@
 import React from "react";
+
 import Spinner from "../Spinner";
 
 const CashPaymentInput = ({ paymentMethodSet, register, errors, cartTotalMinusDiscountPlusTax }) => {
@@ -15,7 +16,7 @@ const CashPaymentInput = ({ paymentMethodSet, register, errors, cartTotalMinusDi
             Number(value) >= cartTotalMinusDiscountPlusTax || `Amount entered cannot be be less than GHS${cartTotalMinusDiscountPlusTax}`,
         })}
         pattern="[0-9]*"
-        novalidate
+        noValidate
         className="border border-blue-500 px-3 4 text-lg placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded outline-none focus:outline-none w-full"
       />
       <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
@@ -45,7 +46,7 @@ const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors })
           },
         })}
         pattern="[0-9]*"
-        novalidate
+        noValidate
         placeholder="0547748484"
         className="border border-blue-500 px-3 4 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-lg outline-none focus:outline-none w-full"
       />
