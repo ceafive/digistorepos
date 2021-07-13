@@ -4,6 +4,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "../styles/index.css";
 
 import { Box, createMuiTheme, CssBaseline, LinearProgress, ThemeProvider } from "@material-ui/core";
+import { createTheme, responsiveFontSizes } from "@material-ui/core/styles";
 import App from "next/app";
 import Head from "next/head";
 import Router from "next/router";
@@ -72,7 +73,7 @@ export default class MyApp extends App {
       fontWeight: 400,
     };
 
-    const theme = createMuiTheme({
+    let theme = createMuiTheme({
       typography: {
         fontFamily: "Nunito Sans",
       },
@@ -84,6 +85,8 @@ export default class MyApp extends App {
         },
       },
     });
+
+    theme = responsiveFontSizes(theme);
 
     return (
       <React.Fragment>

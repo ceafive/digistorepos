@@ -14,6 +14,7 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
+import axios from "axios";
 import Dropdown from "components/Misc/Dropdown";
 import { capitalize, filter } from "lodash";
 import MaterialTable, { MTableToolbar } from "material-table";
@@ -125,6 +126,39 @@ const ManageProductDetails = ({}) => {
     },
   ];
 
+  const updateProductVariant = async (newValue, oldValue, rowData, columnDef) => {
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteVariant = async (parentData, childData) => {
+    let user = sessionStorage.getItem("IPAYPOSUSER");
+    user = JSON.parse(user);
+
+    const r = window.confirm("Are you sure you want to delete variant?");
+    if (r === true) {
+      console.log(parentData, childData);
+
+      return;
+
+      const data = {
+        variant: childData?.variantOptionId,
+        // product: ,
+        merchant: user?.user_merchant_id,
+      };
+
+      const deleteVariantRes = await axios.post("/api/products/delete-product-variant", { data });
+      console.log(allProductsRes);
+      const { data: allProductsResData } = await allProductsRes.data;
+    }
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <div className="flex w-full h-full">
@@ -181,6 +215,88 @@ const ManageProductDetails = ({}) => {
               </div>
             ),
           }}
+          detailPanel={[
+            {
+              tooltip: "Show Variants",
+              render: (rowData) => {
+                if (!rowData?.product_properties_variants) return null;
+                // console.log(rowData);
+
+                const detailColumns = [
+                  { title: "ID", field: "variantOptionId", editable: "never" },
+                  {
+                    title: "Option Values",
+                    field: "product_id",
+                    editable: "never",
+                    render(rowData) {
+                      let header = "";
+                      let subheader = "";
+
+                      const variantdata = Object.entries(rowData?.variantOptionValue);
+                      variantdata.forEach(([key, value], index) => {
+                        header += `${key}${index === variantdata?.length - 1 ? " " : " / "}`;
+                        subheader += `${value}${index === variantdata?.length - 1 ? " " : " / "}`;
+                      });
+                      return (
+                        <div>
+                          <h6 className="font-bold">{header}</h6>
+                          <p>{subheader}</p>
+                        </div>
+                      );
+                    },
+                  },
+                  { title: "Price", field: "variantOptionPrice" },
+                  { title: "Quantity", field: "variantOptionQuantity" },
+                  {
+                    title: "Action",
+                    field: "delete",
+                    editable: "never",
+                    render(detailRowData) {
+                      return (
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded shadow-sm focus:outline-none focus:ring-red-600 focus:ring-2"
+                          onClick={() => {
+                            deleteVariant(rowData, detailRowData);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      );
+                    },
+                  },
+                ];
+                return (
+                  <MaterialTable
+                    style={{
+                      // backgroundColor: "lightgray",
+                      border: "1px solid green",
+                      overflow: "hidden",
+                    }}
+                    cellEditable={{
+                      onCellEditApproved: async (newValue, oldValue, rowData, columnDef) => {
+                        return new Promise((resolve, reject) => {
+                          console.log({ newValue, oldValue, rowData, columnDef });
+                          setTimeout(resolve, 1000);
+                        });
+                      },
+                    }}
+                    isLoading={loading}
+                    title="Variants"
+                    icons={tableIcons}
+                    columns={detailColumns}
+                    data={rowData?.product_properties_variants.map((o) => ({ ...o, tableData: {} }))}
+                    components={{
+                      Toolbar: (props) => (
+                        <div>
+                          <MTableToolbar {...props} />
+                        </div>
+                      ),
+                    }}
+                  />
+                );
+              },
+            },
+          ]}
         />
       </div>
     </>

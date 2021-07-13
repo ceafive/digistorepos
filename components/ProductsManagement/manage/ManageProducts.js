@@ -26,8 +26,8 @@ const ManageProducts = () => {
         const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
         const allOutletsRes = await axios.post("/api/products/get-outlets", { user });
 
-        const { data: allCategoriesResData } = await allCategoriesRes.data;
         const { data: allProductsResData } = await allProductsRes.data;
+        const { data: allCategoriesResData } = await allCategoriesRes.data;
         const { data: allOutletsResData } = await allOutletsRes.data;
 
         dispatch(setManageProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
