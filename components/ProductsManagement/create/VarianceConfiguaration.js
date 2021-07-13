@@ -105,7 +105,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
 
         const property_list = productWithVariants?.variants?.reduce((acc, val) => {
           const values = Object.values(val);
-          const variantName = values[0];
+          const variantName = capitalize(values[0]);
           const variantsStringArray = map(
             filter(map(split(values[1], ","), trim), (o) => Boolean(o)),
             capitalize
@@ -248,7 +248,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                         {...register(capitalizeName, { required: `${capitalizeName} is required` })}
                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white"
                       >
-                        <option value="">{`Select ${capitalizeName}`}</option>
+                        <option value="" disabled>{`Select ${capitalizeName}`}</option>
                         {variantValues.map((variantValue) => (
                           <option key={variantValue} value={variantValue}>
                             {variantValue}

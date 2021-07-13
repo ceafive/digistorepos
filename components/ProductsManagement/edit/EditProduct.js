@@ -23,10 +23,13 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
   const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
+
+  // console.log(productWithVariants);
 
   const [fetching, setFetching] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -43,31 +46,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
     handleSubmit,
   } = useForm({
     defaultValues: {
-      productName: product?.product_name,
-      productDescription: product?.product_description,
-      sellingPrice: product?.product_price,
-      costPerItem: product?.product_unit_cost,
-      inventoryQuantity: product?.product_quantity === "-99" ? 0 : product?.product_quantity,
-      productCategory: manageProductCategories.find((category) => category?.product_category === product?.product_category)
-        ?.product_category_id,
-      tag: "NORMAL",
-      sku: product?.product_sku,
-      weight: product?.product_weight,
-      barcode: product?.product_barcode,
-      is_price_global: "YES",
-      setInventoryQuantity: product?.product_quantity === "-99" ? false : true,
-      //   outlets: JSON.stringify(outlets),
-      applyTax: product?.product_taxed === "YES" ? true : false,
-      outlets: [],
-      productImages: [],
-      variants: product?.product_properties
-        ? Object.entries(product?.product_properties ?? {})?.map((product) => {
-            return {
-              name: capitalize(product[0]),
-              values: product[1].map((value) => value?.property_value).join(","),
-            };
-          })
-        : [],
+      ...productWithVariants,
     },
   });
 
@@ -183,9 +162,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
 
   const updateProductWithVariants = (values) => {
     try {
-      //   console.log(product);
-      //   return;
-      dispatch(setProductWithVariants({ ...values, variantsDistribution: product?.product_properties_variants }));
+      dispatch(setProductWithVariants({ ...values, variantsDistribution: product?.product_properties_variants ?? [] }));
       setGoToVarianceConfig(true);
     } catch (error) {
       console.log(error);
@@ -256,12 +233,6 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
   }, [productHasVariants]);
 
   React.useEffect(() => {
-    if (productCategory === "addNewCategory") {
-      dispatch(setShowAddCategoryModal());
-    }
-  }, [productCategory]);
-
-  React.useEffect(() => {
     // console.log({ product });
     const fetchItems = async () => {
       try {
@@ -271,12 +242,58 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           return arrVal?.outlet_id === othVal?.outlet_id;
         });
 
-        setValue(
-          "outlets",
-          map(response ?? [], (o) => o?.outlet_id)
-        );
+        // merge props
+        const initial = {
+          productName: product?.product_name,
+          productDescription: product?.product_description,
+          sellingPrice: product?.product_price,
+          costPerItem: product?.product_unit_cost,
+          inventoryQuantity: product?.product_quantity === "-99" ? 0 : product?.product_quantity,
+          productCategory: manageProductCategories.find((category) => category?.product_category === product?.product_category)
+            ?.product_category_id,
+          tag: "NORMAL",
+          sku: product?.product_sku,
+          weight: product?.product_weight,
+          barcode: product?.product_barcode,
+          is_price_global: "YES",
+          setInventoryQuantity: product?.product_quantity === "-99" ? false : true,
+          //   outlets: JSON.stringify(outlets),
+          applyTax: product?.product_taxed === "YES" ? true : false,
+          outlets: [],
+          productImages: [],
+          variants: product?.product_properties
+            ? Object.entries(product?.product_properties ?? {})?.map((product) => {
+                return {
+                  name: capitalize(product[0]),
+                  values: product[1].map((value) => value?.property_value).join(","),
+                };
+              })
+            : [],
+        };
 
-        const hasVariants = product?.product_properties && !isEmpty(product?.product_properties);
+        const valuesToDispatch = {
+          applyTax: initial?.applyTax,
+          barcode: initial?.barcode,
+          costPerItem: initial?.costPerItem,
+          inventoryQuantity: initial?.inventoryQuantity,
+          is_price_global: initial?.is_price_global,
+          outlets: map(response ?? [], (o) => o?.outlet_id),
+          productCategory: initial?.productCategory,
+          productDescription: initial?.productDescription,
+          productName: initial?.productName,
+          sellingPrice: initial?.sellingPrice,
+          setInventoryQuantity: initial?.setInventoryQuantity,
+          sku: initial?.sku,
+          tag: initial?.tag,
+          variants: initial?.variants?.length === 0 ? productWithVariants?.variants ?? [] : initial?.variants,
+          weight: initial?.weight,
+        };
+
+        const hasVariants =
+          (product?.product_properties && !isEmpty(product?.product_properties)) ||
+          (productWithVariants?.variants && !isEmpty(productWithVariants?.variants));
+
+        dispatch(setProductWithVariants(valuesToDispatch));
         dispatch(setProductHasVariants(!!hasVariants));
       } catch (error) {
         console.log(error);
@@ -287,6 +304,18 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
 
     fetchItems();
   }, []);
+
+  React.useEffect(() => {
+    if (productHasVariants) {
+      if (fields.length === 0) append({});
+    } else remove();
+  }, [productHasVariants]);
+
+  React.useEffect(() => {
+    if (productCategory === "addNewCategory") {
+      dispatch(setShowAddCategoryModal());
+    }
+  }, [productCategory]);
 
   if (fetching || fetching === null) {
     return (

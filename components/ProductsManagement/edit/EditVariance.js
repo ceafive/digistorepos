@@ -1,6 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import { capitalize, filter, intersectionWith, isEqual, join, map, omit, split, trim } from "lodash";
+import { capitalize, filter, intersectionWith, isEmpty, isEqual, join, map, omit, split, trim } from "lodash";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -29,22 +29,14 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
     handleSubmit: submitFormHandleSubmit,
   } = useForm({});
 
-  // const { fields, append, remove } = useFieldArray({
-  //   control,
-  //   name: "addVariant",
-  // });
-
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
-  //   console.log(productWithVariants);
+  // console.log(productWithVariants);
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [varianceDistribution, setVarianceDistribution] = React.useState({});
 
   const addVariantRow = (values) => {
     try {
-      console.log({ values });
-
-      //   return;
       const copyObject = Object.assign({}, varianceDistribution);
       const objectValues = Object.values({ ...copyObject });
 
@@ -64,7 +56,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
         return addToast(`Variant already added`, { appearance: "error", autoDismiss: true });
       }
 
-      setVarianceDistribution((varianceData) => ({ ...varianceData, [uuidv4()]: { Quantity: "", Price: "", ...values } }));
+      setVarianceDistribution((varianceData) => ({ ...varianceData, [uuidv4()]: { ...values, Quantity: "", Price: "" } }));
     } catch (error) {
       console.log(error);
     }
@@ -89,11 +81,15 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
   // console.log(varianceDistribution);
   // console.log(allVarianceDistribution);
 
-  const handleCreateProduct = async () => {
+  const handleUpdateProduct = async () => {
     try {
       setIsProcessing(true);
       submitFormClearErrors();
       const errorObjects = [];
+
+      if (isEmpty(varianceDistribution)) {
+        return addToast("At least one variance must be added!", { appearance: "error", autoDismiss: true });
+      }
 
       for (const [key, value] of Object.entries(varianceDistribution)) {
         for (const [keyOfKey, valueOfValue] of Object.entries(value)) {
@@ -123,7 +119,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
 
         const property_list = productWithVariants?.variants?.reduce((acc, val) => {
           const values = Object.values(val);
-          const variantName = values[0];
+          const variantName = capitalize(values[0]);
           const variantsStringArray = map(
             filter(map(split(values[1], ","), trim), (o) => Boolean(o)),
             capitalize
@@ -213,7 +209,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           barcode,
           is_price_global: "YES",
           outlet_list: JSON.stringify(outlets),
-          $_FILES: imagesToUpload,
+          // $_FILES: imagesToUpload,
           merchant: user["user_merchant_id"],
           mod_by: user["login"],
           property_list: JSON.stringify(property_list),
@@ -267,14 +263,14 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                         {...register(capitalizeName, { required: `${capitalizeName} is required` })}
                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white"
                       >
-                        <option value="">{`Select ${capitalizeName}`}</option>
+                        <option value="" disabled>{`Select ${capitalizeName}`}</option>
                         {variantValues.map((variantValue) => (
                           <option key={variantValue} value={variantValue}>
                             {variantValue}
                           </option>
                         ))}
                       </select>
-                      <p className="text-xs text-red-500">{errors[capitalizeName]?.message}</p>
+                      <p className="text-xs text-red-500 mt-2">{errors[capitalizeName]?.message}</p>
                     </div>
                   </div>
                 );
@@ -332,7 +328,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                                     }));
                                   }}
                                   placeholder="10"
-                                  className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                                  className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
                                 />
                                 {errorObject?.errorID === formattedVarianceKey && key === errorObject?.errorKey && (
                                   <p className="text-xs text-red-500">{errorObject?.message}</p>
@@ -348,17 +344,15 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                           }
                         })}
 
-                        <div
-                          className="flex justify-center ittems-center font-bold bg-red-500 rounded py-1 cursor-pointer w-1/3"
+                        <button
+                          className="w-1/2 bg-red-500 rounded py-0 font-bold focus:outline-none"
                           onClick={() => {
                             const result = omit(varianceDistribution, [formattedVarianceKey]);
                             setVarianceDistribution(result);
                           }}
                         >
-                          <button className="focus:outline-none">
-                            <i className="fas fa-trash-alt text-white"></i>
-                          </button>
-                        </div>
+                          <i className="fas fa-trash-alt text-white"></i>
+                        </button>
                       </div>
                     );
                   })}
@@ -387,7 +381,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                   isProcessing ? "bg-gray-300 text-gray-200" : "bg-green-800  text-white"
                 }  px-6 py-3 w-full rounded font-semibold focus:outline-none`}
                 onClick={() => {
-                  handleCreateProduct();
+                  handleUpdateProduct();
                 }}
               >
                 {isProcessing && (

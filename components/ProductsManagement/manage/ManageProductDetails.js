@@ -125,6 +125,7 @@ const ManageProductDetails = ({}) => {
       render(rowData) {
         return <Dropdown rowData={rowData} buttons={() => buttons(rowData)} />;
       },
+      disableClick: true,
     },
   ];
 
@@ -225,6 +226,7 @@ const ManageProductDetails = ({}) => {
               </div>
             ),
           }}
+          onRowClick={(event, rowData, togglePanel) => togglePanel()}
           detailPanel={[
             {
               tooltip: "Show Variants",

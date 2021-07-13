@@ -194,7 +194,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       merchant: user?.user_merchant_id,
       mod_by: user?.login,
     };
-
+ 
     const response = await axios.post("/api/products/add-product-category", data);
     const { status, message } = await response.data;
     return { data, status, message };
