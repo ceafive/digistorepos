@@ -2,16 +2,13 @@ import React from "react";
 import ImageUploading from "react-images-uploading";
 import { useSelector } from "react-redux";
 
-export default function UploadImage({ classes, setValue }) {
-  const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
-  const [images, setImages] = React.useState(productWithVariants?.productImages ?? []);
+export default function UploadImage({ classes, setValue, images, setImages }) {
   const maxNumber = 4;
 
   const onChange = (imageList, addUpdateIndex) => {
     // data for submit
-    console.log(imageList);
+    // console.log(imageList);
     setImages(imageList);
-
     setValue("productImages", imageList);
   };
 

@@ -1,8 +1,8 @@
 import { getHandler } from "utils";
 
 export default async function handler(req, res) {
-  const { user: userDetails } = req.body;
+  const { user } = req.body;
 
-  const url = `/products/category/${userDetails["user_merchant_id"]}/list`;
+  const url = `/stores/merchant/${user["user_merchant_id"]}/store/outlets/mobile/list`;
   await getHandler(req, res, url);
 }

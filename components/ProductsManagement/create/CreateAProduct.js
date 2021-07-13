@@ -1,7 +1,7 @@
 import axios from "axios";
 import AddBasicProductDetails from "components/ProductsManagement/create/AddBasicProductDetails";
 import Spinner from "components/Spinner";
-import { setManageProductCategories } from "features/manageproducts/manageprodcutsSlice";
+import { setManageProductCategories, setManageProductOutlets } from "features/manageproducts/manageprodcutsSlice";
 import { filter } from "lodash";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -22,11 +22,14 @@ const CreateAProduct = () => {
         user = JSON.parse(user);
 
         const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
+        const allOutletsRes = await axios.post("/api/products/get-outlets", { user });
 
         const { data: allCategoriesResData } = await allCategoriesRes.data;
-        // console.log({ outletsResData, user_assigned_outlets, response });
+        const { data: allOutletsResData } = await allOutletsRes.data;
+        // console.log({ allOutletsResData });
 
         dispatch(setManageProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
+        dispatch(setManageProductOutlets(filter(allOutletsResData, (o) => Boolean(o))));
       } catch (error) {
         console.log(error);
       } finally {

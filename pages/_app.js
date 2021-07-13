@@ -3,7 +3,7 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "../styles/index.css";
 
-import { Box, LinearProgress } from "@material-ui/core";
+import { Box, createMuiTheme, CssBaseline, LinearProgress, ThemeProvider } from "@material-ui/core";
 import App from "next/app";
 import Head from "next/head";
 import Router from "next/router";
@@ -65,6 +65,26 @@ export default class MyApp extends App {
     const { Component, pageProps } = this.props;
     const Layout = Component.layout || (({ children }) => <>{children}</>);
 
+    const nunito = {
+      fontFamily: "Nunito Sans",
+      fontStyle: "normal",
+      fontDisplay: "swap",
+      fontWeight: 400,
+    };
+
+    const theme = createMuiTheme({
+      typography: {
+        fontFamily: "Nunito Sans",
+      },
+      overrides: {
+        MuiCssBaseline: {
+          "@global": {
+            "@font-face": [nunito],
+          },
+        },
+      },
+    });
+
     return (
       <React.Fragment>
         <Head>
@@ -79,16 +99,19 @@ export default class MyApp extends App {
           />
         </Head>
         <Provider store={store}>
-          <ToastProvider placement="top-center">
-            {this.state.loading && (
-              <Box style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 2002 }}>
-                <LinearProgress />
-              </Box>
-            )}
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </ToastProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <ToastProvider placement="top-center">
+              {this.state.loading && (
+                <Box style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 2002 }}>
+                  <LinearProgress />
+                </Box>
+              )}
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ToastProvider>
+          </ThemeProvider>
         </Provider>
       </React.Fragment>
     );

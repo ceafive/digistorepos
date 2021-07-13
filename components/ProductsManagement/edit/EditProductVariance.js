@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { v4 as uuidv4 } from "uuid";
 
-const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
+const EditProductVariance = ({ setGoToVarianceConfig }) => {
   const { addToast } = useToasts();
   const {
     control,
@@ -35,13 +35,16 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
   // });
 
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
+  //   console.log(productWithVariants);
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [varianceDistribution, setVarianceDistribution] = React.useState({});
 
   const addVariantRow = (values) => {
     try {
-      // console.log({ values });
+      console.log({ values });
+
+      //   return;
       const copyObject = Object.assign({}, varianceDistribution);
       const objectValues = Object.values({ ...copyObject });
 
@@ -61,11 +64,26 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
         return addToast(`Variant already added`, { appearance: "error", autoDismiss: true });
       }
 
-      setVarianceDistribution((varianceData) => ({ ...varianceData, [uuidv4()]: { ...values, Quantity: "", Price: "" } }));
+      setVarianceDistribution((varianceData) => ({ ...varianceData, [uuidv4()]: { Quantity: "", Price: "", ...values } }));
     } catch (error) {
       console.log(error);
     }
   };
+
+  React.useEffect(() => {
+    const values = productWithVariants?.variantsDistribution?.reduce((acc, variantDistribution) => {
+      return {
+        ...acc,
+        [uuidv4()]: {
+          ...variantDistribution?.variantOptionValue,
+          Quantity: variantDistribution?.variantOptionQuantity,
+          Price: variantDistribution?.variantOptionPrice,
+        },
+      };
+    }, {});
+
+    setVarianceDistribution((varianceData) => ({ ...varianceData, ...values }));
+  }, []);
 
   const allVarianceDistribution = Object.entries(varianceDistribution);
   // console.log(varianceDistribution);
@@ -203,6 +221,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
         };
 
         console.log(payload);
+        return;
         const addProductRes = await axios.post("/api/products/create-product", { data: payload });
 
         const response = await addProductRes.data;
@@ -386,4 +405,4 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
   );
 };
 
-export default VarianceConfiguaration;
+export default EditProductVariance;

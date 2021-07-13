@@ -44,9 +44,9 @@ const ProductsSelection = () => {
   }, [productCategories?.length]);
 
   React.useEffect(() => {
-    const pageCount = Math.ceil(productsDisplay.length / perPage);
+    const pageCount = Math.ceil(products.length / perPage);
     setPageCount(pageCount);
-  }, [productsDisplay.length]);
+  }, [products.length]);
 
   React.useEffect(() => {
     const KEYS_TO_FILTERS = ["product_name", "product_description"];

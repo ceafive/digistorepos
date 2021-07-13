@@ -241,7 +241,7 @@ const cartSlice = createSlice({
       if (action.payload) state.totalItemsInCart += action.payload;
       else state.totalItemsInCart++;
     },
-    decreaseTotalItemsInCart: (state, action) => {
+    decreaseTotalItemsInCart: (state) => {
       state.totalItemsInCart = state.totalItemsInCart !== 0 ? state.totalItemsInCart-- : 0;
     },
     addItemToCart: (state, action) => {

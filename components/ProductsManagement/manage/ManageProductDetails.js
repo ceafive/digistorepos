@@ -14,6 +14,7 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
+import Dropdown from "components/Misc/Dropdown";
 import { setProductHasVariants, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
 import { capitalize, filter } from "lodash";
 import MaterialTable, { MTableToolbar } from "material-table";
@@ -42,7 +43,7 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
-const ManageProductDetails = ({ setGoToVarianceConfig }) => {
+const ManageProductDetails = ({}) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const {
@@ -55,7 +56,7 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
     handleSubmit,
   } = useForm({});
 
-  const categorySelected = watch("productCategory", "ALL");
+  const categorySelected = watch("productCategory", "All");
 
   const manageProductProducts = useSelector((state) => state.manageproducts.manageProductProducts);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
@@ -64,7 +65,7 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (categorySelected !== "ALL") {
+    if (categorySelected !== "All") {
       setLoading(true);
       const filtered = filter(manageProductProducts, (o) => {
         return o?.product_category === categorySelected;
@@ -79,6 +80,28 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
     }
   }, [categorySelected]);
 
+  const buttons = (data) => [
+    {
+      name: "View",
+      action() {
+        const viewLink = `/products/edit?product_id=${data?.product_id}&action=view`;
+        router.push(viewLink);
+      },
+    },
+    {
+      name: "Modify",
+      action() {
+        const viewLink = `/products/edit?product_id=${data?.product_id}&action=edit`;
+        router.push(viewLink);
+      },
+    },
+    {
+      name: "Delete",
+      classes: "text-red-500",
+      action() {},
+    },
+  ];
+
   const columns = [
     { title: "Product ID", field: "product_id" },
     { title: "Name", field: "product_name" },
@@ -92,9 +115,15 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
       },
     },
     { title: "Qty. Sold", field: "product_quantity_sold" },
-    { title: "Date Added", field: "product_create_date" },
+    { title: "Date Added", field: "product_create_date", defaultSort: "desc" },
     { title: "Category", field: "product_category" },
-    { title: "Actions", field: "actions" },
+    {
+      title: "Actions",
+      field: "actions",
+      render(rowData) {
+        return <Dropdown rowData={rowData} buttons={() => buttons(rowData)} />;
+      },
+    },
   ];
 
   return (
@@ -121,7 +150,7 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
                   {...register("productCategory")}
                   className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white"
                 >
-                  <option value="ALL">{`ALL`}</option>
+                  <option value="All">{`All`}</option>
                   {manageProductCategories?.map((category) => {
                     return (
                       <option key={category?.product_category_id} value={category?.product_category}>
@@ -142,7 +171,7 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
       <div>
         <MaterialTable
           isLoading={loading}
-          title={`Category: ${capitalize(categorySelected)}`}
+          title={<p className="font-bold text-xl">{`Products: ${capitalize(categorySelected)}`}</p>}
           icons={tableIcons}
           columns={columns}
           data={allProducts.map((o) => ({ ...o, tableData: {} }))}
@@ -150,13 +179,6 @@ const ManageProductDetails = ({ setGoToVarianceConfig }) => {
             Toolbar: (props) => (
               <div>
                 <MTableToolbar {...props} />
-                <div style={{ padding: "0px 10px" }}>
-                  <p label="Chip 1" color="secondary" style={{ marginRight: 5 }} />
-                  <p label="Chip 2" color="secondary" style={{ marginRight: 5 }} />
-                  <p label="Chip 3" color="secondary" style={{ marginRight: 5 }} />
-                  <p label="Chip 4" color="secondary" style={{ marginRight: 5 }} />
-                  <p label="Chip 5" color="secondary" style={{ marginRight: 5 }} />
-                </div>
               </div>
             ),
           }}

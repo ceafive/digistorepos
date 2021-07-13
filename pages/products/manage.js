@@ -1,4 +1,4 @@
-import ManageProducts from "components/ProductsManagement/ManageProducts";
+import ManageProducts from "components/ProductsManagement/manage/ManageProducts";
 import Admin from "layouts/Admin";
 import React from "react";
 

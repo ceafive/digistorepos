@@ -8,16 +8,15 @@ import {
   setProductWithVariants,
   setShowAddCategoryModal,
 } from "features/manageproducts/manageprodcutsSlice";
-import { filter, get } from "lodash";
+import { capitalize, filter, get, intersectionWith, isEmpty, isEqual, map } from "lodash";
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
-import AddCategory from "./AddCategory";
-import UploadImage from "./UploadImage";
+import UploadImage from "../create/UploadImage";
 
-const AddProductDetails = ({ setGoToVarianceConfig }) => {
+const EditProduct = ({ product, setGoToVarianceConfig }) => {
   const { addToast } = useToasts();
   const dispatch = useDispatch();
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
@@ -26,7 +25,12 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
-  // console.log({ manageProductOutlets });
+  const [fetching, setFetching] = React.useState(false);
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [processing, setProcessing] = React.useState(false);
+  const [images, setImages] = React.useState(product?.product_images ?? []);
+
+  //   console.log({ product });
 
   const {
     control,
@@ -38,9 +42,31 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
     handleSubmit,
   } = useForm({
     defaultValues: {
-      applyTax: false,
-      inventoryQuantity: 0,
-      ...productWithVariants,
+      productName: product?.product_name,
+      productDescription: product?.product_description,
+      sellingPrice: product?.product_price,
+      costPerItem: product?.product_unit_cost,
+      inventoryQuantity: product?.product_quantity === "-99" ? 0 : product?.product_quantity,
+      productCategory: manageProductCategories.find((category) => category?.product_category === product?.product_category)
+        ?.product_category_id,
+      tag: "NORMAL",
+      sku: product?.product_sku,
+      weight: product?.product_weight,
+      barcode: product?.product_barcode,
+      is_price_global: "YES",
+      setInventoryQuantity: product?.product_quantity === "-99" ? false : true,
+      //   outlets: JSON.stringify(outlets),
+      applyTax: product?.product_taxed === "YES" ? true : false,
+      outlets: [],
+      productImages: [],
+      variants: product?.product_properties
+        ? Object.entries(product?.product_properties ?? {})?.map((product) => {
+            return {
+              name: capitalize(product[0]),
+              values: product[1].map((value) => value?.property_value).join(","),
+            };
+          })
+        : [],
     },
   });
 
@@ -56,16 +82,8 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
     name: "variants",
   });
 
-  const [isProcessing, setIsProcessing] = React.useState(false);
-  const [processing, setProcessing] = React.useState(false);
-  const [images, setImages] = React.useState(productWithVariants?.productImages ?? []);
-
   const isInventorySet = watch("setInventoryQuantity", false);
   const productCategory = watch("productCategory", false);
-
-  // console.log(productCategory);
-  // console.log(showAddCategoryModal);
-  // console.log(manageProductCategories);
 
   const createProduct = async (values) => {
     try {
@@ -180,7 +198,9 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
 
   const createProductWithVariants = (values) => {
     try {
-      dispatch(setProductWithVariants(values));
+      //   console.log(product);
+      //   return;
+      dispatch(setProductWithVariants({ ...values, variantsDistribution: product?.product_properties_variants }));
       setGoToVarianceConfig(true);
     } catch (error) {
       console.log(error);
@@ -248,22 +268,16 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
     switch (productHasVariants) {
       case true:
         return {
-          buttonText: "Proceed",
+          buttonText: "Edit Variance",
           buttonAction: handleSubmit(createProductWithVariants),
         };
 
       case false:
         return {
-          buttonText: "Create Product",
+          buttonText: "Save",
           buttonAction: handleSubmit(createProduct),
         };
     }
-  }, [productHasVariants]);
-
-  React.useEffect(() => {
-    if (productHasVariants) {
-      if (fields.length === 0) append({});
-    } else remove();
   }, [productHasVariants]);
 
   React.useEffect(() => {
@@ -272,17 +286,48 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
     }
   }, [productCategory]);
 
+  React.useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        setFetching(true);
+        let user = sessionStorage.getItem("IPAYPOSUSER");
+        user = JSON.parse(user);
+
+        const allOutletsRes = await axios.post("/api/products/get-product-outlets", { user, product_id: product?.product_id });
+        const { data: allOutletsResData } = await allOutletsRes.data;
+        const filtered = filter(allOutletsResData, (o) => Boolean(o));
+        // console.log({ allOutletsResData });
+
+        const response = intersectionWith(manageProductOutlets, filtered, (arrVal, othVal) => {
+          return arrVal?.outlet_id === othVal?.outlet_id;
+        });
+
+        setValue(
+          "outlets",
+          map(response ?? [], (o) => o?.outlet_id)
+        );
+
+        !isEmpty(product?.product_properties) && dispatch(setProductHasVariants(true));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchItems();
+  }, [dispatch]);
+
+  if (fetching || fetching === null) {
+    return (
+      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
+        <Spinner type="TailSpin" width={50} height={50} />
+      </div>
+    );
+  }
+
   return (
     <>
-      <Modal open={showAddCategoryModal} onClose={() => dispatch(setShowAddCategoryModal())} maxWidth="md">
-        <AddCategory
-          addCategoryRegister={addCategoryRegister}
-          processing={processing}
-          addCategoryErrors={addCategoryErrors}
-          addCategoryHandleSumbit={addCategoryHandleSumbit}
-          action={sumbitNewCategoryToServer}
-        />
-      </Modal>
       <h1>Setup Products</h1>
       <div className="flex w-full h-full">
         <div className="w-7/12 xl:w-8/12 pb-6 pt-12 px-4">
@@ -304,7 +349,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                 <label className="text-sm leading-none  font-bold">Product Category</label>
                 <select
                   {...register("productCategory", { required: "Product category is required" })}
-                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2"
+                  className="block border-0 appearance-none w-full text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2"
                 >
                   <option value="">{`Select Category`}</option>
                   {manageProductCategories?.map((category) => {
@@ -314,7 +359,6 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                       </option>
                     );
                   })}
-                  <option value="addNewCategory">{`Add New Category`}</option>;
                 </select>
                 <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
               </div>
@@ -459,7 +503,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
               {productHasVariants && (
                 <div className="mt-2">
                   <div className="flex flex-wrap justify-center items-center w-full">
-                    {fields.map(({ id, name, values }, index) => {
+                    {fields?.map(({ id, name, values }, index) => {
                       return (
                         <div key={id} className="w-full my-3">
                           <div key={id} className="flex w-full justify-between items-center">
@@ -497,7 +541,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                               )}
                             </div>
 
-                            <div className="w-1/5 flex">
+                            <div id="add-variant-buttons" className="w-1/5 flex">
                               {fields.length > 1 && (
                                 <div
                                   className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
@@ -533,7 +577,6 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                 </div>
               )}
             </div>
-
             {/* Variants */}
           </div>
         </div>
@@ -603,4 +646,4 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   );
 };
 
-export default AddProductDetails;
+export default EditProduct;

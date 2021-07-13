@@ -60,20 +60,78 @@ export function getHeaders() {
   };
 }
 
-export async function postHandler(req, res, url, data) {
+export async function deleteHandler(req, res, url) {
   try {
     await cors(req, res);
 
     const iPayResponse = await axiosIPAY({
       url,
-      method: "post",
-      data: qs.stringify(data),
+      method: "delete",
       headers: getHeaders(),
     });
+    const iPayData = await iPayResponse.data;
+    return res.status(200).json(iPayData);
+  } catch (error) {
+    let errorResponse = "";
+    if (error.response) {
+      errorResponse = error.response.data;
+    } else if (error.request) {
+      errorResponse = error.request;
+    } else {
+      errorResponse = { error: error.message };
+    }
+    return res.status(error.response.status).json(errorResponse);
+  }
+}
+
+export async function postHandler(req, res, url, data, additionalHeaders = {}) {
+  try {
+    // console.log({ ...getHeaders(), ...additionalHeaders });
+    await cors(req, res);
+
+    const iPayResponse = await axiosIPAY({
+      url,
+      method: "post",
+      // data,
+      data: qs.stringify(data),
+      headers: { ...getHeaders(), ...additionalHeaders },
+    });
+
+    // console.log(iPayResponse);
 
     const iPayData = await iPayResponse.data;
     return res.status(200).json(iPayData);
   } catch (error) {
+    // console.log(error);
+    let errorResponse = "";
+    if (error.response) {
+      errorResponse = error.response.data;
+    } else if (error.request) {
+      errorResponse = error.request;
+    } else {
+      errorResponse = { error: error.message };
+    }
+    return res.status(error.response.status).json(errorResponse);
+  }
+}
+
+export async function putHandler(req, res, url, data, additionalHeaders = {}) {
+  try {
+    await cors(req, res);
+
+    const iPayResponse = await axiosIPAY({
+      url,
+      method: "put",
+      data: qs.stringify(data),
+      headers: { ...getHeaders(), ...additionalHeaders },
+    });
+
+    // console.log(iPayResponse);
+
+    const iPayData = await iPayResponse.data;
+    return res.status(200).json(iPayData);
+  } catch (error) {
+    // console.log(error);
     let errorResponse = "";
     if (error.response) {
       errorResponse = error.response.data;
