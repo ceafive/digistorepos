@@ -1,4 +1,4 @@
-export const sidebarRoutes = [
+const sidebarRoutes = [
   {
     id: 1,
     name: "Home",
@@ -66,3 +66,7 @@ export const sidebarRoutes = [
     ],
   },
 ];
+
+module.exports = {
+  sidebarRoutes,
+};

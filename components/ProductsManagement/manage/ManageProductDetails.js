@@ -148,14 +148,20 @@ const ManageProductDetails = ({}) => {
           variant: childData?.variantOptionId,
           product: parentData?.product_id,
           merchant: user?.user_merchant_id,
+          mod_by: user?.login,
         };
-
-        console.log(data);
 
         const deleteVariantRes = await axios.post("/api/products/delete-product-variant", { data });
         console.log(deleteVariantRes);
-        removeToast(`delete-variant`);
         const { data: deleteVariantResData } = await deleteVariantRes.data;
+
+        removeToast(`delete-variant`);
+
+        if (Number(deleteVariantResData?.status === 0)) {
+          addToast(deleteVariantResData?.message, { appearance: "success", autoDismiss: true });
+        } else {
+          addToast(deleteVariantResData?.message, { appearance: "error", autoDismiss: true });
+        }
       }
     } catch (error) {
       let errorResponse = "";

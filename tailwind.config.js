@@ -1,15 +1,16 @@
 const plugin = require("tailwindcss/plugin");
 const colors = require("tailwindcss/colors");
+const { sidebarRoutes } = require("./utils/routes");
+
+const safelistTexts = sidebarRoutes.map((route) => `text-${route.iconColor}`);
 
 module.exports = {
-  // mode: "jit",
   purge: {
     content: ["./**/*.html", "./*.html", "./**/*.js", "./*.js"],
     darkMode: false, // or 'media' or 'class',
     // These options are passed through directly to PurgeCSS
     options: {
-      safelist: ["text-green-500"],
-
+      safelist: [...safelistTexts],
       keyframes: true,
       fontFace: true,
     },
@@ -19,10 +20,10 @@ module.exports = {
       width: {
         34: "8.5rem",
       },
+      colors,
       fontFamily: {
         print: ["Nunito Sans, sans-serif"],
       },
-      colors,
       minHeight: {
         "screen-75": "75vh",
       },
