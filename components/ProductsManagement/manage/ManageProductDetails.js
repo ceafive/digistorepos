@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 import React, { forwardRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -46,6 +47,7 @@ const tableIcons = {
 const ManageProductDetails = ({}) => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { addToast, removeToast } = useToasts();
   const {
     control,
     register,
@@ -134,28 +136,36 @@ const ManageProductDetails = ({}) => {
   };
 
   const deleteVariant = async (parentData, childData) => {
-    let user = sessionStorage.getItem("IPAYPOSUSER");
-    user = JSON.parse(user);
-
-    const r = window.confirm("Are you sure you want to delete variant?");
-    if (r === true) {
-      console.log(parentData, childData);
-
-      return;
-
-      const data = {
-        variant: childData?.variantOptionId,
-        // product: ,
-        merchant: user?.user_merchant_id,
-      };
-
-      const deleteVariantRes = await axios.post("/api/products/delete-product-variant", { data });
-      console.log(allProductsRes);
-      const { data: allProductsResData } = await allProductsRes.data;
-    }
     try {
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      const r = window.confirm("Are you sure you want to delete variant?");
+      if (r === true) {
+        addToast(`Deleting Variant...`, { appearance: "info", autoDismiss: true, id: "delete-variant" });
+        const data = {
+          variant: childData?.variantOptionId,
+          product: parentData?.product_id,
+          merchant: user?.user_merchant_id,
+        };
+
+        console.log(data);
+
+        const deleteVariantRes = await axios.post("/api/products/delete-product-variant", { data });
+        console.log(deleteVariantRes);
+        removeToast(`delete-variant`);
+        const { data: deleteVariantResData } = await deleteVariantRes.data;
+      }
     } catch (error) {
-      console.log(error);
+      let errorResponse = "";
+      if (error.response) {
+        errorResponse = error.response.data;
+      } else if (error.request) {
+        errorResponse = error.request;
+      } else {
+        errorResponse = { error: error.message };
+        console.log(errorResponse);
+      }
     }
   };
 
