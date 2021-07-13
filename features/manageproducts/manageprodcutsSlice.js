@@ -34,7 +34,11 @@ const manageproductsSlice = createSlice({
       actionCreator("productWithVariants", state, action?.payload);
     },
     setProductHasVariants(state, action) {
-      actionCreator("productHasVariants", state, action?.payload ? action.payload : !state.productHasVariants);
+      actionCreator(
+        "productHasVariants",
+        state,
+        action?.payload === true || action?.payload === false ? action.payload : !state.productHasVariants
+      );
     },
   },
 });

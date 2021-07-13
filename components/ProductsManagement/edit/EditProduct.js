@@ -9,17 +9,20 @@ import {
   setShowAddCategoryModal,
 } from "features/manageproducts/manageprodcutsSlice";
 import { capitalize, filter, get, intersectionWith, isEmpty, isEqual, map } from "lodash";
+import { useRouter } from "next/router";
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
+import AddCategory from "../create/AddCategory";
 import UploadImage from "../create/UploadImage";
 
 const EditProduct = ({ product, setGoToVarianceConfig }) => {
   const { addToast } = useToasts();
   const dispatch = useDispatch();
-  const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
+  const router = useRouter();
+
   const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
@@ -29,8 +32,6 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
   const [images, setImages] = React.useState(product?.product_images ?? []);
-
-  //   console.log({ product });
 
   const {
     control,
@@ -85,7 +86,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
   const isInventorySet = watch("setInventoryQuantity", false);
   const productCategory = watch("productCategory", false);
 
-  const createProduct = async (values) => {
+  const updateProduct = async (values) => {
     try {
       setIsProcessing(true);
       const data = { ...values, applyTax: get(values, "applyTax") ? "YES" : "NO" };
@@ -111,6 +112,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
       const imagesToUpload = productImages?.map((productImage) => productImage?.file) ?? [];
 
       const payload = {
+        id: product?.product_id,
         name: productName,
         desc: productDescription,
         price: parseFloat(sellingPrice),
@@ -123,48 +125,27 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
         weight: weight ? parseFloat(weight) : "",
         barcode,
         is_price_global: "YES",
+        old_outlet_list: JSON.stringify(map(product?.product_outlets ?? [], (o) => o?.outlet_id)),
         outlet_list: JSON.stringify(outlets),
         merchant: user["user_merchant_id"],
         mod_by: user["login"],
         // image: imagesToUpload[0],
       };
 
-      const formData = new FormData();
-      formData.append("image", imagesToUpload[0]);
-      formData.append("name", payload?.name);
-      formData.append("desc", payload?.desc);
-      formData.append("price", payload?.price);
-      formData.append("cost", payload?.cost);
-      formData.append("quantity", payload?.quantity);
-      formData.append("category", payload?.category);
-      formData.append("tag", payload?.tag);
-      formData.append("taxable", payload?.taxable);
-      formData.append("sku", payload?.sku);
-      formData.append("weight", payload?.weight);
-      formData.append("barcode", payload?.barcode);
-      formData.append("is_price_global", payload?.is_price_global);
-      formData.append("outlet_list", payload?.outlet_list);
-      formData.append("merchant", payload?.merchant);
-      formData.append("mod_by", payload?.mod_by);
-
       console.log(payload);
-      // console.log(imagesToUpload[0]);
-      // console.log(formData.entries());
 
-      // for (var pair of formData.entries()) {
-      //   console.log(pair[0] + ", " + pair[1]);
-      // }
-
-      const addProductRes = await axios.post("/api/products/create-product", {
+      // return;
+      const updateProductRes = await axios.post("/api/products/update-product-no-variant", {
         data: payload,
         // config: {
         //   "Content-Type": "multipart/form-data",
         // },
       });
-      const response = await addProductRes.data;
+      const response = await updateProductRes.data;
       console.log(response);
 
-      if (Number(response?.status) === 0)
+      if (Number(response?.status) === 0) {
+        addToast(response?.message, { appearance: "success", autoDismiss: true });
         reset({
           productName: "",
           productCategory: "",
@@ -180,7 +161,11 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           applyTax: false,
           inventoryQuantity: 0,
         });
-      setImages([]);
+        router.push("/products/manage");
+        setImages([]);
+      } else {
+        addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
+      }
     } catch (error) {
       let errorResponse = "";
       if (error.response) {
@@ -196,7 +181,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
     }
   };
 
-  const createProductWithVariants = (values) => {
+  const updateProductWithVariants = (values) => {
     try {
       //   console.log(product);
       //   return;
@@ -207,47 +192,37 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
     }
   };
 
-  const postNewCategory = async (values, user) => {
-    const data = {
-      name: values?.categoryName,
-      desc: values?.categoryDescription,
-      merchant: user?.user_merchant_id,
-      mod_by: user?.login,
-    };
-
-    const response = await axios.post("/api/products/add-product-category", data);
-    const { status, message } = await response.data;
-    return { data, status, message };
-  };
-
-  const getNewCategories = async (status, message, user) => {
-    if (status === 0) {
-      addCategoryReset({
-        categoryName: "",
-        categoryDescription: "",
-      });
-
-      const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
-      const { data: allCategoriesResData } = await allCategoriesRes.data;
-      const filtered = filter(allCategoriesResData, (o) => Boolean(o));
-      dispatch(setManageProductCategories(filtered));
-      return filtered;
-    } else addToast(`${message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
-  };
-
   const sumbitNewCategoryToServer = async (values) => {
     try {
       setProcessing(true);
       let user = sessionStorage.getItem("IPAYPOSUSER");
       user = JSON.parse(user);
 
-      const { data, status, message } = await postNewCategory(values, user);
-      await getNewCategories(status, message, user, data).then((filtered) => {
+      const data = {
+        name: values?.categoryName,
+        desc: values?.categoryDescription,
+        merchant: user?.user_merchant_id,
+        mod_by: user?.login,
+      };
+
+      const response = await axios.post("/api/products/add-product-category", data);
+      const { status, message } = await response.data;
+
+      if (status === 0) {
+        addCategoryReset({
+          categoryName: "",
+          categoryDescription: "",
+        });
+
+        const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
+        const { data: allCategoriesResData } = await allCategoriesRes.data;
+        const filtered = filter(allCategoriesResData, (o) => Boolean(o));
+        dispatch(setManageProductCategories(filtered));
         const found = filtered.find((o) => o?.product_category === data?.name);
         setValue("productCategory", found?.product_category_id ?? ""); // add new cateogry and select it
         addToast(message, { appearance: "success", autoDismiss: true });
         dispatch(setShowAddCategoryModal());
-      });
+      } else addToast(`${message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
     } catch (error) {
       let errorResponse = "";
       if (error.response) {
@@ -269,13 +244,13 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
       case true:
         return {
           buttonText: "Edit Variance",
-          buttonAction: handleSubmit(createProductWithVariants),
+          buttonAction: handleSubmit(updateProductWithVariants),
         };
 
       case false:
         return {
-          buttonText: "Save",
-          buttonAction: handleSubmit(createProduct),
+          buttonText: "Update Product Details",
+          buttonAction: handleSubmit(updateProduct),
         };
     }
   }, [productHasVariants]);
@@ -287,17 +262,11 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
   }, [productCategory]);
 
   React.useEffect(() => {
+    // console.log({ product });
     const fetchItems = async () => {
       try {
         setFetching(true);
-        let user = sessionStorage.getItem("IPAYPOSUSER");
-        user = JSON.parse(user);
-
-        const allOutletsRes = await axios.post("/api/products/get-product-outlets", { user, product_id: product?.product_id });
-        const { data: allOutletsResData } = await allOutletsRes.data;
-        const filtered = filter(allOutletsResData, (o) => Boolean(o));
-        // console.log({ allOutletsResData });
-
+        const filtered = filter(product?.product_outlets ?? [], (o) => Boolean(o));
         const response = intersectionWith(manageProductOutlets, filtered, (arrVal, othVal) => {
           return arrVal?.outlet_id === othVal?.outlet_id;
         });
@@ -307,7 +276,8 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           map(response ?? [], (o) => o?.outlet_id)
         );
 
-        !isEmpty(product?.product_properties) && dispatch(setProductHasVariants(true));
+        const hasVariants = product?.product_properties && !isEmpty(product?.product_properties);
+        dispatch(setProductHasVariants(!!hasVariants));
       } catch (error) {
         console.log(error);
       } finally {
@@ -316,7 +286,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
     };
 
     fetchItems();
-  }, [dispatch]);
+  }, []);
 
   if (fetching || fetching === null) {
     return (
@@ -328,6 +298,15 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
 
   return (
     <>
+      <Modal open={showAddCategoryModal} onClose={() => dispatch(setShowAddCategoryModal())} maxWidth="md">
+        <AddCategory
+          addCategoryRegister={addCategoryRegister}
+          processing={processing}
+          addCategoryErrors={addCategoryErrors}
+          addCategoryHandleSumbit={addCategoryHandleSumbit}
+          action={sumbitNewCategoryToServer}
+        />
+      </Modal>
       <h1>Setup Products</h1>
       <div className="flex w-full h-full">
         <div className="w-7/12 xl:w-8/12 pb-6 pt-12 px-4">
@@ -359,6 +338,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
                       </option>
                     );
                   })}
+                  <option value="addNewCategory">{`Add New Category`}</option>;
                 </select>
                 <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
               </div>

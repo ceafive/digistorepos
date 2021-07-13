@@ -186,7 +186,7 @@ const cartSlice = createSlice({
       state.cartPromoDiscount = action.payload;
     },
     onClickToCheckout: (state, action) => {
-      state.clickToCheckout = action?.payload || !state.clickToCheckout;
+      state.clickToCheckout = action?.payload === true || action?.payload === false ? action.payload : !state.clickToCheckout;
     },
     onAddCartNote: (state, action) => {
       state.cartNote = action.payload;

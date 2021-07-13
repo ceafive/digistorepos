@@ -38,7 +38,7 @@ const ViewEditAProduct = () => {
 
   return (
     <>
-      {router?.query?.action === "view" && <ViewProduct product={productToViewOrEdit} />}{" "}
+      {router?.query?.action === "view" && <ViewProduct product={productToViewOrEdit} />}
       {router?.query?.action === "edit" && <EditProductAndVariants product={productToViewOrEdit} />}
     </>
   );

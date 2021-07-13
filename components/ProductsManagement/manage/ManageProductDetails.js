@@ -15,7 +15,6 @@ import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import Dropdown from "components/Misc/Dropdown";
-import { setProductHasVariants, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
 import { capitalize, filter } from "lodash";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
@@ -105,7 +104,7 @@ const ManageProductDetails = ({}) => {
   const columns = [
     { title: "Product ID", field: "product_id" },
     { title: "Name", field: "product_name" },
-    { title: "Description", field: "product_category_description" },
+    { title: "Description", field: "product_description" },
     { title: "Price", field: "product_price" },
     {
       title: "In Stock",

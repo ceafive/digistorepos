@@ -78,7 +78,7 @@ const ViewProduct = ({ product }) => {
               <div className="mb-8 mr-8">
                 <label className="text-sm leading-none font-bold">Product Properties</label>
                 <div className="flex">
-                  {Object.entries(product?.product_properties)?.map((product_property) => {
+                  {Object.entries(product?.product_properties ?? {})?.map((product_property) => {
                     return (
                       <div key={product_property[0]} className="mr-8">
                         <p className="font-bold">{product_property[0]}</p>

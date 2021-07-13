@@ -17,7 +17,7 @@ import ViewColumn from "@material-ui/icons/ViewColumn";
 import axios from "axios";
 import Dropdown from "components/Misc/Dropdown";
 import Modal from "components/Modal";
-import { setManageProductCategories, setProductHasVariants, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
+import { setManageProductCategories } from "features/manageproducts/manageprodcutsSlice";
 import { capitalize, filter } from "lodash";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
@@ -112,6 +112,7 @@ const ManageCategories = ({ setFetching }) => {
 
       const response = await axios.post("/api/products/add-product-category", data);
       const { status, message } = await response.data;
+      removeToast("notif-sending");
 
       if (status === 0) {
         addCategoryReset({
@@ -123,7 +124,7 @@ const ManageCategories = ({ setFetching }) => {
         const { data: allCategoriesResData } = await allCategoriesRes.data;
         const filtered = filter(allCategoriesResData, (o) => Boolean(o));
         dispatch(setManageProductCategories(filtered));
-        removeToast("notif-sending");
+
         addToast(message, { appearance: "success", autoDismiss: true });
         setShowAddCategoryModal(false);
       } else addToast(`${message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
@@ -136,8 +137,7 @@ const ManageCategories = ({ setFetching }) => {
       } else {
         errorResponse = { error: error.message };
       }
-      console.log(errorResponse);
-      setProcessing(false);
+      addToast(`${errorResponse}. Fix error and try again`, { appearance: "error", autoDismiss: true });
     } finally {
       setProcessing(false);
     }
@@ -159,13 +159,14 @@ const ManageCategories = ({ setFetching }) => {
 
       const response = await axios.post("/api/products/update-product-category", data);
       const { status, message } = await response.data;
+      removeToast("notif-sending");
 
       if (status === 0) {
         const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
         const { data: allCategoriesResData } = await allCategoriesRes.data;
         const filtered = filter(allCategoriesResData, (o) => Boolean(o));
         dispatch(setManageProductCategories(filtered));
-        removeToast("notif-sending");
+
         addToast(message, { appearance: "success", autoDismiss: true });
         addCategorySetValue("categoryName", "");
         addCategorySetValue("categoryDescription", "");
@@ -182,8 +183,7 @@ const ManageCategories = ({ setFetching }) => {
       } else {
         errorResponse = { error: error.message };
       }
-      console.log(errorResponse);
-      setProcessing(false);
+      addToast(`${errorResponse}. Fix error and try again`, { appearance: "error", autoDismiss: true });
     } finally {
       setProcessing(false);
     }
@@ -192,19 +192,20 @@ const ManageCategories = ({ setFetching }) => {
   const deleteCategory = async (id) => {
     try {
       setProcessing(true);
-      addToast(`Deleting....`, { appearance: "info", id: "notif-sending" });
+      addToast(`Deleting....`, { appearance: "info", id: "deleting" });
       let user = sessionStorage.getItem("IPAYPOSUSER");
       user = JSON.parse(user);
 
       const response = await axios.post("/api/products/delete-category", { id });
       const { status, message } = await response.data;
+      removeToast("deleting");
 
       if (status === 0) {
         const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
         const { data: allCategoriesResData } = await allCategoriesRes.data;
         const filtered = filter(allCategoriesResData, (o) => Boolean(o));
         dispatch(setManageProductCategories(filtered));
-        removeToast("notif-sending");
+
         addToast(message, { appearance: "success", autoDismiss: true });
       } else addToast(`${message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
     } catch (error) {
@@ -216,8 +217,7 @@ const ManageCategories = ({ setFetching }) => {
       } else {
         errorResponse = { error: error.message };
       }
-      console.log(errorResponse);
-      setProcessing(false);
+      addToast(`${errorResponse}. Fix error and try again`, { appearance: "error", autoDismiss: true });
     } finally {
       setProcessing(false);
     }
