@@ -119,7 +119,7 @@ const ProcessPayment = ({
       {/* Pay Field */}
 
       {/* Payment Buttons */}
-      <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2 my-4 mt-8">
+      <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3 my-4 mt-8">
         {paymentButtons.map((paymentButton) => {
           return (
             <div key={paymentButton.name} className="">
@@ -145,7 +145,7 @@ const ProcessPayment = ({
       {outlets.length > 1 && (
         <div className="mt-4">
           <h1 className="font-semibold mb-1">Outlets</h1>
-          <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2 ">
+          <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3">
             {outlets.map((outlet) => {
               return (
                 <button
@@ -169,7 +169,7 @@ const ProcessPayment = ({
       {/* Delivery Options */}
       <div className="mt-4">
         <h1 className="font-semibold mb-1">Pickup or Delivery?</h1>
-        <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xl:gap-2">
+        <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3">
           {merchantUserDeliveryOptions.map((option) => {
             return (
               <div key={option.name} className="">
