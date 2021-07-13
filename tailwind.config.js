@@ -3,8 +3,17 @@ const colors = require("tailwindcss/colors");
 
 module.exports = {
   // mode: "jit",
-  purge: ["./**/*.html", "./*.html", "./**/*.js", "./*.js"],
-  darkMode: false, // or 'media' or 'class',
+  purge: {
+    content: ["./**/*.html", "./*.html", "./**/*.js", "./*.js"],
+    darkMode: false, // or 'media' or 'class',
+    // These options are passed through directly to PurgeCSS
+    options: {
+      safelist: ["bg-green-500"],
+
+      keyframes: true,
+      fontFace: true,
+    },
+  },
   theme: {
     extend: {
       width: {
@@ -13,9 +22,7 @@ module.exports = {
       fontFamily: {
         print: ["Nunito Sans, sans-serif"],
       },
-      colors: {
-        ...colors,
-      },
+      colors,
       minHeight: {
         "screen-75": "75vh",
       },

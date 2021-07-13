@@ -1,6 +1,8 @@
+import { useRouter } from "next/router";
 import React from "react";
 
 const ViewProduct = ({ product }) => {
+  const router = useRouter();
   // console.log({ manageProductOutlets });
 
   // console.log(productCategory);
@@ -9,6 +11,14 @@ const ViewProduct = ({ product }) => {
 
   return (
     <>
+      <button
+        className="focus:outline-none font-bold mt-2"
+        onClick={() => {
+          router.back();
+        }}
+      >
+        Back
+      </button>
       <div className="flex w-full h-full">
         <div className="w-7/12 xl:w-8/12 pb-6 pt-12 px-4">
           <div>
