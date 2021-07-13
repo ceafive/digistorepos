@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   productHasVariants: false,
-  productWithVariants: [],
+  productWithVariants: {},
   manageProductCategories: [],
   manageProductProducts: [],
   manageProductOutlets: [],

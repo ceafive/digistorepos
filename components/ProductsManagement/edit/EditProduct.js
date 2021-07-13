@@ -29,7 +29,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
-  console.log(productWithVariants);
+  // console.log(productWithVariants);
 
   const [fetching, setFetching] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -42,6 +42,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
     reset,
     watch,
     setValue,
+    getValues,
     formState: { errors },
     handleSubmit,
   } = useForm({
@@ -57,7 +58,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
     handleSubmit: addCategoryHandleSumbit,
   } = useForm();
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: "variants",
   });
@@ -285,7 +286,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           setInventoryQuantity: initial?.setInventoryQuantity,
           sku: initial?.sku,
           tag: initial?.tag,
-          variants: initial?.variants?.length === 0 ? productWithVariants?.variants ?? [] : initial?.variants,
+          variants: initial?.variants?.length === 0 ? productWithVariants?.variants ?? [] : initial?.variants ?? [],
           weight: initial?.weight,
         };
 
@@ -293,6 +294,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           (product?.product_properties && !isEmpty(product?.product_properties)) ||
           (productWithVariants?.variants && !isEmpty(productWithVariants?.variants));
 
+        Object.entries(valuesToDispatch).forEach(([key, value]) => setValue(key, value));
         dispatch(setProductWithVariants(valuesToDispatch));
         dispatch(setProductHasVariants(!!hasVariants));
       } catch (error) {
@@ -305,11 +307,11 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
     fetchItems();
   }, []);
 
-  React.useEffect(() => {
-    if (productHasVariants) {
-      if (fields.length === 0) append({});
-    } else remove();
-  }, [productHasVariants]);
+  // React.useEffect(() => {
+  //   if (productHasVariants) {
+  //     if (fields.length === 0) append({});
+  //   } else remove();
+  // }, [productHasVariants]);
 
   React.useEffect(() => {
     if (productCategory === "addNewCategory") {
@@ -339,6 +341,8 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
       <button
         className="focus:outline-none font-bold"
         onClick={() => {
+          dispatch(setProductWithVariants({}));
+          dispatch(setProductHasVariants(false));
           router.back();
         }}
       >
@@ -500,6 +504,9 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
                   <div
                     className="flex justify-between items-center cursor-pointer"
                     onClick={() => {
+                      if (!productHasVariants) {
+                        if (fields.length === 0) append({});
+                      } else remove();
                       dispatch(setProductHasVariants());
                     }}
                   >

@@ -22,7 +22,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
           ).toFixed(2)
         ) > 0 && (
           <p className="mt-4">
-            <span className="font-bold text-3xl">Change to give to customer: </span>
+            <span className="font-bold text-4xl">Change to give to customer: </span>
             <span className="font-bold text-4xl">
               GHS
               {Number(
