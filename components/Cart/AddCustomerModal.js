@@ -74,7 +74,7 @@ const AddCustomerModal = ({ onClose, setStep }) => {
           <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Email</label>
           <input
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            {...register("email", { required: "Please enter an email" })}
+            {...register("email")}
             type="email"
             placeholder="kofi_adomah@mail.com"
           />
@@ -86,7 +86,10 @@ const AddCustomerModal = ({ onClose, setStep }) => {
         <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
           <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Phone</label>
           <input
-            {...register("phone", { required: "Please enter a phone number" })}
+            {...register("phone", {
+              required: "Please enter a phone number",
+              validate: (value) => value?.length === 10 || "Phone number should be equal to 10 digits",
+            })}
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             type="number"
             placeholder="0222442455"
@@ -96,7 +99,7 @@ const AddCustomerModal = ({ onClose, setStep }) => {
         <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
           <label className="block uppercase tracking-wide text-gray-700  text-xs font-bold mb-2">Date Of Birth</label>
           <input
-            {...register("dob", { required: "Please enter a date of birth" })}
+            {...register("dob")}
             className="appearance-none block w-full text-sm bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             type="date"
             placeholder="06/06/1957"

@@ -29,7 +29,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
-  // console.log(productWithVariants);
+  console.log(productWithVariants);
 
   const [fetching, setFetching] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState(false);

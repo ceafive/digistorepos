@@ -21,9 +21,9 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             amountReceivedFromPayer - cartTotalMinusDiscountPlusTax <= 0 ? 0 : amountReceivedFromPayer - cartTotalMinusDiscountPlusTax
           ).toFixed(2)
         ) > 0 && (
-          <p>
+          <p className="mt-4">
             <span className="font-bold text-3xl">Change to give to customer: </span>
-            <span>
+            <span className="font-bold text-4xl">
               GHS
               {Number(
                 parseFloat(
