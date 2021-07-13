@@ -8,7 +8,7 @@ module.exports = {
     darkMode: false, // or 'media' or 'class',
     // These options are passed through directly to PurgeCSS
     options: {
-      safelist: ["bg-green-500"],
+      safelist: ["text-green-500"],
 
       keyframes: true,
       fontFace: true,
