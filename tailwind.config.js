@@ -11,8 +11,6 @@ module.exports = {
     // These options are passed through directly to PurgeCSS
     options: {
       safelist: [...safelistTexts],
-      keyframes: true,
-      fontFace: true,
     },
   },
   theme: {

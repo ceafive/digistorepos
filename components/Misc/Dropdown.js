@@ -17,7 +17,7 @@ export default function Example({ buttons }) {
       <div>
         <div>
           <button
-            className="inline-flex justify-center items-center w-full px-4 py-2 text-sm font-medium text-blue-700 hover:bg-gray-50 focus:outline-none"
+            className="inline-flex justify-center items-center w-full py-2 text-sm font-medium text-blue-700 hover:text-blue-800 focus:outline-none"
             onClick={() => {
               setIsOpen((data) => !data);
             }}
