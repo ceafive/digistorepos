@@ -13,6 +13,7 @@ const ManageProducts = () => {
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
   const [tabSelected, setTabSelected] = React.useState("products");
+  const [reRUn, setReRUn] = React.useState(new Date());
   // Compnent State
 
   React.useEffect(() => {
@@ -41,7 +42,7 @@ const ManageProducts = () => {
     };
 
     fetchItems();
-  }, [dispatch]);
+  }, [reRUn]);
 
   if (fetching || fetching === null) {
     return (
@@ -87,8 +88,8 @@ const ManageProducts = () => {
           Outlet Products
         </button>
       </div>
-      {tabSelected === "products" && <ManageProductDetails />}
-      {tabSelected === "categories" && <ManageCategories setFetching={setFetching} />}
+      {tabSelected === "products" && <ManageProductDetails setReRUn={setReRUn} />}
+      {tabSelected === "categories" && <ManageCategories setReRUn={setReRUn} />}
     </div>
   );
 };

@@ -44,7 +44,7 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
-const ManageProductDetails = ({}) => {
+const ManageProductDetails = ({ setReRUn }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
@@ -129,10 +129,42 @@ const ManageProductDetails = ({}) => {
     },
   ];
 
-  const updateProductVariant = async (newValue, oldValue, rowData, columnDef) => {
+  const updateProductVariant = async (newValue, oldValue, parentData, childData, columnDef) => {
     try {
+      addToast(`Updating Variant...`, { appearance: "info", autoDismiss: true, id: "update-variant" });
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      const data = {
+        variant: childData?.variantOptionId,
+        price: columnDef?.field === "variantOptionPrice" ? newValue : childData?.variantOptionPrice,
+        quantity: columnDef?.field === "variantOptionQuantity" ? newValue : childData?.variantOptionQuantity,
+        product: parentData?.product_id,
+        merchant: user?.user_merchant_id,
+        mod_by: user?.login,
+      };
+
+      const updateVariantRes = await axios.post("/api/products/update-product-variant-props", { data });
+      const { status, message } = await updateVariantRes.data;
+
+      removeToast(`update-variant`);
+
+      if (Number(status === 0)) {
+        addToast(message, { appearance: "success", autoDismiss: true });
+        setReRUn(new Date());
+      } else {
+        addToast(message, { appearance: "error", autoDismiss: true });
+      }
     } catch (error) {
-      console.log(error);
+      let errorResponse = "";
+      if (error.response) {
+        errorResponse = error.response.data;
+      } else if (error.request) {
+        errorResponse = error.request;
+      } else {
+        errorResponse = { error: error.message };
+      }
+      addToast(errorResponse, { appearance: "error", autoDismiss: true });
     }
   };
 
@@ -152,15 +184,15 @@ const ManageProductDetails = ({}) => {
         };
 
         const deleteVariantRes = await axios.post("/api/products/delete-product-variant", { data });
-        console.log(deleteVariantRes);
-        const { data: deleteVariantResData } = await deleteVariantRes.data;
+        const { status, message } = await deleteVariantRes.data;
 
         removeToast(`delete-variant`);
 
-        if (Number(deleteVariantResData?.status === 0)) {
-          addToast(deleteVariantResData?.message, { appearance: "success", autoDismiss: true });
+        if (Number(status === 0)) {
+          addToast(message, { appearance: "success", autoDismiss: true });
+          setReRUn(new Date());
         } else {
-          addToast(deleteVariantResData?.message, { appearance: "error", autoDismiss: true });
+          addToast(message, { appearance: "error", autoDismiss: true });
         }
       }
     } catch (error) {
@@ -244,7 +276,7 @@ const ManageProductDetails = ({}) => {
                   { title: "ID", field: "variantOptionId", editable: "never" },
                   {
                     title: "Option Values",
-                    field: "product_id",
+                    field: "option_values",
                     editable: "never",
                     render(rowData) {
                       let header = "";
@@ -291,11 +323,12 @@ const ManageProductDetails = ({}) => {
                       overflow: "hidden",
                     }}
                     cellEditable={{
-                      onCellEditApproved: async (newValue, oldValue, rowData, columnDef) => {
-                        return new Promise((resolve, reject) => {
-                          console.log({ newValue, oldValue, rowData, columnDef });
-                          setTimeout(resolve, 1000);
-                        });
+                      onCellEditApproved: async (newValue, oldValue, childRowData, columnDef) => {
+                        await updateProductVariant(newValue, oldValue, rowData, childRowData, columnDef);
+                        // return new Promise((resolve, reject) => {
+                        //   console.log({ newValue, oldValue, rowData, columnDef });
+                        //   setTimeout(resolve, 1000);
+                        // });
                       },
                     }}
                     isLoading={loading}

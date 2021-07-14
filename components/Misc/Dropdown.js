@@ -23,7 +23,7 @@ export default function Example({ buttons }) {
             }}
           >
             Options
-            <i className="fas fa-chevron-down -mr-1 ml-2" aria-hidden="true" />
+            <i className={`fas fa-chevron-${isOpen ? "down" : "right"} -mr-1 ml-2`} aria-hidden="true" />
           </button>
         </div>
         {isOpen && (
