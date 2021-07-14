@@ -10,7 +10,7 @@ module.exports = {
     darkMode: false, // or 'media' or 'class',
     // These options are passed through directly to PurgeCSS
     options: {
-      safelist: [...safelistTexts, /^grid-col-/],
+      safelist: [...safelistTexts, /^[\w:]*grid-col-/],
     },
   },
   theme: {

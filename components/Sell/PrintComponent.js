@@ -13,6 +13,10 @@ const ListItem = ({ text, value, className }) => {
 
 const PrintComponent = React.forwardRef((props, ref) => {
   const dispatch = useDispatch();
+  let user = sessionStorage.getItem("IPAYPOSUSER");
+  user = JSON.parse(user);
+
+  console.log({ user });
 
   // Selectors
   const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
@@ -41,9 +45,18 @@ const PrintComponent = React.forwardRef((props, ref) => {
   const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3));
 
   return (
-    <div className="font-print">
+    <div className="">
       <div className="page-break" />
-      <div className="w-full p-6" ref={ref}>
+      <div className="relative w-full p-6" ref={ref}>
+        <div className="mb-2">
+          <div className="flex justify-between items-center w-full mb-2">
+            <img src={user?.user_merchant_logo} alt={`Merchant Logo`} />
+            <h1 className="font-bold text-3xl">{user?.user_merchant}</h1>
+          </div>
+
+          <hr />
+        </div>
+
         <div className="flex items-center font-semibold text-xl">
           <p className="">Sale Summary</p>
         </div>
@@ -62,10 +75,12 @@ const PrintComponent = React.forwardRef((props, ref) => {
           })}
         </div>
 
-        <div className="flex justify-between pt-2">
-          <p>Note:</p>
-          <p>{cartNote}</p>
-        </div>
+        {cartNote && (
+          <div className="flex justify-between pt-2">
+            <p>Note:</p>
+            <p>{cartNote}</p>
+          </div>
+        )}
 
         <hr className="mt-6 mb-5" />
 
@@ -155,16 +170,23 @@ const PrintComponent = React.forwardRef((props, ref) => {
             <>
               <hr className="my-2" />
               <div className="flex justify-between items-center">
-                <p className="font-bold tracking-wide mr-4">BALANCE</p>
+                <p className="font-bold tracking-wide mr-4">CHANGE</p>
                 <p>
                   GHC
-                  {balance}
+                  {-balance}
                 </p>
               </div>
             </>
           ) : (
             <> </>
           )}
+
+          <div className="fixed bottom-0 left-0 w-full">
+            <div className="flex justify-between items-center text-xs w-full">
+              <h1 className="font-bold">Thank You For Your Business</h1>
+              <h1 className="font-bold">Contact Us: {user?.user_merchant_phone}</h1>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -14,14 +14,14 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
 
   return (
     <div className="mt-10 py-20 text-center">
-      <p className="font-bold text-4xl">Payment Received</p>
+      <p className="font-bold text-4xl ">Payment Received</p>
       <div>
         {Number(
           parseFloat(
             amountReceivedFromPayer - cartTotalMinusDiscountPlusTax <= 0 ? 0 : amountReceivedFromPayer - cartTotalMinusDiscountPlusTax
           ).toFixed(2)
         ) > 0 && (
-          <p className="mt-2 lg:text-4xl 2xl:text-5xl">
+          <p className="mt-2 text-4xl 2xl:text-5xl text-blueGray-900">
             <span className="font-bold">Give </span>
             <span className="font-bold">
               GHS
