@@ -1,7 +1,12 @@
 import axios from "axios";
 import AddBasicProductDetails from "components/ProductsManagement/create/AddBasicProductDetails";
 import Spinner from "components/Spinner";
-import { setManageProductCategories, setManageProductOutlets } from "features/manageproducts/manageprodcutsSlice";
+import {
+  setManageProductCategories,
+  setManageProductOutlets,
+  setProductHasVariants,
+  setProductWithVariants,
+} from "features/manageproducts/manageprodcutsSlice";
 import { filter } from "lodash";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -38,6 +43,12 @@ const CreateAProduct = () => {
     };
 
     fetchItems();
+
+    // clear data
+    return () => {
+      dispatch(setProductWithVariants({}));
+      dispatch(setProductHasVariants(false));
+    };
   }, [dispatch]);
 
   if (fetching || fetching === null) {

@@ -234,7 +234,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
   }, [productHasVariants]);
 
   React.useEffect(() => {
-    console.log({ product });
+    // console.log({ product });
     const fetchItems = async () => {
       try {
         setFetching(true);
@@ -290,7 +290,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           weight: initial?.weight,
         };
 
-        console.log({ valuesToDispatch });
+        // console.log({ valuesToDispatch });
 
         const hasVariants =
           (product?.product_properties && !isEmpty(product?.product_properties)) ||
