@@ -21,9 +21,9 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             amountReceivedFromPayer - cartTotalMinusDiscountPlusTax <= 0 ? 0 : amountReceivedFromPayer - cartTotalMinusDiscountPlusTax
           ).toFixed(2)
         ) > 0 && (
-          <p className="mt-4">
-            <span className="font-bold text-4xl">Change to give to customer: </span>
-            <span className="font-bold text-4xl">
+          <p className="mt-2 lg:text-4xl 2xl:text-5xl">
+            <span className="font-bold">Give </span>
+            <span className="font-bold">
               GHS
               {Number(
                 parseFloat(
@@ -31,11 +31,12 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
                 ).toFixed(2)
               )}
             </span>
+            <span className="font-bold"> Change</span>
           </p>
         )}
       </div>
 
-      <div className="flex justify-center mt-24 text-sm font-semibold">
+      <div className="flex justify-center mt-12 text-sm font-semibold">
         <div className="flex justify-center w-full">
           <button
             disabled={printing}

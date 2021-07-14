@@ -1,4 +1,4 @@
-import { changeItemPropsInCart, removeItemFromCart } from "features/cart/cartSlice";
+import { changeItemPropsInCart, removeItemFromCart, setItemDiscount } from "features/cart/cartSlice";
 import { openInventoryModal, setProductToView } from "features/products/productsSlice";
 import { capitalize } from "lodash";
 import React, { useState } from "react";
@@ -65,6 +65,23 @@ const Accordion = ({ product, index }) => {
           })
         );
       }
+    } else if (field === "discount") {
+      const price = product?.price;
+      let discountAmount = 0;
+
+      if (value) {
+        discountAmount = price * (value / 100);
+      } else {
+        discountAmount = price * (0 / 100);
+      }
+
+      dispatch(setItemDiscount(discountAmount));
+      dispatch(
+        changeItemPropsInCart({
+          ...product,
+          [field]: value,
+        })
+      );
     } else {
       dispatch(
         changeItemPropsInCart({
@@ -152,11 +169,11 @@ const Accordion = ({ product, index }) => {
                 value={product.price}
                 type="number"
                 placeholder="eg. 0"
-                className="border-0 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                className="border-0 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-blueGray-100 rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
               />
             </div>
 
-            <div className="">
+            {/* <div className="">
               <label htmlFor="price" className="text-sm font-bold">
                 Discount %
               </label>
@@ -173,7 +190,7 @@ const Accordion = ({ product, index }) => {
                 placeholder="eg. 0"
                 className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
               />
-            </div>
+            </div> */}
           </div>
 
           {/* <div className="mt-2">

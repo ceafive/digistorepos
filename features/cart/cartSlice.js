@@ -15,6 +15,7 @@ const initialState = {
   partPaymentAmount: "",
   cartNote: "",
   cartDiscount: "",
+  cartItemDiscount: "",
   cartPromoDiscount: 0,
   cartPromoCode: null,
   cartDiscountOnCartTotal: 0,
@@ -172,6 +173,16 @@ const cartSlice = createSlice({
 
       if (!payload) state.cartDiscount = "";
       else state.cartDiscount = action.payload;
+    },
+    setItemDiscount: (state, action) => {
+      const { payload } = action;
+
+      // const itemAmount =
+      // const itemDiscountPercent =
+      // const itemDiscount =
+
+      if (!payload) state.cartItemDiscount = "";
+      else state.cartItemDiscount = action.payload;
     },
     applyDiscount(state) {
       const { discountAmount, valueReturn } = calculateDiscount(state.totalPriceInCart, state.cartDiscountType, state.cartDiscount);
@@ -339,5 +350,6 @@ export const {
   setCartPromoCode,
   setInvoiceDetails,
   setVerifyTransactionResponse,
+  setItemDiscount,
 } = cartSlice.actions;
 export default cartSlice.reducer;

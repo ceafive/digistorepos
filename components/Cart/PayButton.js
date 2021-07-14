@@ -21,6 +21,7 @@ const PayButton = () => {
   const totalItemsInCart = useSelector((state) => state.cart.totalItemsInCart);
   const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
   const cartDiscount = useSelector((state) => state.cart.cartDiscount);
+  const cartItemDiscount = useSelector((state) => state.cart.cartItemDiscount);
   const totalTaxes = useSelector((state) => state.cart.totalTaxes);
   const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
   const cartTotalMinusDiscount = useSelector((state) => state.cart.cartTotalMinusDiscount);
@@ -43,7 +44,7 @@ const PayButton = () => {
   React.useEffect(() => {
     dispatch(applyDiscount());
     return () => {};
-  }, [totalPriceInCart, totalItemsInCart, cartDiscount, cartPromoDiscount, dispatch]);
+  }, [totalPriceInCart, totalItemsInCart, cartItemDiscount, cartDiscount, cartPromoDiscount, dispatch]);
 
   const checkingPromoCode = async () => {
     try {
