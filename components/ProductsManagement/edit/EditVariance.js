@@ -295,14 +295,22 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                   {productWithVariants?.variants?.map((variant) => {
                     const capitalizeName = capitalize(variant?.name);
                     return (
-                      <h1 key={capitalizeName} className="font-bold text-blue-700 self-center">
-                        {capitalizeName}
-                      </h1>
+                      <div key={capitalizeName} className="self-center">
+                        <h1 key={capitalizeName} className="font-bold text-blue-700 self-center">
+                          {capitalizeName}
+                        </h1>
+                      </div>
                     );
                   })}
-                  <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
-                  <h1 className="font-bold text-blue-700 self-center">Price</h1>
-                  <h1 className="font-bold text-blue-700 self-center">Actions</h1>
+                  <div className="self-center">
+                    <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
+                  </div>
+                  <div className="self-center">
+                    <h1 className="font-bold text-blue-700 self-center">Price</h1>
+                  </div>
+                  <div className="self-center">
+                    <h1 className="font-bold text-blue-700 self-center">Actions</h1>
+                  </div>
                 </div>
 
                 <div className="my-2">
