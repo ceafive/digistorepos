@@ -2,7 +2,7 @@ const plugin = require("tailwindcss/plugin");
 const colors = require("tailwindcss/colors");
 const { sidebarRoutes } = require("./utils/routes");
 
-const safelistTexts = sidebarRoutes.map((route) => `text-${route.iconColor}`);
+const saferoutecolors = sidebarRoutes.map((route) => `text-${route.iconColor}`);
 
 module.exports = {
   purge: {
@@ -10,7 +10,7 @@ module.exports = {
     darkMode: false, // or 'media' or 'class',
     // These options are passed through directly to PurgeCSS
     options: {
-      safelist: [...safelistTexts, /^[\w:]*grid-col-/],
+      safelist: [...saferoutecolors, /^[\w:]*grid-col-/],
     },
   },
   theme: {
