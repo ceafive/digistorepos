@@ -10,7 +10,7 @@ module.exports = {
     darkMode: false, // or 'media' or 'class',
     // These options are passed through directly to PurgeCSS
     options: {
-      safelist: [...saferoutecolors, "grid-col-4", "grid-col-5", "grid-col-6", "grid-col-7", "grid-col-8"],
+      safelist: [...saferoutecolors, /^[\w:]*grid-cols-/, /^grid-cols-/],
     },
   },
   theme: {
