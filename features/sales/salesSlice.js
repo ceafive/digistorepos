@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import salesHistory from "data/mock_sales_history";
 
 const initialState = {
   salesHistory: [],
@@ -10,7 +9,7 @@ const salesSlice = createSlice({
   initialState,
   reducers: {
     setSalesHistoryitem(state, action) {
-      state.salesHistory = [...action.payload, ...salesHistory];
+      state.salesHistory = [...action.payload, ...[]];
     },
   },
 });

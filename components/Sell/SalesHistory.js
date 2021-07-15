@@ -96,7 +96,7 @@ const SalesHistory = () => {
       title="Sales History"
       icons={tableIcons}
       columns={columns}
-      data={salesHistory.map((o) => ({ ...o, tableData: {} }))}
+      data={[]}
       options={{
         filtering: true,
       }}
