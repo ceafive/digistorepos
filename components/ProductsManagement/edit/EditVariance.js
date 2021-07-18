@@ -1,6 +1,7 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
 import { capitalize, filter, intersectionWith, isEmpty, isEqual, join, map, omit, split, trim } from "lodash";
+import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -8,6 +9,7 @@ import { useToasts } from "react-toast-notifications";
 import { v4 as uuidv4 } from "uuid";
 
 const EditProductVariance = ({ setGoToVarianceConfig }) => {
+  const router = useRouter();
   const { addToast } = useToasts();
   const {
     control,
@@ -173,6 +175,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
         }, {});
 
         const {
+          id,
           productName,
           productCategory,
           productDescription,
@@ -186,6 +189,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           inventoryQuantity,
           setInventoryQuantity,
           applyTax,
+          old_outlet_list,
         } = productWithVariants;
 
         let user = sessionStorage.getItem("IPAYPOSUSER");
@@ -196,6 +200,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
         formData.append("image", imagesToUpload[0]);
 
         const payload = {
+          id,
           name: productName,
           desc: productDescription,
           price: parseFloat(sellingPrice),
@@ -208,6 +213,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           weight: weight ? parseFloat(weight) : "",
           barcode,
           is_price_global: "YES",
+          old_outlet_list,
           outlet_list: JSON.stringify(outlets),
           // $_FILES: imagesToUpload,
           merchant: user["user_merchant_id"],
@@ -216,17 +222,36 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           variants_options: JSON.stringify(variants_options),
         };
 
-        console.log(payload);
-        return;
-        const addProductRes = await axios.post("/api/products/create-product", { data: payload });
-
-        const response = await addProductRes.data;
+        // console.log(payload);
+        // return;
+        const updateProductRes = await axios.post("/api/products/update-product", {
+          data: payload,
+          // config: {
+          //   "Content-Type": "multipart/form-data",
+          // },
+        });
+        const response = await updateProductRes.data;
         console.log(response);
+
+        if (Number(response?.status) === 0) {
+          addToast(response?.message, { appearance: "success", autoDismiss: true });
+          router.push("/products/manage");
+        } else {
+          addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
+        }
       } else {
         addToast("Please fix errors", { appearance: "error", autoDismiss: true });
       }
     } catch (error) {
-      console.log(error);
+      let errorResponse = "";
+      if (error.response) {
+        errorResponse = error.response.data;
+      } else if (error.request) {
+        errorResponse = error.request;
+      } else {
+        errorResponse = { error: error.message };
+      }
+      console.log(errorResponse);
     } finally {
       setIsProcessing(false);
     }
@@ -235,8 +260,8 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
   // console.log(submitFormErrors);
 
   return (
-    <div className="px-4">
-      <h1>Setup Products</h1>
+    <div className="px-4 pb-6 pt-6">
+      <h1>Setup Product Variant Permutations</h1>
       <div className="flex w-full h-full">
         <div className="w-full pb-6 pt-6">
           <div>
@@ -397,7 +422,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                     <Spinner type={"TailSpin"} color="black" width={10} height={10} />
                   </div>
                 )}
-                <span> Create Product</span>
+                <span>Update Product</span>
               </button>
             </div>
           </div>

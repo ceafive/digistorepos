@@ -19,7 +19,7 @@ import AddCategory from "../create/AddCategory";
 import UploadImage from "../create/UploadImage";
 
 const EditProduct = ({ product, setGoToVarianceConfig }) => {
-  const { addToast } = useToasts();
+  const { addToast, removeToast } = useToasts();
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -105,24 +105,25 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
         weight: weight ? parseFloat(weight) : "",
         barcode,
         is_price_global: "YES",
-        old_outlet_list: JSON.stringify(map(product?.product_outlets ?? [], (o) => o?.outlet_id)),
+
         outlet_list: JSON.stringify(outlets),
         merchant: user["user_merchant_id"],
         mod_by: user["login"],
         // image: imagesToUpload[0],
       };
 
-      console.log(payload);
+      // console.log(productHasVariants);
+      // console.log(payload);
 
       // return;
-      const updateProductRes = await axios.post("/api/products/update-product-no-variant", {
+      const updateProductRes = await axios.post("/api/products/update-product", {
         data: payload,
         // config: {
         //   "Content-Type": "multipart/form-data",
         // },
       });
       const response = await updateProductRes.data;
-      console.log(response);
+      // console.log(response);
 
       if (Number(response?.status) === 0) {
         addToast(response?.message, { appearance: "success", autoDismiss: true });
@@ -139,7 +140,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           productImages: [],
           setInventoryQuantity: false,
           applyTax: false,
-          inventoryQuantity: 0,
+          inventoryQuantity: "",
         });
         router.push("/products/manage");
         setImages([]);
@@ -163,7 +164,14 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
 
   const updateProductWithVariants = (values) => {
     try {
-      dispatch(setProductWithVariants({ ...values, variantsDistribution: product?.product_properties_variants ?? [] }));
+      dispatch(
+        setProductWithVariants({
+          ...values,
+          id: product?.product_id,
+          old_outlet_list: JSON.stringify(map(product?.product_outlets ?? [], (o) => o?.outlet_id)),
+          variantsDistribution: product?.product_properties_variants ?? [],
+        })
+      );
       setGoToVarianceConfig(true);
     } catch (error) {
       console.log(error);
@@ -217,6 +225,47 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
     }
   };
 
+  const deleteVariant = async (name) => {
+    try {
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      const r = window.confirm("Are you sure you want to delete variant?");
+      if (r === true) {
+        addToast(`Deleting Variant...`, { appearance: "info", autoDismiss: true, id: "delete-variant" });
+        const data = {
+          id: product?.product_id,
+          option: name,
+          merchant: user?.user_merchant_id,
+          mod_by: user?.login,
+        };
+
+        const deleteVariantRes = await axios.post("/api/products/delete-product-property", { data });
+        const { status, message } = await deleteVariantRes.data;
+
+        removeToast(`delete-variant`);
+
+        if (Number(status === 0)) {
+          addToast(message, { appearance: "success", autoDismiss: true });
+          // setReRUn(new Date());
+        } else {
+          addToast(message, { appearance: "error", autoDismiss: true });
+          //console.log(product?.product_properties_variants); // TODO: automatically delete all product property variants
+        }
+      }
+    } catch (error) {
+      let errorResponse = "";
+      if (error.response) {
+        errorResponse = error.response.data;
+      } else if (error.request) {
+        errorResponse = error.request;
+      } else {
+        errorResponse = { error: error.message };
+        console.log(errorResponse);
+      }
+    }
+  };
+
   const buttonParams = React.useMemo(() => {
     switch (productHasVariants) {
       case true:
@@ -249,7 +298,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           productDescription: product?.product_description,
           sellingPrice: product?.product_price,
           costPerItem: product?.product_unit_cost,
-          inventoryQuantity: product?.product_quantity === "-99" ? 0 : product?.product_quantity,
+          inventoryQuantity: product?.product_quantity === "-99" ? "" : product?.product_quantity,
           productCategory: manageProductCategories.find((category) => category?.product_category === product?.product_category)
             ?.product_category_id,
           tag: "NORMAL",
@@ -500,15 +549,15 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
               </div>
 
               {/* Variants */}
-              <div className="w-full mr-2 mt-2 bg-gray-200 p-6 rounded">
+              <div className="w-full mt-6 bg-gray-200 p-6 rounded">
                 <div className="flex justify-between items-center w-full">
                   <h1 className="font-bold text-blue-700">Does your product have variants?</h1>
                   <div
                     className="flex justify-between items-center cursor-pointer"
                     onClick={() => {
-                      if (!productHasVariants) {
-                        if (fields.length === 0) append({});
-                      } else remove();
+                      // if (!productHasVariants) {
+                      //   if (fields.length === 0) append({});
+                      // } else remove();
                       dispatch(setProductHasVariants());
                     }}
                   >
@@ -572,8 +621,8 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
                                 {fields.length > 1 && (
                                   <div
                                     className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
-                                    onClick={() => {
-                                      remove(index);
+                                    onClick={async () => {
+                                      await deleteVariant(name);
                                     }}
                                   >
                                     <button className="justify-self-end focus:outline-none">

@@ -5,8 +5,6 @@ import React from "react";
 
 export default function Navbar() {
   const router = useRouter();
-
-  console.log(router);
   return (
     <>
       {/* Navbar */}

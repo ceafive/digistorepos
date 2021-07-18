@@ -5,7 +5,7 @@ const ViewProduct = ({ product }) => {
   const router = useRouter();
   // console.log({ manageProductOutlets });
 
-  // console.log(productCategory);
+  console.log(product);
   // console.log(showAddCategoryModal);
   // console.log(manageProductCategories);
 
@@ -131,7 +131,7 @@ const ViewProduct = ({ product }) => {
           <img
             className="w-full h-full object-cover rounded shadow-sm"
             src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
-            alt={product.product_name}
+            alt={product?.product_name}
           />
         </div>
       </div>

@@ -295,6 +295,9 @@ const ManageProducts = ({ setReRUn }) => {
           icons={tableIcons}
           columns={columns}
           data={allProducts.map((o) => ({ ...o, tableData: {} }))}
+          options={{
+            selection: false,
+          }}
           components={{
             Toolbar: (props) => (
               <div>

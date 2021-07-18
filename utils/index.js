@@ -56,7 +56,7 @@ export function getHeaders() {
     Time: stringedTimestamp,
     Authentication: authSecret,
     Accept: "application/json",
-    "Content-Type": "application/x-www-form-urlencoded",
+    "content-type": "application/x-www-form-urlencoded",
   };
 }
 
@@ -92,10 +92,13 @@ export async function postHandler(req, res, url, data, additionalHeaders = {}) {
     const iPayResponse = await axiosIPAY({
       url,
       method: "post",
-      // data,
       data: qs.stringify(data),
       headers: { ...getHeaders(), ...additionalHeaders },
     });
+
+    // const iPayResponse = await axiosIPAY.post(url, data, {
+    //   headers: { ...getHeaders(), ...additionalHeaders },
+    // });
 
     // console.log(iPayResponse);
 

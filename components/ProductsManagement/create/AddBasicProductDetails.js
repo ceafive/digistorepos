@@ -65,7 +65,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
 
   // console.log(productCategory);
   // console.log(showAddCategoryModal);
-  // console.log(manageProductCategories);
+  // console.log(productImages);
 
   const createProduct = async (values) => {
     try {
@@ -90,7 +90,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       let user = sessionStorage.getItem("IPAYPOSUSER");
       user = JSON.parse(user);
 
-      const imagesToUpload = productImages?.map((productImage) => productImage?.file) ?? [];
+      const imagesToUpload = productImages?.map((productImage) => productImage?.data_url) ?? [];
 
       const payload = {
         name: productName,
@@ -108,7 +108,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
         outlet_list: JSON.stringify(outlets),
         merchant: user["user_merchant_id"],
         mod_by: user["login"],
-        // image: imagesToUpload[0],
+        image: imagesToUpload[0],
       };
 
       const formData = new FormData();
@@ -129,20 +129,25 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       formData.append("merchant", payload?.merchant);
       formData.append("mod_by", payload?.mod_by);
 
-      console.log(payload);
+      // console.log(payload);
       // console.log(imagesToUpload[0]);
       // console.log(formData.entries());
 
       // for (var pair of formData.entries()) {
-      //   console.log(pair[0] + ", " + pair[1]);
+      //   console.log(pair[0] + ":" + pair[1]);
       // }
+
+      // return;
 
       const addProductRes = await axios.post("/api/products/create-product", {
         data: payload,
-        // config: {
-        //   "Content-Type": "multipart/form-data",
-        // },
+        config: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+
+      // const addProductRes = await axios.post("/api/products/create-product", formData);
+
       const response = await addProductRes.data;
       console.log(response);
 
@@ -194,7 +199,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       merchant: user?.user_merchant_id,
       mod_by: user?.login,
     };
- 
+
     const response = await axios.post("/api/products/add-product-category", data);
     const { status, message } = await response.data;
     return { data, status, message };
