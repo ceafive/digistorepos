@@ -4,15 +4,33 @@ const fs = require("fs");
 
 const FormData = require("form-data");
 
+function decodeBase64Image(dataString) {
+  var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+    response = {};
+
+  if (matches?.length !== 3) {
+    return new Error("Invalid input string");
+  }
+
+  response.type = matches[1];
+  response.data = new Buffer(matches[2], "base64");
+
+  return response;
+}
+
 export default async function handler(req, res) {
+  const form = new FormData();
   const payload = req.body.data;
-  let config = req.body.config;
   const url = `/products/product`;
 
-  // console.log({ payload });
+  const dataURL = payload?.image?.dataURL ?? "";
+  const name = payload?.image?.name;
 
-  const form = new FormData();
-  form.append("image", Buffer.from(payload?.image, "base64"), { filename: "temp.jpg" });
+  const imageBuffer = decodeBase64Image(dataURL);
+  payload?.image && fs.writeFileSync(name, imageBuffer.data);
+
+  payload?.image && form.append("image", fs.createReadStream(name)); // add images async
+
   form.append("name", payload?.name);
   form.append("desc", payload?.desc);
   form.append("price", payload?.price);

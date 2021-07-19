@@ -89,16 +89,16 @@ export async function postHandler(req, res, url, data, additionalHeaders = {}) {
     // console.log({ ...getHeaders(), ...additionalHeaders });
     await cors(req, res);
 
-    const iPayResponse = await axiosIPAY({
-      url,
-      method: "post",
-      data: qs.stringify(data),
-      headers: { ...getHeaders(), ...additionalHeaders },
-    });
-
-    // const iPayResponse = await axiosIPAY.post(url, data, {
+    // const iPayResponse = await axiosIPAY({
+    //   url,
+    //   method: "post",
+    //   data: qs.stringify(data),
     //   headers: { ...getHeaders(), ...additionalHeaders },
     // });
+
+    const iPayResponse = await axiosIPAY.post(url, data, {
+      headers: { ...getHeaders(), ...additionalHeaders },
+    });
 
     // console.log(iPayResponse);
 

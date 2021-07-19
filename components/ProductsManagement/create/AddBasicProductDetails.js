@@ -67,6 +67,30 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   // console.log(showAddCategoryModal);
   // console.log(productImages);
 
+  function b64toBlob(b64Data, contentType, sliceSize) {
+    contentType = contentType || "";
+    sliceSize = sliceSize || 512;
+
+    var byteCharacters = atob(b64Data);
+    var byteArrays = [];
+
+    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+      var byteNumbers = new Array(slice.length);
+      for (var i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      var byteArray = new Uint8Array(byteNumbers);
+
+      byteArrays.push(byteArray);
+    }
+
+    var blob = new Blob(byteArrays, { type: contentType });
+    return blob;
+  }
+
   const createProduct = async (values) => {
     try {
       setIsProcessing(true);
@@ -90,7 +114,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       let user = sessionStorage.getItem("IPAYPOSUSER");
       user = JSON.parse(user);
 
-      const imagesToUpload = productImages?.map((productImage) => productImage?.data_url) ?? [];
+      const imagesToUpload = productImages?.map((productImage) => productImage) ?? [];
 
       const payload = {
         name: productName,
@@ -108,48 +132,26 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
         outlet_list: JSON.stringify(outlets),
         merchant: user["user_merchant_id"],
         mod_by: user["login"],
-        image: imagesToUpload[0],
       };
 
-      const formData = new FormData();
-      formData.append("image", imagesToUpload[0]);
-      formData.append("name", payload?.name);
-      formData.append("desc", payload?.desc);
-      formData.append("price", payload?.price);
-      formData.append("cost", payload?.cost);
-      formData.append("quantity", payload?.quantity);
-      formData.append("category", payload?.category);
-      formData.append("tag", payload?.tag);
-      formData.append("taxable", payload?.taxable);
-      formData.append("sku", payload?.sku);
-      formData.append("weight", payload?.weight);
-      formData.append("barcode", payload?.barcode);
-      formData.append("is_price_global", payload?.is_price_global);
-      formData.append("outlet_list", payload?.outlet_list);
-      formData.append("merchant", payload?.merchant);
-      formData.append("mod_by", payload?.mod_by);
+      if (imagesToUpload[0]) {
+        payload["image"] = {
+          dataURL: imagesToUpload[0].data_url,
+          name: imagesToUpload[0].file.name,
+          // contentType: imagesToUpload[0].file.type,
+          // fileExtension: imagesToUpload[0].file.type.split("/")[1],
+        };
+      }
 
-      // console.log(payload);
-      // console.log(imagesToUpload[0]);
-      // console.log(formData.entries());
-
-      // for (var pair of formData.entries()) {
-      //   console.log(pair[0] + ":" + pair[1]);
-      // }
-
+      console.log(payload);
       // return;
 
       const addProductRes = await axios.post("/api/products/create-product", {
         data: payload,
-        config: {
-          "Content-Type": "multipart/form-data",
-        },
       });
 
-      // const addProductRes = await axios.post("/api/products/create-product", formData);
-
       const response = await addProductRes.data;
-      console.log(response);
+      // console.log(response);
 
       if (Number(response?.status) === 0)
         reset({

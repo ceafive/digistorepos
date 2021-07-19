@@ -13,7 +13,7 @@ export default function Example({ buttons }) {
   const [linkActive, setLinkActive] = React.useState(null);
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left z-50 mb-6">
       <div>
         <div>
           <button
