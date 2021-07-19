@@ -1,6 +1,7 @@
 import { postHandler } from "utils";
 
 const fs = require("fs");
+const path = require("path");
 
 const FormData = require("form-data");
 
@@ -23,13 +24,16 @@ export default async function handler(req, res) {
   const payload = req.body.data;
   const url = `/products/product`;
 
-  const dataURL = payload?.image?.dataURL ?? "";
-  const name = payload?.image?.name;
+  if (payload?.image) {
+    const dataURL = payload?.image?.dataURL;
+    const name = payload?.image?.name;
 
-  const imageBuffer = decodeBase64Image(dataURL);
-  payload?.image && fs.writeFileSync(name, imageBuffer.data);
-
-  payload?.image && form.append("image", fs.createReadStream(name)); // add images async
+    const imageBuffer = decodeBase64Image(dataURL);
+    // fs.writeFileSync(path.join(__dirname, "_product_images", name), imageBuffer.data);
+    // form.append("image", fs.createReadStream(path.join(__dirname, "_product_images", name))); // add images async
+    form.append("image", Buffer.from(imageBuffer.data, "base64"), { filename: name });
+  }
+  // fs.unlinkSync(path.join(__dirname, "_product_images", name));
 
   form.append("name", payload?.name);
   form.append("desc", payload?.desc);
@@ -47,5 +51,5 @@ export default async function handler(req, res) {
   form.append("merchant", payload?.merchant);
   form.append("mod_by", payload?.mod_by);
 
-  await postHandler(req, res, url, form, form?.getHeaders());
+  await postHandler(req, res, url, form, form?.getHeaders(), true);
 }

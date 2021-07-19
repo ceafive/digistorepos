@@ -112,15 +112,9 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
         // image: imagesToUpload[0],
       };
 
-      // console.log(productHasVariants);
-      // console.log(payload);
-
       // return;
       const updateProductRes = await axios.post("/api/products/update-product", {
         data: payload,
-        // config: {
-        //   "Content-Type": "multipart/form-data",
-        // },
       });
       const response = await updateProductRes.data;
       // console.log(response);
@@ -357,12 +351,6 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
 
     fetchItems();
   }, []);
-
-  // React.useEffect(() => {
-  //   if (productHasVariants) {
-  //     if (fields.length === 0) append({});
-  //   } else remove();
-  // }, [productHasVariants]);
 
   React.useEffect(() => {
     if (productCategory === "addNewCategory") {

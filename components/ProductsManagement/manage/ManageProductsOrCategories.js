@@ -51,8 +51,8 @@ const ManageProductsOrCategories = () => {
 
     // clear data
     return () => {
-      dispatch(setProductHasVariants({}));
-      dispatch(setProductWithVariants(false));
+      dispatch(setProductHasVariants(false));
+      dispatch(setProductWithVariants({}));
     };
   }, [reRUn]);
 
@@ -65,16 +65,16 @@ const ManageProductsOrCategories = () => {
   }
 
   return (
-    <div>
+    <div className="mt-6">
       <h1>Products</h1>
       <hr />
       <p>
         Setup and manage your products and inventory; assign products to your outlet(s) or shop(s) customers can buy from and manage
         products/orders all in ONE ACCOUNT
       </p>
-      <div className="mt-6 pl-6">
+      <div className="mt-6">
         <button
-          className={`mx-4 font-bold ${tabSelected === "products" ? "text-green-600" : "text-blue-600"}  focus:outline-none`}
+          className={`mx-2 font-bold ${tabSelected === "products" ? "text-green-600" : "text-blue-600"}  focus:outline-none`}
           onClick={() => {
             setTabSelected("products");
           }}
@@ -83,14 +83,14 @@ const ManageProductsOrCategories = () => {
         </button>{" "}
         {"  | "}
         <button
-          className={`mx-4 font-bold ${tabSelected === "categories" ? "text-green-600" : "text-blue-600"} focus:outline-none`}
+          className={`mx-2 font-bold ${tabSelected === "categories" ? "text-green-600" : "text-blue-600"} focus:outline-none`}
           onClick={() => {
             setTabSelected("categories");
           }}
         >
           Categories
         </button>{" "}
-        {"  | "}
+        {/* {"  | "}
         <button
           className={`mx-4 font-bold ${tabSelected === "outlets" ? "text-green-600" : "text-blue-600"} focus:outline-none`}
           onClick={() => {
@@ -98,7 +98,7 @@ const ManageProductsOrCategories = () => {
           }}
         >
           Outlet Products
-        </button>
+        </button> */}
       </div>
       {tabSelected === "products" && <ManageProducts setReRUn={setReRUn} />}
       {tabSelected === "categories" && <ManageCategories setReRUn={setReRUn} />}

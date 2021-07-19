@@ -18,7 +18,7 @@ import AddCategory from "./AddCategory";
 import UploadImage from "./UploadImage";
 
 const AddProductDetails = ({ setGoToVarianceConfig }) => {
-  const { addToast } = useToasts();
+  const { addToast, removeToast } = useToasts();
   const dispatch = useDispatch();
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
   const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
@@ -26,7 +26,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
-  // console.log({ manageProductOutlets });
+  // console.log({ productHasVariants });
 
   const {
     control,
@@ -67,33 +67,10 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   // console.log(showAddCategoryModal);
   // console.log(productImages);
 
-  function b64toBlob(b64Data, contentType, sliceSize) {
-    contentType = contentType || "";
-    sliceSize = sliceSize || 512;
-
-    var byteCharacters = atob(b64Data);
-    var byteArrays = [];
-
-    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      var slice = byteCharacters.slice(offset, offset + sliceSize);
-
-      var byteNumbers = new Array(slice.length);
-      for (var i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      var byteArray = new Uint8Array(byteNumbers);
-
-      byteArrays.push(byteArray);
-    }
-
-    var blob = new Blob(byteArrays, { type: contentType });
-    return blob;
-  }
-
   const createProduct = async (values) => {
     try {
       setIsProcessing(true);
+      addToast(`Adding Product....`, { id: "adding" });
       const data = { ...values, applyTax: get(values, "applyTax") ? "YES" : "NO" };
       const {
         productName,
@@ -143,7 +120,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
         };
       }
 
-      console.log(payload);
+      // console.log(payload);
       // return;
 
       const addProductRes = await axios.post("/api/products/create-product", {
@@ -153,7 +130,10 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       const response = await addProductRes.data;
       // console.log(response);
 
-      if (Number(response?.status) === 0)
+      removeToast(`adding`);
+      if (Number(response?.status) === 0) {
+        addToast(response?.message, { appearance: `success`, autoDismiss: true });
+
         reset({
           productName: "",
           productCategory: "",
@@ -169,7 +149,9 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
           applyTax: false,
           inventoryQuantity: 0,
         });
-      setImages([]);
+
+        setImages([]);
+      }
     } catch (error) {
       let errorResponse = "";
       if (error.response) {
@@ -179,6 +161,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       } else {
         errorResponse = { error: error.message };
       }
+      addToast(errorResponse, { appearance: `error`, autoDismiss: true });
       console.log(errorResponse);
     } finally {
       setIsProcessing(false);

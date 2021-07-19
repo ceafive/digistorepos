@@ -84,19 +84,12 @@ export async function deleteHandler(req, res, url) {
   }
 }
 
-export async function postHandler(req, res, url, data, additionalHeaders = {}) {
+export async function postHandler(req, res, url, data, additionalHeaders = {}, useFirst = false) {
   try {
     // console.log({ ...getHeaders(), ...additionalHeaders });
     await cors(req, res);
 
-    // const iPayResponse = await axiosIPAY({
-    //   url,
-    //   method: "post",
-    //   data: qs.stringify(data),
-    //   headers: { ...getHeaders(), ...additionalHeaders },
-    // });
-
-    const iPayResponse = await axiosIPAY.post(url, data, {
+    const iPayResponse = await axiosIPAY.post(url, useFirst ? data : qs.stringify(data), {
       headers: { ...getHeaders(), ...additionalHeaders },
     });
 
@@ -105,7 +98,6 @@ export async function postHandler(req, res, url, data, additionalHeaders = {}) {
     const iPayData = await iPayResponse.data;
     return res.status(200).json(iPayData);
   } catch (error) {
-    // console.log(error);
     let errorResponse = "";
     if (error.response) {
       errorResponse = error.response.data;

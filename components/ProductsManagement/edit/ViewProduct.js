@@ -3,11 +3,6 @@ import React from "react";
 
 const ViewProduct = ({ product }) => {
   const router = useRouter();
-  // console.log({ manageProductOutlets });
-
-  console.log(product);
-  // console.log(showAddCategoryModal);
-  // console.log(manageProductCategories);
 
   return (
     <>
@@ -85,44 +80,48 @@ const ViewProduct = ({ product }) => {
                 <p>{product?.merchant_name}</p>
               </div>
 
-              <div className="mb-8 mr-8">
-                <label className="text-sm leading-none font-bold">Product Properties</label>
-                <div className="flex">
-                  {Object.entries(product?.product_properties ?? {})?.map((product_property) => {
-                    return (
-                      <div key={product_property[0]} className="mr-8">
-                        <p className="font-bold">{product_property[0]}</p>
-                        {product_property[1].map((property) => {
-                          return (
-                            <p key={property?.property_value}>
-                              <span>{property?.property_value}</span>
-                              {" - "}
-                              <span>GHS{property?.property_price}</span>
-                            </p>
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
+              {product?.product_properties && (
+                <div className="mb-8 mr-8">
+                  <label className="text-sm leading-none font-bold">Product Properties</label>
+                  <div className="flex">
+                    {Object.entries(product?.product_properties ?? {})?.map((product_property) => {
+                      return (
+                        <div key={product_property[0]} className="mr-8">
+                          <p className="font-bold">{product_property[0]}</p>
+                          {product_property[1].map((property) => {
+                            return (
+                              <p key={property?.property_value}>
+                                <span>{property?.property_value}</span>
+                                {" - "}
+                                <span>GHS{property?.property_price}</span>
+                              </p>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="mb-8 mr-8">
-                <label className="text-sm leading-none font-bold">Product Variants</label>
-                <div className="flex ">
-                  {product?.product_properties_variants?.map((product_property) => {
-                    return (
-                      <div key={product_property?.variantOptionId} className="mr-8">
-                        <p className="text-sm">
-                          <p className="font-bold uppercase">{Object.values(product_property?.variantOptionValue).join("/")}</p>
-                          <p>Price: GHS{product_property?.variantOptionPrice}</p>
-                          <p>Quantity: {product_property?.variantOptionQuantity}</p>
-                        </p>
-                      </div>
-                    );
-                  })}
+              {product?.product_properties_variants && (
+                <div className="mb-8 mr-8">
+                  <label className="text-sm leading-none font-bold">Product Variants</label>
+                  <div className="flex ">
+                    {product?.product_properties_variants?.map((product_property) => {
+                      return (
+                        <div key={product_property?.variantOptionId} className="mr-8">
+                          <p className="text-sm">
+                            <p className="font-bold uppercase">{Object.values(product_property?.variantOptionValue).join("/")}</p>
+                            <p>Price: GHS{product_property?.variantOptionPrice}</p>
+                            <p>Quantity: {product_property?.variantOptionQuantity}</p>
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

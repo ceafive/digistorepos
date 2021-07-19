@@ -12,8 +12,8 @@ const EditProductAndVariants = ({ product }) => {
   React.useEffect(() => {
     // clear data
     return () => {
-      dispatch(setProductHasVariants({}));
-      dispatch(setProductWithVariants(false));
+      dispatch(setProductHasVariants(false));
+      dispatch(setProductWithVariants({}));
     };
   }, []);
 

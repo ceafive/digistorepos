@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/products/create-product.js": {
+      "includeFiles": "_product_images/**"
+    }
+  }
+}

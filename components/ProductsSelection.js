@@ -19,7 +19,6 @@ const ProductsSelection = () => {
   const searchTerm = useSelector((state) => state.products.searchTerm);
   const categorySelected = useSelector((state) => state.products.categorySelected);
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
-  const outlets = useSelector((state) => state.products.outlets);
   const productsInCart = useSelector((state) => state.cart.productsInCart);
 
   const perPage = 12; // product number to display per page
@@ -43,36 +42,11 @@ const ProductsSelection = () => {
     });
   }, [productCategories?.length]);
 
-  React.useEffect(() => {
-    const pageCount = Math.ceil(products.length / perPage);
-    setPageCount(pageCount);
-  }, [products.length]);
-
-  React.useEffect(() => {
-    const KEYS_TO_FILTERS = ["product_name", "product_description"];
-    const filteredProducts = products.filter(createFilter(searchTerm ?? "", KEYS_TO_FILTERS));
-
-    setSearchProductsDisplay(filteredProducts);
-  }, [products, searchTerm]);
-
-  React.useEffect(() => {
-    if (categorySelected.product_category !== "ALL") {
-      const filtered = filter(products, (o) => o?.product_category === categorySelected.product_category);
-      setProductsDisplay(take([...filtered].slice(offset), perPage));
-    } else {
-      setProductsDisplay(take([...products].slice(offset), perPage));
-    }
-  }, [categorySelected.product_category, offset, products]);
-
   const handlePageClick = (data) => {
     let selected = data.selected;
     let offset = Math.ceil(selected * perPage);
     setOffset(offset);
   };
-
-  React.useEffect(() => {
-    checkProductQuantity(productSelected);
-  }, [productSelected]);
 
   const checkProductQuantity = (product) => {
     try {
@@ -113,6 +87,32 @@ const ProductsSelection = () => {
       console.log(error);
     }
   };
+
+  React.useEffect(() => {
+    const KEYS_TO_FILTERS = ["product_name", "product_description"];
+    const filteredProducts = products.filter(createFilter(searchTerm ?? "", KEYS_TO_FILTERS));
+
+    setSearchProductsDisplay(filteredProducts);
+  }, [products, searchTerm]);
+
+  React.useEffect(() => {
+    if (categorySelected.product_category === "ALL") {
+      const productsLength = products?.length;
+      const pageCount = Math.ceil(productsLength / perPage);
+      setPageCount(pageCount);
+      setProductsDisplay(take([...products].slice(offset), perPage));
+    } else {
+      const filtered = filter(products, (o) => o?.product_category === categorySelected.product_category);
+      const productsLength = filtered?.length;
+      const pageCount = Math.ceil(productsLength / perPage);
+      setPageCount(pageCount);
+      setProductsDisplay(take([...filtered].slice(offset), perPage));
+    }
+  }, [categorySelected.product_category, offset, products]);
+
+  React.useEffect(() => {
+    checkProductQuantity(productSelected);
+  }, [productSelected]);
 
   return (
     <>
@@ -233,7 +233,7 @@ const ProductsSelection = () => {
                 <div className="grid grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-5">
                   <button
                     className={`shadow rounded text-black font-semibold border-t-8 ${
-                      categorySelected?.product_category === "ALL" ? "border-green-600" : "border-gray-400"
+                      categorySelected?.product_category === "ALL" ? "border-green-500" : "border-gray-400"
                     } p-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
                     style={{ backgroundColor: categoryTabColors[0] }}
                     onClick={() => {
@@ -259,7 +259,7 @@ const ProductsSelection = () => {
                           key={productCatergory?.product_category_id}
                           className={`shadow rounded text-black font-semibold border-t-8 ${
                             categorySelected?.product_category === productCatergory?.product_category
-                              ? "border-green-600"
+                              ? "border-green-500"
                               : "border-gray-400"
                           } p-2 focus:outline-none transition-colors duration-150 ease-in-out h-32 w-full`}
                           style={{ backgroundColor: categoryTabColors.slice(1)[index] }}

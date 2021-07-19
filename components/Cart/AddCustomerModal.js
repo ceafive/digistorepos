@@ -25,17 +25,18 @@ const AddCustomerModal = ({ onClose, setStep }) => {
 
       const userData = {
         client_name: values?.fullName,
-        client_email: values?.email,
-        client_dob: format(new Date(values?.dob), "dd-MM"),
         client_phone: values?.phone,
         client_merchant: user?.user_merchant_id,
         mod_by: user?.login,
       };
 
+      if (values?.email) userData["client_email"] = values?.email;
+      if (values?.dob) userData["client_dob"] = format(new Date(values?.dob), "dd-MM");
+
       const response = await axios.post("/api/sell/add-customer", userData);
       const { status, message } = await response.data;
 
-      if (status === 0 || status === 91) {
+      if (Number(status) === 0 || Number(status) === 91) {
         const getCustomerRes = await axios.post("/api/sell/get-customer", { phoneNumber: userData?.client_phone });
         const { data } = await getCustomerRes.data;
         dispatch(addCustomer(data));
@@ -48,12 +49,19 @@ const AddCustomerModal = ({ onClose, setStep }) => {
         dob: "",
         phone: "",
       });
+      onClose();
     } catch (error) {
-      console.log(error);
-      setProcessing(false);
+      let errorResponse = "";
+      if (error.response) {
+        errorResponse = error.response.data;
+      } else if (error.request) {
+        errorResponse = error.request;
+      } else {
+        errorResponse = { error: error.message };
+      }
+      console.log(errorResponse);
     } finally {
       setProcessing(false);
-      onClose();
     }
   };
 

@@ -52,7 +52,7 @@ const AddCustomer = () => {
   }, [watchCustomerSearch]);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full px-4">
       <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)} maxWidth="sm">
         <AddCustomerModal onClose={() => setOpenAddCustomerModal(false)} setStep={setStep} />
       </Modal>
@@ -85,7 +85,7 @@ const AddCustomer = () => {
                 pattern="[0-9]*"
                 noValidate
                 placeholder="Search here..."
-                className="border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
+                className="appearance-none border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
               />
 
               <span
@@ -115,7 +115,7 @@ const AddCustomer = () => {
                     // console.log(customer);
                     return (
                       <div
-                        className="w-full py-2 cursor-pointer"
+                        className="w-full py-1 cursor-pointer"
                         key={customer.customer_id}
                         onClick={() => {
                           dispatch(addCustomer(customer));
@@ -126,7 +126,7 @@ const AddCustomer = () => {
                       >
                         <div className="flex items-center" key={customer.customer_id}>
                           <div className="flex items-center w-full">
-                            <div className="flex justify-between items-center w-full px-4">
+                            <div className="flex justify-between items-center w-full px-1">
                               <div className="flex items-center">
                                 <span className="font-bold">{customer.customer_name}</span>
                                 <span className="text-xs ml-2">{customer.customer_email}</span>
