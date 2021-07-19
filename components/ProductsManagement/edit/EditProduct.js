@@ -18,7 +18,7 @@ import { useToasts } from "react-toast-notifications";
 import AddCategory from "../create/AddCategory";
 import UploadImage from "../create/UploadImage";
 
-const EditProduct = ({ product, setGoToVarianceConfig }) => {
+const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, fields, append, remove, setGoToVarianceConfig }) => {
   const { addToast, removeToast } = useToasts();
   const dispatch = useDispatch();
   const router = useRouter();
@@ -31,25 +31,10 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
 
   // console.log(productWithVariants);
 
-  const [fetching, setFetching] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
-  const [images, setImages] = React.useState(product?.product_images ?? []);
 
-  const {
-    control,
-    register,
-    reset,
-    watch,
-    setValue,
-    getValues,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({
-    defaultValues: {
-      ...productWithVariants,
-    },
-  });
+  const [images, setImages] = React.useState(productWithVariants?.productImages ?? []);
 
   const {
     register: addCategoryRegister,
@@ -58,24 +43,23 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
     handleSubmit: addCategoryHandleSumbit,
   } = useForm();
 
-  const { fields, append, remove, update } = useFieldArray({
-    control,
-    name: "variants",
-  });
-
   const isInventorySet = watch("setInventoryQuantity", false);
   const productCategory = watch("productCategory", false);
+  const maxNumber = 1;
 
   const updateProduct = async (values) => {
     try {
       setIsProcessing(true);
+      addToast(`Updating Product....`, { id: "updating" });
       const data = { ...values, applyTax: get(values, "applyTax") ? "YES" : "NO" };
       const {
+        id,
         productName,
         productCategory,
         productDescription,
         sku,
         outlets,
+        old_outlet_list,
         weight,
         barcode,
         sellingPrice,
@@ -89,10 +73,10 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
       let user = sessionStorage.getItem("IPAYPOSUSER");
       user = JSON.parse(user);
 
-      const imagesToUpload = productImages?.map((productImage) => productImage?.file) ?? [];
+      const imagesToUpload = productImages?.map((productImage) => productImage) ?? [];
 
       const payload = {
-        id: product?.product_id,
+        id,
         name: productName,
         desc: productDescription,
         price: parseFloat(sellingPrice),
@@ -105,22 +89,34 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
         weight: weight ? parseFloat(weight) : "",
         barcode,
         is_price_global: "YES",
-
+        old_outlet_list,
         outlet_list: JSON.stringify(outlets),
         merchant: user["user_merchant_id"],
         mod_by: user["login"],
-        // image: imagesToUpload[0],
       };
 
+      if (typeof imagesToUpload[0] !== "string") {
+        payload["image"] = {
+          dataURL: imagesToUpload[0].data_url,
+          name: imagesToUpload[0].file.name,
+          // contentType: imagesToUpload[0].file.type,
+          // fileExtension: imagesToUpload[0].file.type.split("/")[1],
+        };
+      }
+
+      // console.log({ payload });
       // return;
+
       const updateProductRes = await axios.post("/api/products/update-product", {
         data: payload,
       });
+
       const response = await updateProductRes.data;
       // console.log(response);
 
       if (Number(response?.status) === 0) {
         addToast(response?.message, { appearance: "success", autoDismiss: true });
+
         reset({
           productName: "",
           productCategory: "",
@@ -136,8 +132,8 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           applyTax: false,
           inventoryQuantity: "",
         });
-        router.push("/products/manage");
         setImages([]);
+        router.push("/products/manage");
       } else {
         addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
       }
@@ -150,22 +146,17 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
       } else {
         errorResponse = { error: error.message };
       }
+      // addToast(errorResponse, { appearance: `error`, autoDismiss: true });
       console.log(errorResponse);
     } finally {
+      removeToast(`updating`);
       setIsProcessing(false);
     }
   };
 
   const updateProductWithVariants = (values) => {
     try {
-      dispatch(
-        setProductWithVariants({
-          ...values,
-          id: product?.product_id,
-          old_outlet_list: JSON.stringify(map(product?.product_outlets ?? [], (o) => o?.outlet_id)),
-          variantsDistribution: product?.product_properties_variants ?? [],
-        })
-      );
+      dispatch(setProductWithVariants(values));
       setGoToVarianceConfig(true);
     } catch (error) {
       console.log(error);
@@ -228,14 +219,18 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
       if (r === true) {
         addToast(`Deleting Variant...`, { appearance: "info", autoDismiss: true, id: "delete-variant" });
         const data = {
-          id: product?.product_id,
+          id: productWithVariants?.id,
           option: name,
           merchant: user?.user_merchant_id,
           mod_by: user?.login,
         };
 
+        console.log({ data });
+
         const deleteVariantRes = await axios.post("/api/products/delete-product-property", { data });
         const { status, message } = await deleteVariantRes.data;
+
+        console.log({ status, message });
 
         removeToast(`delete-variant`);
 
@@ -244,7 +239,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
           // setReRUn(new Date());
         } else {
           addToast(message, { appearance: "error", autoDismiss: true });
-          //console.log(product?.product_properties_variants); // TODO: automatically delete all product property variants
+          //console.log(productWithVariants?.product_properties_variants); // TODO: automatically delete all product property variants
         }
       }
     } catch (error) {
@@ -277,94 +272,10 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
   }, [productHasVariants]);
 
   React.useEffect(() => {
-    // console.log({ product });
-    const fetchItems = async () => {
-      try {
-        setFetching(true);
-        const filtered = filter(product?.product_outlets ?? [], (o) => Boolean(o));
-        const response = intersectionWith(manageProductOutlets, filtered, (arrVal, othVal) => {
-          return arrVal?.outlet_id === othVal?.outlet_id;
-        });
-
-        // merge props
-        const initial = {
-          productName: product?.product_name,
-          productDescription: product?.product_description,
-          sellingPrice: product?.product_price,
-          costPerItem: product?.product_unit_cost,
-          inventoryQuantity: product?.product_quantity === "-99" ? "" : product?.product_quantity,
-          productCategory: manageProductCategories.find((category) => category?.product_category === product?.product_category)
-            ?.product_category_id,
-          tag: "NORMAL",
-          sku: product?.product_sku,
-          weight: product?.product_weight,
-          barcode: product?.product_barcode,
-          is_price_global: "YES",
-          setInventoryQuantity: product?.product_quantity === "-99" ? false : true,
-          //   outlets: JSON.stringify(outlets),
-          applyTax: product?.product_taxed === "YES" ? true : false,
-          outlets: [],
-          productImages: [],
-          variants: product?.product_properties
-            ? Object.entries(product?.product_properties ?? {})?.map((product) => {
-                return {
-                  name: capitalize(product[0]),
-                  values: product[1].map((value) => value?.property_value).join(","),
-                };
-              })
-            : [],
-        };
-
-        const valuesToDispatch = {
-          applyTax: initial?.applyTax,
-          barcode: initial?.barcode,
-          costPerItem: initial?.costPerItem,
-          inventoryQuantity: initial?.inventoryQuantity,
-          is_price_global: initial?.is_price_global,
-          outlets: map(response ?? [], (o) => o?.outlet_id),
-          productCategory: initial?.productCategory,
-          productDescription: initial?.productDescription,
-          productName: initial?.productName,
-          sellingPrice: initial?.sellingPrice,
-          setInventoryQuantity: initial?.setInventoryQuantity,
-          sku: initial?.sku,
-          tag: initial?.tag,
-          variants: initial?.variants?.length === 0 ? productWithVariants?.variants ?? [] : initial?.variants ?? [],
-          weight: initial?.weight,
-        };
-
-        // console.log({ valuesToDispatch });
-
-        const hasVariants =
-          (product?.product_properties && !isEmpty(product?.product_properties)) ||
-          (productWithVariants?.variants && !isEmpty(productWithVariants?.variants));
-
-        Object.entries(valuesToDispatch).forEach(([key, value]) => setValue(key, value));
-        dispatch(setProductWithVariants(valuesToDispatch));
-        dispatch(setProductHasVariants(!!hasVariants));
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setFetching(false);
-      }
-    };
-
-    fetchItems();
-  }, []);
-
-  React.useEffect(() => {
     if (productCategory === "addNewCategory") {
       dispatch(setShowAddCategoryModal());
     }
   }, [productCategory]);
-
-  if (fetching || fetching === null) {
-    return (
-      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
-        <Spinner type="TailSpin" width={50} height={50} />
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -387,7 +298,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
       >
         Back
       </button>
-      <div className="pb-6 pt-12 px-4">
+      <div className="pb-6 pt-6 px-4">
         <h1 className="mb-2 font-bold text-2xl text-center">Setup Products</h1>
         <div className="flex w-full h-full">
           <div className="w-7/12 xl:w-8/12 ">
@@ -543,9 +454,9 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
                   <div
                     className="flex justify-between items-center cursor-pointer"
                     onClick={() => {
-                      // if (!productHasVariants) {
-                      //   if (fields.length === 0) append({});
-                      // } else remove();
+                      if (!productHasVariants) {
+                        if (fields.length === 0) append({});
+                      } else remove();
                       dispatch(setProductHasVariants());
                     }}
                   >
@@ -568,6 +479,7 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
                   <div className="mt-2">
                     <div className="flex flex-wrap justify-center items-center w-full">
                       {fields?.map(({ id, name, values }, index) => {
+                        // console.log({ name });
                         return (
                           <div key={id} className="w-full my-3">
                             <div key={id} className="flex w-full justify-between items-center">
@@ -610,7 +522,8 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
                                   <div
                                     className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
                                     onClick={async () => {
-                                      await deleteVariant(name);
+                                      if (name) await deleteVariant(name);
+                                      else remove(index);
                                     }}
                                   >
                                     <button className="justify-self-end focus:outline-none">
@@ -650,12 +563,12 @@ const EditProduct = ({ product, setGoToVarianceConfig }) => {
             <div className="bg-gray-200 p-2 pt-0 rounded">
               <h1 className="font-bold">Product Gallery</h1>
               <hr className="border-gray-500" />
-              <p className="my-2 text-sm font-bold text-gray-600">Upload product images, max of 4 images (Optional)</p>
+              <p className="my-2 text-sm font-bold text-gray-600">Upload product images, max of {maxNumber} images (Optional)</p>
               <p className="mt-2 text-sm font-bold text-red-500">Minimum Size: 800x800</p>
 
               <div className="bg-white m-2" style={{ height: 200 }}>
                 <div className="flex flex-col justify-center items-center border border-gray-200 h-full w-full">
-                  <UploadImage classes="" setValue={setValue} images={images} setImages={setImages} />
+                  <UploadImage maxNumber={maxNumber} classes="" setValue={setValue} images={images} setImages={setImages} />
                 </div>
               </div>
             </div>

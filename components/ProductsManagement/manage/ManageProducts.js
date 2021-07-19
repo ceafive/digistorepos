@@ -113,7 +113,7 @@ const ManageProducts = ({ setReRUn }) => {
         errorResponse = { error: error.message };
 
         console.log(errorResponse);
-        addToast(errorResponse, { appearance: "error", autoDismiss: true });
+        // addToast(errorResponse, { appearance: "error", autoDismiss: true });
       }
     }
   };
@@ -202,7 +202,8 @@ const ManageProducts = ({ setReRUn }) => {
       } else {
         errorResponse = { error: error.message };
       }
-      addToast(errorResponse, { appearance: "error", autoDismiss: true });
+      console.log(errorResponse);
+      // addToast(errorResponse, { appearance: "error", autoDismiss: true });
     }
   };
 

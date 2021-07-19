@@ -1,55 +1,30 @@
-import { postHandler } from "utils";
+import { decodeBase64Image, postHandler } from "utils";
 
 const fs = require("fs");
 const path = require("path");
 
 const FormData = require("form-data");
 
-function decodeBase64Image(dataString) {
-  var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
-    response = {};
-
-  if (matches?.length !== 3) {
-    return new Error("Invalid input string");
-  }
-
-  response.type = matches[1];
-  response.data = new Buffer(matches[2], "base64");
-
-  return response;
-}
-
 export default async function handler(req, res) {
   const form = new FormData();
   const payload = req.body.data;
   const url = `/products/product`;
 
-  if (payload?.image) {
-    const dataURL = payload?.image?.dataURL;
-    const name = payload?.image?.name;
+  console.log({ payload });
+  Object.entries(payload).forEach(([key, value]) => {
+    if (key === "image") {
+      const dataURL = value?.dataURL;
+      const name = value?.name;
 
-    const imageBuffer = decodeBase64Image(dataURL);
-    // fs.writeFileSync(path.join(__dirname, "_product_images", name), imageBuffer.data);
-    // form.append("image", fs.createReadStream(path.join(__dirname, "_product_images", name))); // add images async
-    form.append("image", Buffer.from(imageBuffer.data, "base64"), { filename: name });
-  }
-  // fs.unlinkSync(path.join(__dirname, "_product_images", name));
-
-  form.append("name", payload?.name);
-  form.append("desc", payload?.desc);
-  form.append("price", payload?.price);
-  form.append("cost", payload?.cost);
-  form.append("quantity", payload?.quantity);
-  form.append("category", payload?.category);
-  form.append("tag", payload?.tag);
-  form.append("taxable", payload?.taxable);
-  form.append("sku", payload?.sku);
-  form.append("weight", payload?.weight);
-  form.append("barcode", payload?.barcode);
-  form.append("is_price_global", payload?.is_price_global);
-  form.append("outlet_list", payload?.outlet_list);
-  form.append("merchant", payload?.merchant);
-  form.append("mod_by", payload?.mod_by);
+      const imageBuffer = decodeBase64Image(dataURL);
+      // fs.writeFileSync(path.join(__dirname, "_product_images", name), imageBuffer.data);
+      // form.append("image", fs.createReadStream(path.join(__dirname, "_product_images", name))); // add images async
+      // fs.unlinkSync(path.join(__dirname, "_product_images", name));
+      form.append(key, Buffer.from(imageBuffer.data, "base64"), { filename: name });
+    } else {
+      form.append(key, value);
+    }
+  });
 
   await postHandler(req, res, url, form, form?.getHeaders(), true);
 }

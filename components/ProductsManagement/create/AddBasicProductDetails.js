@@ -151,6 +151,8 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
         });
 
         setImages([]);
+      } else {
+        addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
       }
     } catch (error) {
       let errorResponse = "";
@@ -161,7 +163,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
       } else {
         errorResponse = { error: error.message };
       }
-      addToast(errorResponse, { appearance: `error`, autoDismiss: true });
+      // addToast(errorResponse, { appearance: `error`, autoDismiss: true });
       console.log(errorResponse);
     } finally {
       setIsProcessing(false);

@@ -5,22 +5,28 @@ import { useDispatch } from "react-redux";
 import EditProduct from "./EditProduct";
 import EditVariance from "./EditVariance";
 
-const EditProductAndVariants = ({ product }) => {
-  const dispatch = useDispatch();
+const EditProductAndVariants = ({ fields, append, remove, control, register, reset, watch, setValue, errors, handleSubmit, fetching }) => {
   const [goToVarianceConfig, setGoToVarianceConfig] = React.useState(false);
-
-  React.useEffect(() => {
-    // clear data
-    return () => {
-      dispatch(setProductHasVariants(false));
-      dispatch(setProductWithVariants({}));
-    };
-  }, []);
 
   return (
     <div>
-      {!goToVarianceConfig && <EditProduct product={product} setGoToVarianceConfig={setGoToVarianceConfig} />}
-      {goToVarianceConfig && <EditVariance product={product} setGoToVarianceConfig={setGoToVarianceConfig} />}
+      {!goToVarianceConfig && (
+        <EditProduct
+          fields={fields}
+          append={append}
+          remove={remove}
+          fetching={fetching}
+          register={register}
+          reset={reset}
+          watch={watch}
+          setValue={setValue}
+          errors={errors}
+          handleSubmit={handleSubmit}
+          control={control}
+          setGoToVarianceConfig={setGoToVarianceConfig}
+        />
+      )}
+      {goToVarianceConfig && <EditVariance setGoToVarianceConfig={setGoToVarianceConfig} />}
     </div>
   );
 };

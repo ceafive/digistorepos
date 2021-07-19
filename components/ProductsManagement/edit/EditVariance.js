@@ -215,23 +215,19 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           is_price_global: "YES",
           old_outlet_list,
           outlet_list: JSON.stringify(outlets),
-          // $_FILES: imagesToUpload,
           merchant: user["user_merchant_id"],
           mod_by: user["login"],
           property_list: JSON.stringify(property_list),
           variants_options: JSON.stringify(variants_options),
         };
 
-        // console.log(payload);
+        // console.log({ payload });
         // return;
         const updateProductRes = await axios.post("/api/products/update-product", {
           data: payload,
-          // config: {
-          //   "Content-Type": "multipart/form-data",
-          // },
         });
         const response = await updateProductRes.data;
-        console.log(response);
+        // console.log(response);
 
         if (Number(response?.status) === 0) {
           addToast(response?.message, { appearance: "success", autoDismiss: true });
