@@ -95,7 +95,8 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
         mod_by: user["login"],
       };
 
-      if (typeof imagesToUpload[0] !== "string") {
+      // console.log(imagesToUpload);
+      if (typeof imagesToUpload[0] !== "string" && typeof imagesToUpload[0] !== "undefined") {
         payload["image"] = {
           dataURL: imagesToUpload[0].data_url,
           name: imagesToUpload[0].file.name,
@@ -104,6 +105,7 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
         };
       }
 
+      s;
       // console.log({ payload });
       // return;
 

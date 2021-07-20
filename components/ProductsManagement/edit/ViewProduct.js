@@ -8,7 +8,7 @@ const ViewProduct = ({}) => {
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
 
-  console.log({ productWithVariants });
+  // console.log({ productWithVariants });
 
   return (
     <>
