@@ -140,7 +140,7 @@ const ViewProduct = ({}) => {
         <div className="w-5/12 xl:w-4/12 pb-6 pt-12 px-4">
           <img
             className="w-full h-full object-cover rounded shadow-sm"
-            src={productWithVariants?.productImages[0] ?? ""}
+            src={productWithVariants?.productImage}
             alt={productWithVariants?.productName}
           />
         </div>

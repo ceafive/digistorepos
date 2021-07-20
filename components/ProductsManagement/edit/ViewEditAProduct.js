@@ -48,7 +48,7 @@ const ViewEditAProduct = () => {
 
   React.useEffect(() => {
     const product = manageProductProducts.find((product) => product?.product_id === router?.query?.product_id);
-    // console.log(product);
+    console.log(product);
 
     const fetchItems = async () => {
       try {
@@ -80,6 +80,7 @@ const ViewEditAProduct = () => {
           old_outlet_list: JSON.stringify(map(product?.product_outlets ?? [], (o) => o?.outlet_id)),
           outlets: map(intersectedOutlets ?? [], (o) => o?.outlet_id),
           productImages: product?.product_images?.map((image) => `https://payments.ipaygh.com/app/webroot/img/products/${image}`) ?? [],
+          productImage: `https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}` ?? "",
           product_properties_variants: product?.product_properties_variants ?? [],
           product_properties: product?.product_properties
             ? Object.entries(product?.product_properties ?? {})?.map(([key, value]) => {
@@ -103,6 +104,7 @@ const ViewEditAProduct = () => {
           productCategory: initial?.productCategory,
           productDescription: initial?.productDescription,
           productName: initial?.productName,
+          productImage: initial?.productImage,
           productImages: initial?.productImages,
           sellingPrice: initial?.sellingPrice,
           setInventoryQuantity: initial?.setInventoryQuantity,
