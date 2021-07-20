@@ -48,7 +48,7 @@ const ViewEditAProduct = () => {
 
   React.useEffect(() => {
     const product = manageProductProducts.find((product) => product?.product_id === router?.query?.product_id);
-    console.log(product);
+    // console.log(product);
 
     const fetchItems = async () => {
       try {

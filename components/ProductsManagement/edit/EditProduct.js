@@ -105,7 +105,6 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
         };
       }
 
-      s;
       // console.log({ payload });
       // return;
 
