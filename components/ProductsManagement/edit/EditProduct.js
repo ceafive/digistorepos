@@ -93,6 +93,8 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
         outlet_list: JSON.stringify(outlets),
         merchant: user["user_merchant_id"],
         mod_by: user["login"],
+        property_list: JSON.stringify({ 0: {} }),
+        variants_options: JSON.stringify({ 0: {} }),
       };
 
       // console.log(imagesToUpload);
