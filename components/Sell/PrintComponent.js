@@ -16,8 +16,6 @@ const PrintComponent = React.forwardRef((props, ref) => {
   let user = sessionStorage.getItem("IPAYPOSUSER");
   user = JSON.parse(user);
 
-  console.log({ user });
-
   // Selectors
   const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
   const cartNote = useSelector((state) => state.cart.cartNote);
