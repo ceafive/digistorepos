@@ -52,8 +52,8 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
       variants: rest,
     };
 
-    console.log({ data });
-    return;
+    // console.log({ data });
+    // return;
 
     dispatch(increaseTotalItemsInCart(Math.round(Number(res?.quantity))));
     dispatch(addItemToCart(data));
