@@ -1,9 +1,9 @@
 import axios from "axios";
 import Cart from "components/Cart/Cart";
 import Modal from "components/Modal";
-import ProcessSale from "components/ProcessSale";
 import InventoryDetails from "components/Product/InventoryDetails";
-import ProductsSelection from "components/ProductsSelection";
+import ProcessSale from "components/Sell/ProcessSale";
+import ProductsSelection from "components/Sell/ProductsSelection";
 import Spinner from "components/Spinner";
 import { setActivePayments, setDeliveryTypes } from "features/cart/cartSlice";
 import {

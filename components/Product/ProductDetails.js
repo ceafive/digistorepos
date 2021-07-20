@@ -52,6 +52,9 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
       variants: rest,
     };
 
+    console.log({ data });
+    return;
+
     dispatch(increaseTotalItemsInCart(Math.round(Number(res?.quantity))));
     dispatch(addItemToCart(data));
     reset();
@@ -130,7 +133,7 @@ const ProductDetails = ({ onClose }) => {
 
   const allVariants = Object.entries(product.product_properties);
 
-  // console.log(product);
+  console.log(product);
   // console.log(allVariants);
   const noOfSteps = allVariants.length;
 
@@ -204,13 +207,14 @@ const ProductDetails = ({ onClose }) => {
                 return (
                   <div key={variant[0]} className="w-full h-full">
                     <div className="flex justify-center items-center w-full">
-                      {stepsClicked?.map((stepClicked) => {
+                      {stepsClicked?.map((stepClicked, index) => {
                         return (
                           <button
                             onClick={() => {
                               setStep(stepClicked?.step);
-                              const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
-                              setStepsClicked(filtered);
+                              const sliced = stepsClicked.slice(0, index);
+                              // const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
+                              setStepsClicked(sliced);
                             }}
                             key={stepClicked?.variantName}
                             className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2 mr-2 focus:outline-none"
@@ -222,7 +226,7 @@ const ProductDetails = ({ onClose }) => {
                       })}
                       <p className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2">{variant[0]}</p>
                     </div>
-                    <div key={variant?.property_value} className="grid grid-cols-4 xl:grid-cols-3 gap-2 xl:gap-5">
+                    <div key={variant?.property_value} className="grid grid-cols-3 gap-4 xl:gap-3">
                       {variant[1].map((item) => {
                         return (
                           <RenderTap
@@ -245,13 +249,14 @@ const ProductDetails = ({ onClose }) => {
             ) : (
               <div className="w-full h-full">
                 <div className="flex justify-center items-center w-full">
-                  {stepsClicked?.map((stepClicked) => {
+                  {stepsClicked?.map((stepClicked, index) => {
                     return (
                       <button
                         onClick={() => {
                           setStep(stepClicked?.step);
-                          const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
-                          setStepsClicked(filtered);
+                          const sliced = stepsClicked.slice(0, index);
+                          // const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
+                          setStepsClicked(sliced);
                         }}
                         key={stepClicked?.variantName}
                         className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2 mr-2 focus:outline-none "
@@ -264,7 +269,7 @@ const ProductDetails = ({ onClose }) => {
 
                   <p className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2">Quantity</p>
                 </div>
-                <div className="grid grid-cols-4 xl:grid-cols-3 gap-2 xl:gap-5">
+                <div className="grid grid-cols-3 gap-4 xl:gap-3">
                   <RenderQuantityTap product={product} productPrice={productPrice} formData={formData} reset={reset} />
                 </div>
               </div>

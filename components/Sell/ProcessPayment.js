@@ -1,6 +1,6 @@
 import AddCustomer from "components/Cart/AddCustomer";
 import Spinner from "components/Spinner";
-import TypeDelivery from "components/TypeDelivery";
+import TypeDelivery from "components/Sell/TypeDelivery";
 import {
   addCustomer,
   onClickToCheckout,
@@ -152,7 +152,7 @@ const ProcessPayment = ({
                   key={outlet.outlet_name}
                   className={`${
                     outletSelected?.outlet_name === outlet.outlet_name ? "ring-2" : ""
-                  } w-36 h-24 border border-gray-300 rounded shadow overflow-hidden font-bold px-2 break-words`}
+                  } w-36 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
                   onClick={() => {
                     dispatch(setOutletSelected(outlet));
                   }}

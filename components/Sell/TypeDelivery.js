@@ -4,8 +4,8 @@ import { get } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import GooglePlaces from "./GooglePlaces";
-import Spinner from "./Spinner";
+import GooglePlaces from "../GooglePlaces";
+import Spinner from "../Spinner";
 
 const Box = ({ option }) => {
   const dispatch = useDispatch();

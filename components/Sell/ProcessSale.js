@@ -12,11 +12,11 @@ import { useReactToPrint } from "react-to-print";
 import { useToasts } from "react-toast-notifications";
 import { configureVariables, onAddPayment, onRaiseOrder, onSendNotification } from "utils";
 
-import CashPaymentModal from "./Cart/CashPaymentModal";
-import CollectUserDetail from "./Cart/CollectUserDetail";
-import PrintComponent from "./Sell/PrintComponent";
-import RaiseOrderSection from "./Sell/RaiseOrderSection";
-import ReceiptsSection from "./Sell/ReceiptsSection";
+import CashPaymentModal from "../Cart/CashPaymentModal";
+import CollectUserDetail from "../Cart/CollectUserDetail";
+import PrintComponent from "./PrintComponent";
+import RaiseOrderSection from "./RaiseOrderSection";
+import ReceiptsSection from "./ReceiptsSection";
 
 const ProcessSale = () => {
   const dispatch = useDispatch();
