@@ -127,13 +127,13 @@ const ProcessPayment = ({
                 disabled={!payerAmountEntered || payerAmountEntered === "0"}
                 className={`${
                   paymentMethodSet === paymentButton.name ? "ring-2" : ""
-                }  w-32 h-28 border border-gray-300 focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`}
+                }  w-36 h-32 border border-gray-300 focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`}
                 onClick={() => {
                   dispatch(setPaymentMethodSet(paymentButton.name));
                   setOpenPhoneNumberInputModal(true);
                 }}
               >
-                <img className="w-full" src={paymentButton.img} alt={paymentButton.name} />
+                <img className="" src={paymentButton.img} alt={paymentButton.name} />
               </button>
             </div>
           );
