@@ -23,6 +23,8 @@ const ProductsSelection = () => {
 
   const perPage = 12; // product number to display per page
 
+  // var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+
   // Compnent State
   const [searchProductsDisplay, setSearchProductsDisplay] = React.useState(products);
   const [productsDisplay, setProductsDisplay] = React.useState([]);
@@ -230,7 +232,7 @@ const ProductsSelection = () => {
 
               {/* Categories */}
               <div className="flex justify-start items-center w-full mt-4">
-                <div className="grid grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-6 gap-5">
+                <div className="grid grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-5">
                   <button
                     className={`shadow rounded text-black font-semibold border-t-8 ${
                       categorySelected?.product_category === "ALL" ? "border-green-500" : "border-gray-400"
@@ -311,7 +313,7 @@ const ProductsSelection = () => {
                       <img
                         className="absolute h-full w-full object-cover"
                         src={`${imgUrlBase}${product.product_image}`}
-                        alt={product.product_image}
+                        alt={product.product_name}
                       />
                     </div>
                     <div className="p-2 text-sm">

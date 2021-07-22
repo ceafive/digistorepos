@@ -190,7 +190,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
 
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
-        const imagesToUpload = productImages?.map((productImage) => productImage?.file) ?? [];
+        const imagesToUpload = productImages?.map((productImage) => productImage) ?? [];
 
         const formData = new FormData();
         formData.append("image", imagesToUpload[0]);
@@ -218,6 +218,15 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           // property_list: property_list,
           // variants_options: variants_options,
         };
+
+        if (typeof imagesToUpload[0] !== "string" && typeof imagesToUpload[0] !== "undefined") {
+          payload["image"] = {
+            dataURL: imagesToUpload[0].data_url,
+            name: imagesToUpload[0].file.name,
+            // contentType: imagesToUpload[0].file.type,
+            // fileExtension: imagesToUpload[0].file.type.split("/")[1],
+          };
+        }
 
         // console.log({ payload });
         // return;
