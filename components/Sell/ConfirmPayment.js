@@ -18,17 +18,10 @@ const ConfirmPayment = ({
   setConfirmButtonText,
 }) => {
   const dispatch = useDispatch();
-  const verifyTransactionResponse = useSelector((state) => state.cart.verifyTransactionResponse);
   const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
 
-  const [interval, setInterval] = React.useState(() => {});
-  const [isAfter, setIsAfter] = React.useState(false);
-  const [confirmPaymentClicked, setConfirmPaymentClicked] = React.useState(false);
   const [ticking, setTicking] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [throttledFn, setThrottledFn] = React.useState(() => {});
-
-  // console.log(fetching);
 
   const sleep = (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -73,7 +66,6 @@ const ConfirmPayment = ({
         setLoading(false);
       } catch (error) {
         console.log(error.response);
-      } finally {
       }
     };
 

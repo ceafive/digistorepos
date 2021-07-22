@@ -222,6 +222,8 @@ const ManageProducts = ({ setReRUn }) => {
           mod_by: user?.login,
         };
 
+        console.log({ data });
+
         const deleteVariantRes = await axios.post("/api/products/delete-product-variant", { data });
         const { status, message } = await deleteVariantRes.data;
 
@@ -323,6 +325,8 @@ const ManageProducts = ({ setReRUn }) => {
                     render(rowData) {
                       let header = "";
                       let subheader = "";
+
+                      // console.log({ rowData });
 
                       const variantdata = Object.entries(rowData?.variantOptionValue);
                       variantdata.forEach(([key, value], index) => {

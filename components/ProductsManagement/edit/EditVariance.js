@@ -1,6 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import { capitalize, filter, intersectionWith, isEmpty, isEqual, join, map, omit, split, trim } from "lodash";
+import { capitalize, filter, intersectionWith, isEmpty, isEqual, join, map, omit, sortBy, split, trim } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -10,25 +10,18 @@ import { v4 as uuidv4 } from "uuid";
 
 const EditProductVariance = ({ setGoToVarianceConfig }) => {
   const router = useRouter();
-  const { addToast } = useToasts();
+  const { addToast, removeToast } = useToasts();
   const {
-    control,
     register,
-    reset,
-    watch,
+
     formState: { errors },
     handleSubmit,
   } = useForm({});
 
   const {
-    control: submitFormControl,
-    register: submitFormRegister,
-    reset: submitFormReset,
-    watch: submitFormWatch,
     formState: { errors: submitFormErrors },
     setError: submitFormSetError,
     clearErrors: submitFormClearErrors,
-    handleSubmit: submitFormHandleSubmit,
   } = useForm({});
 
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
@@ -46,6 +39,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
         const newValue = { ...objectValue };
         delete newValue?.Quantity;
         delete newValue?.Price;
+        delete newValue?.variantOptionId;
 
         return newValue;
       });
@@ -69,9 +63,10 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
       return {
         ...acc,
         [uuidv4()]: {
-          ...variantDistribution?.variantOptionValue,
+          variantOptionId: variantDistribution?.variantOptionId,
           Quantity: variantDistribution?.variantOptionQuantity,
           Price: variantDistribution?.variantOptionPrice,
+          ...variantDistribution?.variantOptionValue,
         },
       };
     }, {});
@@ -152,6 +147,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           const newVal = { ...val };
           delete newVal?.Price;
           delete newVal?.Quantity;
+          delete newVal?.variantOptionId;
 
           const values = Object.entries(newVal);
 
@@ -219,6 +215,8 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           mod_by: user["login"],
           property_list: JSON.stringify(property_list),
           variants_options: JSON.stringify(variants_options),
+          // property_list: property_list,
+          // variants_options: variants_options,
         };
 
         // console.log({ payload });
@@ -253,7 +251,50 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
     }
   };
 
-  // console.log(submitFormErrors);
+  const deleteVariant = async (variantOptionId, formattedVarianceKey) => {
+    try {
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      const r = window.confirm("Are you sure you want to delete variant option?");
+      if (r === true) {
+        addToast(`Deleting Variant...`, { appearance: "info", autoDismiss: true, id: "delete-variant" });
+        const data = {
+          variant: variantOptionId,
+          product: productWithVariants?.id,
+          merchant: user?.user_merchant_id,
+          mod_by: user?.login,
+        };
+
+        // console.log({ data });
+
+        const deleteVariantRes = await axios.post("/api/products/delete-product-variant", { data });
+        const { status, message } = await deleteVariantRes.data;
+
+        // console.log({ status, message });
+
+        removeToast(`delete-variant`);
+
+        if (Number(status === 0)) {
+          addToast(message, { appearance: "success", autoDismiss: true });
+          const result = omit(varianceDistribution, [formattedVarianceKey]);
+          setVarianceDistribution(result);
+        } else {
+          addToast(message, { appearance: "error", autoDismiss: true });
+        }
+      }
+    } catch (error) {
+      let errorResponse = "";
+      if (error.response) {
+        errorResponse = error.response.data;
+      } else if (error.request) {
+        errorResponse = error.request;
+      } else {
+        errorResponse = { error: error.message };
+        console.log(errorResponse);
+      }
+    }
+  };
 
   return (
     <div className="px-4 pb-6 pt-6">
@@ -269,7 +310,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           {/* AddVariants Section */}
           <div className="overflow-scroll" style={{ height: 600 }}>
             <div className={`grid grid-cols-${productWithVariants?.variants.length + 1} gap-3 my-2`}>
-              {productWithVariants?.variants?.map((variant, index) => {
+              {sortBy(productWithVariants?.variants, (o) => o?.name)?.map((variant, index) => {
                 const variantValues = map(
                   filter(map(split(variant?.values, ","), trim), (o) => Boolean(o)),
                   capitalize
@@ -298,12 +339,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
               })}
 
               <div className="mt-8">
-                <button
-                  className="text-white font-bold px-6 py-2 bg-green-500 rounded shadow mx-4"
-                  onClick={() => {
-                    handleSubmit(addVariantRow)();
-                  }}
-                >
+                <button className="text-white font-bold px-6 py-2 bg-green-500 rounded shadow mx-4" onClick={handleSubmit(addVariantRow)}>
                   Add
                 </button>
               </div>
@@ -313,7 +349,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
             {allVarianceDistribution?.length > 0 && (
               <div className="mt-4">
                 <div className={`grid grid-cols-${productWithVariants?.variants?.length + 3} gap-3`}>
-                  {productWithVariants?.variants?.map((variant) => {
+                  {sortBy(productWithVariants?.variants, (o) => o?.name)?.map((variant) => {
                     const capitalizeName = capitalize(variant?.name);
                     return (
                       <div key={capitalizeName} className="self-center">
@@ -324,10 +360,10 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                     );
                   })}
                   <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
+                    <h1 className="font-bold text-blue-700 self-center">Price</h1>
                   </div>
                   <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Price</h1>
+                    <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
                   </div>
                   <div className="self-center">
                     <h1 className="font-bold text-blue-700 self-center">Actions</h1>
@@ -337,47 +373,76 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                 <div className="my-2">
                   {allVarianceDistribution.map((variance) => {
                     const formattedVarianceKey = variance[0];
-                    const formattedVarianceEntries = Object.entries(variance[1]);
                     const errorObject = submitFormErrors[formattedVarianceKey];
+
+                    const oldValue = { ...variance[1] };
+                    const newValue = { ...variance[1] };
+                    // console.log({ oldValue });
+
+                    const variantOptionId = oldValue?.variantOptionId;
+                    variantOptionId && delete newValue["variantOptionId"];
+
+                    const sortedNewValues = {};
+                    Object.keys(newValue)
+                      .sort()
+                      .forEach(function (v, i) {
+                        sortedNewValues[v] = newValue[v];
+                      });
+
+                    const formattedVarianceEntries = Object.entries(sortedNewValues);
+
+                    const removeKeys = formattedVarianceEntries.filter(([key]) => {
+                      if (key === "Quantity" || key === "Price") return false;
+                      else return true;
+                    });
+
+                    const removePriceAndQuantty = formattedVarianceEntries.filter(([key]) => {
+                      if (key === "Quantity" || key === "Price") return true;
+                      else return false;
+                    });
 
                     return (
                       <div key={variance[0]} className={`grid grid-cols-${formattedVarianceEntries.length + 1} gap-3 my-2`}>
-                        {formattedVarianceEntries.map(([key, value]) => {
-                          if (key === "Quantity" || key === "Price") {
-                            return (
-                              <div key={key} className="self-center ">
-                                <input
-                                  type="number"
-                                  value={varianceDistribution[variance[0]][key] ?? ""}
-                                  onChange={(e) => {
-                                    e.persist();
-                                    setVarianceDistribution((values) => ({
-                                      ...values,
-                                      [variance[0]]: { ...values[variance[0]], [key]: e.target.value },
-                                    }));
-                                  }}
-                                  placeholder="10"
-                                  className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
-                                />
-                                {errorObject?.errorID === formattedVarianceKey && key === errorObject?.errorKey && (
-                                  <p className="text-xs text-red-500">{errorObject?.message}</p>
-                                )}
-                              </div>
-                            );
-                          } else {
-                            return (
-                              <h1 key={key} className="font-bold self-center  bg-gray-300 rounded pl-2 py-2">
-                                {value}
-                              </h1>
-                            );
-                          }
+                        {removeKeys.map(([key, value]) => {
+                          return (
+                            <h1 key={key} className="font-bold self-center  bg-gray-300 rounded pl-2 py-2">
+                              {value}
+                            </h1>
+                          );
+                        })}
+
+                        {removePriceAndQuantty.map(([key, value]) => {
+                          return (
+                            <div key={key} className="self-center ">
+                              <input
+                                type="number"
+                                value={varianceDistribution[variance[0]][key] ?? ""}
+                                onChange={(e) => {
+                                  e.persist();
+                                  setVarianceDistribution((values) => ({
+                                    ...values,
+                                    [variance[0]]: { ...values[variance[0]], [key]: e.target.value },
+                                  }));
+                                }}
+                                placeholder="10"
+                                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                              />
+                              {errorObject?.errorID === formattedVarianceKey && key === errorObject?.errorKey && (
+                                <p className="text-xs text-red-500">{errorObject?.message}</p>
+                              )}
+                            </div>
+                          );
                         })}
 
                         <button
                           className="w-1/2 bg-red-500 rounded py-0 font-bold focus:outline-none"
-                          onClick={() => {
-                            const result = omit(varianceDistribution, [formattedVarianceKey]);
-                            setVarianceDistribution(result);
+                          onClick={async () => {
+                            if (variantOptionId) {
+                              await deleteVariant(variantOptionId, formattedVarianceKey);
+                            } else {
+                              const result = omit(varianceDistribution, [formattedVarianceKey]);
+                              setVarianceDistribution(result);
+                            }
                           }}
                         >
                           <i className="fas fa-trash-alt text-white"></i>

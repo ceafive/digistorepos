@@ -133,7 +133,7 @@ const ProductDetails = ({ onClose }) => {
 
   const allVariants = Object.entries(product.product_properties);
 
-  console.log(product);
+  // console.log(product);
   // console.log(allVariants);
   const noOfSteps = allVariants.length;
 

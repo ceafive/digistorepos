@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   openSidebarSecondpane: false,
-  secondPaneOpenPathname: "home",
+  secondPaneOpenPathname: "sell",
 };
 
 const appSlice = createSlice({

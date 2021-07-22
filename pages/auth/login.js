@@ -40,7 +40,7 @@ export default function Login() {
           message: error,
         });
       }
-      if (success) router.push("/home/main");
+      if (success) router.push("/sell/sell");
     } catch (error) {
       setLoginError({
         status: false,

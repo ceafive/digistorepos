@@ -213,7 +213,7 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
     }
   };
 
-  const deleteVariant = async (name) => {
+  const deleteVariant = async (name, index) => {
     try {
       let user = sessionStorage.getItem("IPAYPOSUSER");
       user = JSON.parse(user);
@@ -228,18 +228,18 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
           mod_by: user?.login,
         };
 
-        console.log({ data });
+        // console.log({ data });
 
         const deleteVariantRes = await axios.post("/api/products/delete-product-property", { data });
         const { status, message } = await deleteVariantRes.data;
 
-        console.log({ status, message });
+        // console.log({ status, message });
 
         removeToast(`delete-variant`);
 
         if (Number(status === 0)) {
           addToast(message, { appearance: "success", autoDismiss: true });
-          // setReRUn(new Date());
+          remove(index);
         } else {
           addToast(message, { appearance: "error", autoDismiss: true });
           //console.log(productWithVariants?.product_properties_variants); // TODO: automatically delete all product property variants
@@ -525,7 +525,7 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
                                   <div
                                     className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
                                     onClick={async () => {
-                                      if (name) await deleteVariant(name);
+                                      if (name) await deleteVariant(name, index);
                                       else remove(index);
                                     }}
                                   >

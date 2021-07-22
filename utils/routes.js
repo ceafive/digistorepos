@@ -1,20 +1,20 @@
 const sidebarRoutes = [
-  {
-    id: 1,
-    name: "Home",
-    slug: "home",
-    path: "/home",
-    icon: "home",
-    iconColor: "indigo-500",
-    childLinks: [
-      {
-        id: 1,
-        name: "Main",
-        path: "/home/main",
-        slug: "home/main",
-      },
-    ],
-  },
+  // {
+  //   id: 1,
+  //   name: "Home",
+  //   slug: "home",
+  //   path: "/home",
+  //   icon: "home",
+  //   iconColor: "indigo-500",
+  //   childLinks: [
+  //     {
+  //       id: 1,
+  //       name: "Main",
+  //       path: "/home/main",
+  //       slug: "home/main",
+  //     },
+  //   ],
+  // },
   {
     id: 2,
     name: "Sell",
