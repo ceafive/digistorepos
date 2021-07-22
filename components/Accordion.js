@@ -1,6 +1,6 @@
 import { changeItemPropsInCart, removeItemFromCart, setItemDiscount } from "features/cart/cartSlice";
 import { openInventoryModal, setProductToView } from "features/products/productsSlice";
-import { capitalize } from "lodash";
+import { capitalize, find, isEqual } from "lodash";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,14 +18,31 @@ const Accordion = ({ product, index }) => {
   } = useForm();
   const dispatch = useDispatch();
   const productsInCart = useSelector((state) => state.cart.productsInCart);
+  // console.log(productsInCart);
 
   const [isActive, setIsActive] = useState(false);
 
   const checkProductQuantity = (product, value) => {
     try {
-      // console.log(productsInCart);
+      let stock_level;
+      let variantQuantity = null;
+      const foundProduct = find(productsInCart, (o) => o?.uniqueId === product?.uniqueId);
+
+      if (product?.product_properties_variants && product?.product_properties_variants?.length > 0) {
+        const foundVariant = find(product?.product_properties_variants, (o) => {
+          return isEqual(foundProduct?.variants, o?.variantOptionValue);
+        });
+
+        if (foundVariant) variantQuantity = foundVariant?.variantOptionQuantity;
+        else variantQuantity = null;
+      }
+
       let status = true;
-      const stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
+      if (variantQuantity) {
+        stock_level = variantQuantity === "-99" ? 10000000000000 : parseInt(variantQuantity);
+      } else {
+        stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
+      }
       const productSoldOut = stock_level <= 0;
 
       if (productSoldOut) {

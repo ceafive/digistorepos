@@ -1,11 +1,11 @@
 import Carousel from "components/Carousel";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
-import { lowerCase, reduce, snakeCase, upperCase } from "lodash";
+import { capitalize, find, isEqual, lowerCase, reduce, snakeCase, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
-const RenderTap = ({ item, propertyName, setProductPrice, step, setStep, setFormData, variantName, setStepsClicked }) => {
+const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantName, setStepsClicked }) => {
   return (
     <button
       className="font-bold border border-gray-200 focus:outline-none w-32 h-32"
@@ -13,7 +13,7 @@ const RenderTap = ({ item, propertyName, setProductPrice, step, setStep, setForm
         setStepsClicked((data) => [...data, { step, variantName }]);
         // console.log(variantName);
         // console.log(step);
-        setFormData((data) => ({ ...data, [propertyName]: item.property_value }));
+        setFormData((data) => ({ ...data, [variantName]: item.property_value }));
         if (item?.property_price_set === "YES") {
           setProductPrice(Number(parseFloat(item?.property_price).toFixed(2)));
         }
@@ -25,7 +25,7 @@ const RenderTap = ({ item, propertyName, setProductPrice, step, setStep, setForm
   );
 };
 
-const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
+const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuantity }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   const productsInCart = useSelector((state) => state.cart.productsInCart);
@@ -36,26 +36,28 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
     const res = reduce(
       values,
       function (result, value, key) {
-        return { ...result, [snakeCase(lowerCase(key))]: value };
+        return { ...result, [capitalize(key)]: value };
       },
       {}
     );
 
-    const { quantity, ...rest } = res;
+    console.log({ res });
+
+    const { Quantity, ...rest } = res;
     const data = {
       ...product,
       id: product.product_id,
       title: product.product_name,
       price: Number(parseFloat(productPrice).toFixed(2)),
       imgURL: product.product_image,
-      quantity: Number(quantity),
+      quantity: Number(Quantity),
       variants: rest,
     };
 
     // console.log({ data });
     // return;
 
-    dispatch(increaseTotalItemsInCart(Math.round(Number(res?.quantity))));
+    dispatch(increaseTotalItemsInCart(Math.round(Number(res?.Quantity))));
     dispatch(addItemToCart(data));
     reset();
   };
@@ -63,7 +65,12 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
   const checkProductQuantity = (product, quantity) => {
     try {
       // console.log(product);
-      const stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
+      let stock_level;
+      if (variantQuantity) {
+        stock_level = variantQuantity === "-99" ? 10000000000000 : parseInt(variantQuantity);
+      } else {
+        stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
+      }
       const productSoldOut = stock_level <= 0;
 
       if (productSoldOut) {
@@ -79,10 +86,13 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
         // console.log(isQuantitySelectedUnAvailable);
 
         if (isQuantitySelectedUnAvailable) {
-          return addToast(`Quantity is not available, ${stock_level} item(s) already added to cart. Available quantity is ${stock_level}`, {
-            appearance: "warning",
-            autoDismiss: true,
-          });
+          return addToast(
+            `Quantity is not available, ${foundProduct?.quantity} item(s) already added to cart. Total available quantity is ${stock_level}`,
+            {
+              appearance: "warning",
+              autoDismiss: true,
+            }
+          );
         }
         submitFormData({ ...formData, QUANTITY: quantity });
       } else {
@@ -124,7 +134,9 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset }) => {
 };
 
 const ProductDetails = ({ onClose }) => {
+  const { addToast } = useToasts();
   const product = useSelector((state) => state.products.productToView);
+  // console.log(product);
   // const variants = Object.values(product.product_properties);
   // const groupVariants = variants.reduce((acc, variant) => {
   //   const found = acc[variant.property_id] || [];
@@ -133,7 +145,6 @@ const ProductDetails = ({ onClose }) => {
 
   const allVariants = Object.entries(product.product_properties);
 
-  // console.log(product);
   // console.log(allVariants);
   const noOfSteps = allVariants.length;
 
@@ -142,6 +153,7 @@ const ProductDetails = ({ onClose }) => {
   const [formData, setFormData] = React.useState({});
   const [step, setStep] = React.useState(0);
   const [currentStep, setCurrentStep] = React.useState([allVariants[step]]);
+  const [variantQuantity, setVariantQuantity] = React.useState(0);
 
   const [stepsClicked, setStepsClicked] = React.useState([]);
 
@@ -154,6 +166,7 @@ const ProductDetails = ({ onClose }) => {
     setFormData({});
     setProductPrice(0);
     setCurrentStep([allVariants[0]]);
+    setStepsClicked([]);
   };
 
   React.useEffect(() => {
@@ -162,12 +175,32 @@ const ProductDetails = ({ onClose }) => {
     } else {
       setCurrentStep(null);
     }
+
+    if (step === noOfSteps) {
+      if (product?.product_properties_variants && product?.product_properties_variants?.length > 0) {
+        const found = find(product?.product_properties_variants, (o) => {
+          return isEqual(formData, o?.variantOptionValue);
+        });
+
+        if (!found) {
+          setStep((step) => step - 1);
+          setStepsClicked((data) => data.slice(0, -1));
+          addToast(`Product variant combinations is not possible, please select a different combination`, {
+            appearance: `warning`,
+            autoDismiss: true,
+          });
+        } else {
+          setProductPrice(Number(parseFloat(found?.variantOptionPrice).toFixed(2)));
+          setVariantQuantity(found?.variantOptionQuantity);
+        }
+      }
+    }
   }, [noOfSteps, step]);
 
   // return null;
 
   return (
-    <div className="flex w-full rounded-lg" style={{ maxHeight: 500 }}>
+    <div className="flex w-full rounded-lg" style={{ maxHeight: 700 }}>
       <div className="w-5/12">
         <Carousel
           showArrows={false}
@@ -175,19 +208,29 @@ const ProductDetails = ({ onClose }) => {
           showThumbs={false}
           className="flex flex-col justify-center items-center w-full h-full"
         >
-          {product?.product_images?.map((product_image) => {
-            return (
-              <div key={product_image} className="">
-                <img
-                  className="h-full w-full object-cover"
-                  key={product_image}
-                  src={`https://payments.ipaygh.com/app/webroot/img/products/${product_image}`}
-                  alt={product_image}
-                  // style={{ maxHeight: 400 }}
-                />
-              </div>
-            );
-          })}
+          {product?.product_images && product?.product_images?.length > 0 ? (
+            product?.product_images?.map((product_image) => {
+              return (
+                <div key={product_image} className="">
+                  <img
+                    className="h-full w-full object-cover"
+                    key={product_image}
+                    src={`https://payments.ipaygh.com/app/webroot/img/products/${product_image}`}
+                    alt={product_image}
+                    // style={{ minHeight: "100%" }}
+                  />
+                </div>
+              );
+            })
+          ) : (
+            <div className="">
+              <img
+                className="h-full w-full object-cover"
+                src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
+                alt={product?.product_image}
+              />
+            </div>
+          )}
         </Carousel>
       </div>
 
@@ -198,47 +241,50 @@ const ProductDetails = ({ onClose }) => {
               <span className="text-xl mr-4">{upperCase(product.product_name)}</span>
             </p>
             <p className="text-sm">Product ID: {product.product_id}</p>
+            <div className="mt-4">
+              {step === noOfSteps && variantQuantity && <span className="font-bold text-sm mr-2">Variant Quantity: {variantQuantity}</span>}
+              {step === noOfSteps && productPrice && <span className="font-bold text-sm">Variant Price: GHS{productPrice}</span>}
+            </div>
           </div>
 
           <hr className="my-2" />
           <div className="w-full">
             {currentStep ? (
-              currentStep?.map((variant) => {
+              currentStep?.map(([key, value], index) => {
                 return (
-                  <div key={variant[0]} className="w-full h-full">
+                  <div key={key + index} className="w-full h-full">
                     <div className="flex justify-center items-center w-full">
                       {stepsClicked?.map((stepClicked, index) => {
                         return (
                           <button
+                            key={stepClicked?.variantName}
+                            className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2 mr-2 focus:outline-none"
                             onClick={() => {
                               setStep(stepClicked?.step);
                               const sliced = stepsClicked.slice(0, index);
                               // const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
                               setStepsClicked(sliced);
                             }}
-                            key={stepClicked?.variantName}
-                            className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2 mr-2 focus:outline-none"
                           >
                             <span className="border-b-2 border-blue-500">{stepClicked?.variantName}</span>
                             <span> {">"}</span>
                           </button>
                         );
                       })}
-                      <p className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2">{variant[0]}</p>
+                      <p className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2">{key}</p>
                     </div>
-                    <div key={variant?.property_value} className="grid grid-cols-3 gap-4 xl:gap-3">
-                      {variant[1].map((item) => {
+                    <div className="grid grid-cols-3 gap-4 xl:gap-3">
+                      {value.map((item) => {
                         return (
                           <RenderTap
                             key={item?.property_value}
-                            propertyName={variant[0]}
                             item={item}
                             setProductPrice={setProductPrice}
                             setStep={setStep}
                             step={step}
                             setFormData={setFormData}
                             setStepsClicked={setStepsClicked}
-                            variantName={variant[0]}
+                            variantName={capitalize(key)}
                           />
                         );
                       })}
@@ -270,7 +316,13 @@ const ProductDetails = ({ onClose }) => {
                   <p className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2">Quantity</p>
                 </div>
                 <div className="grid grid-cols-3 gap-4 xl:gap-3">
-                  <RenderQuantityTap product={product} productPrice={productPrice} formData={formData} reset={reset} />
+                  <RenderQuantityTap
+                    product={product}
+                    productPrice={productPrice}
+                    formData={formData}
+                    reset={reset}
+                    variantQuantity={variantQuantity}
+                  />
                 </div>
               </div>
             )}
