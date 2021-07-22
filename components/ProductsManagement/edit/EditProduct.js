@@ -8,7 +8,7 @@ import {
   setProductWithVariants,
   setShowAddCategoryModal,
 } from "features/manageproducts/manageprodcutsSlice";
-import { capitalize, filter, get, intersectionWith, isEmpty, isEqual, map } from "lodash";
+import { capitalize, filter, find, get, has, intersectionWith, isEmpty, isEqual, map } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -18,7 +18,19 @@ import { useToasts } from "react-toast-notifications";
 import AddCategory from "../create/AddCategory";
 import UploadImage from "../create/UploadImage";
 
-const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, fields, append, remove, setGoToVarianceConfig }) => {
+const EditProduct = ({
+  register,
+  reset,
+  watch,
+  setValue,
+  errors,
+  clearErrors,
+  handleSubmit,
+  fields,
+  append,
+  remove,
+  setGoToVarianceConfig,
+}) => {
   const { addToast, removeToast } = useToasts();
   const dispatch = useDispatch();
   const router = useRouter();
@@ -45,6 +57,7 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
 
   const isInventorySet = watch("setInventoryQuantity", false);
   const productCategory = watch("productCategory", false);
+  const allVariants = watch("variants", false);
   const maxNumber = 1;
 
   const updateProduct = async (values) => {
@@ -490,7 +503,14 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
                                 <label className="text-xs leading-none font-bold">Variant Name</label>
                                 <input
                                   {...register(`variants[${index}].name`, {
-                                    validate: (value) => (productHasVariants ? Boolean(value) : true) || "Variant name must be entered",
+                                    validate: {
+                                      notDuplicate: (value) => {
+                                        const foundItems = filter(allVariants, (o) => capitalize(o?.name) === capitalize(value));
+                                        // console.log(value, foundItems?.length, allVariants);
+                                        return foundItems?.length < 2 || `Duplicate variant entered`;
+                                      },
+                                      notEmpty: (value) => (productHasVariants ? Boolean(value) : true) || "Variant name must be entered",
+                                    },
                                   })}
                                   defaultValue={name}
                                   type="text"
@@ -526,7 +546,10 @@ const EditProduct = ({ register, reset, watch, setValue, errors, handleSubmit, f
                                     className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
                                     onClick={async () => {
                                       if (name) await deleteVariant(name, index);
-                                      else remove(index);
+                                      else {
+                                        clearErrors(`variants[${index}]`);
+                                        remove(index);
+                                      }
                                     }}
                                   >
                                     <button className="justify-self-end focus:outline-none">

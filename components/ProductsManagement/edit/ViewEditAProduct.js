@@ -32,6 +32,7 @@ const ViewEditAProduct = () => {
     reset,
     watch,
     setValue,
+    clearErrors,
     formState: { errors },
     handleSubmit,
   } = useForm({
@@ -157,6 +158,7 @@ const ViewEditAProduct = () => {
           setValue={setValue}
           errors={errors}
           handleSubmit={handleSubmit}
+          clearErrors={clearErrors}
           fields={fields}
           append={append}
           remove={remove}

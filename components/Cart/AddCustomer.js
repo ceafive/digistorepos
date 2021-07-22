@@ -82,8 +82,6 @@ const AddCustomer = () => {
               <input
                 {...register("searchCustomer")}
                 type="number"
-                pattern="[0-9]*"
-                noValidate
                 placeholder="Search here..."
                 className="appearance-none border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
               />

@@ -5,7 +5,20 @@ import { useDispatch } from "react-redux";
 import EditProduct from "./EditProduct";
 import EditVariance from "./EditVariance";
 
-const EditProductAndVariants = ({ fields, append, remove, control, register, reset, watch, setValue, errors, handleSubmit, fetching }) => {
+const EditProductAndVariants = ({
+  fields,
+  append,
+  remove,
+  control,
+  register,
+  reset,
+  watch,
+  setValue,
+  clearErrors,
+  errors,
+  handleSubmit,
+  fetching,
+}) => {
   const [goToVarianceConfig, setGoToVarianceConfig] = React.useState(false);
 
   return (
@@ -22,6 +35,7 @@ const EditProductAndVariants = ({ fields, append, remove, control, register, res
           setValue={setValue}
           errors={errors}
           handleSubmit={handleSubmit}
+          clearErrors={clearErrors}
           control={control}
           setGoToVarianceConfig={setGoToVarianceConfig}
         />

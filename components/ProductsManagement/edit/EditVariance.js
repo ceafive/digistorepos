@@ -192,9 +192,6 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
         user = JSON.parse(user);
         const imagesToUpload = productImages?.map((productImage) => productImage) ?? [];
 
-        const formData = new FormData();
-        formData.append("image", imagesToUpload[0]);
-
         const payload = {
           id,
           name: productName,
@@ -304,6 +301,8 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
       }
     }
   };
+
+  // console.log(productWithVariants);
 
   return (
     <div className="px-4 pb-6 pt-6">
