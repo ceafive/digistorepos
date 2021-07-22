@@ -41,8 +41,6 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
       {}
     );
 
-    console.log({ res });
-
     const { Quantity, ...rest } = res;
     const data = {
       ...product,
