@@ -134,7 +134,7 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
 };
 
 const ProductDetails = ({ onClose }) => {
-  const { addToast } = useToasts();
+  const { addToast, removeAllToasts } = useToasts();
   const product = useSelector((state) => state.products.productToView);
   // console.log(product);
   // const variants = Object.values(product.product_properties);
@@ -183,13 +183,41 @@ const ProductDetails = ({ onClose }) => {
         });
 
         if (!found) {
+          const combinations = product?.product_properties_variants?.map((product_property) => {
+            return `Variant Combination: ${Object.values(product_property?.variantOptionValue).join("/")} Price: GHS${
+              product_property?.variantOptionPrice
+            }  Quantity: ${product_property?.variantOptionQuantity}`;
+          });
+
           setStep((step) => step - 1);
           setStepsClicked((data) => data.slice(0, -1));
-          addToast(`Product variant combinations is not possible, please select a different combination`, {
-            appearance: `warning`,
-            autoDismiss: true,
-          });
+          addToast(
+            // `Product variant combination is not possible.\n\n Available combinations ${combinations.map(
+            //   (combination, index) => `${index}. ${combination}\n`
+            // )}`
+            <div className="w-full">
+              <p className="text-center text-red-500">Product variant combination is not possible</p>
+
+              <div className="text-black  mt-2 text-center">
+                <p className="font-bold">Available combinations</p>
+                {combinations.map((combination, index) => {
+                  return (
+                    <p key={index} className="my-1">
+                      <span>{index}.</span> <span>{combination}</span>
+                    </p>
+                  );
+                })}
+              </div>
+            </div>,
+
+            {
+              appearance: `info`,
+              autoDismiss: true,
+              autoDismissTimeout: 50000,
+            }
+          );
         } else {
+          removeAllToasts();
           setProductPrice(Number(parseFloat(found?.variantOptionPrice).toFixed(2)));
           setVariantQuantity(found?.variantOptionQuantity);
         }

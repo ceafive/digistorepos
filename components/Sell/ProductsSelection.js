@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createFilter } from "react-search-input";
 import { useToasts } from "react-toast-notifications";
 
-const categoryColors = ["#eefefd", "#aeffff", "#a0b5c3", "#49a397", "#59b1bf", "#b1ccfe"];
+const categoryColors = ["#aeffff", "#49a397", "#59b1bf"];
 
 const ProductsSelection = () => {
   const dispatch = useDispatch();
@@ -21,9 +21,11 @@ const ProductsSelection = () => {
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
   const productsInCart = useSelector((state) => state.cart.productsInCart);
 
-  const perPage = 12; // product number to display per page
+  var width = window.innerWidth > 0 ? window.innerWidth : screen.width;
+  let perPage = 12; // product number to display per page
+  perPage = width >= 1536 ? 15 : width < 1280 ? 9 : 12;
 
-  // var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+  // console.log(width);
 
   // Compnent State
   const [searchProductsDisplay, setSearchProductsDisplay] = React.useState(products);
@@ -177,7 +179,7 @@ const ProductsSelection = () => {
                               title: product.product_name,
                               price: Number(parseFloat(product.product_price).toFixed(2)),
                               imgURL: product.product_image,
-                              variants: { type: "normal" },
+                              variants: { Type: "Normal" },
                             };
 
                             if (product?.product_has_property === "YES") {
@@ -193,7 +195,7 @@ const ProductsSelection = () => {
                               //     title: product.product_name,
                               //     price: Number(parseFloat(product.product_price).toFixed(2)),
                               //     imgURL: product.product_image,
-                              //     variants: { type: "normal" },
+                              //     variants: { Type: "Normal" },
                               //   })
                               // );
                             }
@@ -298,7 +300,7 @@ const ProductsSelection = () => {
                         title: product.product_name,
                         price: Number(parseFloat(product.product_price).toFixed(2)),
                         imgURL: product.product_image,
-                        variants: { type: "normal" },
+                        variants: { Type: "Normal" },
                       };
 
                       if (product?.product_has_property === "YES") {
@@ -341,7 +343,7 @@ const ProductsSelection = () => {
                   //       title: product.product_name,
                   //       price: Number(parseFloat(product.product_price).toFixed(2)),
                   //       imgURL: product.product_image,
-                  //       variants: { type: "normal" },
+                  //       variants: { Type: "Normal" },
                   //     };
 
                   //     if (product?.product_has_property === "YES") {
