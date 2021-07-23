@@ -62,7 +62,6 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
 
   const checkProductQuantity = (product, quantity) => {
     try {
-      // console.log(product);
       let stock_level;
       if (variantQuantity) {
         stock_level = variantQuantity === "-99" ? 10000000000000 : parseInt(variantQuantity);
@@ -75,12 +74,13 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
         return addToast(`Product sold out`, { appearance: "warning", autoDismiss: true });
       }
 
-      const foundProduct = productsInCart?.find((productInCart) => productInCart?.product_id === product?.product_id);
-      // console.log(foundProduct);
+      const productWithVariants = { ...product, variants: formData };
+      const foundProduct = productsInCart?.find((productInCart) => isEqual(productInCart?.variants, productWithVariants?.variants));
 
       //if not found continue
       if (foundProduct) {
-        const isQuantitySelectedUnAvailable = foundProduct?.quantity + quantity > stock_level;
+        const isQuantitySelectedUnAvailable = quantity > stock_level;
+        // const isQuantitySelectedUnAvailable = foundProduct?.quantity + quantity > stock_level;
         // console.log(isQuantitySelectedUnAvailable);
 
         if (isQuantitySelectedUnAvailable) {
@@ -96,7 +96,7 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
       } else {
         const isQuantitySelectedUnAvailable = quantity > stock_level;
         if (isQuantitySelectedUnAvailable) {
-          return addToast(`Quantity is not availble, available quantity is ${stock_level}`, { appearance: "warning", autoDismiss: true });
+          return addToast(`Quantity is not available, available quantity is ${stock_level}`, { appearance: "warning", autoDismiss: true });
         }
         submitFormData({ ...formData, QUANTITY: quantity });
       }
@@ -141,7 +141,13 @@ const ProductDetails = ({ onClose }) => {
   //   return { ...acc, [variant.property_id]: [...found, variant] };
   // }, {});
 
-  const allVariants = Object.entries(product.product_properties);
+  const sortedNewProductProperties = {};
+  Object.keys(product.product_properties)
+    .sort()
+    .forEach(function (v, i) {
+      sortedNewProductProperties[v] = product.product_properties[v];
+    });
+  const allVariants = Object.entries(sortedNewProductProperties);
 
   // console.log(allVariants);
   const noOfSteps = allVariants.length;
@@ -160,11 +166,11 @@ const ProductDetails = ({ onClose }) => {
 
   const reset = () => {
     onClose();
-    setStep(0);
-    setFormData({});
     setProductPrice(0);
-    setCurrentStep([allVariants[0]]);
+    setFormData({});
     setStepsClicked([]);
+    setStep(0);
+    setCurrentStep([allVariants[0]]);
   };
 
   React.useEffect(() => {
@@ -181,8 +187,20 @@ const ProductDetails = ({ onClose }) => {
         });
 
         if (!found) {
+          // const sortedNewValues = {};
+          // product?.product_properties_variants.sort().forEach(function (v, i) {
+          //   sortedNewValues[v] = product?.product_properties_variants[v];
+          // });
+
           const combinations = product?.product_properties_variants?.map((product_property) => {
-            return `Variant Combination: ${Object.values(product_property?.variantOptionValue).join("/")} Price: GHS${
+            const sortedNewValues = {};
+            Object.keys(product_property?.variantOptionValue)
+              .sort()
+              .forEach(function (v, i) {
+                sortedNewValues[v] = product_property?.variantOptionValue[v];
+              });
+
+            return `Variant Combination: ${Object.values(sortedNewValues).join("/")} Price: GHS${
               product_property?.variantOptionPrice
             }  Quantity: ${product_property?.variantOptionQuantity}`;
           });
@@ -190,17 +208,16 @@ const ProductDetails = ({ onClose }) => {
           setStep((step) => step - 1);
           setStepsClicked((data) => data.slice(0, -1));
           addToast(
-            // `Product variant combination is not possible.\n\n Available combinations ${combinations.map(
-            //   (combination, index) => `${index}. ${combination}\n`
-            // )}`
             <div className="w-full">
-              <p className="text-center text-red-500">Product variant combination is not possible</p>
+              <p className="text-center text-red-500">{`Product variant combination '${Object.entries(formData)
+                .map(([key, value]) => `${value}`)
+                .join("/")}' is not possible`}</p>
 
-              <div className="text-black  mt-2 text-center">
+              <div className="text-black mt-2 text-center">
                 <p className="font-bold">Available combinations</p>
                 {combinations.map((combination, index) => {
                   return (
-                    <p key={index} className="my-1">
+                    <p key={index} className="mb-2">
                       <span>{index}.</span> <span>{combination}</span>
                     </p>
                   );
@@ -219,6 +236,8 @@ const ProductDetails = ({ onClose }) => {
           setProductPrice(Number(parseFloat(found?.variantOptionPrice).toFixed(2)));
           setVariantQuantity(found?.variantOptionQuantity);
         }
+      } else {
+        setVariantQuantity(product?.product_quantity === "-99" ? "Unlimited" : parseInt(product?.product_quantity));
       }
     }
   }, [noOfSteps, step]);
@@ -268,8 +287,8 @@ const ProductDetails = ({ onClose }) => {
             </p>
             <p className="text-sm">Product ID: {product.product_id}</p>
             <div className="mt-4">
-              {step === noOfSteps && variantQuantity && <span className="font-bold text-sm mr-2">Variant Quantity: {variantQuantity}</span>}
-              {step === noOfSteps && productPrice && <span className="font-bold text-sm">Variant Price: GHS{productPrice}</span>}
+              {step === noOfSteps && <span className="font-bold text-sm mr-2">Variant Quantity: {variantQuantity}</span>}
+              {step === noOfSteps && <span className="font-bold text-sm">Variant Price: GHS{productPrice}</span>}
             </div>
           </div>
 

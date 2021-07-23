@@ -3,7 +3,7 @@ import ImageUploading from "react-images-uploading";
 import { useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
-export default function UploadImage({ maxNumber, classes, setValue, images, setImages }) {
+export default function UploadImage({ maxNumber, classes, setValue, images, setImages, deleteImage }) {
   const { addToast } = useToasts();
   const onChange = (imageList, addUpdateIndex) => {
     // data for submit
@@ -35,7 +35,7 @@ export default function UploadImage({ maxNumber, classes, setValue, images, setI
         {({ imageList, onImageUpload, onImageRemoveAll, onImageUpdate, onImageRemove, isDragging, dragProps }) => (
           // write your building UI
           <div className="w-full h-full">
-            <div className={`flex w-full items-center ${images.length > 0 ? "h-1/3" : "h-0"} z-10`}>
+            <div className={`flex w-full items-center ${images.length > 0 ? "h-1/2" : "h-0"} z-10`}>
               {imageList.map((image, index) => {
                 return (
                   <div key={index} className={`relative h-full border border-black`}>
@@ -49,7 +49,20 @@ export default function UploadImage({ maxNumber, classes, setValue, images, setI
                         <button className="text-sm font-bold focus:outline-none" onClick={() => onImageUpdate(index)}>
                           <i className="fas fa-pencil-alt text-blue-500"></i>
                         </button>
-                        <button className="text-sm font-bold focus:outline-none" onClick={() => onImageRemove(index)}>
+                        <button
+                          className="text-sm font-bold focus:outline-none"
+                          onClick={async () => {
+                            if (typeof image === "string") {
+                              const baseURL = `https://payments.ipaygh.com/app/webroot/img/products/`;
+                              const shortenString = image.substring(baseURL?.length);
+
+                              const res = await deleteImage(shortenString, index);
+                              if (res) onImageRemove(index);
+                            } else {
+                              onImageRemove(index);
+                            }
+                          }}
+                        >
                           <i className="fas fa-trash-alt text-red-500"></i>
                         </button>
                       </div>
@@ -59,7 +72,7 @@ export default function UploadImage({ maxNumber, classes, setValue, images, setI
               })}
             </div>
             <button
-              className={`w-full focus:outline-none font-bold  ${images.length > 0 ? "h-2/3" : "h-full"}`}
+              className={`w-full focus:outline-none font-bold  ${images.length > 0 ? "h-1/2" : "h-full"}`}
               style={isDragging ? { color: "red" } : undefined}
               onClick={onImageUpload}
               {...dragProps}

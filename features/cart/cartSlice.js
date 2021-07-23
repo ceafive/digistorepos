@@ -205,7 +205,6 @@ const cartSlice = createSlice({
     selectPaymentMethod: (state, action) => {
       state.paymentMethodSelected = action.payload;
     },
-
     setPartPaymentAmount: (state, action) => {
       const amount = action.payload ? parseFloat(action.payload) : "";
       state.partPaymentAmount = amount;
@@ -261,7 +260,7 @@ const cartSlice = createSlice({
       const foundItems = productsInCart.filter((product) => product.product_id === action.payload?.product_id);
 
       let foundItem = null;
-      if (foundItems) {
+      if (foundItems?.length > 0) {
         const response = intersectionWith(foundItems, [action.payload], (arrVal, othVal) => {
           return isEqual(arrVal.variants, othVal.variants);
         });

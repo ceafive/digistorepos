@@ -71,19 +71,25 @@ const InventoryDetails = ({ onClose }) => {
         <div className="w-full mt-4">
           {product?.product_properties && (
             <div className="mb-4">
-              <label className="text-sm leading-none font-bold">Product Properties</label>
-              <div className="flex flex-wrap justify-between">
+              <label className="text-sm leading-none font-bold">Options</label>
+              <div className="flex flex-wrap">
                 {Object.entries(product?.product_properties ?? {})?.map((product_property) => {
                   return (
-                    <div key={product_property[0]} className="mr-8">
+                    <div key={product_property[0]} className="mr-8 mb-4">
                       <p className="font-bold">{product_property[0]}</p>
                       {product_property[1].map((property) => {
                         return (
-                          <p key={property?.property_value}>
+                          <div key={property?.property_value} className="flex">
                             <span>{property?.property_value}</span>
-                            {" - "}
-                            <span>GHS{property?.property_price}</span>
-                          </p>
+                            {Number(property?.property_price) ? (
+                              <p className="flex">
+                                {"  -  "}
+                                <span>GHS{property?.property_price}</span>
+                              </p>
+                            ) : (
+                              <></>
+                            )}
+                          </div>
                         );
                       })}
                     </div>
@@ -95,16 +101,16 @@ const InventoryDetails = ({ onClose }) => {
 
           {product?.product_properties_variants && (
             <div className="mb-4">
-              <label className="text-sm leading-none font-bold">Product Variants</label>
-              <div className="flex flex-wrap justify-between">
+              <label className="text-sm leading-none font-bold">Variants</label>
+              <div className="flex flex-wrap">
                 {product?.product_properties_variants?.map((product_property) => {
                   return (
-                    <div key={product_property?.variantOptionId} className="mr-8">
-                      <p className="text-sm">
+                    <div key={product_property?.variantOptionId} className="mr-8 mb-4">
+                      <div className="text-sm">
                         <p className="font-bold uppercase">{Object.values(product_property?.variantOptionValue).join("/")}</p>
                         <p>Price: GHS{product_property?.variantOptionPrice}</p>
                         <p>Quantity: {product_property?.variantOptionQuantity}</p>
-                      </p>
+                      </div>
                     </div>
                   );
                 })}
@@ -131,7 +137,7 @@ const InventoryDetails = ({ onClose }) => {
                 </div>
               )}
             </div>
-            <p>{variantQuantity ? variantQuantity : product?.product_quantity === "=99" ? "Unlimited" : product?.product_quantity}</p>
+            <p>{variantQuantity ? variantQuantity : product?.product_quantity === "-99" ? "Unlimited" : product?.product_quantity}</p>
           </div>
         </div>
       </div>

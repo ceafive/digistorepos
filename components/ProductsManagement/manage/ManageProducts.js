@@ -96,7 +96,7 @@ const ManageProducts = ({ setReRUn }) => {
 
         removeToast(`delete`);
 
-        if (Number(status === 0)) {
+        if (Number(status) === 0) {
           addToast(message, { appearance: "success", autoDismiss: true });
           setReRUn(new Date());
         } else {
@@ -187,7 +187,7 @@ const ManageProducts = ({ setReRUn }) => {
 
       removeToast(`update-variant`);
 
-      if (Number(status === 0)) {
+      if (Number(status) === 0) {
         addToast(message, { appearance: "success", autoDismiss: true });
         setReRUn(new Date());
       } else {
@@ -229,7 +229,7 @@ const ManageProducts = ({ setReRUn }) => {
 
         removeToast(`delete-variant`);
 
-        if (Number(status === 0)) {
+        if (Number(status) === 0) {
           addToast(message, { appearance: "success", autoDismiss: true });
           setReRUn(new Date());
         } else {

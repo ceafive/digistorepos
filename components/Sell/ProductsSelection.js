@@ -73,7 +73,7 @@ const ProductsSelection = () => {
           // console.log(isQuantitySelectedUnAvailable);
 
           if (isQuantitySelectedUnAvailable) {
-            return addToast(`Quantity is not availble, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true });
+            return addToast(`Quantity is not available, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true });
           }
 
           dispatch(increaseTotalItemsInCart());

@@ -250,7 +250,7 @@ const EditProduct = ({
 
         removeToast(`delete-variant`);
 
-        if (Number(status === 0)) {
+        if (Number(status) === 0) {
           addToast(message, { appearance: "success", autoDismiss: true });
           remove(index);
         } else {
@@ -287,6 +287,66 @@ const EditProduct = ({
     }
   }, [productHasVariants]);
 
+  const productHasVariantsButton = () => {
+    try {
+      if (productHasVariants) {
+        if (allVariants.length > 0 && allVariants[0] && allVariants[0]?.name) {
+          const r = window.confirm("This action will remove all variants you have setup on this product, proceed?");
+          if (r === true) {
+            dispatch(setProductHasVariants(false));
+            remove();
+          }
+        } else {
+          dispatch(setProductHasVariants(false));
+        }
+      } else {
+        dispatch(setProductHasVariants(true));
+        if (fields.length === 0) append({});
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteImage = async (name, index) => {
+    try {
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      const r = window.confirm("Are you sure you want to delete image?");
+      if (r === true) {
+        const data = {
+          id: productWithVariants?.id,
+          image: name,
+          merchant: user?.user_merchant_id,
+          mod_by: user?.login,
+        };
+
+        const deleteVariantRes = await axios.post("/api/products/delete-image", data);
+        const { status, message = "" } = await deleteVariantRes.data;
+
+        if (Number(status) === 0) {
+          return true;
+        } else {
+          addToast(message, { appearance: "error", autoDismiss: true });
+          return false;
+        }
+      }
+    } catch (error) {
+      let errorResponse = "";
+      if (error.response) {
+        errorResponse = error.response.data;
+      } else if (error.request) {
+        errorResponse = error.request;
+      } else {
+        errorResponse = { error: error.message };
+        console.log(errorResponse);
+      }
+
+      return false;
+    }
+  };
+
   React.useEffect(() => {
     if (productCategory === "addNewCategory") {
       dispatch(setShowAddCategoryModal());
@@ -315,7 +375,7 @@ const EditProduct = ({
         Back
       </button>
       <div className="pb-6 pt-6 px-4">
-        <h1 className="mb-2 font-bold text-2xl text-center">Setup Products</h1>
+        <h1 className="mb-2 font-bold text-2xl text-center">Modify Products</h1>
         <div className="flex w-full h-full">
           <div className="w-7/12 xl:w-8/12 ">
             <div>
@@ -467,23 +527,15 @@ const EditProduct = ({
               <div className="w-full mt-6 bg-gray-200 p-6 rounded">
                 <div className="flex justify-between items-center w-full">
                   <h1 className="font-bold text-blue-700">Does your product have variants?</h1>
-                  <div
-                    className="flex justify-between items-center cursor-pointer"
-                    onClick={() => {
-                      if (!productHasVariants) {
-                        if (fields.length === 0) append({});
-                      } else remove();
-                      dispatch(setProductHasVariants());
-                    }}
-                  >
+                  <div className="flex justify-between items-center cursor-pointer" onClick={productHasVariantsButton}>
                     <div
                       className={`${
-                        productHasVariants && "bg-green-400"
+                        productHasVariants ? "bg-green-400" : ""
                       } w-10 h-6 flex items-center bg-gray-300 rounded-full p-1 duration-300 ease-in-out`}
                     >
                       <div
                         className={`${
-                          productHasVariants && "translate-x-4"
+                          productHasVariants ? "translate-x-4" : ""
                         } bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out`}
                       />
                     </div>
@@ -594,7 +646,14 @@ const EditProduct = ({
 
               <div className="bg-white m-2" style={{ height: 200 }}>
                 <div className="flex flex-col justify-center items-center border border-gray-200 h-full w-full">
-                  <UploadImage maxNumber={maxNumber} classes="" setValue={setValue} images={images} setImages={setImages} />
+                  <UploadImage
+                    maxNumber={maxNumber}
+                    classes=""
+                    setValue={setValue}
+                    images={images}
+                    setImages={setImages}
+                    deleteImage={deleteImage}
+                  />
                 </div>
               </div>
             </div>

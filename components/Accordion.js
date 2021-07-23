@@ -54,7 +54,7 @@ const Accordion = ({ product, index }) => {
       // console.log(isQuantitySelectedUnAvailable);
 
       if (isQuantitySelectedUnAvailable) {
-        addToast(`Quantity is not availble, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true });
+        addToast(`Quantity is not available, available quantity is ${stock_level}`, { appearance: "error", autoDismiss: true });
         status = false;
       }
       return { status, stock_level };

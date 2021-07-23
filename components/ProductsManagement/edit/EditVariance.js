@@ -281,7 +281,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
 
         removeToast(`delete-variant`);
 
-        if (Number(status === 0)) {
+        if (Number(status) === 0) {
           addToast(message, { appearance: "success", autoDismiss: true });
           const result = omit(varianceDistribution, [formattedVarianceKey]);
           setVarianceDistribution(result);

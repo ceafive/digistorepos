@@ -12,7 +12,7 @@ export default function Navbar() {
         <div className="w-full mx-auto items-center flex justify-end md:flex-nowrap flex-wrap md:px-10 px-4">
           {/* Brand */}
 
-          <div className="">
+          {/* <div className="">
             {router?.locales.map((locale) => {
               return (
                 <div key={locale} className="text-sm hidden lg:inline-block font-semibold mr-4">
@@ -22,7 +22,7 @@ export default function Navbar() {
                 </div>
               );
             })}
-          </div>
+          </div> */}
           {/* User */}
           <div className="flex items-center">
             <ul className="flex-col md:flex-row list-none items-center hidden md:flex">
