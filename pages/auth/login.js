@@ -84,7 +84,7 @@ export default function Login() {
                         required: "Username is required",
                       })}
                       type="text"
-                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-500 text-blueGray-600 bg-white rounded text-sm focus:outline-none focus:ring-0 w-full"
+                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-500 text-center text-blueGray-600 bg-white rounded text-sm focus:outline-none focus:ring-0 w-full"
                       placeholder="Enter your Mobile Number or Username"
                     />
                     <p className="text-sm text-red-500">{errors?.username?.message}</p>
@@ -105,7 +105,7 @@ export default function Login() {
                       type="password"
                       pattern="[0-9]*"
                       noValidate
-                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-500 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-0 w-full ease-linear transition-all duration-150"
+                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-500 text-center text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-0 w-full ease-linear transition-all duration-150"
                       placeholder="Enter your 4 digit PIN Code"
                     />
                     <p className="text-sm text-red-500">{errors?.pin?.message}</p>
@@ -126,14 +126,19 @@ export default function Login() {
                           <Spinner type={"TailSpin"} color="black" width="10" height="10" />
                         </div>
                       )}
-                      <span>Login</span>
+                      <span>Sign In</span>
                     </button>
                   </div>
 
                   <div className="text-center mt-4 text-lg">
                     <p>
                       By signing you agree to our{" "}
-                      <a className="underline" href="https://www.ipaygh.com/terms" target="_blank" rel="noreferrer">
+                      <a
+                        className="underline"
+                        href="https://sell.digistoreafrica.com/digistore-terms-conditions/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         Terms of Use
                       </a>{" "}
                       and{" "}
@@ -143,7 +148,12 @@ export default function Login() {
                     </p>
                     <p className="mt-6">
                       Don't have an account?{" "}
-                      <a className="underline" href="https://signup.digistoreafrica.com/" target="_blank" rel="noreferrer">
+                      <a
+                        className="underline"
+                        href="https://sell.digistoreafrica.com/digistore-privacy-policy/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         Sign Up
                       </a>
                     </p>
