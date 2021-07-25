@@ -142,18 +142,18 @@ export default function Login() {
                         Terms of Use
                       </a>{" "}
                       and{" "}
-                      <a className="underline" href="https://www.ipaygh.com/privacy" target="_blank" rel="noreferrer">
-                        Privacy Policy
-                      </a>
-                    </p>
-                    <p className="mt-6">
-                      Don't have an account?{" "}
                       <a
                         className="underline"
                         href="https://sell.digistoreafrica.com/digistore-privacy-policy/"
                         target="_blank"
                         rel="noreferrer"
                       >
+                        Privacy Policy
+                      </a>
+                    </p>
+                    <p className="mt-6">
+                      Don't have an account?{" "}
+                      <a className="underline" href="https://signup.digistoreafrica.com/" target="_blank" rel="noreferrer">
                         Sign Up
                       </a>
                     </p>

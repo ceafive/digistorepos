@@ -25,9 +25,9 @@ const InventoryDetails = ({ onClose }) => {
       <button className="absolute right-0 top-0 p-2 text-2xl focus:outline-none text-red-500" onClick={onClose}>
         <i className="fas fa-times"></i>
       </button>
-      <div className="relative w-full" style={{ paddingBottom: "50%" }}>
+      <div className="flex items-center">
         <img
-          className="absolute left-0 object-contain w-full h-full"
+          className=""
           src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
           alt={product?.product_image}
         />
