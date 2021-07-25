@@ -21,13 +21,13 @@ const InventoryDetails = ({ onClose }) => {
   }, []);
 
   return (
-    <div className="relative flex w-full h-full bg-white rounded-lg overflow-scroll overflow-x-hidden mb-4" style={{ maxHeight: 500 }}>
+    <div className="relative flex w-full h-full bg-white rounded-lg overflow-scroll overflow-x-hidden" style={{ maxHeight: 500 }}>
       <button className="absolute right-0 top-0 p-2 text-2xl focus:outline-none text-red-500" onClick={onClose}>
         <i className="fas fa-times"></i>
       </button>
-      <div className="flex items-center w-5/12">
+      <div className="relative w-full" style={{ paddingBottom: "50%" }}>
         <img
-          className="w-64 h-64"
+          className="absolute left-0 object-contain w-full h-full"
           src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
           alt={product?.product_image}
         />

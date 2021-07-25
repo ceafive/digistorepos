@@ -1,10 +1,13 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
 import Auth from "layouts/Auth.js";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { verifyToken } from "services";
+
+import appLogo from "../../public/img/brand/brand_logo.jpg";
 
 export default function Login() {
   const router = useRouter();
@@ -65,7 +68,10 @@ export default function Login() {
         <div className="flex flex-col items-center justify-center h-full ">
           <div className="w-full h-full lg:w-5/12 px-4">
             <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-3xl bg-white border-0">
-              <div className="rounded-t-3xl mb-0 px-6 py-6">
+              <div className="rounded-t-3xl mb-0 px-6 pb-2">
+                <div className="flex justify-center items-center w-full mb-3">
+                  <Image src={appLogo} alt="logo" />
+                </div>
                 {/* <div className="text-center mb-3">
                   <h6 className="text-blueGray-500 text-sm font-bold">Sign in with</h6>
                 </div> 
@@ -83,7 +89,7 @@ export default function Login() {
                         required: "Username is required",
                       })}
                       type="text"
-                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm focus:outline-none focus:ring-0 w-full"
+                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-500 text-blueGray-600 bg-white rounded text-sm focus:outline-none focus:ring-0 w-full"
                       placeholder="Enter your Mobile Number or Username"
                     />
                     <p className="text-sm text-red-500">{errors?.username?.message}</p>
@@ -104,7 +110,7 @@ export default function Login() {
                       type="password"
                       pattern="[0-9]*"
                       noValidate
-                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-0 w-full ease-linear transition-all duration-150"
+                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-500 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-0 w-full ease-linear transition-all duration-150"
                       placeholder="Enter your 4 digit PIN Code"
                     />
                     <p className="text-sm text-red-500">{errors?.pin?.message}</p>
@@ -127,6 +133,25 @@ export default function Login() {
                       )}
                       <span>Login</span>
                     </button>
+                  </div>
+
+                  <div className="text-center mt-4 text-lg">
+                    <p>
+                      By signing you agree to our{" "}
+                      <a className="underline" href="https://www.ipaygh.com/terms" target="_blank" rel="noreferrer">
+                        Terms of Use
+                      </a>{" "}
+                      and{" "}
+                      <a className="underline" href="https://www.ipaygh.com/privacy" target="_blank" rel="noreferrer">
+                        Privacy Policy
+                      </a>
+                    </p>
+                    <p className="mt-6">
+                      Don't have an account?{" "}
+                      <a className="underline" href="https://signup.digistoreafrica.com/" target="_blank" rel="noreferrer">
+                        Sign Up
+                      </a>
+                    </p>
                   </div>
                 </form>
               </div>

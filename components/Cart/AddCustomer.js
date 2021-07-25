@@ -1,5 +1,6 @@
 import axios from "axios";
 import Modal from "components/Modal";
+import Spinner from "components/Spinner";
 import { addCustomer } from "features/cart/cartSlice";
 import debounce from "lodash.debounce";
 import React from "react";
@@ -24,12 +25,16 @@ const AddCustomer = () => {
   const [step, setStep] = React.useState(0);
   const [allCustomers, setAllCustomers] = React.useState([]);
   const [openAddCustomerModal, setOpenAddCustomerModal] = React.useState(false);
+  const [searching, setSearching] = React.useState(false);
 
   const watchCustomerSearch = watch("searchCustomer", "");
 
   React.useEffect(() => {
     const fetchCustomerDetails = async () => {
       try {
+        setSearching(true);
+        setAllCustomers([]);
+        dispatch(addCustomer(null));
         const response = await axios.post("/api/sell/get-customer", { phoneNumber: watchCustomerSearch });
         const { data } = await response.data;
 
@@ -43,11 +48,12 @@ const AddCustomer = () => {
       } catch (error) {
         console.log(error);
       } finally {
+        setSearching(false);
       }
     };
 
     if (watchCustomerSearch) {
-      debounce(fetchCustomerDetails, 250, { maxWait: 500 })();
+      debounce(fetchCustomerDetails, 150, { maxWait: 50 })();
     }
   }, [watchCustomerSearch]);
 
@@ -62,7 +68,8 @@ const AddCustomer = () => {
             <button
               className="text-white focus:outline-none font-bold bg-blueGray-800 px-4 py-3 rounded w-full"
               onClick={() => {
-                setOpenAddCustomerModal(true);
+                setStep(1);
+                // setOpenAddCustomerModal(true);
               }}
             >
               Add Customer
@@ -70,31 +77,15 @@ const AddCustomer = () => {
           </div>
         )}
 
-        <div className="text-sm w-5/12">
+        <div className={`text-sm ${currentCustomer ? "w-full" : "w-5/12"} `}>
           <button className="text-white focus:outline-none font-bold bg-blue-800 px-4 py-3 rounded w-full" onClick={() => {}}>
             Quick Sale
           </button>
         </div>
       </div>
-      {/* <div className="w-full">
-        {!currentCustomer && step === 0 && (
-          <div className="text-sm py-3">
-            <span className="mr-2">
-              <i className="fas fa-user-alt"></i>
-            </span>
-            <button
-              className="text-blue-500 focus:outline-none font-bold"
-              onClick={() => {
-                setStep(1);
-              }}
-            >
-              <span>Add a customer</span>
-            </button>
-          </div>
-        )}
-
+      <div className="w-full">
         {step === 1 && (
-          <div className="relative" initial={{ y: "-1vw" }} animate={{ y: 0 }}>
+          <div className="relative mt-4" initial={{ y: "-1vw" }} animate={{ y: 0 }}>
             <div>
               <span className="z-10 absolute text-center text-blueGray-300 w-8 pl-3 py-3">
                 <i className="fas fa-search"></i>
@@ -114,12 +105,12 @@ const AddCustomer = () => {
                   setAllCustomers([]);
                 }}
               >
-                <i className="fas fa-times-circle"></i>
+                {searching ? <Spinner width={20} height={20} /> : <i className="fas fa-times-circle"></i>}
               </span>
             </div>
             {watchCustomerSearch && (
               <div
-                className={`z-10 absolute w-full p-2 bg-white border border-gray-800 rounded shadow-lg 
+                className={`z-10 absolute w-full p-2 bg-white border border-gray-500 rounded shadow-3xl 
            
               `}
                 // ${ allCustomers.length > 0 && "overflow-x-hidden overflow-scroll" }
@@ -176,7 +167,7 @@ const AddCustomer = () => {
         )}
 
         {(currentCustomer || step === 2) && (
-          <div className="w-full flex justify-between items-center text-sm py-3">
+          <div className="w-full flex justify-between items-center text-sm pt-3">
             <div>
               <span className="mr-2">
                 <i className="fas fa-user-alt"></i>
@@ -196,9 +187,7 @@ const AddCustomer = () => {
             </button>
           </div>
         )}
-        <hr className="my-1" />
       </div>
-    */}
     </div>
   );
 };

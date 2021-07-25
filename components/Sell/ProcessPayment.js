@@ -25,7 +25,19 @@ const paymentOptions = [
   { name: "GCBMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-GCBMM.png", showInput: true },
 ];
 
+const paymentOptionNames = {
+  VISAG: "VISA AND MASTERCARD",
+  MTNMM: "MTN MOBILE MONEY",
+  TIGOC: "AIRTELTIGO MONEY",
+  VODAC: "VODAFONE CASH",
+  QRPAY: "GHQR PAY",
+  GCBMM: "GCB MOBILE MONEY",
+  BNKTR: "BANK TRANSFER",
+  CASH: "CASH",
+};
+
 const merchantUserDeliveryOptions = [
+  { name: "Walk In" },
   { name: "Dine In" },
   { name: "Pickup" },
   {
@@ -127,14 +139,15 @@ const ProcessPayment = ({
               <button
                 disabled={!payerAmountEntered || payerAmountEntered === "0"}
                 className={`${
-                  paymentMethodSet === paymentButton.name ? "ring-2" : ""
-                }  w-36 h-32 border border-gray-300 focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`}
+                  paymentMethodSet === paymentButton.name ? "ring-4" : ""
+                }  w-40 h-12 font-bold bg-blue-500 text-white focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`}
                 onClick={() => {
                   dispatch(setPaymentMethodSet(paymentButton.name));
                   setOpenPhoneNumberInputModal(true);
                 }}
               >
-                <img src={paymentButton.img} alt={paymentButton.name} />
+                {paymentOptionNames[paymentButton.name]}
+                {/* <img src={paymentButton.img} alt={paymentButton.name} /> */}
               </button>
             </div>
           );
@@ -171,26 +184,35 @@ const ProcessPayment = ({
       <div className="mt-4">
         <h1 className="font-semibold mb-1">Pickup or Delivery?</h1>
         <div className="grid grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
-          {merchantUserDeliveryOptions.map((option) => {
-            return (
-              <div key={option.name} className="">
-                <button
-                  className={`${
-                    deliveryTypeSelected === option.name ? "ring-2" : ""
-                  } w-36 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
-                  onClick={() => {
-                    if (option?.name !== "Delivery") {
-                      dispatch(setDeliveryCharge(null));
-                      dispatch(setDeliveryNotes(""));
-                    }
-                    dispatch(setDeliveryTypeSelected(option?.name));
-                  }}
-                >
-                  {option.name}
-                </button>
-              </div>
-            );
-          })}
+          {merchantUserDeliveryOptions
+            .filter((option) => {
+              if (option.name === "Dine In") {
+                if (userDetails?.user_merchant_cat_id === "67" || userDetails?.user_merchant_cat_id === "68") {
+                  return true;
+                } else return false;
+              }
+              return true;
+            })
+            .map((option) => {
+              return (
+                <div key={option.name} className="">
+                  <button
+                    className={`${
+                      deliveryTypeSelected === option.name ? "ring-2" : ""
+                    } w-36 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
+                    onClick={() => {
+                      if (option?.name !== "Delivery") {
+                        dispatch(setDeliveryCharge(null));
+                        dispatch(setDeliveryNotes(""));
+                      }
+                      dispatch(setDeliveryTypeSelected(option?.name));
+                    }}
+                  >
+                    {option.name}
+                  </button>
+                </div>
+              );
+            })}
         </div>
 
         {deliveryTypeSelected === "Delivery" && (
