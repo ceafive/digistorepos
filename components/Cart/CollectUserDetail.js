@@ -45,8 +45,6 @@ const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors })
             message: "Cannot be longer than 10 chars",
           },
         })}
-        pattern="[0-9]*"
-        noValidate
         placeholder="0547748484"
         className="border border-blue-500 px-3 4 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-lg outline-none focus:outline-none w-full"
       />
@@ -111,9 +109,7 @@ const CollectUserDetail = ({
             fetching ? "bg-gray-300 text-gray-200" : "bg-green-700 text-white"
           } font-bold px-3 py-3  rounded focus:outline-none ease-linear transition-all duration-150`}
           type="button"
-          onClick={() => {
-            handleSubmit(onAddPayment)();
-          }}
+          onClick={handleSubmit(onAddPayment)}
         >
           {fetching && (
             <div className="inline-block mr-2">

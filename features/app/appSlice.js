@@ -9,6 +9,9 @@ const appSlice = createSlice({
   name: "app",
   initialState,
   reducers: {
+    onAppLogout() {
+      return initialState;
+    },
     setSidebarSecondPaneOpen(state, action) {
       // state.openSidebarSecondpane = !state.openSidebarSecondpane;
       state.openSidebarSecondpane = action.payload;
@@ -19,5 +22,5 @@ const appSlice = createSlice({
   },
 });
 
-export const { setSidebarSecondPaneOpen, setSecondPaneOpenPath } = appSlice.actions;
+export const { setSidebarSecondPaneOpen, setSecondPaneOpenPath, onAppLogout } = appSlice.actions;
 export default appSlice.reducer;

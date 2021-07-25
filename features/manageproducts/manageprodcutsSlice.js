@@ -17,6 +17,9 @@ const manageproductsSlice = createSlice({
   name: "manageproducts",
   initialState,
   reducers: {
+    onAppResetManageProducts() {
+      return initialState;
+    },
     setShowAddCategoryModal(state) {
       actionCreator("showAddCategoryModal", state, !state.showAddCategoryModal);
     },
@@ -50,5 +53,6 @@ export const {
   setManageProductProducts,
   setManageProductOutlets,
   setShowAddCategoryModal,
+  onAppResetManageProducts,
 } = manageproductsSlice.actions;
 export default manageproductsSlice.reducer;

@@ -237,7 +237,7 @@ const Accordion = ({ product, index }) => {
               <span>
                 <i className="fas fa-info-circle mr-1"></i>
               </span>
-              <span>Show details</span>
+              <span>Show inventory &amp; details</span>
             </button>
           </div>
         </div>

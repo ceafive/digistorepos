@@ -27,6 +27,9 @@ const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
+    onAppResetProducts() {
+      return initialState;
+    },
     setProductsOnHold(state) {
       state.productsOnHold = !state.productsOnHold;
     },
@@ -79,5 +82,6 @@ export const {
   setAllOutlets,
   setCategoryProductsCount,
   setProductsOnHold,
+  onAppResetProducts,
 } = productsSlice.actions;
 export default productsSlice.reducer;

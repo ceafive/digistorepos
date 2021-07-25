@@ -41,11 +41,11 @@ const Cart = () => {
           </button>
         </div>
       </div> */}
+      <AddCustomer />
       <div
-        className="flex flex-wrap bg-white w-full h-full shadow-lg rounded p-1 xl:p-2"
+        className="flex flex-wrap bg-white w-full h-full shadow-lg rounded p-1 xl:p-2 mt-4"
         // style={{ height: "auto" }}
       >
-        <AddCustomer />
         <ShowItems />
         <PayButton />
       </div>

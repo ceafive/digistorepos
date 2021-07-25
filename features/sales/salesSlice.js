@@ -8,11 +8,14 @@ const salesSlice = createSlice({
   name: "sales",
   initialState,
   reducers: {
+    onAppResetSales() {
+      return initialState;
+    },
     setSalesHistoryitem(state, action) {
       state.salesHistory = [...action.payload, ...[]];
     },
   },
 });
 
-export const { setSalesHistoryitem } = salesSlice.actions;
+export const { setSalesHistoryitem, onAppResetSales } = salesSlice.actions;
 export default salesSlice.reducer;

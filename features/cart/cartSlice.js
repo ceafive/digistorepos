@@ -86,7 +86,7 @@ const calculatePromoAmount = (valueToApplyOn, discountValue) => {
 
 const cartSlice = createSlice({
   name: "cart",
-  initialState: initialState,
+  initialState,
   reducers: {
     setVerifyTransactionResponse(state, action) {
       state.verifyTransactionResponse = action.payload;
@@ -103,6 +103,9 @@ const cartSlice = createSlice({
       resetState.deliveryTypes = state.deliveryTypes;
 
       return resetState;
+    },
+    onAppResetCart() {
+      return initialState;
     },
     setDeliveryGPS(state, action) {
       state.deliveryGPS = action.payload;
@@ -350,5 +353,6 @@ export const {
   setInvoiceDetails,
   setVerifyTransactionResponse,
   setItemDiscount,
+  onAppResetCart,
 } = cartSlice.actions;
 export default cartSlice.reducer;

@@ -25,6 +25,7 @@ const fetchFeeCharges = async (dispatch, setTransactionFeeCharges, setFetching, 
         amount: paymentMethod.amount,
       });
       const response = await res.data;
+      console.log(response);
 
       const charge = get(response, "charge", 0);
       feeCharges.push({ ...response, charge: Number(parseFloat(charge).toFixed(3)) });

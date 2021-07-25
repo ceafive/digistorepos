@@ -25,7 +25,6 @@ const ProcessSale = () => {
   const {
     formState: { errors },
     register,
-
     handleSubmit,
     reset,
   } = useForm({
@@ -40,10 +39,10 @@ const ProcessSale = () => {
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
   const outletSelected = useSelector((state) => state.products.outletSelected);
   const paymentMethodSet = useSelector((state) => state.cart.paymentMethodSet);
-  const cart = useSelector((state) => state.cart);
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
   const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  const cart = useSelector((state) => state.cart);
 
   // console.log(cart);
 

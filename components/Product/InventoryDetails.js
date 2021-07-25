@@ -21,7 +21,7 @@ const InventoryDetails = ({ onClose }) => {
   }, []);
 
   return (
-    <div className="relative flex w-full h-full bg-white rounded-lg overflow-hidden mb-4">
+    <div className="relative flex w-full h-full bg-white rounded-lg overflow-scroll overflow-x-hidden mb-4" style={{ maxHeight: 500 }}>
       <button className="absolute right-0 top-0 p-2 text-2xl focus:outline-none text-red-500" onClick={onClose}>
         <i className="fas fa-times"></i>
       </button>

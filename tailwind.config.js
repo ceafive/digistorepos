@@ -5,8 +5,9 @@ const { sidebarRoutes } = require("./utils/routes");
 const saferoutecolors = sidebarRoutes.map((route) => `text-${route.iconColor}`);
 
 module.exports = {
+  // mode: "jit",
   purge: {
-    content: ["./**/*.html", "./*.html", "./**/*.js", "./*.js"],
+    content: ["./**/*.js"],
     darkMode: false, // or 'media' or 'class',
     // These options are passed through directly to PurgeCSS
     options: {

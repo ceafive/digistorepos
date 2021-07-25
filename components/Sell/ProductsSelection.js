@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { createFilter } from "react-search-input";
 import { useToasts } from "react-toast-notifications";
 
+import CategoriesScroll from "./CategoriesScroll";
+
 const categoryColors = ["#aeffff", "#49a397", "#59b1bf"];
 
 const ProductsSelection = () => {
@@ -233,7 +235,8 @@ const ProductsSelection = () => {
               {/* search results */}
 
               {/* Categories */}
-              <div className="flex justify-start items-center w-full mt-4">
+              <CategoriesScroll setOffset={setOffset} categoryTabColors={categoryTabColors} />
+              {/* <div className="flex justify-start items-center w-full mt-4">
                 <div className="grid grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-5">
                   <button
                     className={`shadow rounded text-black font-semibold border-t-8 ${
@@ -278,7 +281,7 @@ const ProductsSelection = () => {
                       );
                     })}
                 </div>
-              </div>
+              </div> */}
               {/* Categories */}
             </div>
           </div>

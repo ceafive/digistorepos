@@ -90,7 +90,8 @@ export default function Sidebar() {
   return (
     <>
       <nav
-        className={`side-bar left-0 fixed top-0 bottom-0 overflow-y-auto flex-row overflow-hidden ${
+        style={{ top: 70 }}
+        className={`side-bar left-0 fixed bottom-0 overflow-y-auto flex-row overflow-hidden ${
           openSidebarSecondpane ? "w-48 xl:w-64" : "w-24 xl:w-32"
         } z-10`}
       >

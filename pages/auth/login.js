@@ -40,12 +40,15 @@ export default function Login() {
           message: error,
         });
       }
-      if (success) router.push("/sell/sell");
+      if (success) {
+        router.push("/sell/sell");
+      }
     } catch (error) {
       setLoginError({
         status: false,
         message: "ERROR",
       });
+      setProcessing(false);
       if (error.response) {
         console.log(error.response.data);
       } else if (error.request) {
@@ -53,45 +56,43 @@ export default function Login() {
       } else {
         console.log("Error", error.message);
       }
-    } finally {
-      setProcessing(false);
     }
   };
 
   return (
     <>
-      <div className="container mx-auto px-4 h-full">
-        <div className="flex content-center items-center justify-center h-full">
-          <div className="w-full lg:w-5/12 px-4">
-            <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0">
-              <div className="rounded-t mb-0 px-6 py-6">
-                <div className="text-center mb-3">
+      <div className="container mx-auto px-4 h-full ">
+        <div className="flex flex-col items-center justify-center h-full ">
+          <div className="w-full h-full lg:w-5/12 px-4">
+            <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-3xl bg-white border-0">
+              <div className="rounded-t-3xl mb-0 px-6 py-6">
+                {/* <div className="text-center mb-3">
                   <h6 className="text-blueGray-500 text-sm font-bold">Sign in with</h6>
-                </div>
+                </div> 
 
-                <hr className="mt-6 border-b-1 border-blueGray-300" />
+                <hr className="mt-6 border-b-1 border-blueGray-300" />*/}
               </div>
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
                 <form>
                   <div className="relative w-full mb-3">
-                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="grid-password">
+                    {/* <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="grid-password">
                       Username
-                    </label>
+                    </label> */}
                     <input
                       {...register("username", {
                         required: "Username is required",
                       })}
                       type="text"
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-1 w-full ease-linear transition-all duration-150"
-                      placeholder="kofi_amankwah"
+                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm focus:outline-none focus:ring-0 w-full"
+                      placeholder="Enter your Mobile Number or Username"
                     />
                     <p className="text-sm text-red-500">{errors?.username?.message}</p>
                   </div>
 
                   <div className="relative w-full mb-3">
-                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="grid-password">
-                      PIN
-                    </label>
+                    {/* <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="grid-password">
+                      Pin
+                    </label> */}
                     <input
                       {...register("pin", {
                         required: "PIN is required",
@@ -103,8 +104,8 @@ export default function Login() {
                       type="password"
                       pattern="[0-9]*"
                       noValidate
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-1 w-full ease-linear transition-all duration-150"
-                      placeholder="1234"
+                      className="border border-gray-500 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-0 w-full ease-linear transition-all duration-150"
+                      placeholder="Enter your 4 digit PIN Code"
                     />
                     <p className="text-sm text-red-500">{errors?.pin?.message}</p>
                   </div>
@@ -114,8 +115,8 @@ export default function Login() {
                     <button
                       disabled={processing}
                       className={`${
-                        processing ? "bg-gray-300 text-gray-200" : "bg-blueGray-800 text-white"
-                      } active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150`}
+                        processing ? "bg-gray-300 text-gray-200" : "bg-green-600 text-white"
+                      } active:bg-green-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150`}
                       type="button"
                       onClick={handleSubmit(handleUserSignIn)}
                     >

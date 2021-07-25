@@ -1,8 +1,15 @@
 import { createPopper } from "@popperjs/core";
+import { onAppLogout } from "features/app/appSlice";
+import { onAppResetCart } from "features/cart/cartSlice";
+import { onAppResetManageProducts } from "features/manageproducts/manageprodcutsSlice";
+import { onAppResetProducts } from "features/products/productsSlice";
+import { onAppResetSales } from "features/sales/salesSlice";
 import { useRouter } from "next/router";
 import React from "react";
+import { useDispatch } from "react-redux";
 
 const UserDropdown = () => {
+  const dispatch = useDispatch();
   let user = sessionStorage.getItem("IPAYPOSUSER");
   user = JSON.parse(user);
   const router = useRouter();
@@ -21,9 +28,8 @@ const UserDropdown = () => {
   };
   return (
     <>
-      <a
+      <div
         className="text-blueGray-500 block"
-        href="#pablo"
         ref={btnDropdownRef}
         onClick={(e) => {
           e.preventDefault();
@@ -35,7 +41,7 @@ const UserDropdown = () => {
             <img alt="..." className="w-full rounded-full align-middle border-none shadow-lg" src={user?.user_merchant_logo} />
           </span>
         </div>
-      </a>
+      </div>
       <div
         ref={popoverDropdownRef}
         className={
@@ -47,6 +53,11 @@ const UserDropdown = () => {
           className="focus:outline-none text-blueGray-600 px-4 w-full"
           onClick={() => {
             sessionStorage.removeItem("IPAYPOSUSER");
+            dispatch(onAppLogout());
+            dispatch(onAppResetCart());
+            dispatch(onAppResetManageProducts());
+            dispatch(onAppResetProducts());
+            dispatch(onAppResetSales());
             router.push("/auth/login");
           }}
         >

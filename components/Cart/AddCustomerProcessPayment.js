@@ -56,27 +56,8 @@ const AddCustomer = () => {
       <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)} maxWidth="sm">
         <AddCustomerModal onClose={() => setOpenAddCustomerModal(false)} setStep={setStep} />
       </Modal>
-      <div className="flex justify-between items-center w-full">
-        {!currentCustomer && (
-          <div className="text-sm w-5/12">
-            <button
-              className="text-white focus:outline-none font-bold bg-blueGray-800 px-4 py-3 rounded w-full"
-              onClick={() => {
-                setOpenAddCustomerModal(true);
-              }}
-            >
-              Add Customer
-            </button>
-          </div>
-        )}
 
-        <div className="text-sm w-5/12">
-          <button className="text-white focus:outline-none font-bold bg-blue-800 px-4 py-3 rounded w-full" onClick={() => {}}>
-            Quick Sale
-          </button>
-        </div>
-      </div>
-      {/* <div className="w-full">
+      <div className="w-full">
         {!currentCustomer && step === 0 && (
           <div className="text-sm py-3">
             <span className="mr-2">
@@ -198,7 +179,6 @@ const AddCustomer = () => {
         )}
         <hr className="my-1" />
       </div>
-    */}
     </div>
   );
 };
