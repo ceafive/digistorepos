@@ -12,8 +12,8 @@ const Admin = ({ children }) => {
     <div className="font-print">
       <Sidebar />
       <AdminNavbar />
-      <div className={`admin-main ${openSidebarSecondpane ? "ml-48 xl:ml-64" : "ml-24 xl:ml-32"} bg-blueGray-100 min-h-screen`}>
-        <div className="admin-children px-5 mx-auto w-full">
+      <div className={`admin-main  ${openSidebarSecondpane ? "ml-48 xl:ml-64" : "ml-24 xl:ml-32"} bg-blueGray-100 min-h-screen`}>
+        <div className="admin-children px-5 mx-auto w-full" style={{ paddingTop: 70 }}>
           {children}
           <FooterAdmin />
         </div>

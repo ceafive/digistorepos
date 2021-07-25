@@ -7,7 +7,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { verifyToken } from "services";
 
-import appLogo from "../../public/img/brand/brand_logo.jpg";
+import logo from "../../public/img/brand/brand_logo.jpg";
 
 export default function Login() {
   const router = useRouter();
@@ -68,15 +68,10 @@ export default function Login() {
         <div className="flex flex-col items-center justify-center h-full ">
           <div className="w-full h-full lg:w-5/12 px-4">
             <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-3xl bg-white border-0">
-              <div className="rounded-t-3xl mb-0 px-6 pb-2">
-                <div className="flex justify-center items-center w-full mb-3">
-                  <Image src={appLogo} alt="logo" />
+              <div className="rounded-t-3xl my-4">
+                <div className="flex justify-center items-center w-full">
+                  <Image src={logo} alt="logo" />
                 </div>
-                {/* <div className="text-center mb-3">
-                  <h6 className="text-blueGray-500 text-sm font-bold">Sign in with</h6>
-                </div> 
-
-                <hr className="mt-6 border-b-1 border-blueGray-300" />*/}
               </div>
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
                 <form>

@@ -1,4 +1,5 @@
 import UserDropdown from "components/Dropdowns/UserDropdown.js";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -13,9 +14,12 @@ export default function Navbar() {
     <>
       {/* Navbar */}
       <nav
-        className="w-full z-10 bg-blueGray-800 text-white md:flex-row md:flex-nowrap md:justify-start flex items-center"
+        className="fixed w-full z-50 bg-blueGray-800 text-white md:flex-row md:flex-nowrap md:justify-start flex items-center"
         style={{ height: 70 }}
       >
+        <div className="flex items-center">
+          <Image src={"/img/brand/brand_icon.png"} alt="logo" width={"100%"} height={90} />
+        </div>
         <div className="w-full mx-auto items-center flex justify-end md:flex-nowrap flex-wrap md:px-10 px-4">
           {/* Brand */}
 
