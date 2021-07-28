@@ -16,6 +16,7 @@ import {
 import { motion } from "framer-motion";
 import { filter, intersectionWith, upperCase } from "lodash";
 import React from "react";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useDispatch, useSelector } from "react-redux";
 
 const SellPage = () => {
@@ -82,11 +83,42 @@ const SellPage = () => {
     fetchItems();
   }, [dispatch, productsOnHold]);
 
+  // if (fetching || fetching === null) {
+  //   return (
+  //     <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
+  //       <Spinner type="TailSpin" width={50} height={50} />
+  //     </div>
+  //   );
+  // }
+
   if (fetching || fetching === null) {
     return (
-      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
-        <Spinner type="TailSpin" width={50} height={50} />
-      </div>
+      <SkeletonTheme color="#fff" highlightColor="#eee">
+        {/* <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full"> */}
+        <div className="min-h-screen-75 flex flex-col justify-center pb-6 pt-6">
+          <div className="flex">
+            <div className="w-7/12 xl:w-8/12 px-4">
+              <Skeleton height={50} />
+              <div className="flex w-full justify-between">
+                <Skeleton circle={true} height={100} width={100} />
+                <Skeleton circle={true} height={100} width={100} />
+                <Skeleton circle={true} height={100} width={100} />
+                <Skeleton circle={true} height={100} width={100} />
+                <Skeleton circle={true} height={100} width={100} />
+                <Skeleton circle={true} height={100} width={100} />
+                <Skeleton circle={true} height={100} width={100} />
+                <Skeleton circle={true} height={100} width={100} />
+              </div>
+              <Skeleton height={600} />
+            </div>
+            <div className="w-5/12 xl:w-4/12 px-4">
+              <Skeleton height={50} />
+
+              <Skeleton height={500} />
+            </div>
+          </div>
+        </div>
+      </SkeletonTheme>
     );
   }
 
