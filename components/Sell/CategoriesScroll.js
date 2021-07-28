@@ -12,6 +12,7 @@ function CategoriesScroll({ setOffset }) {
   const productCategories = useSelector((state) => state.products.productCategories);
   const categorySelected = useSelector((state) => state.products.categorySelected);
 
+  const backgroundColors = React.useMemo(() => categoryTabColors(productCategories), [productCategories]);
   const allProductCategories = [
     {
       product_category_id: "ALL",
@@ -29,14 +30,14 @@ function CategoriesScroll({ setOffset }) {
           ?.filter((productCatergory) => Boolean(productCatergory))
           ?.map((productCatergory, index) => {
             // console.log(productCatergory);
+
             return (
               <Card
                 key={productCatergory?.product_category_id}
                 productCatergory={productCatergory}
                 setOffset={setOffset}
                 categorySelected={categorySelected}
-                categoryTabColors={categoryTabColors(productCategories)}
-                dispatch={dispatch}
+                backgroundColor={backgroundColors[index]}
                 index={index}
               />
             );
@@ -49,13 +50,16 @@ function CategoriesScroll({ setOffset }) {
 const LeftArrow = () => <></>;
 const RightArrow = () => <></>;
 
-function Card({ productCatergory, setOffset, categorySelected, categoryTabColors, dispatch, index }) {
+function Card({ productCatergory, setOffset, categorySelected, backgroundColor }) {
+  const dispatch = useDispatch();
+
   return (
     <button
       className={`shadow rounded-3xl text-white font-semibold
       focus:outline-none transition-colors duration-150 ease-in-out w-32 h-28 mx-2 break-words
+      ${categorySelected?.product_category_id === productCatergory?.product_category_id ? "ring-4 ring-gray-400" : ""}
       `}
-      style={{ backgroundColor: categoryTabColors[index] }}
+      style={{ backgroundColor }}
       onClick={() => {
         setOffset(0);
         dispatch(onSelectCategory(productCatergory));

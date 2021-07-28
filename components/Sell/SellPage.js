@@ -46,7 +46,7 @@ const SellPage = () => {
         const { data: deliveryTypesResData } = await deliveryTypesRes.data;
         const { data: activePaymentsResData } = await activePaymentsRes.data;
         const { data: outletsResData } = await outletsRes.data;
-        // console.log({ outletsResData });
+        // console.log({ allCategoriesResData, allProductsResData });
 
         dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
         dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));

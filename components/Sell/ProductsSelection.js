@@ -16,7 +16,6 @@ const ProductsSelection = () => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   const products = useSelector((state) => state.products.products);
-  const productCategories = useSelector((state) => state.products.productCategories);
   const searchTerm = useSelector((state) => state.products.searchTerm);
   const categorySelected = useSelector((state) => state.products.categorySelected);
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
@@ -87,13 +86,13 @@ const ProductsSelection = () => {
   }, [products, searchTerm]);
 
   React.useEffect(() => {
-    if (categorySelected.product_category === "ALL") {
+    if (categorySelected.product_category_id === "ALL") {
       const productsLength = products?.length;
       const pageCount = Math.ceil(productsLength / perPage);
       setPageCount(pageCount);
       setProductsDisplay(take([...products].slice(offset), perPage));
     } else {
-      const filtered = filter(products, (o) => o?.product_category === categorySelected.product_category);
+      const filtered = filter(products, (o) => o?.product_category_id === categorySelected.product_category_id);
       const productsLength = filtered?.length;
       const pageCount = Math.ceil(productsLength / perPage);
       setPageCount(pageCount);
