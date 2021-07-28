@@ -120,13 +120,19 @@ const ConfirmPayment = ({
           </button>
         </p> */}
       <div className="py-20 text-center">
-        <p className="font-bold text-4xl">Awaiting Payment</p>
-        <div className="mt-4">
-          <p>
-            <span className="font-bold">Instructions: </span>
-            <span dangerouslySetInnerHTML={{ __html: confirmPaymentText }} />
-          </p>
-        </div>
+        {processError ? (
+          <p className={`font-bold text-4xl ${processError.includes("PAID") ? "text-green-500" : "text-red-500 "}`}>{processError}</p>
+        ) : (
+          <div>
+            <p className="font-bold text-4xl">Awaiting Payment</p>
+            <div className="mt-4">
+              <p>
+                <span className="font-bold">Instructions: </span>
+                <span dangerouslySetInnerHTML={{ __html: confirmPaymentText }} />
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="w-full self-end mt-20">
           <button
@@ -151,7 +157,7 @@ const ConfirmPayment = ({
             )}
             {confirmButtonText ? confirmButtonText : "Confirm Payment"}
           </button>
-          {processError && <p className="text-center text-red-500 text-sm">{processError}</p>}
+          {/* {processError && <p className="text-center text-red-500 text-sm">{processError}</p>} */}
         </div>
       </div>
     </>
