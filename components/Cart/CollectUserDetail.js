@@ -15,8 +15,6 @@ const CashPaymentInput = ({ paymentMethodSet, register, errors, cartTotalMinusDi
           validate: (value) =>
             Number(value) >= cartTotalMinusDiscountPlusTax || `Amount entered cannot be be less than GHS${cartTotalMinusDiscountPlusTax}`,
         })}
-        pattern="[0-9]*"
-        noValidate
         className="border border-blue-500 px-3 4 text-lg placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded outline-none focus:outline-none w-full"
       />
       <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
@@ -82,7 +80,7 @@ const CollectUserDetail = ({
   errors,
   cartTotalMinusDiscountPlusTax,
 }) => {
-  // console.log(errors);
+  // console.log(paymentMethodSet);
   // console.log(cartTotalMinusDiscountPlusTax);
   return (
     <>

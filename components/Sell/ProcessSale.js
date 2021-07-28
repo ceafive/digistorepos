@@ -37,14 +37,13 @@ const ProcessSale = () => {
   const paymentMethodsAndAmount = useSelector((state) => state.cart.paymentMethodsAndAmount);
   const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
   const paymentMethodSet = useSelector((state) => state.cart.paymentMethodSet);
-  const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
   const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
   const cart = useSelector((state) => state.cart);
+  const products = useSelector((state) => state.products);
 
-  // console.log(cart);
+  // console.log(deliveryTypeSelected);
 
   // Component State
   const [step, setStep] = React.useState(0);
@@ -112,11 +111,9 @@ const ProcessSale = () => {
       setFetching,
       setProcessError,
       cart,
-      outletSelected,
-      deliveryTypes,
+      products,
       fees,
       saleTotal,
-      currentCustomer,
       user
     );
 

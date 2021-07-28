@@ -25,7 +25,7 @@ const fetchFeeCharges = async (dispatch, setTransactionFeeCharges, setFetching, 
         amount: paymentMethod.amount,
       });
       const response = await res.data;
-      console.log(response);
+      // console.log(response);
 
       const charge = get(response, "charge", 0);
       feeCharges.push({ ...response, charge: Number(parseFloat(charge).toFixed(3)) });
@@ -52,7 +52,8 @@ const onAddPayment = async function (
   currentCustomer,
   values
 ) {
-  // console.log(values);
+  // console.log(user, paymentMethodsAndAmount, paymentMethodSet, payerAmountEntered, currentCustomer, values);
+  // return;
   try {
     await fetchFeeCharges(dispatch, setTransactionFeeCharges, setFetching, user, [
       ...paymentMethodsAndAmount,
@@ -135,24 +136,17 @@ const onRaiseOrder = async (
   setFetching,
   setProcessError,
   cart,
-  outletSelected,
-  deliveryTypes,
+  products,
   fees,
   saleTotal,
-  currentCustomer,
   user
 ) => {
   try {
-    // if (paymentMethodSet === "CASH") {
-
-    // } else setStep(1);
-
-    // return;
     setFetching(true);
     setProcessError(false);
     const productsInCart = cart?.productsInCart;
     const productsJSON = productsInCart.reduce((acc, curr, index) => {
-      const variants = Object.values(curr?.variants).map((variant, index) => {
+      const variants = Object.values(curr?.variants).map((variant) => {
         return `${capitalize(variant)}`;
       });
 
@@ -175,19 +169,18 @@ const onRaiseOrder = async (
       };
     }, {});
 
-    // return;
     const payload = {
       order_notes: cart?.cartNote,
       order_items: JSON.stringify(productsJSON),
-      order_outlet: outletSelected?.outlet_id,
+      order_outlet: products?.outletSelected?.outlet_id ?? "",
       delivery_type: replace(upperCase(cart?.deliveryTypeSelected), " ", "-"),
       delivery_notes: cart?.deliveryNotes,
       delivery_id:
-        cart?.deliveryTypeSelected === "Pickup"
-          ? outletSelected?.outlet_id
-          : deliveryTypes["option_delivery"] === "MERCHANT"
-          ? "merchant_id"
-          : "",
+        cart?.deliveryTypeSelected === "Pickup" || cart?.deliveryTypeSelected === "Walk In" || cart?.deliveryTypeSelected === "Dine In"
+          ? products?.outletSelected?.outlet_id ?? ""
+          : cart?.deliveryTypes["option_delivery"] === "MERCHANT" || cart?.deliveryTypes["option_delivery"] === "MERCHANT-DIST"
+          ? cart?.deliveryCharge?.delivery_code ?? ""
+          : products?.outletSelected?.outlet_id ?? "",
       delivery_location: cart?.deliveryLocationInputted?.label ?? "",
       delivery_gps: cart?.deliveryGPS ?? "",
       delivery_name: cart?.currentCustomer?.customer_name ?? "",
@@ -207,7 +200,7 @@ const onRaiseOrder = async (
           : cart?.paymentMethodSet === "MTNMM" || cart?.paymentMethodSet === "TIGOC" || cart?.paymentMethodSet === "VODAC"
           ? "MOMO"
           : "",
-      payment_number: cart?.paymentMethodsAndAmount[0]?.payment_number ?? currentCustomer?.customer_phone ?? "",
+      payment_number: cart?.paymentMethodsAndAmount[0]?.payment_number ?? cart?.currentCustomer?.customer_phone ?? "",
       payment_network: cart?.paymentMethodSet,
       merchant: user["user_merchant_id"],
       source: "INSHP",
@@ -225,19 +218,24 @@ const onRaiseOrder = async (
 
     if (data?.status !== 0) {
       setProcessError(data?.message);
+      setFetching(false);
     }
+
     if (data?.status === 0 && cart?.paymentMethodSet === "CASH") {
       dispatch(setInvoiceDetails(data));
       setStep(2);
+      setFetching(false);
     }
 
     if (Number(data?.status) === 0 && cart?.paymentMethodSet !== "CASH") {
       dispatch(setInvoiceDetails(data));
       setConfirmPaymentText(data?.message);
       setStep(1);
+      setFetching(false);
     }
   } catch (error) {
     console.log(error.response.data);
+    setFetching(false);
   } finally {
     setFetching(false);
   }

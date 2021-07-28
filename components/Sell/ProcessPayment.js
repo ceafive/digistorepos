@@ -13,56 +13,20 @@ import { setOutletSelected } from "features/products/productsSlice";
 import { intersectionWith, isEqual } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-
-const paymentOptions = [
-  { name: "CASH", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-CASH.png", showInput: false },
-  { name: "VISAG", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-VISAG.png", showInput: true },
-  { name: "QRPAY", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-QRPAY.png", showInput: true },
-  { name: "BNKTR", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-BNKTR.png", showInput: true },
-  { name: "MTNMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-MTNMM.png", showInput: true },
-  { name: "TIGOC", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-TIGOC.png", showInput: true },
-  { name: "VODAC", img: " https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-VODAC.png", showInput: true },
-  { name: "GCBMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-GCBMM.png", showInput: true },
-];
-
-const paymentOptionNames = {
-  VISAG: "VISA AND MASTERCARD",
-  MTNMM: "MTN MOBILE MONEY",
-  TIGOC: "AIRTELTIGO MONEY",
-  VODAC: "VODAFONE CASH",
-  QRPAY: "GHQR PAY",
-  GCBMM: "GCB MOBILE MONEY",
-  BNKTR: "BANK TRANSFER",
-  CASH: "CASH",
-};
-
-const merchantUserDeliveryOptions = [
-  { name: "Walk In" },
-  { name: "Dine In" },
-  { name: "Pickup" },
-  {
-    name: "Delivery",
-  },
-];
-
-const loyaltyTabs = ["Loyalty", "Layby", "Store Credit", "On Account"];
+import { useToasts } from "react-toast-notifications";
+import { loyaltyTabs, merchantUserDeliveryOptions, paymentOptionNames, paymentOptions } from "utils";
 
 const ProcessPayment = ({
   handleRaiseOrder,
   setOpenPhoneNumberInputModal,
-  handlePrint,
-  setStep,
-  step,
-  printing,
   payerAmountEntered,
   setPayerAmountEntered,
   fetching,
   setFetching,
   processError,
-  handleSendNotification,
-  sendingNotification,
 }) => {
   const dispatch = useDispatch();
+  const { addToast } = useToasts();
 
   // Selectors
   const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
@@ -78,21 +42,21 @@ const ProcessPayment = ({
 
   // Variables
   const balance = Number(parseFloat(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(3));
-  const userDetails = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
+  const user = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
 
   const paymentButtons = React.useMemo(() => {
-    const intersected = intersectionWith(paymentOptions, userDetails?.user_permissions, (arrVal, othVal) => {
+    const intersected = intersectionWith(paymentOptions, user?.user_permissions, (arrVal, othVal) => {
       return isEqual(arrVal.name, othVal);
     });
     const allIntersected = intersectionWith(intersected, activePayments, (arrVal, othVal) => {
       return isEqual(arrVal.name, othVal);
     });
     return allIntersected;
-  }, [activePayments, userDetails?.user_permissions]);
+  }, [activePayments, user?.user_permissions]);
   const deliveryLocationIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryLocationInputted;
+  const [processingDeliveryCharge, setProcessingDeliveryCharge] = React.useState(false);
 
-  // console.log(fetching, deliveryTypeSelected, deliveryLocationIsEmpty, amountReceivedFromPayer, balance);
-  // console.log(outletSelected);
+  // console.log(deliveryTypeSelected);
 
   return (
     <div>
@@ -137,13 +101,20 @@ const ProcessPayment = ({
           return (
             <div key={paymentButton.name}>
               <button
-                disabled={!payerAmountEntered || payerAmountEntered === "0"}
+                // disabled={!payerAmountEntered || Number(payerAmountEntered) === 0}
                 className={`${
                   paymentMethodSet === paymentButton.name ? "ring-4" : ""
                 }  w-40 h-12 font-bold bg-blue-500 text-white focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`}
                 onClick={() => {
-                  dispatch(setPaymentMethodSet(paymentButton.name));
-                  setOpenPhoneNumberInputModal(true);
+                  if (Number(payerAmountEntered) === 0) {
+                    addToast(`You must delete currently selected payment to select a different one`, {
+                      appearance: "info",
+                      autoDismiss: true,
+                    });
+                  } else {
+                    dispatch(setPaymentMethodSet(paymentButton.name));
+                    setOpenPhoneNumberInputModal(true);
+                  }
                 }}
               >
                 {paymentOptionNames[paymentButton.name]}
@@ -187,7 +158,7 @@ const ProcessPayment = ({
           {merchantUserDeliveryOptions
             .filter((option) => {
               if (option.name === "Dine In") {
-                if (userDetails?.user_merchant_cat_id === "67" || userDetails?.user_merchant_cat_id === "68") {
+                if (user?.user_merchant_cat_id === "67" || user?.user_merchant_cat_id === "68") {
                   return true;
                 } else return false;
               }
@@ -199,7 +170,7 @@ const ProcessPayment = ({
                   <button
                     className={`${
                       deliveryTypeSelected === option.name ? "ring-2" : ""
-                    } w-36 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
+                    } w-36 h-24 border border-gray-300 text-lg focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
                     onClick={() => {
                       if (option?.name !== "Delivery") {
                         dispatch(setDeliveryCharge(null));
@@ -217,7 +188,7 @@ const ProcessPayment = ({
 
         {deliveryTypeSelected === "Delivery" && (
           <div className="mt-4">
-            <TypeDelivery setFetching={setFetching} />
+            <TypeDelivery setFetching={setFetching} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
           </div>
         )}
       </div>
@@ -267,11 +238,33 @@ const ProcessPayment = ({
               );
             })}
           </div> */}
-      <div className="w-full self-end mt-20">
+
+      {["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer && (
+        <div className="text-red-500 font-bold text-center">
+          <p>You need to add a cusomter to this delivery type to proceed</p>
+        </div>
+      )}
+
+      {/* Raise Order Button */}
+      <div className="w-full self-end mt-5">
         <button
-          disabled={fetching || !deliveryTypeSelected || deliveryLocationIsEmpty || !amountReceivedFromPayer || balance > 0}
+          disabled={
+            processingDeliveryCharge ||
+            fetching ||
+            !deliveryTypeSelected ||
+            deliveryLocationIsEmpty ||
+            !amountReceivedFromPayer ||
+            (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
+            balance > 0
+          }
           className={`${
-            fetching || !deliveryTypeSelected || deliveryLocationIsEmpty || !amountReceivedFromPayer || balance > 0
+            processingDeliveryCharge ||
+            fetching ||
+            !deliveryTypeSelected ||
+            deliveryLocationIsEmpty ||
+            !amountReceivedFromPayer ||
+            (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
+            balance > 0
               ? "bg-gray-400 text-gray-300"
               : "bg-green-700 text-white"
           } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}

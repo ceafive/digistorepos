@@ -5,7 +5,6 @@ import { configureVariables, fetchFeeCharges, onAddPayment, onRaiseOrder, onSend
 import { sidebarRoutes } from "./routes";
 
 const qs = require("querystring");
-
 const crypto = require("crypto");
 
 const productColors = [
@@ -177,4 +176,64 @@ function decodeBase64Image(dataString) {
   return response;
 }
 
-export { configureVariables, decodeBase64Image, fetchFeeCharges, onAddPayment, onRaiseOrder, onSendNotification, sidebarRoutes };
+const paymentOptions = [
+  { name: "CASH", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-CASH.png", label: "CASH" },
+  { name: "VISAG", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-VISAG.png", label: "VISA AND MASTERCARD" },
+  { name: "QRPAY", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-QRPAY.png", label: "GHQR PAY" },
+  { name: "BNKTR", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-BNKTR.png", label: "BANK TRANSFER" },
+  { name: "MTNMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-MTNMM.png", label: "MTN MOBILE MONEY" },
+  { name: "TIGOC", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-TIGOC.png", label: "AIRTELTIGO MONEY" },
+  { name: "VODAC", img: " https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-VODAC.png", label: "VODAFONE CASH" },
+  { name: "GCBMM", img: "https://payments2.ipaygh.com/app/webroot/img/logo/IPAY-GCBMM.png", label: "GCB MOBILE MONEY" },
+];
+
+const paymentOptionNames = paymentOptions.reduce(
+  (acc, val) => ({
+    ...acc,
+    [val?.name]: val?.label,
+  }),
+  {}
+);
+
+const merchantUserDeliveryOptions = [
+  { name: "Walk In" },
+  { name: "Dine In" },
+  { name: "Pickup" },
+  {
+    name: "Delivery",
+  },
+];
+
+const loyaltyTabs = ["Loyalty", "Layby", "Store Credit", "On Account"];
+
+/**
+ * @return one of brown: #4C2B24
+gold: #937433
+green: #3E8460
+deep blue: #1B354E
+some orange: #C65A11
+purple/violet: #7030A0
+ */
+const categoryColors = ["#4C2B24", "#937433", "#3E8460", "#1B354E", "#C65A11", "#7030A0"];
+
+const categoryTabColors = (productCategories) => {
+  return Array.from({ length: productCategories?.length + 1 }, () => {
+    const randomIndex = Math.floor(Math.random() * categoryColors.length);
+    return categoryColors[randomIndex];
+  });
+};
+
+export {
+  categoryTabColors,
+  configureVariables,
+  decodeBase64Image,
+  fetchFeeCharges,
+  loyaltyTabs,
+  merchantUserDeliveryOptions,
+  onAddPayment,
+  onRaiseOrder,
+  onSendNotification,
+  paymentOptionNames,
+  paymentOptions,
+  sidebarRoutes,
+};

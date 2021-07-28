@@ -2,6 +2,7 @@ import { onRemovePaymentMethod } from "features/cart/cartSlice";
 import { find, reduce, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { paymentOptionNames } from "utils";
 
 const ListItem = ({ text, value, className }) => {
   return (
@@ -36,6 +37,8 @@ const ReceiptsSection = ({ step }) => {
   const balance = Number(parseFloat(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(3));
   // const saleTotal = cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees;
   const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3));
+
+  // console.log(deliveryCharge);
 
   return (
     <>
@@ -91,11 +94,16 @@ const ReceiptsSection = ({ step }) => {
           return (
             <div key={paymentMethod.method + index} className="flex justify-between my-4">
               <div>
-                <p>{paymentMethod.method}</p>
+                <p>{paymentOptionNames[paymentMethod.method]}</p>
                 {fee ? <p className="text-sm">Fee: GHC{fee?.charge}</p> : <></>}
-                {paymentMethod?.payment_number && <p className="text-sm">Contact: {paymentMethod?.payment_number}</p>}
+                {paymentMethod?.payment_number && (
+                  <p className="text-sm">
+                    {paymentMethod?.method === "VISAG" ? "Phone/Email" : "Payment Number"}: {paymentMethod?.payment_number}
+                  </p>
+                )}
                 <p className="text-sm">{paymentMethod.date}</p>
               </div>
+
               <div className="justify-self-end justify-end justify-items-end">
                 <div>
                   <span>GHC{paymentMethod.amount}</span>

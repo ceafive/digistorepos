@@ -10,8 +10,11 @@ export default function FooterSmall(props) {
             <div className="w-full md:w-4/12 px-4">
               <div className="text-sm text-blueGray-500 font-semibold py-1 text-center md:text-left">
                 Copyright © {new Date().getFullYear()}{" "}
-                <a href="https://www.ipaygh.com/" className="text-blueGray-700 hover:text-blueGray-900 text-sm font-semibold py-1">
-                  iPay Ghana
+                <a
+                  href="https://sell.digistoreafrica.com/"
+                  className="text-blueGray-700 hover:text-blueGray-900 text-sm font-semibold py-1"
+                >
+                  iPay Solutions Ltd
                 </a>
               </div>
             </div>

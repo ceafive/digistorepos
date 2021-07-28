@@ -8,10 +8,9 @@ import ReactPaginate from "react-paginate";
 import { useDispatch, useSelector } from "react-redux";
 import { createFilter } from "react-search-input";
 import { useToasts } from "react-toast-notifications";
+import { categoryTabColors } from "utils";
 
 import CategoriesScroll from "./CategoriesScroll";
-
-const categoryColors = ["#aeffff", "#49a397", "#59b1bf"];
 
 const ProductsSelection = () => {
   const dispatch = useDispatch();
@@ -27,26 +26,12 @@ const ProductsSelection = () => {
   let perPage = 12; // product number to display per page
   perPage = width >= 1536 ? 15 : width < 1280 ? 9 : 12;
 
-  // console.log(width);
-
   // Compnent State
   const [searchProductsDisplay, setSearchProductsDisplay] = React.useState(products);
   const [productsDisplay, setProductsDisplay] = React.useState([]);
   const [pageCount, setPageCount] = React.useState(0);
   const [offset, setOffset] = React.useState(Math.ceil(0 * perPage));
   const [productSelected, setProductSelected] = React.useState(null);
-
-  // console.log(categoryProductsCount);
-  // console.log(products);
-  // console.log(productsDisplay);
-  // console.log(categorySelected);
-
-  const categoryTabColors = React.useMemo(() => {
-    return Array.from({ length: productCategories?.length + 1 }, () => {
-      const randomIndex = Math.floor(Math.random() * categoryColors.length);
-      return categoryColors[randomIndex];
-    });
-  }, [productCategories?.length]);
 
   const handlePageClick = (data) => {
     let selected = data.selected;
@@ -143,7 +128,7 @@ const ProductsSelection = () => {
                   }}
                   type="text"
                   placeholder="Start typing or scanning..."
-                  className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
+                  className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
                 />
                 {searchTerm && (
                   <span
@@ -235,7 +220,7 @@ const ProductsSelection = () => {
               {/* search results */}
 
               {/* Categories */}
-              <CategoriesScroll setOffset={setOffset} categoryTabColors={categoryTabColors} />
+              <CategoriesScroll setOffset={setOffset} />
               {/* <div className="flex justify-start items-center w-full mt-4">
                 <div className="grid grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-5">
                   <button

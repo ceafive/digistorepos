@@ -14,7 +14,7 @@ import {
   setOutletSelected,
 } from "features/products/productsSlice";
 import { motion } from "framer-motion";
-import { filter, intersectionWith } from "lodash";
+import { filter, intersectionWith, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -33,6 +33,7 @@ const SellPage = () => {
         setFetching(true);
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
+        const { user_assigned_outlets, user_merchant_group } = user;
 
         const allProductsRes = await axios.post("/api/sell/get-all-products", { user });
         const allCategoriesRes = await axios.post("/api/sell/get-all-categories", { user });
@@ -45,20 +46,31 @@ const SellPage = () => {
         const { data: deliveryTypesResData } = await deliveryTypesRes.data;
         const { data: activePaymentsResData } = await activePaymentsRes.data;
         const { data: outletsResData } = await outletsRes.data;
-        // console.log({ outletsResData, user_assigned_outlets, response });
+        // console.log({ outletsResData });
 
         dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
         dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
         dispatch(setDeliveryTypes(deliveryTypesResData));
         dispatch(setActivePayments(activePaymentsResData));
 
-        const { user_assigned_outlets } = user;
-        const response = intersectionWith(outletsResData, user_assigned_outlets ?? [], (arrVal, othVal) => {
-          return arrVal.outlet_id === othVal;
-        });
-        dispatch(setAllOutlets(user_assigned_outlets ? response : outletsResData));
-        if (response.length === 1) {
-          dispatch(setOutletSelected(response[0]));
+        const upperCaseMerchantGroup = upperCase(user_merchant_group);
+
+        if (upperCaseMerchantGroup === "ADMINISTRATORS") {
+          if (outletsResData.length === 1) {
+            dispatch(setOutletSelected(outletsResData[0]));
+          } else {
+            dispatch(setAllOutlets(outletsResData));
+          }
+        } else {
+          const response = intersectionWith(outletsResData, user_assigned_outlets ?? [], (arrVal, othVal) => {
+            return arrVal.outlet_id === othVal;
+          });
+
+          if (response.length === 1) {
+            dispatch(setOutletSelected(response[0]));
+          } else {
+            dispatch(setAllOutlets(response));
+          }
         }
       } catch (error) {
         console.log(error);

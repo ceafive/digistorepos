@@ -64,7 +64,7 @@ const AddCustomer = () => {
       </Modal>
       <div className="flex justify-between items-center w-full">
         {!currentCustomer && (
-          <div className="text-sm w-5/12">
+          <div className="text-sm w-6/12 mr-2">
             <button
               className="text-white focus:outline-none font-bold bg-blueGray-800 px-4 py-3 rounded w-full"
               onClick={() => {
@@ -77,7 +77,7 @@ const AddCustomer = () => {
           </div>
         )}
 
-        <div className={`text-sm ${currentCustomer ? "w-full" : "w-5/12"} `}>
+        <div className={`text-sm ${currentCustomer ? "w-full" : "w-6/12"} `}>
           <button className="text-white focus:outline-none font-bold bg-blue-800 px-4 py-3 rounded w-full" onClick={() => {}}>
             Quick Sale
           </button>
@@ -92,7 +92,7 @@ const AddCustomer = () => {
               </span>
               <input
                 {...register("searchCustomer")}
-                type="number"
+                type="text"
                 placeholder="Search here..."
                 className="appearance-none border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
               />
