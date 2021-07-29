@@ -3,7 +3,7 @@ import { upperCase } from "lodash";
 import React from "react";
 import { ScrollMenu } from "react-horizontal-scrolling-menu";
 import { useDispatch, useSelector } from "react-redux";
-import { categoryTabColors } from "utils";
+import { categoryColors, categoryTabColors, repeatFor } from "utils";
 
 function CategoriesScroll({ setOffset }) {
   const dispatch = useDispatch();
@@ -11,6 +11,8 @@ function CategoriesScroll({ setOffset }) {
   const products = useSelector((state) => state.products.products);
   const productCategories = useSelector((state) => state.products.productCategories);
   const categorySelected = useSelector((state) => state.products.categorySelected);
+
+  // console.log(repeatFor(productCategories.length + 1));
 
   const backgroundColors = React.useMemo(() => categoryTabColors(productCategories), [productCategories]);
   const allProductCategories = [
@@ -25,7 +27,7 @@ function CategoriesScroll({ setOffset }) {
 
   return (
     <ScrollMenu LeftArrow={LeftArrow} RightArrow={RightArrow} className="overflow-hidden">
-      <div className="flex justify-center items-center w-full mt-4">
+      <div className="flex justify-center items-center w-full my-4">
         {allProductCategories
           ?.filter((productCatergory) => Boolean(productCatergory))
           ?.map((productCatergory, index) => {

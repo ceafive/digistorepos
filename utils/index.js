@@ -223,7 +223,23 @@ const categoryTabColors = (productCategories) => {
   });
 };
 
+function repeatFor(size) {
+  const newArr = [];
+  let count = 0;
+  let remaining = categoryColors.length;
+  let offset = categoryColors.length;
+
+  for (let i = 0; i < offset; i++) {
+    newArr[i] = categoryColors[i];
+    count++;
+    remaining--;
+  }
+
+  return newArr;
+}
+
 export {
+  categoryColors,
   categoryTabColors,
   configureVariables,
   decodeBase64Image,
@@ -235,5 +251,6 @@ export {
   onSendNotification,
   paymentOptionNames,
   paymentOptions,
+  repeatFor,
   sidebarRoutes,
 };
