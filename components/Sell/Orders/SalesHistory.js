@@ -312,7 +312,7 @@ const SalesHistory = () => {
                         className="w-full"
                         {...register("endDate", { required: `End date required`, valueAsDate: true })}
                         type="date"
-                        min={format(new Date(), "yyyy-MM-dd")}
+                        // min={format(new Date(), "yyyy-MM-dd")}
                         defaultValue={format(new Date(), "yyyy-MM-dd")}
                       />
                       <p className="text-red-500 text-xs">{errors?.endDate?.message}</p>
