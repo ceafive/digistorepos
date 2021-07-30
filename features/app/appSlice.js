@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   openSidebarSecondpane: false,
   secondPaneOpenPathname: "sell",
+  currentUser: null,
 };
 
 const appSlice = createSlice({
@@ -11,6 +12,9 @@ const appSlice = createSlice({
   reducers: {
     onAppLogout() {
       return initialState;
+    },
+    setCurrentUser(state, action) {
+      state.currentUser = action.payload;
     },
     setSidebarSecondPaneOpen(state, action) {
       // state.openSidebarSecondpane = !state.openSidebarSecondpane;
@@ -22,5 +26,5 @@ const appSlice = createSlice({
   },
 });
 
-export const { setSidebarSecondPaneOpen, setSecondPaneOpenPath, onAppLogout } = appSlice.actions;
+export const { setSidebarSecondPaneOpen, setSecondPaneOpenPath, onAppLogout, setCurrentUser } = appSlice.actions;
 export default appSlice.reducer;

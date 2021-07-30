@@ -11,6 +11,7 @@ export const verifyToken = (response) => {
 
   if (status && status === "0") {
     sessionStorage.setItem("IPAYPOSUSER", JSON.stringify(response));
+
     const returnData = {
       error: false,
       success: message,

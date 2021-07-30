@@ -72,7 +72,7 @@ const OutletsPage = () => {
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
-        const res = await axios.post("/api/sell/get-outlets", user);
+        const res = await axios.post("/api/sell/sell/get-outlets", user);
         const { data } = await res.data;
         const { user_assigned_outlets } = user;
 

@@ -36,11 +36,11 @@ const SellPage = () => {
         user = JSON.parse(user);
         const { user_assigned_outlets, user_merchant_group } = user;
 
-        const allProductsRes = await axios.post("/api/sell/get-all-products", { user });
-        const allCategoriesRes = await axios.post("/api/sell/get-all-categories", { user });
-        const deliveryTypesRes = await axios.post("/api/sell/get-delivery-type", { user });
-        const activePaymentsRes = await axios.post("/api/sell/get-active-payments");
-        const outletsRes = await axios.post("/api/sell/get-outlets", { user });
+        const allProductsRes = await axios.post("/api/sell/sell/get-all-products", { user });
+        const allCategoriesRes = await axios.post("/api/sell/sell/get-all-categories", { user });
+        const deliveryTypesRes = await axios.post("/api/sell/sell/get-delivery-type", { user });
+        const activePaymentsRes = await axios.post("/api/sell/sell/get-active-payments");
+        const outletsRes = await axios.post("/api/sell/sell/get-outlets", { user });
 
         const { data: allProductsResData } = await allProductsRes.data;
         const { data: allCategoriesResData } = await allCategoriesRes.data;
@@ -63,9 +63,13 @@ const SellPage = () => {
             dispatch(setAllOutlets(outletsResData));
           }
         } else {
-          const response = intersectionWith(outletsResData, user_assigned_outlets ?? [], (arrVal, othVal) => {
-            return arrVal.outlet_id === othVal;
-          });
+          const response = intersectionWith(
+            filter(outletsResData, (o) => Boolean(o)),
+            user_assigned_outlets ?? [],
+            (arrVal, othVal) => {
+              return arrVal.outlet_id === othVal;
+            }
+          );
 
           if (response.length === 1) {
             dispatch(setOutletSelected(response[0]));
@@ -81,46 +85,69 @@ const SellPage = () => {
     };
 
     fetchItems();
-  }, [dispatch, productsOnHold]);
-
-  // if (fetching || fetching === null) {
-  //   return (
-  //     <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
-  //       <Spinner type="TailSpin" width={50} height={50} />
-  //     </div>
-  //   );
-  // }
+  }, [dispatch]);
 
   if (fetching || fetching === null) {
     return (
-      <SkeletonTheme color="#fff" highlightColor="#eee">
-        {/* <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full"> */}
-        <div className="min-h-screen-75 flex flex-col justify-center pb-6 pt-6">
-          <div className="flex">
-            <div className="w-7/12 xl:w-8/12 px-4">
-              <Skeleton height={50} />
-              <div className="flex w-full justify-between">
-                <Skeleton circle={true} height={100} width={100} />
-                <Skeleton circle={true} height={100} width={100} />
-                <Skeleton circle={true} height={100} width={100} />
-                <Skeleton circle={true} height={100} width={100} />
-                <Skeleton circle={true} height={100} width={100} />
-                <Skeleton circle={true} height={100} width={100} />
-                <Skeleton circle={true} height={100} width={100} />
-                <Skeleton circle={true} height={100} width={100} />
-              </div>
-              <Skeleton height={600} />
-            </div>
-            <div className="w-5/12 xl:w-4/12 px-4">
-              <Skeleton height={50} />
-
-              <Skeleton height={500} />
-            </div>
-          </div>
-        </div>
-      </SkeletonTheme>
+      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
+        <Spinner type="TailSpin" width={50} height={50} />
+      </div>
     );
   }
+
+  // if (fetching || fetching === null) {
+  //   return (
+  //     <SkeletonTheme color="#fff" highlightColor="#eee">
+  //       {/* <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full"> */}
+  //       <div className="min-h-screen-75 flex flex-col justify-center pb-6 pt-6">
+  //         <div className="flex">
+  //           <div className="w-7/12 xl:w-8/12 px-4">
+  //             <Skeleton height={50} />
+  //             <div className="flex w-full justify-between my-4">
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //             </div>
+  //             <div className="flex w-full justify-between">
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //             </div>
+  //             <div className="flex w-full justify-between">
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //             </div>
+  //             <div className="flex w-full justify-between">
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //             </div>
+  //           </div>
+  //           <div className="w-5/12 xl:w-4/12 px-4">
+  //             <Skeleton height={50} />
+
+  //             <Skeleton height={500} />
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </SkeletonTheme>
+  //   );
+  // }
 
   return (
     <div className="pb-6 pt-6">

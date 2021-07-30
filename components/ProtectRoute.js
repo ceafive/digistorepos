@@ -13,6 +13,7 @@ const withAuth = (WrappedComponent) => {
     useEffect(() => {
       const fetchToken = async () => {
         const IPAYPOSUSER = sessionStorage.getItem("IPAYPOSUSER");
+
         if (!IPAYPOSUSER) {
           Router.replace("/auth/login");
         } else {

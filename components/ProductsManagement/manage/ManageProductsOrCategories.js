@@ -90,15 +90,6 @@ const ManageProductsOrCategories = () => {
         >
           Categories
         </button>{" "}
-        {/* {"  | "}
-        <button
-          className={`mx-4 font-bold ${tabSelected === "outlets" ? "text-green-600" : "text-blue-600"} focus:outline-none`}
-          onClick={() => {
-            setTabSelected("outlets");
-          }}
-        >
-          Outlet Products
-        </button> */}
       </div>
       {tabSelected === "products" && <ManageProducts setReRUn={setReRUn} />}
       {tabSelected === "categories" && <ManageCategories setReRUn={setReRUn} />}

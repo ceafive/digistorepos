@@ -1,15 +1,18 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
+import { setCurrentUser } from "features/app/appSlice";
 import Auth from "layouts/Auth.js";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { verifyToken } from "services";
 
 import logo from "../../public/img/brand/brand_logo.jpg";
 
 export default function Login() {
+  const dispatch = useDispatch();
   const router = useRouter();
   const {
     control,
@@ -44,6 +47,7 @@ export default function Login() {
         });
       }
       if (success) {
+        dispatch(setCurrentUser(data));
         router.push("/sell/sell");
       }
     } catch (error) {

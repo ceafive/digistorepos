@@ -8,7 +8,7 @@ import ShowItems from "./ShowItems";
 const Cart = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
-  const salesHistory = useSelector((state) => state.sales.salesHistory);
+  const orderHistory = useSelector((state) => state.orders.orderHistory);
 
   return (
     <div id="cart-section">

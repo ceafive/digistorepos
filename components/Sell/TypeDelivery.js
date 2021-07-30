@@ -44,7 +44,7 @@ const MerchantDeliveryType = () => {
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
-        const res = await axios.post("/api/sell/get-delivery-lov", { user });
+        const res = await axios.post("/api/sell/sell/get-delivery-lov", { user });
         const { data } = await res.data;
         // console.log({ data });
 
@@ -95,7 +95,7 @@ const IPAYDeliveryType = ({ setProcessingDeliveryCharge }) => {
 
       // console.log({ value });
       // return;
-      const response = await axios.post("/api/sell/get-coordinates", { description: value?.value?.description });
+      const response = await axios.post("/api/sell/sell/get-coordinates", { description: value?.value?.description });
       const responsedata = await response.data;
       const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
 
@@ -110,7 +110,7 @@ const IPAYDeliveryType = ({ setProcessingDeliveryCharge }) => {
             destination_gps: stringCoordinates,
           };
 
-          const res = await axios.post("/api/sell/get-ipay-delivery-charge", payload);
+          const res = await axios.post("/api/sell/sell/get-ipay-delivery-charge", payload);
 
           if (Number(res?.data?.status) === 0) {
             let { data } = await res.data;
@@ -200,7 +200,7 @@ const MerchantDistDeliveryType = ({ setProcessingDeliveryCharge }) => {
   React.useEffect(() => {
     const getCoordinates = async () => {
       setProcessingDeliveryCharge(true);
-      const response = await axios.post("/api/sell/get-coordinates", { description: value?.value?.description });
+      const response = await axios.post("/api/sell/sell/get-coordinates", { description: value?.value?.description });
       const responsedata = await response.data;
       const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
 
@@ -217,7 +217,7 @@ const MerchantDistDeliveryType = ({ setProcessingDeliveryCharge }) => {
           };
           //   console.log({ payload });
 
-          const res = await axios.post("/api/sell/get-merchant-dist-charge", payload);
+          const res = await axios.post("/api/sell/sell/get-merchant-dist-charge", payload);
 
           if (Number(res?.data?.status) === 91) {
             addToast(res?.data?.message, { appearance: "error", autoDismiss: true });

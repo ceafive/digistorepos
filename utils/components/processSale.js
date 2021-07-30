@@ -19,7 +19,7 @@ const fetchFeeCharges = async (dispatch, setTransactionFeeCharges, setFetching, 
     const feeCharges = [];
 
     await forEach(userPaymentMethods, async (paymentMethod) => {
-      const res = await axios.post("/api/sell/get-transaction-fee-charges", {
+      const res = await axios.post("/api/sell/sell/get-transaction-fee-charges", {
         merchant: user["user_merchant_id"],
         channel: paymentMethod.method,
         amount: paymentMethod.amount,
@@ -110,7 +110,7 @@ const onSendNotification = async (type = "SMS", setSendingNotification, addToast
       merchant: user["user_merchant_id"],
       mod_by: user["login"],
     };
-    const res = await axios.post("/api/sell/send-notification", payload);
+    const res = await axios.post("/api/sell/sell/send-notification", payload);
     const data = await res.data;
     // console.log(data);
 
@@ -212,7 +212,7 @@ const onRaiseOrder = async (
     // console.log({ payload });
     // return;
 
-    const res = await axios.post("/api/sell/raise-order", payload);
+    const res = await axios.post("/api/sell/sell/raise-order", payload);
     const data = await res.data;
     // console.log(data);
 

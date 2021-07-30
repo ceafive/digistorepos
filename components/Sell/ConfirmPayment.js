@@ -32,7 +32,7 @@ const ConfirmPayment = ({
       try {
         setFetching(true);
         const getResData = async () => {
-          const res = await axios.post("/api/sell/verify-transaction", { user: userDetails, trxID: invoiceDetails?.invoice });
+          const res = await axios.post("/api/sell/sell/verify-transaction", { user: userDetails, trxID: invoiceDetails?.invoice });
           const data = await res.data;
           return data;
         };

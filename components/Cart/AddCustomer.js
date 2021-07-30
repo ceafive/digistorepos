@@ -35,7 +35,7 @@ const AddCustomer = () => {
         setSearching(true);
         setAllCustomers([]);
         dispatch(addCustomer(null));
-        const response = await axios.post("/api/sell/get-customer", { phoneNumber: watchCustomerSearch });
+        const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: watchCustomerSearch });
         const { data } = await response.data;
 
         if (data) {

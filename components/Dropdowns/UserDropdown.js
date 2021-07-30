@@ -2,8 +2,8 @@ import { createPopper } from "@popperjs/core";
 import { onAppLogout } from "features/app/appSlice";
 import { onAppResetCart } from "features/cart/cartSlice";
 import { onAppResetManageProducts } from "features/manageproducts/manageprodcutsSlice";
+import { onAppResetSales } from "features/orders/ordersSlice";
 import { onAppResetProducts } from "features/products/productsSlice";
-import { onAppResetSales } from "features/sales/salesSlice";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -52,13 +52,13 @@ const UserDropdown = () => {
         <button
           className="focus:outline-none text-blueGray-600 px-4 w-full"
           onClick={() => {
+            router.push("/auth/login");
             sessionStorage.removeItem("IPAYPOSUSER");
             dispatch(onAppLogout());
             dispatch(onAppResetCart());
             dispatch(onAppResetManageProducts());
             dispatch(onAppResetProducts());
             dispatch(onAppResetSales());
-            router.push("/auth/login");
           }}
         >
           Logout

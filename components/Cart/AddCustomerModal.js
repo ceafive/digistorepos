@@ -33,11 +33,11 @@ const AddCustomerModal = ({ onClose, setStep }) => {
       if (values?.email) userData["client_email"] = values?.email;
       if (values?.dob) userData["client_dob"] = format(new Date(values?.dob), "dd-MM");
 
-      const response = await axios.post("/api/sell/add-customer", userData);
+      const response = await axios.post("/api/sell/sell/add-customer", userData);
       const { status, message } = await response.data;
 
       if (Number(status) === 0 || Number(status) === 91) {
-        const getCustomerRes = await axios.post("/api/sell/get-customer", { phoneNumber: userData?.client_phone });
+        const getCustomerRes = await axios.post("/api/sell/sell/get-customer", { phoneNumber: userData?.client_phone });
         const { data } = await getCustomerRes.data;
         dispatch(addCustomer(data));
         setStep(2);

@@ -30,7 +30,7 @@ const AddCustomer = () => {
   React.useEffect(() => {
     const fetchCustomerDetails = async () => {
       try {
-        const response = await axios.post("/api/sell/get-customer", { phoneNumber: watchCustomerSearch });
+        const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: watchCustomerSearch });
         const { data } = await response.data;
 
         if (data) {
