@@ -12,8 +12,7 @@ export default function FooterSmall(props) {
                 Copyright © {new Date().getFullYear()}{" "}
                 <a
                   href="https://sell.digistoreafrica.com/"
-                  className="text-blueGray-700 hover:text-blueGray-900 text-sm font-semibold py-1"
-                >
+                  className="text-blueGray-700 hover:text-blueGray-900 text-sm font-semibold py-1">
                   iPay Solutions Ltd
                 </a>
               </div>

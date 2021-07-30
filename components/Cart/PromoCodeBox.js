@@ -25,8 +25,7 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
             onClick={() => {
               setShowPromoCodeBox(false);
               // dispatch(onChangeCartDiscountType("percent"));
-            }}
-          >
+            }}>
             Cancel
           </button>
           <div className="text-center">
@@ -38,8 +37,7 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
               type="button"
               onClick={() => {
                 checkingPromoCode();
-              }}
-            >
+              }}>
               {checking && (
                 <div className="inline-block mr-2">
                   <Spinner type={"TailSpin"} color="black" width="10" height="10" />

@@ -1,6 +1,7 @@
 import { postHandler, getHandler } from "utils";
+import { withSentry } from "@sentry/nextjs";
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const data = req.body;
 
   let url;
@@ -17,3 +18,4 @@ export default async function handler(req, res) {
   // console.log(url);
   // console.log({ data, isAdmin });
 }
+export default withSentry(handler);

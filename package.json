@@ -11,6 +11,7 @@
     "@material-ui/icons": "^4.11.2",
     "@popperjs/core": "2.9.1",
     "@reduxjs/toolkit": "^1.6.0",
+    "@sentry/nextjs": "^6.10.0",
     "@tailwindcss/forms": "0.2.1",
     "axios": "^0.21.1",
     "chart.js": "2.9.4",

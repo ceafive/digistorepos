@@ -67,8 +67,7 @@ const ProcessPayment = ({
           onClick={() => {
             dispatch(onClickToCheckout());
             // dispatch(setProductsOnHold());
-          }}
-        >
+          }}>
           <i className="fas fa-arrow-left mr-1 "></i>
           <span>Back to Sale</span>
         </button>{" "}
@@ -115,8 +114,7 @@ const ProcessPayment = ({
                     dispatch(setPaymentMethodSet(paymentButton.name));
                     setOpenPhoneNumberInputModal(true);
                   }
-                }}
-              >
+                }}>
                 {paymentOptionNames[paymentButton.name]}
                 {/* <img src={paymentButton.img} alt={paymentButton.name} /> */}
               </button>
@@ -140,8 +138,7 @@ const ProcessPayment = ({
                   } w-36 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
                   onClick={() => {
                     dispatch(setOutletSelected(outlet));
-                  }}
-                >
+                  }}>
                   {outlet.outlet_name}
                 </button>
               );
@@ -177,8 +174,7 @@ const ProcessPayment = ({
                         dispatch(setDeliveryNotes(""));
                       }
                       dispatch(setDeliveryTypeSelected(option?.name));
-                    }}
-                  >
+                    }}>
                     {option.name}
                   </button>
                 </div>
@@ -209,8 +205,7 @@ const ProcessPayment = ({
                 className=" focus:outline-none font-bold"
                 onClick={() => {
                   dispatch(addCustomer(null));
-                }}
-              >
+                }}>
                 <i className="fas fa-trash-alt text-red-500"></i>
               </button>
             </div>
@@ -268,8 +263,7 @@ const ProcessPayment = ({
               ? "bg-gray-400 text-gray-300"
               : "bg-green-700 text-white"
           } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}
-          onClick={handleRaiseOrder}
-        >
+          onClick={handleRaiseOrder}>
           {fetching && (
             <div className="inline-block mr-2">
               <Spinner type={"TailSpin"} color="black" width={20} height={20} />

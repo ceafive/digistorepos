@@ -108,7 +108,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           const variantName = capitalize(values[0]);
           const variantsStringArray = map(
             filter(map(split(values[1], ","), trim), (o) => Boolean(o)),
-            capitalize
+            capitalize,
           );
 
           const entries = variantsStringArray.reduce((acc, value, index) => {
@@ -236,7 +236,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
               {productWithVariants?.variants?.map((variant, index) => {
                 const variantValues = map(
                   filter(map(split(variant?.values, ","), trim), (o) => Boolean(o)),
-                  capitalize
+                  capitalize,
                 );
                 const capitalizeName = capitalize(variant?.name);
 
@@ -246,8 +246,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                     <div className="">
                       <select
                         {...register(capitalizeName, { required: `${capitalizeName} is required` })}
-                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white"
-                      >
+                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white">
                         <option value="" disabled>{`Select ${capitalizeName}`}</option>
                         {variantValues.map((variantValue) => (
                           <option key={variantValue} value={variantValue}>
@@ -266,8 +265,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                   className="text-white font-bold px-6 py-2 bg-green-500 rounded shadow mx-4"
                   onClick={() => {
                     handleSubmit(addVariantRow)();
-                  }}
-                >
+                  }}>
                   Add
                 </button>
               </div>
@@ -334,8 +332,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                           onClick={() => {
                             const result = omit(varianceDistribution, [formattedVarianceKey]);
                             setVarianceDistribution(result);
-                          }}
-                        >
+                          }}>
                           <button className="focus:outline-none">
                             <i className="fas fa-trash-alt text-white"></i>
                           </button>
@@ -357,8 +354,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                 className="bg-black text-white px-6 py-3 rounded font-bold mr-2 focus:outline-none"
                 onClick={() => {
                   setGoToVarianceConfig(false);
-                }}
-              >
+                }}>
                 Back
               </button>
             </div>
@@ -369,8 +365,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                 }  px-6 py-3 w-full rounded font-semibold focus:outline-none`}
                 onClick={() => {
                   handleCreateProduct();
-                }}
-              >
+                }}>
                 {isProcessing && (
                   <div className="inline-block mr-2">
                     <Spinner type={"TailSpin"} color="black" width={10} height={10} />

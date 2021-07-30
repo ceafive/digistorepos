@@ -20,8 +20,7 @@ export default function AlertDialogSlide({ maxWidth = "md", open = false, onClos
       fullWidth
       maxWidth={maxWidth}
       PaperProps={{ className: classes.paymentContainer }}
-      onClose={onClose}
-    >
+      onClose={onClose}>
       <div className="relative h-full flex flex-col justify-center items-center m-3 border border-gray-200 bg-white rounded-xl text-center font-semibold">
         <button className="absolute right-0 top-0 p-2 pt-0 text-2xl focus:outline-none text-red-500" onClick={onClose}>
           <i className="fas fa-times"></i>

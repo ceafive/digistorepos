@@ -122,8 +122,7 @@ const PayButton = () => {
             className="font-bold text-red-500 focus:outline-none"
             onClick={() => {
               dispatch(onResetCart());
-            }}
-          >
+            }}>
             Clear Cart
           </button>
         </div>
@@ -135,8 +134,7 @@ const PayButton = () => {
                 className="font-bold text-blue-500 mr-4 focus:outline-none"
                 onClick={() => {
                   setShowDiscountBox(true);
-                }}
-              >
+                }}>
                 Discount
               </button>
             )}
@@ -145,8 +143,7 @@ const PayButton = () => {
                 className="font-bold text-blue-500 mr-4 focus:outline-none"
                 onClick={() => {
                   setShowPromoCodeBox(true);
-                }}
-              >
+                }}>
                 Promo Code
               </button>
             )}
@@ -154,8 +151,7 @@ const PayButton = () => {
               className="font-bold text-blue-500 focus:outline-none"
               onClick={() => {
                 setShowAddNoteInput(true);
-              }}
-            >
+              }}>
               Note
             </button>
           </div>
@@ -192,8 +188,7 @@ const PayButton = () => {
               onClick={() => {
                 dispatch(onChangeCartDiscountType("percent"));
                 dispatch(setDiscount(""));
-              }}
-            >
+              }}>
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>
             </button>
           </div>
@@ -212,8 +207,7 @@ const PayButton = () => {
               className="justify-self-end focus:outline-none"
               onClick={() => {
                 dispatch(setPromoAmount(0));
-              }}
-            >
+              }}>
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>
             </button>
           </div>
@@ -239,8 +233,7 @@ const PayButton = () => {
           } py-3 px-6  font-medium text-xl rounded`}
           onClick={() => {
             dispatch(onClickToCheckout());
-          }}
-        >
+          }}>
           <div className="flex justify-between">
             <p>
               <span>Pay</span>

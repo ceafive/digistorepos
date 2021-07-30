@@ -115,8 +115,7 @@ const ReceiptsSection = ({ step }) => {
                         //   [paymentMethod.method]: "",
                         // });
                         dispatch(onRemovePaymentMethod(paymentMethod));
-                      }}
-                    >
+                      }}>
                       <i className="fas fa-minus-circle ml-2 text-red-500"></i>
                     </button>
                   )}

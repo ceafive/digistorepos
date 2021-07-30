@@ -70,8 +70,7 @@ const AddCustomer = () => {
               onClick={() => {
                 setStep(1);
                 // setOpenAddCustomerModal(true);
-              }}
-            >
+              }}>
               Add Customer
             </button>
           </div>
@@ -103,8 +102,7 @@ const AddCustomer = () => {
                   setStep(0);
                   setValue("searchCustomer", "");
                   setAllCustomers([]);
-                }}
-              >
+                }}>
                 {searching ? <Spinner width={20} height={20} /> : <i className="fas fa-times-circle"></i>}
               </span>
             </div>
@@ -117,8 +115,7 @@ const AddCustomer = () => {
                 style={{
                   top: 50,
                   // height: allCustomers.length > 0 ? 90 : "auto",
-                }}
-              >
+                }}>
                 {allCustomers.length > 0 ? (
                   allCustomers?.map((customer) => {
                     // console.log(customer);
@@ -131,8 +128,7 @@ const AddCustomer = () => {
                           setStep(2);
                           setAllCustomers([]);
                           // console.log(customer);
-                        }}
-                      >
+                        }}>
                         <div className="flex items-center" key={customer.customer_id}>
                           <div className="flex items-center w-full">
                             <div className="flex justify-between items-center w-full px-1">
@@ -155,8 +151,7 @@ const AddCustomer = () => {
                       className="text-sm text-blue-500 focus:outline-none"
                       onClick={() => {
                         setOpenAddCustomerModal(true);
-                      }}
-                    >
+                      }}>
                       Add New Customer
                     </button>
                   </div>
@@ -181,8 +176,7 @@ const AddCustomer = () => {
                 setValue("searchCustomer", "");
                 setStep(0);
                 setAllCustomers([]);
-              }}
-            >
+              }}>
               <i className="fas fa-trash-alt text-red-500"></i>
             </button>
           </div>

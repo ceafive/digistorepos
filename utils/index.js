@@ -192,7 +192,7 @@ const paymentOptionNames = paymentOptions.reduce(
     ...acc,
     [val?.name]: val?.label,
   }),
-  {}
+  {},
 );
 
 const merchantUserDeliveryOptions = [

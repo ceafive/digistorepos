@@ -58,7 +58,7 @@ const ViewEditAProduct = () => {
         const intersectedOutlets = intersectionWith(
           manageProductOutlets,
           filteredOutlets,
-          (arrVal, othVal) => arrVal?.outlet_id === othVal?.outlet_id
+          (arrVal, othVal) => arrVal?.outlet_id === othVal?.outlet_id,
         );
 
         // merge props

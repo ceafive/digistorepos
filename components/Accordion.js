@@ -72,14 +72,14 @@ const Accordion = ({ product, index }) => {
           changeItemPropsInCart({
             ...product,
             [field]: value,
-          })
+          }),
         );
       } else {
         dispatch(
           changeItemPropsInCart({
             ...product,
             [field]: stock_level,
-          })
+          }),
         );
       }
     } else if (field === "discount") {
@@ -97,14 +97,14 @@ const Accordion = ({ product, index }) => {
         changeItemPropsInCart({
           ...product,
           [field]: value,
-        })
+        }),
       );
     } else {
       dispatch(
         changeItemPropsInCart({
           ...product,
           [field]: value,
-        })
+        }),
       );
     }
   };
@@ -145,8 +145,7 @@ const Accordion = ({ product, index }) => {
               className="justify-self-end focus:outline-none"
               onClick={() => {
                 dispatch(removeItemFromCart(product?.uniqueId));
-              }}
-            >
+              }}>
               <i className="fas fa-trash-alt text-red-500 text-sm"></i>
             </button>
           </div>
@@ -232,8 +231,7 @@ const Accordion = ({ product, index }) => {
               onClick={() => {
                 dispatch(setProductToView(product));
                 dispatch(openInventoryModal());
-              }}
-            >
+              }}>
               <span>
                 <i className="fas fa-info-circle mr-1"></i>
               </span>

@@ -70,9 +70,9 @@ const ProcessSale = () => {
     setPayerAmountEntered(
       Number(
         parseFloat(
-          amountReceivedFromPayer >= cartTotalMinusDiscountPlusTax ? 0 : cartTotalMinusDiscountPlusTax - amountReceivedFromPayer
-        ).toFixed(2)
-      )
+          amountReceivedFromPayer >= cartTotalMinusDiscountPlusTax ? 0 : cartTotalMinusDiscountPlusTax - amountReceivedFromPayer,
+        ).toFixed(2),
+      ),
     );
   }, [amountReceivedFromPayer, cartTotalMinusDiscountPlusTax]);
 
@@ -91,7 +91,7 @@ const ProcessSale = () => {
       setOpenPhoneNumberInputModal,
       reset,
       currentCustomer,
-      values
+      values,
     );
 
   const handlePrint = useReactToPrint({
@@ -114,7 +114,7 @@ const ProcessSale = () => {
       products,
       fees,
       saleTotal,
-      user
+      user,
     );
 
   return (

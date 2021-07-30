@@ -18,8 +18,7 @@ const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantN
           setProductPrice(Number(parseFloat(item?.property_price).toFixed(2)));
         }
         setStep(step + 1);
-      }}
-    >
+      }}>
       {item.property_value}
     </button>
   );
@@ -38,7 +37,7 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
       function (result, value, key) {
         return { ...result, [capitalize(key)]: value };
       },
-      {}
+      {},
     );
 
     const { Quantity, ...rest } = res;
@@ -89,7 +88,7 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
             {
               appearance: "warning",
               autoDismiss: true,
-            }
+            },
           );
         }
         submitFormData({ ...formData, QUANTITY: quantity });
@@ -114,8 +113,7 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
             className="font-bold border border-gray-200 focus:outline-none w-32 h-32"
             onClick={() => {
               checkProductQuantity(product, quantity); //check stock quantity before add to cart
-            }}
-          >
+            }}>
             {quantity}
           </button>
         );
@@ -229,7 +227,7 @@ const ProductDetails = ({ onClose }) => {
               appearance: `info`,
               autoDismiss: true,
               autoDismissTimeout: 50000,
-            }
+            },
           );
         } else {
           removeAllToasts();
@@ -251,8 +249,7 @@ const ProductDetails = ({ onClose }) => {
           showArrows={false}
           showIndicators={false}
           showThumbs={false}
-          className="flex flex-col justify-center items-center w-full h-full"
-        >
+          className="flex flex-col justify-center items-center w-full h-full">
           {product?.product_images && product?.product_images?.length > 0 ? (
             product?.product_images?.map((product_image) => {
               return (
@@ -309,8 +306,7 @@ const ProductDetails = ({ onClose }) => {
                               const sliced = stepsClicked.slice(0, index);
                               // const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
                               setStepsClicked(sliced);
-                            }}
-                          >
+                            }}>
                             <span className="border-b-2 border-blue-500">{stepClicked?.variantName}</span>
                             <span> {">"}</span>
                           </button>
@@ -350,8 +346,7 @@ const ProductDetails = ({ onClose }) => {
                           setStepsClicked(sliced);
                         }}
                         key={stepClicked?.variantName}
-                        className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2 mr-2 focus:outline-none "
-                      >
+                        className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2 mr-2 focus:outline-none ">
                         <span className="border-b-2 border-blue-500">{stepClicked?.variantName}</span>
                         <span> {">"}</span>
                       </button>

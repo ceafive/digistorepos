@@ -1,11 +1,12 @@
 import { decodeBase64Image, postHandler } from "utils";
+import { withSentry } from "@sentry/nextjs";
 
 const fs = require("fs");
 const path = require("path");
 
 const FormData = require("form-data");
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const form = new FormData();
   const payload = req.body.data;
   const url = `/products/product/update/mobile`;
@@ -27,3 +28,4 @@ export default async function handler(req, res) {
 
   await postHandler(req, res, url, form, form?.getHeaders(), true);
 }
+export default withSentry(handler);

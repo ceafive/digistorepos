@@ -10,8 +10,7 @@ export default function Auth({ children }) {
             className="absolute top-0 w-full h-full bg-white bg-no-repeat bg-full"
             style={{
               backgroundImage: "url('/img/register_bg_2.png')",
-            }}
-          ></div>
+            }}></div>
           {children}
           <FooterSmall absolute />
         </section>

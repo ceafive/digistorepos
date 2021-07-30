@@ -21,10 +21,9 @@ const Outlet = ({ outlet }) => {
             category_id: "ALL",
             category_name: "ALL",
             category_description: "All Categories",
-          })
+          }),
         );
-      }}
-    >
+      }}>
       <div className="w-full h-full rounded-xl shadow-lg overflow-hidden">
         <div className="relative" style={{ paddingBottom: "75%" }}>
           <img className="absolute object-cover w-full h-full" src={outlet.outlet_image} alt={outlet.outlet_name} />

@@ -30,8 +30,7 @@ export default function UploadImage({ maxNumber, classes, setValue, images, setI
           errors.maxFileSize &&
             addToast(`Selected file size exceed maxFileSize of 2000000 bytes`, { appearance: `error`, autoDismiss: true });
           errors.resolution && addToast(`Selected file is not match your desired resolution`, { appearance: `error`, autoDismiss: true });
-        }}
-      >
+        }}>
         {({ imageList, onImageUpload, onImageRemoveAll, onImageUpdate, onImageRemove, isDragging, dragProps }) => (
           // write your building UI
           <div className="w-full h-full">
@@ -61,8 +60,7 @@ export default function UploadImage({ maxNumber, classes, setValue, images, setI
                             } else {
                               onImageRemove(index);
                             }
-                          }}
-                        >
+                          }}>
                           <i className="fas fa-trash-alt text-red-500"></i>
                         </button>
                       </div>
@@ -75,8 +73,7 @@ export default function UploadImage({ maxNumber, classes, setValue, images, setI
               className={`w-full focus:outline-none font-bold  ${images.length > 0 ? "h-1/2" : "h-full"}`}
               style={isDragging ? { color: "red" } : undefined}
               onClick={onImageUpload}
-              {...dragProps}
-            >
+              {...dragProps}>
               Drag &amp; drop files here or click to add files
             </button>
             &nbsp;

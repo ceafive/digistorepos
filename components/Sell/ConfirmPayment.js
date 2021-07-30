@@ -148,8 +148,7 @@ const ConfirmPayment = ({
                     dispatch(setProductsOnHold());
                   })()
                 : setTicking(true);
-            }}
-          >
+            }}>
             {fetching && (
               <div className="inline-block mr-2">
                 <Spinner type={"TailSpin"} color="green" width={20} height={20} timeout={3000000} />

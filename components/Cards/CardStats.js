@@ -24,8 +24,7 @@ export default function CardStats({
               <div
                 className={
                   "text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full " + statIconColor
-                }
-              >
+                }>
                 <i className={statIconName}></i>
               </div>
             </div>

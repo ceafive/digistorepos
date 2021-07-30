@@ -119,7 +119,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           const variantName = capitalize(values[0]);
           const variantsStringArray = map(
             filter(map(split(values[1], ","), trim), (o) => Boolean(o)),
-            capitalize
+            capitalize,
           );
 
           const entries = variantsStringArray.reduce((acc, value, index) => {
@@ -321,7 +321,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
               {sortBy(productWithVariants?.variants, (o) => o?.name)?.map((variant, index) => {
                 const variantValues = map(
                   filter(map(split(variant?.values, ","), trim), (o) => Boolean(o)),
-                  capitalize
+                  capitalize,
                 );
                 const capitalizeName = capitalize(variant?.name);
 
@@ -331,8 +331,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                     <div className="">
                       <select
                         {...register(capitalizeName, { required: `${capitalizeName} is required` })}
-                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white"
-                      >
+                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white">
                         <option value="" disabled>{`Select ${capitalizeName}`}</option>
                         {variantValues.map((variantValue) => (
                           <option key={variantValue} value={variantValue}>
@@ -451,8 +450,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                               const result = omit(varianceDistribution, [formattedVarianceKey]);
                               setVarianceDistribution(result);
                             }
-                          }}
-                        >
+                          }}>
                           <i className="fas fa-trash-alt text-white"></i>
                         </button>
                       </div>
@@ -472,8 +470,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                 className="bg-black text-white px-6 py-3 rounded font-bold mr-2 focus:outline-none"
                 onClick={() => {
                   setGoToVarianceConfig(false);
-                }}
-              >
+                }}>
                 Back
               </button>
             </div>
@@ -484,8 +481,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                 }  px-6 py-3 w-full rounded font-semibold focus:outline-none`}
                 onClick={() => {
                   handleUpdateProduct();
-                }}
-              >
+                }}>
                 {isProcessing && (
                   <div className="inline-block mr-2">
                     <Spinner type={"TailSpin"} color="black" width={10} height={10} />

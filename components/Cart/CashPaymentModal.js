@@ -10,7 +10,7 @@ const CashPaymentModal = ({ onClose, payerAmountEntered, cartTotalMinusDiscountP
       setAmountReceivedFromPayer({
         method: "CASH",
         amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
-      })
+      }),
     );
 
     onClose();

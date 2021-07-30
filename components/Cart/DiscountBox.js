@@ -21,8 +21,7 @@ const DiscountBox = ({ setShowDiscountBox }) => {
                 className="focus:outline-none h-full w-full"
                 onClick={() => {
                   dispatch(onChangeCartDiscountType("percent"));
-                }}
-              >
+                }}>
                 %
               </button>
             </div>
@@ -31,8 +30,7 @@ const DiscountBox = ({ setShowDiscountBox }) => {
                 className="focus:outline-none h-full w-full"
                 onClick={() => {
                   dispatch(onChangeCartDiscountType("amount"));
-                }}
-              >
+                }}>
                 ₵
               </button>
             </div>
@@ -56,8 +54,7 @@ const DiscountBox = ({ setShowDiscountBox }) => {
             onClick={() => {
               setShowDiscountBox(false);
               dispatch(onChangeCartDiscountType("percent"));
-            }}
-          >
+            }}>
             Cancel
           </button>
           <button
@@ -65,8 +62,7 @@ const DiscountBox = ({ setShowDiscountBox }) => {
             onClick={() => {
               dispatch(setDiscount(amount));
               setShowDiscountBox(false);
-            }}
-          >
+            }}>
             Add
           </button>
         </div>

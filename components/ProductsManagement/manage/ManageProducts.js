@@ -260,8 +260,7 @@ const ManageProducts = ({ setReRUn }) => {
                 className="bg-green-600 px-2 py-1 rounded text-white font-semibold focus:ring focus:outline-none focus:ring-green-500"
                 onClick={() => {
                   router.push("/products/create");
-                }}
-              >
+                }}>
                 Create New Product
               </button>
             </div>
@@ -271,8 +270,7 @@ const ManageProducts = ({ setReRUn }) => {
                 <label className="text-sm leading-none  font-bold">Product Categories</label>
                 <select
                   {...register("productCategory")}
-                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white"
-                >
+                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white">
                   <option value="All">{`All`}</option>
                   {manageProductCategories?.map((category) => {
                     return (
@@ -353,8 +351,7 @@ const ManageProducts = ({ setReRUn }) => {
                           className="bg-red-500 text-white px-4 py-2 rounded shadow-sm focus:outline-none focus:ring-red-600 focus:ring-2"
                           onClick={() => {
                             deleteVariant(rowData, detailRowData);
-                          }}
-                        >
+                          }}>
                           Delete
                         </button>
                       );

@@ -123,8 +123,7 @@ export default function Login() {
                         processing ? "bg-gray-300 text-gray-200" : "bg-green-600 text-white"
                       } active:bg-green-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150`}
                       type="button"
-                      onClick={handleSubmit(handleUserSignIn)}
-                    >
+                      onClick={handleSubmit(handleUserSignIn)}>
                       {processing && (
                         <div className="inline-block mr-2">
                           <Spinner type={"TailSpin"} color="black" width="10" height="10" />
@@ -141,8 +140,7 @@ export default function Login() {
                         className="underline"
                         href="https://sell.digistoreafrica.com/digistore-terms-conditions/"
                         target="_blank"
-                        rel="noreferrer"
-                      >
+                        rel="noreferrer">
                         Terms of Use
                       </a>{" "}
                       and{" "}
@@ -150,8 +148,7 @@ export default function Login() {
                         className="underline"
                         href="https://sell.digistoreafrica.com/digistore-privacy-policy/"
                         target="_blank"
-                        rel="noreferrer"
-                      >
+                        rel="noreferrer">
                         Privacy Policy
                       </a>
                     </p>

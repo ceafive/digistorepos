@@ -77,8 +77,7 @@ const ManageProductsOrCategories = () => {
           className={`mx-2 font-bold ${tabSelected === "products" ? "text-green-600" : "text-blue-600"}  focus:outline-none`}
           onClick={() => {
             setTabSelected("products");
-          }}
-        >
+          }}>
           Products
         </button>{" "}
         {"  | "}
@@ -86,8 +85,7 @@ const ManageProductsOrCategories = () => {
           className={`mx-2 font-bold ${tabSelected === "categories" ? "text-green-600" : "text-blue-600"} focus:outline-none`}
           onClick={() => {
             setTabSelected("categories");
-          }}
-        >
+          }}>
           Categories
         </button>{" "}
       </div>

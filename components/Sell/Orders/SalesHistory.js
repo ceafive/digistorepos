@@ -15,6 +15,7 @@ import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import axios from "axios";
+import Modal from "components/Modal";
 import Spinner from "components/Spinner";
 import { format, startOfMonth } from "date-fns";
 import { setOrderHistory } from "features/orders/ordersSlice";
@@ -24,8 +25,8 @@ import MaterialTable from "material-table";
 import React, { forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+
 import OrderDetailsComponent from "./OrderDetailsComponent";
-import Modal from "components/Modal";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -93,7 +94,7 @@ const SalesHistory = () => {
             user?.user_assigned_outlets ?? [],
             (arrVal, othVal) => {
               return arrVal.outlet_id === othVal;
-            }
+            },
           );
 
           const outletsString = map(response, (o) => o?.outlet_id).join(",");
@@ -259,7 +260,7 @@ const SalesHistory = () => {
       if (!isAdmin) {
         const stringedOutlets = map(
           intersectionWith(outlets, user?.user_assigned_outlets ?? [], (arrVal, othVal) => arrVal.outlet_id === othVal),
-          (o) => o?.outlet_id
+          (o) => o?.outlet_id,
         ).join(",");
 
         const outletsString = values?.outletSelected === "All" ? stringedOutlets : values?.outletSelected;
@@ -326,8 +327,7 @@ const SalesHistory = () => {
                   <label className="text-sm leading-none font-bold">Outlets</label>
                   <select
                     {...register("outletSelected")}
-                    className="block appearance-none w-full border border-gray-200 text-gray-700 py-3 rounded focus:outline-none focus:ring-1 bg-white"
-                  >
+                    className="block appearance-none w-full border border-gray-200 text-gray-700 py-3 rounded focus:outline-none focus:ring-1 bg-white">
                     <option value="All">{`All Outlets`}</option>
                     {outlets?.map((outlet) => {
                       return (
@@ -347,8 +347,7 @@ const SalesHistory = () => {
                   className={`${
                     fetching ? `bg-gray-200` : `bg-blue-600  focus:ring focus:ring-blue-500`
                   }  px-12 py-3 rounded text-white font-semibold focus:outline-none mt-5 ml-5 h-auto`}
-                  onClick={handleSubmit(handleSubmitQuery)}
-                >
+                  onClick={handleSubmit(handleSubmitQuery)}>
                   Query
                 </button>
               </div>

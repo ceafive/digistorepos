@@ -1,6 +1,8 @@
 import { getHandler } from "utils";
+import { withSentry } from "@sentry/nextjs";
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const url = `/vendors/payment/services/active`;
   await getHandler(req, res, url);
 }
+export default withSentry(handler);
