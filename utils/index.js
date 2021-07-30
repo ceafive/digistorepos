@@ -1,5 +1,6 @@
 import { axiosIPAY } from "services/axios";
 import { cors } from "services/middlewares";
+import * as Sentry from "@sentry/nextjs";
 
 import { configureVariables, fetchFeeCharges, onAddPayment, onRaiseOrder, onSendNotification } from "./components/processSale";
 import { sidebarRoutes } from "./routes";
@@ -79,7 +80,7 @@ export async function deleteHandler(req, res, url) {
     } else {
       errorResponse = { error: error.message };
     }
-    return res.status(error.response.status).json(errorResponse);
+    return res.status(400).json(errorResponse);
   }
 }
 
@@ -105,7 +106,7 @@ export async function postHandler(req, res, url, data, additionalHeaders = {}, u
     } else {
       errorResponse = { error: error.message };
     }
-    return res.status(error.response.status).json(errorResponse);
+    return res.status(400).json(errorResponse);
   }
 }
 
@@ -134,7 +135,7 @@ export async function putHandler(req, res, url, data, additionalHeaders = {}) {
     } else {
       errorResponse = { error: error.message };
     }
-    return res.status(error.response.status).json(errorResponse);
+    return res.status(400).json(errorResponse);
   }
 }
 
@@ -158,7 +159,7 @@ export async function getHandler(req, res, url) {
     } else {
       errorResponse = { error: error.message };
     }
-    return res.status(error.response.status).json(errorResponse);
+    return res.status(400).json(errorResponse);
   }
 }
 
@@ -192,7 +193,7 @@ const paymentOptionNames = paymentOptions.reduce(
     ...acc,
     [val?.name]: val?.label,
   }),
-  {},
+  {}
 );
 
 const merchantUserDeliveryOptions = [
@@ -237,6 +238,14 @@ function repeatFor(size) {
 
   return newArr;
 }
+
+export const sentryErrorLogger = (...params) => {
+  Sentry.captureException(...params);
+};
+
+export const sentrySetUser = (...params) => {
+  Sentry.setUser(...params);
+};
 
 export {
   categoryColors,
