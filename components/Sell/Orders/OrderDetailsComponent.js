@@ -43,7 +43,7 @@ const OrderDetailsComponent = ({ orderNo, user }) => {
       const { data: orderItemsResData } = await orderItemsRes.data;
       const merged = { ...orderResData, items: (orderItemsResData ?? []).filter((item) => Boolean(item)) };
       setOrderDetails(merged);
-      //   console.log(merged);
+      // console.log(merged);
 
       setFetching(false);
     })();
@@ -55,7 +55,8 @@ const OrderDetailsComponent = ({ orderNo, user }) => {
         className="flex justify-center items-center h-full min-w-screen"
         style={{
           height: 300,
-        }}>
+        }}
+      >
         <Spinner type="TailSpin" width={30} height={30} />
       </div>
     );
@@ -68,7 +69,8 @@ const OrderDetailsComponent = ({ orderNo, user }) => {
         <p
           className={`bg-${statusColors[orderDetails?.order_status]?.bg} text-${
             statusColors[orderDetails?.order_status]?.text
-          } ml-5 px-6 py-2 rounded-2xl font-semibold text-xs`}>
+          } ml-5 px-6 py-2 rounded-2xl font-semibold text-xs`}
+        >
           {statusColors[orderDetails?.order_status]?.message}
         </p>
       </div>
