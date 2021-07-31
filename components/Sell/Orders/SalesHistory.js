@@ -185,11 +185,9 @@ const SalesHistory = () => {
     {
       title: "Delivery Location",
       field: "delivery_location",
-      cellStyle() {
-        return {
-          width: "100%",
-          minWidth: 300,
-        };
+      cellStyle: {
+        width: "100%",
+        minWidth: 300,
       },
     },
     {
@@ -216,7 +214,7 @@ const SalesHistory = () => {
       field: "recipient_contact",
     },
     {
-      title: "Phone Created By",
+      title: "Created By",
       field: "created_by_name",
     },
     {
