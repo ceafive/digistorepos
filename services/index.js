@@ -22,7 +22,7 @@ export const verifyToken = (response) => {
 
     if ("sid" in response) {
       returnData["verified"] = true;
-      sentrySetUser({ id: response?.sid, name: response?.login, loginDate: format(new Date(), "iii, d MMM yy h:mmaaa") });
+      sentrySetUser({ id: response?.sid, username: response?.login, loginDate: format(new Date(), "iii, d MMM yy h:mmaaa") });
     }
     return returnData;
   }

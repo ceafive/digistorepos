@@ -80,8 +80,8 @@ export async function deleteHandler(req, res, url) {
     } else {
       errorResponse = { error: error.message };
     }
-    sentryErrorLogger(error);
-    return res.status(400).json(errorResponse);
+    res.status(400).json(errorResponse);
+    return sentryErrorLogger(error);
   }
 }
 
@@ -107,8 +107,8 @@ export async function postHandler(req, res, url, data, additionalHeaders = {}, u
     } else {
       errorResponse = { error: error.message };
     }
-    sentryErrorLogger(error);
-    return res.status(400).json(errorResponse);
+    res.status(400).json(errorResponse);
+    return sentryErrorLogger(error);
   }
 }
 
@@ -137,8 +137,8 @@ export async function putHandler(req, res, url, data, additionalHeaders = {}) {
     } else {
       errorResponse = { error: error.message };
     }
-    sentryErrorLogger(error);
-    return res.status(400).json(errorResponse);
+    res.status(400).json(errorResponse);
+    return sentryErrorLogger(error);
   }
 }
 
@@ -162,8 +162,8 @@ export async function getHandler(req, res, url) {
     } else {
       errorResponse = { error: error.message };
     }
-    sentryErrorLogger(error);
-    return res.status(400).json(errorResponse);
+    res.status(400).json(errorResponse);
+    return sentryErrorLogger(error);
   }
 }
 

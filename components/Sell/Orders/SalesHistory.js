@@ -25,6 +25,7 @@ import MaterialTable from "material-table";
 import React, { forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+import AssignOrderToRider from "./AssignOrderToRider";
 
 import OrderDetailsComponent from "./OrderDetailsComponent";
 
@@ -66,6 +67,8 @@ const SalesHistory = () => {
   const [outletsString, setOutletsString] = React.useState("");
   const [openModal, setOpenModal] = React.useState(false);
   const [orderNo, setOrderNo] = React.useState(null);
+  const [componentToRender, setComponentToRender] = React.useState("details");
+  const [reRun, setReRun] = React.useState(new Date());
   const isAdmin = upperCase(user?.user_merchant_group) === "ADMINISTRATORS" ? true : false;
 
   React.useEffect(() => {
@@ -85,6 +88,7 @@ const SalesHistory = () => {
 
         const outletsRes = await axios.post("/api/sell/sell/get-outlets", { user });
         const { data: outletsResData } = await outletsRes.data;
+        // console.log(outletsResData);
 
         if (isAdmin) {
           dispatch(setAllOutlets(filter(outletsResData, (o) => Boolean(o))));
@@ -94,7 +98,7 @@ const SalesHistory = () => {
             user?.user_assigned_outlets ?? [],
             (arrVal, othVal) => {
               return arrVal.outlet_id === othVal;
-            },
+            }
           );
 
           const outletsString = map(response, (o) => o?.outlet_id).join(",");
@@ -115,7 +119,7 @@ const SalesHistory = () => {
     };
 
     fetchItems();
-  }, [dispatch]);
+  }, [dispatch, reRun]);
 
   const columns = [
     {
@@ -215,34 +219,42 @@ const SalesHistory = () => {
       title: "Phone Created By",
       field: "created_by_name",
     },
-
-    // {
-    //   title: "Actions",
-    //   field: "actions",
-    //   render: (rowData) => {
-    //     const icons = [
-    //       {
-    //         name: "share",
-    //         action: () => {},
-    //       },
-    //       {
-    //         name: "envelope",
-    //         action: () => {},
-    //       },
-    //       {
-    //         name: "print",
-    //         action: () => {},
-    //       },
-    //     ];
-    //     return (
-    //       <div className="flex items-center justify-between">
-    //         {icons.map((icon) => {
-    //           return <i key={icon.name} className={`fas fa-${icon.name} text-gray-200`} />;
-    //         })}
-    //       </div>
-    //     );
-    //   },
-    // },
+    {
+      title: "Actions",
+      field: "actions",
+      disableClick: true,
+      render: (rowData) => {
+        const icons = [
+          {
+            name: "motorcycle",
+            action: () => {
+              setComponentToRender("rider");
+              setOrderNo(rowData?.order_no);
+              setOpenModal(true);
+            },
+          },
+          {
+            name: "envelope",
+            action: () => {},
+          },
+          {
+            name: "print",
+            action: () => {},
+          },
+        ];
+        return (
+          <div className="flex items-center justify-between">
+            {icons.map((icon) => {
+              return (
+                <button key={icon.name} className={` text-blue-500 outline-none`} onClick={icon?.action}>
+                  <i key={icon.name} className={`fas fa-${icon.name} 0`} />
+                </button>
+              );
+            })}
+          </div>
+        );
+      },
+    },
   ];
 
   const handleSubmitQuery = async (values) => {
@@ -260,7 +272,7 @@ const SalesHistory = () => {
       if (!isAdmin) {
         const stringedOutlets = map(
           intersectionWith(outlets, user?.user_assigned_outlets ?? [], (arrVal, othVal) => arrVal.outlet_id === othVal),
-          (o) => o?.outlet_id,
+          (o) => o?.outlet_id
         ).join(",");
 
         const outletsString = values?.outletSelected === "All" ? stringedOutlets : values?.outletSelected;
@@ -281,7 +293,10 @@ const SalesHistory = () => {
   return (
     <>
       <Modal open={openModal} onClose={() => setOpenModal(false)} maxWidth="md">
-        <OrderDetailsComponent orderNo={orderNo} user={user} onClose={() => setOpenModal(false)} />
+        {componentToRender === "details" && <OrderDetailsComponent orderNo={orderNo} user={user} onClose={() => setOpenModal(false)} />}
+        {componentToRender === "rider" && (
+          <AssignOrderToRider orderNo={orderNo} user={user} onClose={() => setOpenModal(false)} setReRun={setReRun} />
+        )}
       </Modal>
       <div className="flex w-full h-full">
         <div className="w-full pb-6 pt-12">
@@ -327,7 +342,8 @@ const SalesHistory = () => {
                   <label className="text-sm leading-none font-bold">Outlets</label>
                   <select
                     {...register("outletSelected")}
-                    className="block appearance-none w-full border border-gray-200 text-gray-700 py-3 rounded focus:outline-none focus:ring-1 bg-white">
+                    className="block appearance-none w-full border border-gray-200 text-gray-700 py-3 rounded focus:outline-none focus:ring-1 bg-white"
+                  >
                     <option value="All">{`All Outlets`}</option>
                     {outlets?.map((outlet) => {
                       return (
@@ -347,7 +363,8 @@ const SalesHistory = () => {
                   className={`${
                     fetching ? `bg-gray-200` : `bg-blue-600  focus:ring focus:ring-blue-500`
                   }  px-12 py-3 rounded text-white font-semibold focus:outline-none mt-5 ml-5 h-auto`}
-                  onClick={handleSubmit(handleSubmitQuery)}>
+                  onClick={handleSubmit(handleSubmitQuery)}
+                >
                   Query
                 </button>
               </div>
@@ -368,6 +385,7 @@ const SalesHistory = () => {
             }
           }
           onRowClick={(event, rowData) => {
+            setComponentToRender("details");
             setOrderNo(rowData?.order_no);
             setOpenModal(true);
           }}
