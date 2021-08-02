@@ -91,8 +91,8 @@ const SalesHistory = () => {
         const data = {
           merchant: user?.user_merchant_id,
           outlet: "",
-          start_date: format(formCurrentValues?.startDate, "dd-MM-yyyy"),
-          end_date: format(formCurrentValues?.endDate, "dd-MM-yyyy"),
+          start_date: format(formCurrentValues?.startDate || startOfMonth(new Date()), "dd-MM-yyyy"),
+          end_date: format(formCurrentValues?.endDate || new Date(), "dd-MM-yyyy"),
           isAdmin,
         };
 
@@ -334,7 +334,7 @@ const SalesHistory = () => {
                   <label className="text-sm leading-none  font-bold">Date Range</label>
                   <div className="flex w-full">
                     <div className="w-1/3">
-                      <inpu
+                      <input
                         className="w-full"
                         defaultValue={format(startOfMonth(new Date()), "yyyy-MM-dd")}
                         {...register("startDate", { required: `Start date required`, valueAsDate: true })}
@@ -402,11 +402,9 @@ const SalesHistory = () => {
           icons={tableIcons}
           columns={columns}
           data={orderHistory.map((o) => ({ ...o, tableData: {} }))}
-          options={
-            {
-              // filtering: true,
-            }
-          }
+          options={{
+            filtering: true,
+          }}
           onRowClick={(event, rowData) => {
             setComponentToRender("details");
             setOrder(rowData);
