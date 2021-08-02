@@ -68,7 +68,7 @@ const SellPage = () => {
             user_assigned_outlets ?? [],
             (arrVal, othVal) => {
               return arrVal.outlet_id === othVal;
-            },
+            }
           );
 
           if (response.length === 1) {

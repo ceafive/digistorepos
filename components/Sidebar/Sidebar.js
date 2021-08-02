@@ -19,10 +19,11 @@ const NavLink = ({ sidebarRoute }) => {
           dispatch(
             setSecondPaneOpenPath({
               name: slug,
-            }),
+            })
           );
           dispatch(setSidebarSecondPaneOpen(true));
-        }}>
+        }}
+      >
         <span className={"text-lg py-3 font-bold block " + "text-blueGray-700 hover:text-blueGray-500"}>
           <p>
             <i className={`fas fa-${icon} text-xl text-${iconColor}`}></i>
@@ -54,7 +55,8 @@ const ChildNavLink = ({ childLink }) => {
             router.pathname.indexOf(path) !== -1
               ? "text-lightBlue-500 hover:text-lightBlue-600"
               : "text-blueGray-700 hover:text-blueGray-500"
-          }>
+          }
+        >
           {name}
         </span>
       </button>
@@ -76,7 +78,7 @@ export default function Sidebar() {
       dispatch(
         setSecondPaneOpenPath({
           name: slug,
-        }),
+        })
       );
   }, []);
 
@@ -91,7 +93,8 @@ export default function Sidebar() {
         style={{ top: 70 }}
         className={`side-bar left-0 fixed bottom-0 overflow-y-auto flex-row overflow-hidden ${
           openSidebarSecondpane ? "w-48 xl:w-64" : "w-24 xl:w-32"
-        } z-10`}>
+        } z-10`}
+      >
         <div className={"min-h-full px-0 mx-auto flex w-full shadow-none"}>
           <div className={`first-pane w-24 xl:w-32 bg-blueGray-100`}>
             <ul className="flex-col min-w-full list-none">

@@ -18,8 +18,8 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
       <div>
         {Number(
           parseFloat(
-            amountReceivedFromPayer - cartTotalMinusDiscountPlusTax <= 0 ? 0 : amountReceivedFromPayer - cartTotalMinusDiscountPlusTax,
-          ).toFixed(2),
+            amountReceivedFromPayer - cartTotalMinusDiscountPlusTax <= 0 ? 0 : amountReceivedFromPayer - cartTotalMinusDiscountPlusTax
+          ).toFixed(2)
         ) > 0 && (
           <p className="mt-2 text-4xl 2xl:text-5xl text-blueGray-900">
             <span className="font-bold">Give </span>
@@ -27,10 +27,8 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
               GHS
               {Number(
                 parseFloat(
-                  amountReceivedFromPayer - cartTotalMinusDiscountPlusTax <= 0
-                    ? 0
-                    : amountReceivedFromPayer - cartTotalMinusDiscountPlusTax,
-                ).toFixed(2),
+                  amountReceivedFromPayer - cartTotalMinusDiscountPlusTax <= 0 ? 0 : amountReceivedFromPayer - cartTotalMinusDiscountPlusTax
+                ).toFixed(2)
               )}
             </span>
             <span className="font-bold"> Change</span>
@@ -46,7 +44,8 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             onClick={() => {
               addToast(`Opening print dialog`, { appearance: "info", autoDismiss: true });
               handlePrint();
-            }}>
+            }}
+          >
             <span className="w-6 mr-1">
               <i className="fas fa-print"></i>
             </span>
@@ -59,7 +58,8 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
               className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-xxl  mr-6"
               onClick={() => {
                 handleSendNotification("SMS");
-              }}>
+              }}
+            >
               <span className="w-6 mr-1">
                 <i className="fas fa-sms"></i>
               </span>
@@ -73,7 +73,8 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
               className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-xxl"
               onClick={() => {
                 handleSendNotification("EMAIL");
-              }}>
+              }}
+            >
               <span className="w-6 mr-1">
                 <i className="fas fa-envelope"></i>
               </span>
@@ -102,7 +103,8 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             dispatch(onClickToCheckout(false));
             dispatch(onResetCart());
             dispatch(setProductsOnHold());
-          }}>
+          }}
+        >
           Close Sale
         </button>
       </div>

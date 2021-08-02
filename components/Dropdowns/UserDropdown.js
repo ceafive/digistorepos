@@ -34,7 +34,8 @@ const UserDropdown = () => {
         onClick={(e) => {
           e.preventDefault();
           dropdownPopoverShow ? closeDropdownPopover() : openDropdownPopover();
-        }}>
+        }}
+      >
         <div className="items-center flex">
           <span className="w-10 h-10 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full">
             <img alt="..." className="w-full rounded-full align-middle border-none shadow-lg" src={user?.user_merchant_logo} />
@@ -46,7 +47,8 @@ const UserDropdown = () => {
         className={
           (dropdownPopoverShow ? "block " : "hidden ") +
           "bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg min-w-48"
-        }>
+        }
+      >
         <button
           className="focus:outline-none text-blueGray-600 px-4 w-full"
           onClick={() => {
@@ -57,7 +59,8 @@ const UserDropdown = () => {
             dispatch(onAppResetManageProducts());
             dispatch(onAppResetProducts());
             dispatch(onAppResetSales());
-          }}>
+          }}
+        >
           Logout
         </button>
       </div>

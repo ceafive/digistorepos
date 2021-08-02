@@ -30,7 +30,8 @@ const NoteBox = ({ setShowAddNoteInput }) => {
             onClick={() => {
               setNote("");
               dispatch(onAddCartNote(""));
-            }}>
+            }}
+          >
             <i className="fas fa-times-circle"></i>
           </span>
         </div>
@@ -39,7 +40,8 @@ const NoteBox = ({ setShowAddNoteInput }) => {
             className="text-white font-bold bg-red-700 px-3 py-1 mr-2 rounded"
             onClick={() => {
               setShowAddNoteInput(false);
-            }}>
+            }}
+          >
             Cancel
           </button>
           <button
@@ -47,7 +49,8 @@ const NoteBox = ({ setShowAddNoteInput }) => {
             onClick={() => {
               dispatch(onAddCartNote(note));
               setShowAddNoteInput(false);
-            }}>
+            }}
+          >
             Add
           </button>
         </div>

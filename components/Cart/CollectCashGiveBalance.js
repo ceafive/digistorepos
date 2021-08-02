@@ -37,7 +37,8 @@ const CollectCashGiveBalance = ({ fetching, register, handleSubmit, errors, cart
           onClick={() => {
             // handleSubmit(onAddPayment)();
             handleSubmit((values) => console.log(values))();
-          }}>
+          }}
+        >
           {fetching && (
             <div className="inline-block mr-2">
               <Spinner type={"TailSpin"} color="black" width={10} height={10} />

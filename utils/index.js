@@ -1,6 +1,6 @@
+import * as Sentry from "@sentry/nextjs";
 import { axiosIPAY } from "services/axios";
 import { cors } from "services/middlewares";
-import * as Sentry from "@sentry/nextjs";
 
 import { configureVariables, fetchFeeCharges, onAddPayment, onRaiseOrder, onSendNotification } from "./components/processSale";
 import { sidebarRoutes } from "./routes";

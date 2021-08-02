@@ -65,7 +65,8 @@ function Card({ productCatergory, setOffset, categorySelected, backgroundColor }
       onClick={() => {
         setOffset(0);
         dispatch(onSelectCategory(productCatergory));
-      }}>
+      }}
+    >
       <p>{upperCase(productCatergory?.product_category)}</p>
       <p className="text-xs">{productCatergory?.product_count}</p>
     </button>

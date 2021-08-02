@@ -107,7 +107,8 @@ const CollectUserDetail = ({
             fetching ? "bg-gray-300 text-gray-200" : "bg-green-700 text-white"
           } font-bold px-3 py-3  rounded focus:outline-none ease-linear transition-all duration-150`}
           type="button"
-          onClick={handleSubmit(onAddPayment)}>
+          onClick={handleSubmit(onAddPayment)}
+        >
           {fetching && (
             <div className="inline-block mr-2">
               <Spinner type={"TailSpin"} color="black" width={10} height={10} />

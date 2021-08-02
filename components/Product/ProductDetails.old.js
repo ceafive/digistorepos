@@ -49,7 +49,7 @@ const ProductDetails = ({ onClose }) => {
       function (result, value, key) {
         return { ...result, [key]: IsJsonString(value) ? get(JSON.parse(value), "value") : value };
       },
-      {},
+      {}
     );
     const { quantity, ...rest } = res;
     console.log({ res });
@@ -63,7 +63,7 @@ const ProductDetails = ({ onClose }) => {
         imgURL: product.product_image,
         quantity: Number(quantity),
         variants: rest,
-      }),
+      })
     );
     onClose();
   };
@@ -131,7 +131,8 @@ const ProductDetails = ({ onClose }) => {
                           if (value?.price) {
                             setProductPrice(Number(parseFloat(value?.price).toFixed(2)));
                           }
-                        }}>
+                        }}
+                      >
                         <option value={""}></option>
                         {groupVariant[1].map((variant) => {
                           return (
@@ -141,7 +142,8 @@ const ProductDetails = ({ onClose }) => {
                                 variant?.property_price_set === "YES"
                                   ? JSON.stringify({ value: variant?.property_value, price: variant?.property_price })
                                   : JSON.stringify({ value: variant?.property_value, price: null })
-                              }>
+                              }
+                            >
                               {variant?.property_value}{" "}
                               {`${
                                 variant?.property_price_set === "YES"
@@ -180,7 +182,8 @@ const ProductDetails = ({ onClose }) => {
                 className={`${true ? "bg-green-600 text-white" : "bg-gray-400 text-gray-300"} py-2 px-6 font-semibold text-lg rounded`}
                 onClick={() => {
                   handleSubmit(submitFormData)();
-                }}>
+                }}
+              >
                 Add to Cart
               </button>
             </div>

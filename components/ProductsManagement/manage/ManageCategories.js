@@ -292,7 +292,8 @@ const ManageCategories = ({ setReRUn }) => {
                   setBtnText("Add New Category");
                   setIsEditing(false);
                   setShowAddCategoryModal(true);
-                }}>
+                }}
+              >
                 Add New Category
               </button>
             </div>
@@ -302,7 +303,8 @@ const ManageCategories = ({ setReRUn }) => {
                 <label className="text-sm leading-none  font-bold">Categories</label>
                 <select
                   {...register("productCategory")}
-                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white">
+                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white"
+                >
                   <option value="All">{`All`}</option>
                   {manageProductCategories?.map((category) => {
                     return (

@@ -1,4 +1,4 @@
-import { compose, configureStore } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import * as Sentry from "@sentry/react";
 
 import appSlice from "../features/app/appSlice";
@@ -22,5 +22,5 @@ const rootReducer = {
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
-  // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sentryReduxEnhancer),
+  enhancers: [sentryReduxEnhancer],
 });

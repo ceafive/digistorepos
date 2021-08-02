@@ -24,7 +24,8 @@ const Box = ({ option }) => {
           const data = { ...option, price: Number(parseFloat(price)) };
           dispatch(setDeliveryLocationInputted(option.delivery_location));
           dispatch(setDeliveryCharge(data));
-        }}>
+        }}
+      >
         {option?.delivery_location} {" - "} GHS{option?.delivery_price}
       </button>
     </div>

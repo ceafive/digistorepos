@@ -15,7 +15,8 @@ export default function Navbar() {
       {/* Navbar */}
       <nav
         className="fixed w-full z-50 bg-blueGray-800 text-white md:flex-row md:flex-nowrap md:justify-start flex items-center"
-        style={{ height: 70 }}>
+        style={{ height: 70 }}
+      >
         <div className="flex items-center">
           <Image src={"/img/brand/brand_icon.png"} alt="logo" width={"100%"} height={90} />
         </div>

@@ -296,7 +296,8 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                 <label className="text-sm leading-none  font-bold">Product Category</label>
                 <select
                   {...register("productCategory", { required: "Product category is required" })}
-                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2">
+                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2"
+                >
                   <option value="">{`Select Category`}</option>
                   {manageProductCategories?.map((category) => {
                     return (
@@ -430,11 +431,13 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => {
                     dispatch(setProductHasVariants());
-                  }}>
+                  }}
+                >
                   <div
                     className={`${
                       productHasVariants && "bg-green-400"
-                    } w-10 h-6 flex items-center bg-gray-300 rounded-full p-1 duration-300 ease-in-out`}>
+                    } w-10 h-6 flex items-center bg-gray-300 rounded-full p-1 duration-300 ease-in-out`}
+                  >
                     <div
                       className={`${
                         productHasVariants && "translate-x-4"
@@ -492,7 +495,8 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                                   className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
                                   onClick={() => {
                                     remove(index);
-                                  }}>
+                                  }}
+                                >
                                   <button className="justify-self-end focus:outline-none">
                                     <i className="fas fa-trash-alt text-white"></i>
                                   </button>
@@ -504,7 +508,8 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                                   className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-4 cursor-pointer"
                                   onClick={() => {
                                     append({});
-                                  }}>
+                                  }}
+                                >
                                   <button className="justify-self-end focus:outline-none">
                                     <i className="fas fa-plus text-white" />
                                   </button>
@@ -573,7 +578,8 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
               }  px-6 py-3 w-full rounded font-semibold uppercase focus:outline-none`}
               onClick={() => {
                 buttonParams.buttonAction();
-              }}>
+              }}
+            >
               {isProcessing && (
                 <div className="inline-block mr-2">
                   <Spinner type={"TailSpin"} color="black" width={10} height={10} />

@@ -1,6 +1,7 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
 import { capitalize, filter, intersectionWith, isEqual, join, map, omit, split, trim } from "lodash";
+import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -8,6 +9,7 @@ import { useToasts } from "react-toast-notifications";
 import { v4 as uuidv4 } from "uuid";
 
 const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
+  const router = useRouter();
   const { addToast } = useToasts();
   const {
     control,
@@ -108,7 +110,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           const variantName = capitalize(values[0]);
           const variantsStringArray = map(
             filter(map(split(values[1], ","), trim), (o) => Boolean(o)),
-            capitalize,
+            capitalize
           );
 
           const entries = variantsStringArray.reduce((acc, value, index) => {
@@ -195,24 +197,31 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           barcode,
           is_price_global: "YES",
           outlet_list: JSON.stringify(outlets),
-          $_FILES: imagesToUpload,
           merchant: user["user_merchant_id"],
           mod_by: user["login"],
           property_list: JSON.stringify(property_list),
           variants_options: JSON.stringify(variants_options),
         };
 
-        console.log(payload);
+        // console.log(payload);
         const addProductRes = await axios.post("/api/products/create-product", { data: payload });
 
         const response = await addProductRes.data;
-        console.log(response);
+        // console.log(response);
+
+        if (Number(response?.status) === 0) {
+          addToast(response?.message, { appearance: "success", autoDismiss: true });
+          router.push("/products/manage");
+        } else {
+          addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
+          setIsProcessing(false);
+        }
       } else {
         addToast("Please fix errors", { appearance: "error", autoDismiss: true });
+        setIsProcessing(false);
       }
     } catch (error) {
       console.log(error);
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -236,7 +245,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
               {productWithVariants?.variants?.map((variant, index) => {
                 const variantValues = map(
                   filter(map(split(variant?.values, ","), trim), (o) => Boolean(o)),
-                  capitalize,
+                  capitalize
                 );
                 const capitalizeName = capitalize(variant?.name);
 
@@ -246,7 +255,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                     <div className="">
                       <select
                         {...register(capitalizeName, { required: `${capitalizeName} is required` })}
-                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white">
+                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white"
+                      >
                         <option value="" disabled>{`Select ${capitalizeName}`}</option>
                         {variantValues.map((variantValue) => (
                           <option key={variantValue} value={variantValue}>
@@ -265,7 +275,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                   className="text-white font-bold px-6 py-2 bg-green-500 rounded shadow mx-4"
                   onClick={() => {
                     handleSubmit(addVariantRow)();
-                  }}>
+                  }}
+                >
                   Add
                 </button>
               </div>
@@ -332,7 +343,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                           onClick={() => {
                             const result = omit(varianceDistribution, [formattedVarianceKey]);
                             setVarianceDistribution(result);
-                          }}>
+                          }}
+                        >
                           <button className="focus:outline-none">
                             <i className="fas fa-trash-alt text-white"></i>
                           </button>
@@ -354,7 +366,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                 className="bg-black text-white px-6 py-3 rounded font-bold mr-2 focus:outline-none"
                 onClick={() => {
                   setGoToVarianceConfig(false);
-                }}>
+                }}
+              >
                 Back
               </button>
             </div>
@@ -365,7 +378,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                 }  px-6 py-3 w-full rounded font-semibold focus:outline-none`}
                 onClick={() => {
                   handleCreateProduct();
-                }}>
+                }}
+              >
                 {isProcessing && (
                   <div className="inline-block mr-2">
                     <Spinner type={"TailSpin"} color="black" width={10} height={10} />

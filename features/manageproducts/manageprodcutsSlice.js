@@ -40,7 +40,7 @@ const manageproductsSlice = createSlice({
       actionCreator(
         "productHasVariants",
         state,
-        action?.payload === true || action?.payload === false ? action.payload : !state.productHasVariants,
+        action?.payload === true || action?.payload === false ? action.payload : !state.productHasVariants
       );
     },
   },

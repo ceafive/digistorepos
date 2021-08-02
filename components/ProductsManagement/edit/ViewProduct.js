@@ -16,7 +16,8 @@ const ViewProduct = ({}) => {
         className="focus:outline-none font-bold mt-2"
         onClick={() => {
           router.back();
-        }}>
+        }}
+      >
         Back
       </button>
       <div className="flex w-full h-full">

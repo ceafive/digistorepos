@@ -134,7 +134,8 @@ const ProductsSelection = () => {
                     className="z-10 absolute right-0 text-center text-red-500 w-8 pr-3 py-3 cursor-pointer"
                     onClick={() => {
                       dispatch(currentSearchTerm(""));
-                    }}>
+                    }}
+                  >
                     <i className="fas fa-times-circle"></i>
                   </span>
                 )}
@@ -149,7 +150,8 @@ const ProductsSelection = () => {
                   style={{
                     top: 60,
                     height: searchProductsDisplay.length > 0 ? 400 : "auto",
-                  }}>
+                  }}
+                >
                   {searchProductsDisplay.length > 0 ? (
                     searchProductsDisplay.map((product) => {
                       return (
@@ -183,7 +185,8 @@ const ProductsSelection = () => {
                               //   })
                               // );
                             }
-                          }}>
+                          }}
+                        >
                           <div className="flex items-center text-black font-medium" key={product.product_id}>
                             <div className="flex items-center w-full">
                               <div className="w-48 h-20">
@@ -293,7 +296,8 @@ const ProductsSelection = () => {
                       } else {
                         setProductSelected(data);
                       }
-                    }}>
+                    }}
+                  >
                     <div key={product.product_id} className="relative " style={{ paddingBottom: "95%" }}>
                       <img
                         className="absolute h-full w-full object-cover"

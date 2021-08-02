@@ -14,7 +14,8 @@ export default function CardSocialTraffic() {
             <div className="relative w-full px-4 max-w-full flex-grow flex-1 text-right">
               <button
                 className="bg-indigo-500 text-white active:bg-indigo-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                type="button">
+                type="button"
+              >
                 See all
               </button>
             </div>
@@ -45,7 +46,8 @@ export default function CardSocialTraffic() {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-red-200">
                         <div
                           style={{ width: "60%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -61,7 +63,8 @@ export default function CardSocialTraffic() {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-emerald-200">
                         <div
                           style={{ width: "70%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -77,7 +80,8 @@ export default function CardSocialTraffic() {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-purple-200">
                         <div
                           style={{ width: "80%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-500"></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-500"
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -93,7 +97,8 @@ export default function CardSocialTraffic() {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-lightBlue-200">
                         <div
                           style={{ width: "75%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-lightBlue-500"></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-lightBlue-500"
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -109,7 +114,8 @@ export default function CardSocialTraffic() {
                       <div className="overflow-hidden h-2 text-xs flex rounded bg-orange-200">
                         <div
                           style={{ width: "30%" }}
-                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"></div>
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"
+                        ></div>
                       </div>
                     </div>
                   </div>
