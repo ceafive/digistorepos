@@ -136,7 +136,7 @@ export default function Login() {
 
       const res = await axios.post("/api/auth/setup-user-pin", data);
       const { status, message } = await res.data;
-      console.log({ status, message });
+      // console.log({ status, message });
 
       if (Number(status) !== 0) {
         return addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });

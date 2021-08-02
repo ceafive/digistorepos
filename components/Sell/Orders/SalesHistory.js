@@ -312,7 +312,7 @@ const SalesHistory = () => {
 
   return (
     <>
-      <Modal open={openModal} onClose={() => setOpenModal(false)} maxWidth="sm">
+      <Modal open={openModal} onClose={() => setOpenModal(false)} maxWidth="md">
         {componentToRender === "order_actions" && (
           <OrderActions isAdmin={isAdmin} order={order} user={user} onClose={() => setOpenModal(false)} />
         )}

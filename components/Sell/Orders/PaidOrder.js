@@ -295,7 +295,7 @@ const PaidOrder = ({ user, order, fetching, setFetching, onClose }) => {
           ["PENDING"].includes(order?.delivery_status) && (
             <button
               disabled={fetching}
-              className={`${fetching ? `bg-gray-200` : `bg-purple-500`} text-lg px-6 py-4 text-white font-bold shadow`}
+              className={`${fetching ? `bg-gray-200` : `bg-purple-500`} text-lg px-6 py-4 text-white mr-5 font-bold shadow`}
               onClick={() => {
                 setOpenAssignOrderBox(true);
               }}

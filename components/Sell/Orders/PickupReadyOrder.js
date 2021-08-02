@@ -71,7 +71,7 @@ const PickuReadyOrder = ({ user, order, fetching, setFetching, onClose }) => {
           !["CANCELLED','DELIVERED"].includes(order?.delivery_status) && (
             <button
               disabled={fetching}
-              className={`${fetching ? `bg-gray-200` : `bg-green-500`} text-lg px-6 py-4 text-white font-bold shadow`}
+              className={`${fetching ? `bg-gray-200` : `bg-green-500`} text-lg px-6 py-4 text-white mr-5 font-bold shadow`}
               onClick={() => {
                 updateDeliveryStatus(`DELIVERED`);
               }}
