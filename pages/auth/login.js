@@ -26,6 +26,7 @@ export default function Login() {
     register,
     handleSubmit,
     setError,
+    setValue,
     watch,
     formState: { errors },
   } = useForm();
@@ -37,78 +38,9 @@ export default function Login() {
     status: false,
     message: "",
   });
+  const [displayMessage, setDisplayMessage] = React.useState("");
 
   const [step, setStep] = React.useState(0);
-
-  const handleGetUserLoginDetails = async (values) => {
-    try {
-      setProcessing(true);
-      setLoginError({
-        status: false,
-        message: "",
-      });
-      const res = await axios.post("/api/auth/check-user", { username: values?.username });
-      const { status, message } = await res.data;
-      console.log({ status, message });
-
-      if (Number(status) !== 0) {
-        return addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
-      }
-
-      setStep(2);
-    } catch (error) {
-      setLoginError({
-        status: false,
-        message: "ERROR",
-      });
-      if (error.response) {
-        console.log(error.response.data);
-      } else if (error.request) {
-        console.log(error.request);
-      } else {
-        console.log("Error", error.message);
-      }
-    } finally {
-      setProcessing(false);
-    }
-  };
-
-  const handleSetupUserPIN = async (values) => {
-    try {
-      setProcessing(true);
-      setLoginError({
-        status: false,
-        message: "",
-      });
-
-      const data = {
-        username: values?.username,
-        new_pin: values?.pin,
-      };
-
-      const res = await axios.post("/api/auth/setup-user-pin", data);
-      const { status, message } = await res.data;
-      console.log({ status, message });
-
-      if (Number(status) !== 0) {
-        addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
-      }
-    } catch (error) {
-      setLoginError({
-        status: false,
-        message: "ERROR",
-      });
-      if (error.response) {
-        console.log(error.response.data);
-      } else if (error.request) {
-        console.log(error.request);
-      } else {
-        console.log("Error", error.message);
-      }
-    } finally {
-      setProcessing(false);
-    }
-  };
 
   const handleUserSignIn = async (values) => {
     try {
@@ -148,21 +80,104 @@ export default function Login() {
     }
   };
 
+  const handleGetUserLoginDetails = async (values) => {
+    try {
+      setProcessing(true);
+      setLoginError({
+        status: false,
+        message: "",
+      });
+      const res = await axios.post("/api/auth/check-user", { username: values?.username });
+      const { status, message, has_pin, uid } = await res.data;
+      // console.log(res.data);
+
+      if (Number(status) !== 0) {
+        return addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
+      }
+
+      if (has_pin === "NO") {
+        setDisplayMessage(`Setup 4 digit PIN code to enable easy access to your account using ${values?.username}`);
+        setValue("uid", uid);
+        return setStep(1);
+      }
+
+      setStep(2);
+    } catch (error) {
+      setLoginError({
+        status: false,
+        message: "ERROR",
+      });
+      if (error.response) {
+        console.log(error.response.data);
+      } else if (error.request) {
+        console.log(error.request);
+      } else {
+        console.log("Error", error.message);
+      }
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleSetupUserPIN = async (values) => {
+    try {
+      setProcessing(true);
+      setLoginError({
+        status: false,
+        message: "",
+      });
+
+      const data = {
+        username: values?.username,
+        uid: values?.uid,
+        pin: values?.pin,
+        new_pin: values?.pin,
+      };
+
+      const res = await axios.post("/api/auth/setup-user-pin", data);
+      const { status, message } = await res.data;
+      console.log({ status, message });
+
+      if (Number(status) !== 0) {
+        return addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
+      }
+      await handleUserSignIn(data);
+    } catch (error) {
+      setLoginError({
+        status: false,
+        message: "ERROR",
+      });
+      if (error.response) {
+        console.log(error.response.data);
+      } else if (error.request) {
+        console.log(error.request);
+      } else {
+        console.log("Error", error.message);
+      }
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   return (
     <>
       <div className="container mx-auto px-4 h-full ">
         <div className="flex flex-col items-center justify-center h-full ">
           <div className="w-full h-full lg:w-5/12 px-4">
             <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-3xl bg-white border-0">
-              <div className="rounded-t-3xl my-4">
+              <div className="rounded-t-3xl mt-4">
                 <div className="flex justify-center items-center w-full">
                   <Image src={logo} alt="logo" />
                 </div>
+              </div>
+              <div className="mb-4 text-gray-700">
+                <p className="text-center px-10 font-medium">{displayMessage}</p>
               </div>
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
                 <form>
                   <div className="relative w-full mb-3">
                     <input
+                      readOnly={step === 1}
                       {...register("username", {
                         required: "Username is required",
                       })}
@@ -208,7 +223,7 @@ export default function Login() {
                         pattern="[0-9]*"
                         noValidate
                         className="border border-gray-500 px-3 py-3 placeholder-blueGray-500 text-center text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-0 w-full ease-linear transition-all duration-150"
-                        placeholder="Enter your 4 digit PIN Code"
+                        placeholder="Confirm your 4 digit PIN Code"
                       />
                       <p className="text-sm text-red-500">{errors?.confirmPin?.message}</p>
                     </div>
