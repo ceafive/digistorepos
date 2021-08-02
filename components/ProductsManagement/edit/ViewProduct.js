@@ -9,6 +9,7 @@ const ViewProduct = ({}) => {
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
 
   // console.log({ productWithVariants });
+  // console.log({ manageProductCategories });
 
   return (
     <>
@@ -40,8 +41,8 @@ const ViewProduct = ({}) => {
                 <label className="text-sm leading-none  font-bold">Product Category</label>
                 <p>
                   {
-                    manageProductCategories.find((category) => category?.product_category === productWithVariants?.productCategory)
-                      ?.product_category_name
+                    manageProductCategories.find((category) => category?.product_category_id === productWithVariants?.productCategory)
+                      ?.product_category
                   }
                 </p>
               </div>
@@ -57,13 +58,8 @@ const ViewProduct = ({}) => {
               </div>
 
               <div className="mb-8 mr-8">
-                <label className="text-sm leading-none  font-bold">Product Price</label>
-                <p>GHS{productWithVariants?.product_price}</p>
-              </div>
-
-              <div className="mb-8 mr-8">
                 <label className="text-sm leading-none  font-bold">Product Quantity</label>
-                <p>{productWithVariants?.inventoryQuantity === "-99" ? "Unlimited" : productWithVariants?.inventoryQuantity}</p>
+                <p>{!productWithVariants?.setInventoryQuantity ? "Unlimited" : productWithVariants?.inventoryQuantity}</p>
               </div>
 
               <div className="mb-8 mr-8">
