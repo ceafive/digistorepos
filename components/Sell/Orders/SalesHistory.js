@@ -334,7 +334,7 @@ const SalesHistory = () => {
                   <label className="text-sm leading-none  font-bold">Date Range</label>
                   <div className="flex w-full">
                     <div className="w-1/3">
-                      <input
+                      <inpu
                         className="w-full"
                         defaultValue={format(startOfMonth(new Date()), "yyyy-MM-dd")}
                         {...register("startDate", { required: `Start date required`, valueAsDate: true })}

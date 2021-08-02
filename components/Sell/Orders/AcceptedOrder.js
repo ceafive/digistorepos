@@ -41,7 +41,7 @@ const ReAssignOrder = ({ user, order, fetching, setFetching, onClose }) => {
             <button
               key={outlet?.outlet_id}
               disabled={fetching}
-              className={`${fetching ? `bg-gray-200` : `bg-green-500`} text-lg px-4 py-2 text-white font-bold shadow`}
+              className={`${fetching ? `bg-gray-200` : `bg-green-500`} text-lg px-4 py-2 text-white mr-5 font-bold shadow`}
               onClick={() => {
                 assignOrderToOutlet(outlet?.outlet_id);
               }}
