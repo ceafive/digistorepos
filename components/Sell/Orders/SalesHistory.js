@@ -62,8 +62,8 @@ const SalesHistory = () => {
     getValues,
   } = useForm({
     defaultValues: {
-      startDate: format(startOfMonth(new Date()), "yyyy-MM-dd"),
-      endDate: format(new Date(), "yyyy-MM-dd"),
+      // startDate: format(startOfMonth(new Date()), "yyyy-MM-dd"),
+      // endDate: format(new Date(), "yyyy-MM-dd"),
       outletSelected: "All",
     },
   });

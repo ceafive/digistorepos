@@ -106,6 +106,7 @@ const EditProduct = ({
         outlet_list: JSON.stringify(outlets),
         merchant: user["user_merchant_id"],
         mod_by: user["login"],
+        property_delete_all: "YES",
         property_list: JSON.stringify({ 0: {} }), // hack to delete property list when user deselect product has variants toggle
         variants_options: JSON.stringify({ 0: {} }), // hack to delete property list when user deselect product has variants toggle
       };
@@ -370,7 +371,8 @@ const EditProduct = ({
           dispatch(setProductWithVariants({}));
           dispatch(setProductHasVariants(false));
           router.back();
-        }}>
+        }}
+      >
         Back
       </button>
       <div className="pb-6 pt-6 px-4">
@@ -395,7 +397,8 @@ const EditProduct = ({
                   <label className="text-sm leading-none  font-bold">Product Category</label>
                   <select
                     {...register("productCategory", { required: "Product category is required" })}
-                    className="block border-0 appearance-none w-full text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2">
+                    className="block border-0 appearance-none w-full text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2"
+                  >
                     <option value="">{`Select Category`}</option>
                     {manageProductCategories?.map((category) => {
                       return (
@@ -529,7 +532,8 @@ const EditProduct = ({
                     <div
                       className={`${
                         productHasVariants ? "bg-green-400" : ""
-                      } w-10 h-6 flex items-center bg-gray-300 rounded-full p-1 duration-300 ease-in-out`}>
+                      } w-10 h-6 flex items-center bg-gray-300 rounded-full p-1 duration-300 ease-in-out`}
+                    >
                       <div
                         className={`${
                           productHasVariants ? "translate-x-4" : ""
@@ -599,7 +603,8 @@ const EditProduct = ({
                                         clearErrors(`variants[${index}]`);
                                         remove(index);
                                       }
-                                    }}>
+                                    }}
+                                  >
                                     <button className="justify-self-end focus:outline-none">
                                       <i className="fas fa-trash-alt text-white"></i>
                                     </button>
@@ -611,7 +616,8 @@ const EditProduct = ({
                                     className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-4 cursor-pointer"
                                     onClick={() => {
                                       append({});
-                                    }}>
+                                    }}
+                                  >
                                     <button className="justify-self-end focus:outline-none">
                                       <i className="fas fa-plus text-white" />
                                     </button>
@@ -686,7 +692,8 @@ const EditProduct = ({
                 }  px-6 py-3 w-full rounded font-semibold uppercase focus:outline-none`}
                 onClick={() => {
                   buttonParams.buttonAction();
-                }}>
+                }}
+              >
                 {isProcessing && (
                   <div className="inline-block mr-2">
                     <Spinner type={"TailSpin"} color="black" width={10} height={10} />
