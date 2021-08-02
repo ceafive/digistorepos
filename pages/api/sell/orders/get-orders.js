@@ -16,6 +16,6 @@ async function handler(req, res) {
   }
 
   // console.log(url);
-  // console.log({ data, isAdmin });
+  // console.log({ data });
 }
 export default withSentry(handler);

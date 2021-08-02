@@ -25,8 +25,9 @@ import MaterialTable from "material-table";
 import React, { forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import AssignOrderToRider from "./AssignOrderToRider";
 
+import AssignOrderToRider from "./AssignOrderToRider";
+import OrderActions from "./OrderActions";
 import OrderDetailsComponent from "./OrderDetailsComponent";
 
 const tableIcons = {
@@ -58,7 +59,14 @@ const SalesHistory = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+    getValues,
+  } = useForm({
+    defaultValues: {
+      startDate: format(startOfMonth(new Date()), "yyyy-MM-dd"),
+      endDate: format(new Date(), "yyyy-MM-dd"),
+      outletSelected: "All",
+    },
+  });
   const orderHistory = useSelector((state) => state.orders.orderHistory);
   const outlets = useSelector((state) => state.products.outlets);
   // console.log(orderHistory[0]);
@@ -66,7 +74,7 @@ const SalesHistory = () => {
   const [fetching, setFetching] = React.useState(false);
   const [outletsString, setOutletsString] = React.useState("");
   const [openModal, setOpenModal] = React.useState(false);
-  const [orderNo, setOrderNo] = React.useState(null);
+  const [order, setOrder] = React.useState(null);
   const [componentToRender, setComponentToRender] = React.useState("details");
   const [reRun, setReRun] = React.useState(new Date());
   const isAdmin = upperCase(user?.user_merchant_group) === "ADMINISTRATORS" ? true : false;
@@ -77,14 +85,18 @@ const SalesHistory = () => {
         setFetching(true);
         dispatch(setAllOutlets([]));
         // dispatch(setOrderHistory([]));
+        const formCurrentValues = getValues();
+        // console.log(formCurrentValues);
         // TODO: Do not remove this object other methods in /api/orders/get-orders rely on it
         const data = {
           merchant: user?.user_merchant_id,
           outlet: "",
-          start_date: format(startOfMonth(new Date()), "dd-MM-yyy"),
-          end_date: format(new Date(), "dd-MM-yyyy"),
+          start_date: format(formCurrentValues?.startDate, "dd-MM-yyyy"),
+          end_date: format(formCurrentValues?.endDate, "dd-MM-yyyy"),
           isAdmin,
         };
+
+        // console.log(data);
 
         const outletsRes = await axios.post("/api/sell/sell/get-outlets", { user });
         const { data: outletsResData } = await outletsRes.data;
@@ -224,28 +236,38 @@ const SalesHistory = () => {
       render: (rowData) => {
         const icons = [
           {
-            name: "motorcycle",
+            name: "tasks",
             action: () => {
-              setComponentToRender("rider");
-              setOrderNo(rowData?.order_no);
+              setOrder(rowData);
+              setComponentToRender("order_actions");
               setOpenModal(true);
             },
           },
-          {
-            name: "envelope",
-            action: () => {},
-          },
-          {
-            name: "print",
-            action: () => {},
-          },
+          // {
+          //   name: "print",
+          //   action: () => {},
+          // },
+          // {
+          //   name: "motorcycle",
+          //   action: () => {
+          //     setComponentToRender("rider");
+          //     setOrder(rowData?.order_no);
+          //     setOpenModal(true);
+          //   },
+          // },
         ];
         return (
           <div className="flex items-center justify-between">
             {icons.map((icon) => {
+              const disabled = !["NEW", "ACCEPTED", "PAID", "PICKUP_READY"].includes(rowData?.order_status);
               return (
-                <button key={icon.name} className={` text-blue-500 outline-none`} onClick={icon?.action}>
-                  <i key={icon.name} className={`fas fa-${icon.name} 0`} />
+                <button
+                  disabled={disabled}
+                  key={icon.name}
+                  className={`text-2xl mx-3 ${disabled ? "text-gray-400" : "text-blue-500"}  outline-none`}
+                  onClick={icon?.action}
+                >
+                  <i key={icon.name} className={`fas fa-${icon.name}`} />
                 </button>
               );
             })}
@@ -290,10 +312,13 @@ const SalesHistory = () => {
 
   return (
     <>
-      <Modal open={openModal} onClose={() => setOpenModal(false)} maxWidth="md">
-        {componentToRender === "details" && <OrderDetailsComponent orderNo={orderNo} user={user} onClose={() => setOpenModal(false)} />}
+      <Modal open={openModal} onClose={() => setOpenModal(false)} maxWidth="sm">
+        {componentToRender === "order_actions" && (
+          <OrderActions isAdmin={isAdmin} order={order} user={user} onClose={() => setOpenModal(false)} />
+        )}
+        {componentToRender === "details" && <OrderDetailsComponent order={order} user={user} onClose={() => setOpenModal(false)} />}
         {componentToRender === "rider" && (
-          <AssignOrderToRider orderNo={orderNo} user={user} onClose={() => setOpenModal(false)} setReRun={setReRun} />
+          <AssignOrderToRider order={order} user={user} onClose={() => setOpenModal(false)} setReRun={setReRun} />
         )}
       </Modal>
       <div className="flex w-full h-full">
@@ -311,10 +336,10 @@ const SalesHistory = () => {
                     <div className="w-1/3">
                       <input
                         className="w-full"
+                        defaultValue={format(startOfMonth(new Date()), "yyyy-MM-dd")}
                         {...register("startDate", { required: `Start date required`, valueAsDate: true })}
                         max={format(new Date(), "yyyy-MM-dd")}
                         type="date"
-                        defaultValue={format(startOfMonth(new Date()), "yyyy-MM-dd")}
                       />
                       <p className="text-red-500 text-xs">{errors?.startDate?.message}</p>
                     </div>
@@ -324,10 +349,10 @@ const SalesHistory = () => {
                     <div className="w-1/3">
                       <input
                         className="w-full"
+                        defaultValue={format(new Date(), "yyyy-MM-dd")}
                         {...register("endDate", { required: `End date required`, valueAsDate: true })}
                         type="date"
                         // min={format(new Date(), "yyyy-MM-dd")}
-                        defaultValue={format(new Date(), "yyyy-MM-dd")}
                       />
                       <p className="text-red-500 text-xs">{errors?.endDate?.message}</p>
                     </div>
@@ -384,7 +409,7 @@ const SalesHistory = () => {
           }
           onRowClick={(event, rowData) => {
             setComponentToRender("details");
-            setOrderNo(rowData?.order_no);
+            setOrder(rowData);
             setOpenModal(true);
           }}
           // detailPanel={[

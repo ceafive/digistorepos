@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import React from "react";
 import { sentryErrorLogger } from "utils";
 
-const AssignOrderToRider = ({ orderNo, user, onClose, setReRun }) => {
+const AssignOrderToRider = ({ order, user, onClose, setReRun }) => {
   const [riders, setRiders] = React.useState(null);
   const [fetching, setFetching] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
@@ -46,7 +46,7 @@ const AssignOrderToRider = ({ orderNo, user, onClose, setReRun }) => {
     try {
       setProcessing(true);
       const data = {
-        no: orderNo,
+        no: order?.order_no,
         rider: id,
         merchant: user?.user_merchant_id,
         mod_by: user?.login,

@@ -50,7 +50,7 @@ const onAddPayment = async function (
   setOpenPhoneNumberInputModal,
   reset,
   currentCustomer,
-  values,
+  values
 ) {
   // console.log(user, paymentMethodsAndAmount, paymentMethodSet, payerAmountEntered, currentCustomer, values);
   // return;
@@ -68,7 +68,7 @@ const onAddPayment = async function (
           method: paymentMethodSet,
           amount: Number(parseFloat(values[paymentMethodSet]).toFixed(2)),
           payment_number: currentCustomer?.customer_phone ?? "",
-        }),
+        })
       );
       // if (payerAmountEntered === cartTotalMinusDiscountPlusTax) {
       //   dispatch(
@@ -85,7 +85,7 @@ const onAddPayment = async function (
           method: paymentMethodSet,
           amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
           payment_number: values[paymentMethodSet],
-        }),
+        })
       );
     }
 
@@ -139,7 +139,7 @@ const onRaiseOrder = async (
   products,
   fees,
   saleTotal,
-  user,
+  user
 ) => {
   try {
     setFetching(true);
