@@ -5,7 +5,7 @@ import { useToasts } from "react-toast-notifications";
 import { sentryErrorLogger } from "utils";
 
 const PickuReadyOrder = ({ user, order, fetching, setFetching, onClose }) => {
-  console.log(order);
+  // console.log(order);
   const { addToast } = useToasts();
   const [fetchingData, setFetchingData] = React.useState(false);
   const [merchantDeliveryConfig, setMerchantDeliveryConfig] = React.useState(null);
@@ -42,6 +42,7 @@ const PickuReadyOrder = ({ user, order, fetching, setFetching, onClose }) => {
       addToast(message, { appearance: Number(resStatus) === 0 ? "success" : "error", autoDismiss: true });
     } catch (error) {
       console.log(error);
+      sentryErrorLogger(error);
     } finally {
       setFetching(false);
       onClose();
