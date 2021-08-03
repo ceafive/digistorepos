@@ -2,6 +2,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { verifyToken } from "services";
+
 import Spinner from "./Spinner";
 
 const withAuth = (WrappedComponent) => {
@@ -12,6 +13,7 @@ const withAuth = (WrappedComponent) => {
     useEffect(() => {
       const fetchToken = async () => {
         const IPAYPOSUSER = sessionStorage.getItem("IPAYPOSUSER");
+
         if (!IPAYPOSUSER) {
           Router.replace("/auth/login");
         } else {

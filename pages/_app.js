@@ -1,19 +1,18 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import "../styles/tailwind.css";
+
+import { Box, createMuiTheme, CssBaseline, LinearProgress, ThemeProvider } from "@material-ui/core";
+import { responsiveFontSizes } from "@material-ui/core/styles";
 import App from "next/app";
 import Head from "next/head";
 import Router from "next/router";
-import { Box, LinearProgress } from "@material-ui/core";
-
+import React from "react";
 import { Provider } from "react-redux";
+import { ToastProvider } from "react-toast-notifications";
+
 import { store } from "../app/store";
-
-import PageChange from "components/PageChange/PageChange.js";
-
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-import "../styles/index.css";
 
 // Router.events.on("routeChangeStart", (url) => {
 //   console.log(`Loading: ${url}`);
@@ -65,24 +64,54 @@ export default class MyApp extends App {
 
   render() {
     const { Component, pageProps } = this.props;
-
     const Layout = Component.layout || (({ children }) => <>{children}</>);
+
+    const nunito = {
+      fontFamily: "Nunito Sans",
+      fontStyle: "normal",
+      fontDisplay: "swap",
+      fontWeight: 400,
+    };
+
+    let theme = createMuiTheme({
+      typography: {
+        fontFamily: "Nunito Sans",
+      },
+      overrides: {
+        MuiCssBaseline: {
+          "@global": {
+            "@font-face": [nunito],
+          },
+        },
+      },
+    });
+
+    theme = responsiveFontSizes(theme);
 
     return (
       <React.Fragment>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-          <title>POS - iPay</title>
+          <title>Digistore POS</title>
+          <script
+            type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZxtyoPfteFDtEe0avkN0u3jdWuYiDC0U&libraries=places&v=weekly&region=GH"
+          />
         </Head>
         <Provider store={store}>
-          {this.state.loading && (
-            <Box style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 2002 }}>
-              <LinearProgress />
-            </Box>
-          )}
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <ToastProvider placement="top-center">
+              {this.state.loading && (
+                <Box style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 2002 }}>
+                  <LinearProgress />
+                </Box>
+              )}
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ToastProvider>
+          </ThemeProvider>
         </Provider>
       </React.Fragment>
     );

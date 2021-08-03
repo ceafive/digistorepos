@@ -1,10 +1,9 @@
-import { openProductModal } from "features/products/productsSlice";
-import { camelCase, get, lowerCase, map, reduce, upperCase } from "lodash";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Carousel from "components/Carousel";
-import { useForm } from "react-hook-form";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
+import { camelCase, get, lowerCase, reduce, upperCase } from "lodash";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 
 const initialFormData = {};
 

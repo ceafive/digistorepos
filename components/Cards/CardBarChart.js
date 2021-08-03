@@ -1,20 +1,12 @@
-import React from "react";
 import Chart from "chart.js";
+import React from "react";
 
 export default function CardBarChart() {
   React.useEffect(() => {
     let config = {
       type: "bar",
       data: {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-        ],
+        labels: ["January", "February", "March", "April", "May", "June", "July"],
         datasets: [
           {
             label: new Date().getFullYear(),
@@ -104,12 +96,8 @@ export default function CardBarChart() {
         <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
           <div className="flex flex-wrap items-center">
             <div className="relative w-full max-w-full flex-grow flex-1">
-              <h6 className="uppercase text-blueGray-400 mb-1 text-xs font-semibold">
-                Performance
-              </h6>
-              <h2 className="text-blueGray-700 text-xl font-semibold">
-                Total orders
-              </h2>
+              <h6 className="uppercase text-blueGray-400 mb-1 text-xs font-semibold">Performance</h6>
+              <h2 className="text-blueGray-700 text-xl font-semibold">Total orders</h2>
             </div>
           </div>
         </div>

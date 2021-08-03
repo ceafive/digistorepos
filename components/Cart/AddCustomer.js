@@ -1,12 +1,12 @@
+import axios from "axios";
+import Modal from "components/Modal";
+import Spinner from "components/Spinner";
+import { addCustomer } from "features/cart/cartSlice";
+import debounce from "lodash.debounce";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { motion } from "framer-motion";
-import { createFilter } from "react-search-input";
-import { addCustomer } from "features/cart/cartSlice";
-import axios from "axios";
-import debounce from "lodash.debounce";
-import Modal from "components/Modal";
+
 import AddCustomerModal from "./AddCustomerModal";
 
 const AddCustomer = () => {
@@ -25,20 +25,17 @@ const AddCustomer = () => {
   const [step, setStep] = React.useState(0);
   const [allCustomers, setAllCustomers] = React.useState([]);
   const [openAddCustomerModal, setOpenAddCustomerModal] = React.useState(false);
+  const [searching, setSearching] = React.useState(false);
 
   const watchCustomerSearch = watch("searchCustomer", "");
-
-  // React.useEffect(() => {
-  //   const KEYS_TO_FILTERS = ["name", "username", "email"];
-  //   const filteredCustomers = customers.filter(createFilter(watchCustomerSearch ?? "", KEYS_TO_FILTERS));
-
-  //   setAllCustomers(filteredCustomers);
-  // }, [customers, watchCustomerSearch]);
 
   React.useEffect(() => {
     const fetchCustomerDetails = async () => {
       try {
-        const response = await axios.post("/api/products/get-customer", { phoneNumber: watchCustomerSearch });
+        setSearching(true);
+        setAllCustomers([]);
+        dispatch(addCustomer(null));
+        const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: watchCustomerSearch });
         const { data } = await response.data;
 
         if (data) {
@@ -51,62 +48,69 @@ const AddCustomer = () => {
       } catch (error) {
         console.log(error);
       } finally {
+        setSearching(false);
       }
     };
 
     if (watchCustomerSearch) {
-      debounce(fetchCustomerDetails, 250, { maxWait: 1000 })();
+      debounce(fetchCustomerDetails, 150, { maxWait: 50 })();
     }
   }, [watchCustomerSearch]);
 
   return (
-    <>
-      <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)}>
+    <div className="w-full">
+      <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)} maxWidth="sm">
         <AddCustomerModal onClose={() => setOpenAddCustomerModal(false)} setStep={setStep} />
       </Modal>
-      <div className="w-full">
-        {step === 0 && (
-          <div className="text-sm py-2">
-            <span className="mr-2">
-              <i className="fas fa-user-alt"></i>
-            </span>
+      <div className="flex justify-between items-center w-full">
+        {!currentCustomer && (
+          <div className="text-sm w-6/12 mr-2">
             <button
-              className="text-blue-500 focus:outline-none font-bold"
+              className="text-white focus:outline-none font-bold bg-blueGray-800 px-4 py-3 rounded w-full"
               onClick={() => {
                 setStep(1);
+                // setOpenAddCustomerModal(true);
               }}
             >
-              <span>Add a customer</span>
+              Add Customer
             </button>
           </div>
         )}
+
+        <div className={`text-sm ${currentCustomer ? "w-full" : "w-6/12"} `}>
+          <button className="text-white focus:outline-none font-bold bg-blue-800 px-4 py-3 rounded w-full" onClick={() => {}}>
+            Quick Sale
+          </button>
+        </div>
+      </div>
+      <div className="w-full">
         {step === 1 && (
-          <motion.div className="relative" initial={{ y: "-1vw" }} animate={{ y: 0 }}>
+          <div className="relative mt-4" initial={{ y: "-1vw" }} animate={{ y: 0 }}>
             <div>
-              <span className="z-10 absolute text-center text-blueGray-300 w-8 pl-3 py-2">
+              <span className="z-10 absolute text-center text-blueGray-300 w-8 pl-3 py-3">
                 <i className="fas fa-search"></i>
               </span>
               <input
                 {...register("searchCustomer")}
                 type="text"
                 placeholder="Search here..."
-                className="border-0 p-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
+                className="appearance-none border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
               />
 
               <span
-                className="z-10 absolute right-0 text-center text-red-500 w-8 pr-3 py-2 cursor-pointer"
+                className="z-10 absolute right-0 text-center text-red-500 w-8 pr-3 py-3 cursor-pointer"
                 onClick={() => {
                   setStep(0);
                   setValue("searchCustomer", "");
                   setAllCustomers([]);
                 }}
               >
-                <i className="fas fa-times-circle"></i>
+                {searching ? <Spinner width={20} height={20} /> : <i className="fas fa-times-circle"></i>}
               </span>
             </div>
             {watchCustomerSearch && (
               <div
-                className={`z-10 absolute w-full p-2 bg-white border border-gray-800 rounded shadow-lg 
+                className={`z-10 absolute w-full p-2 bg-white border border-gray-500 rounded shadow-3xl 
            
               `}
                 // ${ allCustomers.length > 0 && "overflow-x-hidden overflow-scroll" }
@@ -117,10 +121,11 @@ const AddCustomer = () => {
               >
                 {allCustomers.length > 0 ? (
                   allCustomers?.map((customer) => {
+                    // console.log(customer);
                     return (
                       <div
-                        className="w-full py-2 cursor-pointer"
-                        key={customer.id}
+                        className="w-full py-1 cursor-pointer"
+                        key={customer.customer_id}
                         onClick={() => {
                           dispatch(addCustomer(customer));
                           setStep(2);
@@ -128,9 +133,9 @@ const AddCustomer = () => {
                           // console.log(customer);
                         }}
                       >
-                        <div className="flex items-center" key={customer.id}>
+                        <div className="flex items-center" key={customer.customer_id}>
                           <div className="flex items-center w-full">
-                            <div className="flex justify-between items-center w-full px-4">
+                            <div className="flex justify-between items-center w-full px-1">
                               <div className="flex items-center">
                                 <span className="font-bold">{customer.customer_name}</span>
                                 <span className="text-xs ml-2">{customer.customer_email}</span>
@@ -158,10 +163,11 @@ const AddCustomer = () => {
                 )}
               </div>
             )}
-          </motion.div>
+          </div>
         )}
-        {step === 2 && (
-          <div className="w-full flex justify-between items-center text-sm py-2">
+
+        {(currentCustomer || step === 2) && (
+          <div className="w-full flex justify-between items-center text-sm pt-3">
             <div>
               <span className="mr-2">
                 <i className="fas fa-user-alt"></i>
@@ -177,13 +183,12 @@ const AddCustomer = () => {
                 setAllCustomers([]);
               }}
             >
-              <i className="fas fa-trash-alt"></i>
+              <i className="fas fa-trash-alt text-red-500"></i>
             </button>
           </div>
         )}
-        <hr className="my-1" />
       </div>
-    </>
+    </div>
   );
 };
 

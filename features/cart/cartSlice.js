@@ -1,6 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import { format } from "date-fns";
-import { filter, findIndex, intersectionBy, intersectionWith, isEqual } from "lodash";
+import { filter, intersectionWith, isEqual, remove, subtract } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
@@ -15,6 +15,9 @@ const initialState = {
   partPaymentAmount: "",
   cartNote: "",
   cartDiscount: "",
+  cartItemDiscount: "",
+  cartPromoDiscount: 0,
+  cartPromoCode: null,
   cartDiscountOnCartTotal: 0,
   cartDiscountType: "percent",
   cartTotalMinusDiscount: 0,
@@ -23,6 +26,18 @@ const initialState = {
   amountReceivedFromPayer: 0,
   splitPayment: false,
   currentCustomer: null,
+  transactionFeeCharges: [],
+  activePayments: [],
+  deliveryTypes: {},
+  deliveryCharge: null,
+  totalAmountToBePaidByBuyer: 0,
+  deliveryTypeSelected: null,
+  deliveryNotes: "",
+  paymentMethodSet: "",
+  deliveryLocationInputted: null,
+  deliveryGPS: null,
+  invoiceDetails: null,
+  verifyTransactionResponse: null,
 };
 
 const initialProductProps = {
@@ -30,6 +45,7 @@ const initialProductProps = {
   price: 0,
   discount: "",
   variants: { type: "normal" },
+  notes: "",
 };
 
 const calculateDiscount = (valueToApplyOn, discountType, discountValue) => {
@@ -56,28 +72,96 @@ const calculateDiscount = (valueToApplyOn, discountType, discountValue) => {
   };
 };
 
+const calculatePromoAmount = (valueToApplyOn, discountValue) => {
+  let valueAfterDiscount = valueToApplyOn;
+
+  if (!discountValue) {
+    valueAfterDiscount = valueToApplyOn;
+  } else {
+    valueAfterDiscount = valueToApplyOn - discountValue;
+  }
+
+  return Number(parseFloat(valueAfterDiscount).toFixed(2));
+};
+
 const cartSlice = createSlice({
   name: "cart",
-  initialState: initialState,
+  initialState,
   reducers: {
+    setVerifyTransactionResponse(state, action) {
+      state.verifyTransactionResponse = action.payload;
+    },
+    setInvoiceDetails(state, action) {
+      state.invoiceDetails = action.payload;
+    },
+    setCartPromoCode(state, action) {
+      state.cartPromoCode = action.payload;
+    },
     onResetCart: (state) => {
+      const resetState = { ...initialState };
+      resetState.activePayments = state.activePayments;
+      resetState.deliveryTypes = state.deliveryTypes;
+
+      return resetState;
+    },
+    onAppResetCart() {
       return initialState;
     },
+    setDeliveryGPS(state, action) {
+      state.deliveryGPS = action.payload;
+    },
+    setDeliveryLocationInputted(state, action) {
+      state.deliveryLocationInputted = action.payload;
+    },
+    setDeliveryNotes(state, action) {
+      state.deliveryNotes = action.payload;
+    },
+    setPaymentMethodSet(state, action) {
+      state.paymentMethodSet = action.payload;
+    },
+    setDeliveryTypeSelected(state, action) {
+      state.deliveryTypeSelected = action.payload;
+    },
+    setTotalAmountToBePaidByBuyer(state, action) {
+      state.totalAmountToBePaidByBuyer = action.payload;
+    },
+    setDeliveryCharge(state, action) {
+      state.deliveryCharge = action.payload;
+    },
+    setDeliveryTypes(state, action) {
+      state.deliveryTypes = action.payload;
+    },
+    setActivePayments(state, action) {
+      state.activePayments = action.payload;
+    },
+    setTransactionFeeCharges(state, action) {
+      state.transactionFeeCharges = action.payload;
+      // state.transactionFeeCharges = Number(parseFloat(action.payload));
+    },
+
     addCustomer(state, action) {
       state.currentCustomer = action.payload;
     },
     setAmountReceivedFromPayer(state, action) {
-      state.amountReceivedFromPayer += action.payload.amount;
+      state.amountReceivedFromPayer += action?.payload?.amount;
 
       state.paymentMethodsAndAmount.push({
-        method: action.payload.method,
-        amount: action.payload.amount,
+        ...action.payload,
         date: format(new Date(), "iii, d MMM yy h:mmaaa"),
       });
     },
-    onRemovePaymentMethod(state) {
-      state.amountReceivedFromPayer = 0;
-      state.paymentMethodsAndAmount = [];
+    onRemovePaymentMethod(state, action) {
+      var filtered = remove(state.paymentMethodsAndAmount, function (n) {
+        return n.method !== action.payload?.method;
+      });
+
+      var filteredCharges = remove(state.transactionFeeCharges, function (n) {
+        return n.service !== action.payload?.method;
+      });
+
+      state.paymentMethodsAndAmount = filtered;
+      state.transactionFeeCharges = filteredCharges;
+      state.amountReceivedFromPayer = subtract(state.amountReceivedFromPayer, action.payload?.amount);
     },
     calculateTaxes(state, action) {
       state.totalTaxes += action.payload;
@@ -85,7 +169,7 @@ const cartSlice = createSlice({
     onChangeCartDiscountType(state, action) {
       state.cartDiscountType = action.payload;
       state.cartDiscount = 0;
-      state.cartTotalMinusDiscount = state.totalPriceInCart;
+      state.cartTotalMinusDiscount = Number(parseFloat(state.totalPriceInCart).toFixed(2));
     },
     setDiscount: (state, action) => {
       const { payload } = action;
@@ -93,16 +177,30 @@ const cartSlice = createSlice({
       if (!payload) state.cartDiscount = "";
       else state.cartDiscount = action.payload;
     },
+    setItemDiscount: (state, action) => {
+      const { payload } = action;
+
+      // const itemAmount =
+      // const itemDiscountPercent =
+      // const itemDiscount =
+
+      if (!payload) state.cartItemDiscount = "";
+      else state.cartItemDiscount = action.payload;
+    },
     applyDiscount(state) {
       const { discountAmount, valueReturn } = calculateDiscount(state.totalPriceInCart, state.cartDiscountType, state.cartDiscount);
 
-      state.cartDiscountOnCartTotal = discountAmount;
-      state.cartTotalMinusDiscount = valueReturn;
-      state.cartTotalMinusDiscountPlusTax = Number(parseFloat(valueReturn + valueReturn * state.totalTaxes).toFixed(2));
-    },
+      const newvalue = valueReturn - state.cartPromoDiscount;
 
+      state.cartDiscountOnCartTotal = discountAmount;
+      state.cartTotalMinusDiscount = Number(parseFloat(newvalue).toFixed(2));
+      state.cartTotalMinusDiscountPlusTax = Number(parseFloat(newvalue + newvalue * state.totalTaxes).toFixed(2));
+    },
+    setPromoAmount: (state, action) => {
+      state.cartPromoDiscount = action.payload;
+    },
     onClickToCheckout: (state, action) => {
-      state.clickToCheckout = action?.payload || !state.clickToCheckout;
+      state.clickToCheckout = action?.payload === true || action?.payload === false ? action.payload : !state.clickToCheckout;
     },
     onAddCartNote: (state, action) => {
       state.cartNote = action.payload;
@@ -110,21 +208,12 @@ const cartSlice = createSlice({
     selectPaymentMethod: (state, action) => {
       state.paymentMethodSelected = action.payload;
     },
-    addPaymentMethodAndAmount: (state, action) => {
-      state.paymentMethodsAndAmount.push({
-        method: action.payload,
-        amount: state.partPaymentAmount,
-        date: format(new Date(), "iii, d MMM yy h:mmaaa"),
-      });
-
-      state.totalPartPaymentAmount += state.partPaymentAmount;
-    },
     setPartPaymentAmount: (state, action) => {
       const amount = action.payload ? parseFloat(action.payload) : "";
       state.partPaymentAmount = amount;
     },
     changeItemPropsInCart: function (state, action) {
-      const foundItem = state.productsInCart.find((product) => product.uniqueId === action.payload.uniqueId);
+      const foundItem = state.productsInCart.find((product) => product.uniqueId === action.payload?.uniqueId);
 
       if (foundItem) {
         const setDiscount = (newQuantity, newPrice, discount) => {
@@ -136,23 +225,26 @@ const cartSlice = createSlice({
             return newQuantity * newPrice;
           }
 
-          const newDiscount = newQuantity * newPrice * (discount / 100);
-          return newQuantity * newPrice - newDiscount;
+          const calcualteDiscount = discount / 100;
+          const newDiscount = newQuantity * newPrice * calcualteDiscount;
+          const newTotalPrice = newQuantity * newPrice - newDiscount;
+          return Number(parseFloat(newTotalPrice).toFixed(2));
         };
 
-        const newQuantity = action.payload.quantity ? Number(parseFloat(action.payload.quantity).toFixed(2)) : "";
-        const newPrice = action.payload.price ? Number(parseFloat(action.payload.price).toFixed(2)) : "";
-        const discount = action.payload.discount ? Number(parseFloat(action.payload.discount).toFixed(2)) : "";
+        const newQuantity = action.payload?.quantity ? Number(parseFloat(action.payload?.quantity).toFixed(2)) : "";
+        const newPrice = action.payload?.price ? Number(parseFloat(action.payload?.price).toFixed(2)) : "";
+        const discount = action.payload?.discount ? Number(parseFloat(action.payload?.discount).toFixed(2)) : "";
+        const notes = action.payload?.notes ? action.payload?.notes : "";
 
         foundItem.quantity = newQuantity;
         foundItem.price = newPrice;
         foundItem.discount = discount;
+        foundItem.notes = notes;
 
         foundItem.totalPrice = setDiscount(newQuantity, newPrice, discount);
       }
 
       const totalPrice = state.productsInCart.reduce((acc, val) => acc + val.totalPrice, 0);
-
       const totalQuantity = state.productsInCart.reduce((acc, val) => acc + val.quantity, 0);
 
       state.totalPriceInCart = Number(parseFloat(totalPrice).toFixed(2));
@@ -162,16 +254,16 @@ const cartSlice = createSlice({
       if (action.payload) state.totalItemsInCart += action.payload;
       else state.totalItemsInCart++;
     },
-    decreaseTotalItemsInCart: (state, action) => {
+    decreaseTotalItemsInCart: (state) => {
       state.totalItemsInCart = state.totalItemsInCart !== 0 ? state.totalItemsInCart-- : 0;
     },
     addItemToCart: (state, action) => {
       const productsInCart = state.productsInCart;
       // console.log("productsInCart", JSON.parse(JSON.stringify(productsInCart)));
-      const foundItems = productsInCart.filter((product) => product.title === action.payload.title);
+      const foundItems = productsInCart.filter((product) => product.product_id === action.payload?.product_id);
 
       let foundItem = null;
-      if (foundItems) {
+      if (foundItems?.length > 0) {
         const response = intersectionWith(foundItems, [action.payload], (arrVal, othVal) => {
           return isEqual(arrVal.variants, othVal.variants);
         });
@@ -189,7 +281,7 @@ const cartSlice = createSlice({
             ...initialProductProps,
             uniqueId: uuidv4(),
             quantity: newQuantity,
-            totalPrice: Number(parseFloat(action.payload.price * newQuantity).toFixed(2)),
+            totalPrice: Number(parseFloat(action.payload?.price * newQuantity).toFixed(2)),
             ...action.payload,
           });
         } else {
@@ -205,7 +297,7 @@ const cartSlice = createSlice({
           ...initialProductProps,
           uniqueId: uuidv4(),
           quantity: newQuantity,
-          totalPrice: Number(parseFloat(action.payload.price * newQuantity).toFixed(2)),
+          totalPrice: Number(parseFloat(action.payload?.price * newQuantity).toFixed(2)),
           ...action.payload,
         });
       }
@@ -234,7 +326,6 @@ export const {
   removeItemFromCart,
   changeItemPropsInCart,
   onClickToCheckout,
-  addPaymentMethodAndAmount,
   selectPaymentMethod,
   setPartPaymentAmount,
   onResetCart,
@@ -246,5 +337,22 @@ export const {
   setAmountReceivedFromPayer,
   onRemovePaymentMethod,
   addCustomer,
+  setTransactionFeeCharges,
+  setActivePayments,
+  setPromoAmount,
+  applyPromoAmount,
+  setDeliveryTypes,
+  setDeliveryCharge,
+  setTotalAmountToBePaidByBuyer,
+  setDeliveryTypeSelected,
+  setPaymentMethodSet,
+  setDeliveryNotes,
+  setDeliveryLocationInputted,
+  setDeliveryGPS,
+  setCartPromoCode,
+  setInvoiceDetails,
+  setVerifyTransactionResponse,
+  setItemDiscount,
+  onAppResetCart,
 } = cartSlice.actions;
 export default cartSlice.reducer;

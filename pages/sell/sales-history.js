@@ -1,8 +1,7 @@
-import React from "react";
-import SalesHistory from "components/Sell/SalesHistory";
+import SalesHistory from "components/Sell/Orders/SalesHistory";
 import Admin from "layouts/Admin";
-import { useDispatch, useSelector } from "react-redux";
-import { setSalesHistoryitem } from "features/sales/salesSlice";
+import React from "react";
+import { useDispatch } from "react-redux";
 
 const SalesHistoryPage = () => {
   const dispatch = useDispatch();

@@ -1,7 +1,18 @@
-import React from "react";
 import { createPopper } from "@popperjs/core";
+import { onAppLogout } from "features/app/appSlice";
+import { onAppResetCart } from "features/cart/cartSlice";
+import { onAppResetManageProducts } from "features/manageproducts/manageprodcutsSlice";
+import { onAppResetSales } from "features/orders/ordersSlice";
+import { onAppResetProducts } from "features/products/productsSlice";
+import { useRouter } from "next/router";
+import React from "react";
+import { useDispatch } from "react-redux";
 
 const UserDropdown = () => {
+  const dispatch = useDispatch();
+  let user = sessionStorage.getItem("IPAYPOSUSER");
+  user = JSON.parse(user);
+  const router = useRouter();
   // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
   const btnDropdownRef = React.createRef();
@@ -17,9 +28,8 @@ const UserDropdown = () => {
   };
   return (
     <>
-      <a
+      <div
         className="text-blueGray-500 block"
-        href="#pablo"
         ref={btnDropdownRef}
         onClick={(e) => {
           e.preventDefault();
@@ -28,14 +38,10 @@ const UserDropdown = () => {
       >
         <div className="items-center flex">
           <span className="w-10 h-10 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full">
-            <img
-              alt="..."
-              className="w-full rounded-full align-middle border-none shadow-lg"
-              src="/img/team-1-800x800.jpg"
-            />
+            <img alt="..." className="w-full rounded-full align-middle border-none shadow-lg" src={user?.user_merchant_logo} />
           </span>
         </div>
-      </a>
+      </div>
       <div
         ref={popoverDropdownRef}
         className={
@@ -43,43 +49,20 @@ const UserDropdown = () => {
           "bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg min-w-48"
         }
       >
-        <a
-          href="#pablo"
-          className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-          }
-          onClick={(e) => e.preventDefault()}
+        <button
+          className="focus:outline-none text-blueGray-600 px-4 w-full"
+          onClick={() => {
+            router.push("/auth/login");
+            sessionStorage.removeItem("IPAYPOSUSER");
+            dispatch(onAppLogout());
+            dispatch(onAppResetCart());
+            dispatch(onAppResetManageProducts());
+            dispatch(onAppResetProducts());
+            dispatch(onAppResetSales());
+          }}
         >
-          Action
-        </a>
-        <a
-          href="#pablo"
-          className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-          }
-          onClick={(e) => e.preventDefault()}
-        >
-          Another action
-        </a>
-        <a
-          href="#pablo"
-          className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-          }
-          onClick={(e) => e.preventDefault()}
-        >
-          Something else here
-        </a>
-        <div className="h-0 my-2 border border-solid border-blueGray-100" />
-        <a
-          href="#pablo"
-          className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-          }
-          onClick={(e) => e.preventDefault()}
-        >
-          Seprated link
-        </a>
+          Logout
+        </button>
       </div>
     </>
   );

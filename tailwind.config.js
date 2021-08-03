@@ -1,14 +1,27 @@
 const plugin = require("tailwindcss/plugin");
 const colors = require("tailwindcss/colors");
+const { sidebarRoutes } = require("./utils/routes");
+
+const saferoutecolors = sidebarRoutes.map((route) => `text-${route.iconColor}`);
 
 module.exports = {
   // mode: "jit",
-  purge: ["./**/*.html", "./*.html", "./**/*.js", "./*.js"],
-  darkMode: false, // or 'media' or 'class',
+  purge: {
+    content: ["./**/*.js"],
+    darkMode: false, // or 'media' or 'class',
+    // These options are passed through directly to PurgeCSS
+    options: {
+      safelist: [...saferoutecolors, /^[\w:]*grid-cols-/, /^grid-cols-/, "bg-red-400", "bg-gray-200"],
+    },
+  },
   theme: {
     extend: {
-      colors: {
-        ...colors,
+      width: {
+        34: "8.5rem",
+      },
+      colors,
+      fontFamily: {
+        print: ["Nunito Sans, sans-serif"],
       },
       minHeight: {
         "screen-75": "75vh",
@@ -69,20 +82,29 @@ module.exports = {
       },
     },
   },
-  variants: [
-    "responsive",
-    // "group-hover",
-    // "focus-within",
-    // "first",
-    // "last",
-    // "odd",
-    // "even",
-    "hover",
-    "focus",
-    // "active",
-    // "visited",
-    // "disabled",
-  ],
+  // variants: [
+  //   "responsive",
+  //   // // "group-hover",
+  //   // // "focus-within",
+  //   // // "first",
+  //   // // "last",
+  //   // // "odd",
+  //   // // "even",
+  //   "hover",
+  //   "focus",
+  //   // // "active",
+  //   // // "visited",
+  //   "checked",
+  //   // // "disabled",
+  // ],
+
+  variants: {
+    extend: {
+      backgroundColor: ["checked"],
+      borderColor: ["checked"],
+      boxShadow: ["focus-within"],
+    },
+  },
   plugins: [
     require("@tailwindcss/forms"),
     plugin(function ({ addComponents, theme }) {

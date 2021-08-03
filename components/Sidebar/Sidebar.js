@@ -1,14 +1,8 @@
-import React from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-
-import NotificationDropdown from "components/Dropdowns/NotificationDropdown.js";
-import UserDropdown from "components/Dropdowns/UserDropdown.js";
-import { sidebarRoutes } from "utils/routes";
-import { useDispatch, useSelector } from "react-redux";
 import { setSecondPaneOpenPath, setSidebarSecondPaneOpen } from "features/app/appSlice";
-import { onSelectCategory, setOutletSelected } from "features/products/productsSlice";
-import { onResetCart } from "features/cart/cartSlice";
+import { useRouter } from "next/router";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { sidebarRoutes } from "utils";
 
 const NavLink = ({ sidebarRoute }) => {
   const { name, slug, path, icon, iconColor } = sidebarRoute;
@@ -55,7 +49,7 @@ const ChildNavLink = ({ childLink }) => {
 
   return (
     <li className={`text-left p-3 py-2`}>
-      <button className="focus:outline-none" onClick={(e) => handleClick(e, path)}>
+      <button className="focus:outline-none text-xs xl:text-base font-semibold" onClick={(e) => handleClick(e, path)}>
         <span
           className={
             router.pathname.indexOf(path) !== -1
@@ -73,28 +67,36 @@ const ChildNavLink = ({ childLink }) => {
 export default function Sidebar() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const outlets = useSelector((state) => state.products.outlets);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
-
-  React.useEffect(() => {
-    // dispatch(setSecondPaneOpenPath());
-    return () => {};
-  }, []);
-
   const secondPaneOpenPathname = useSelector((state) => state.app.secondPaneOpenPathname);
   const openSidebarSecondpane = useSelector((state) => state.app.openSidebarSecondpane);
+
+  // console.log(router);
+
+  React.useEffect(() => {
+    const slug = router?.pathname?.split("/")[1];
+    slug &&
+      dispatch(
+        setSecondPaneOpenPath({
+          name: slug,
+        })
+      );
+  }, []);
+
+  // console.log(openSidebarSecondpane);
+  // console.log(secondPaneOpenPathname);
 
   const { childLinks } = sidebarRoutes.find((sidebarRoute) => sidebarRoute.slug === secondPaneOpenPathname);
 
   return (
     <>
       <nav
-        className={`side-bar left-0 fixed top-0 bottom-0 overflow-y-auto flex-row overflow-hidden ${
-          openSidebarSecondpane ? "w-64" : "w-28"
+        style={{ top: 70 }}
+        className={`side-bar left-0 fixed bottom-0 overflow-y-auto flex-row overflow-hidden ${
+          openSidebarSecondpane ? "w-48 xl:w-64" : "w-24 xl:w-32"
         } z-10`}
       >
         <div className={"min-h-full px-0 mx-auto flex w-full shadow-none"}>
-          <div className={`first-pane ${openSidebarSecondpane ? "w-28" : "w-28"} bg-blueGray-100`}>
+          <div className={`first-pane w-24 xl:w-32 bg-blueGray-100`}>
             <ul className="flex-col min-w-full list-none">
               {sidebarRoutes.map((sidebarRoute) => {
                 return <NavLink key={sidebarRoute.id} sidebarRoute={sidebarRoute} />;
@@ -102,8 +104,8 @@ export default function Sidebar() {
             </ul>
           </div>
 
-          <div className={`second-pane ${openSidebarSecondpane ? "flex-grow" : "w-0"}`}>
-            <p className="text-left text-blueGray-600 block uppercase font-bold p-4">
+          <div className={`second-pane py-4 ${openSidebarSecondpane ? "flex-grow" : "w-0"}`}>
+            {/* <p className="text-left text-blueGray-600 block uppercase font-bold p-4">
               {outlets.find((outlet) => outlet.outlet_id === outletSelected)?.outlet_name}
             </p>
             {outlets.length > 1 && (
@@ -141,7 +143,7 @@ export default function Sidebar() {
                 </div>
               </div>
             )}
-            <hr className="my-4 min-w-full" />
+            <hr className="my-4 min-w-full" /> */}
 
             <ul className="flex-col list-none">
               {childLinks.map((childLink) => {

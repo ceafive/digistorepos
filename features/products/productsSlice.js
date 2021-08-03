@@ -11,10 +11,12 @@ const initialState = {
   customers: [],
   productCategories: [],
   categorySelected: {
-    category_id: "ALL",
-    category_name: "ALL",
-    category_description: "All Categories",
+    product_category_id: "ALL",
+    product_category: "ALL",
+    product_category_description: "All Categories",
   },
+  categoryProductsCount: [],
+  productsOnHold: false,
 };
 
 const actionCreator = (key, state, payload) => {
@@ -25,8 +27,17 @@ const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
-    setAllOutlets(state, action){
-      actionCreator('outlets',state, action.payload)
+    onAppResetProducts() {
+      return initialState;
+    },
+    setProductsOnHold(state) {
+      state.productsOnHold = !state.productsOnHold;
+    },
+    setCategoryProductsCount(state, action) {
+      state.categoryProductsCount = action.payload;
+    },
+    setAllOutlets(state, action) {
+      actionCreator("outlets", state, action.payload);
     },
     setOutletSelected(state, action) {
       state.outletSelected = action.payload;
@@ -66,7 +77,11 @@ export const {
   currentSearchTerm,
   onSetProductCategories,
   onSelectCategory,
-  openInventoryModal,setOutletSelected,
-  setAllOutlets
+  openInventoryModal,
+  setOutletSelected,
+  setAllOutlets,
+  setCategoryProductsCount,
+  setProductsOnHold,
+  onAppResetProducts,
 } = productsSlice.actions;
 export default productsSlice.reducer;

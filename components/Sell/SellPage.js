@@ -1,24 +1,32 @@
-import React from "react";
-import SearchResults from "components/SearchResults";
+import axios from "axios";
 import Cart from "components/Cart/Cart";
 import Modal from "components/Modal";
 import InventoryDetails from "components/Product/InventoryDetails";
+import ProcessSale from "components/Sell/ProcessSale";
+import ProductsSelection from "components/Sell/ProductsSelection";
 import Spinner from "components/Spinner";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import ProcessSale from "components/ProcessSale";
+import { setActivePayments, setDeliveryTypes } from "features/cart/cartSlice";
+import {
+  onSetProductCategories,
+  openInventoryModal,
+  productsAdded,
+  setAllOutlets,
+  setOutletSelected,
+} from "features/products/productsSlice";
 import { motion } from "framer-motion";
-import { productsAdded, customersAdded, onSetProductCategories, openInventoryModal } from "features/products/productsSlice";
-import axios from "axios";
+import { filter, intersectionWith, upperCase } from "lodash";
+import React from "react";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { useDispatch, useSelector } from "react-redux";
 
 const SellPage = () => {
   const dispatch = useDispatch();
   const clickToCheckout = useSelector((state) => state.cart.clickToCheckout);
   const inventoryModalOpen = useSelector((state) => state.products.inventoryModalOpen);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const productsOnHold = useSelector((state) => state.products.productsOnHold);
 
   // Compnent State
-  const [fetching, setFetching] = React.useState(false);
+  const [fetching, setFetching] = React.useState(null);
 
   React.useEffect(() => {
     const fetchItems = async () => {
@@ -26,17 +34,49 @@ const SellPage = () => {
         setFetching(true);
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
+        const { user_assigned_outlets, user_merchant_group } = user;
 
-        const productsAddedRes = await axios.post("/api/products/get-outlet-products", { user, outletSelected });
-        const onSetProductCategoriesRes = await axios.post("/api/products/get-outlet-categories", { user, outletSelected });
+        const allProductsRes = await axios.post("/api/sell/sell/get-all-products", { user });
+        const allCategoriesRes = await axios.post("/api/sell/sell/get-all-categories", { user });
+        const deliveryTypesRes = await axios.post("/api/sell/sell/get-delivery-type", { user });
+        const activePaymentsRes = await axios.post("/api/sell/sell/get-active-payments");
+        const outletsRes = await axios.post("/api/sell/sell/get-outlets", { user });
 
-        const { data: productsAddedResData } = await productsAddedRes.data;
-        const { data: onSetProductCategoriesResData } = await onSetProductCategoriesRes.data;
+        const { data: allProductsResData } = await allProductsRes.data;
+        const { data: allCategoriesResData } = await allCategoriesRes.data;
+        const { data: deliveryTypesResData } = await deliveryTypesRes.data;
+        const { data: activePaymentsResData } = await activePaymentsRes.data;
+        const { data: outletsResData } = await outletsRes.data;
+        // console.log({ allCategoriesResData, allProductsResData });
 
-        // console.log({productsAddedResData, onSetProductCategoriesResData});
+        dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
+        dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
+        dispatch(setDeliveryTypes(deliveryTypesResData));
+        dispatch(setActivePayments(activePaymentsResData));
 
-        dispatch(productsAdded(productsAddedResData));
-        dispatch(onSetProductCategories(onSetProductCategoriesResData));
+        const upperCaseMerchantGroup = upperCase(user_merchant_group);
+
+        if (upperCaseMerchantGroup === "ADMINISTRATORS") {
+          if (outletsResData.length === 1) {
+            dispatch(setOutletSelected(outletsResData[0]));
+          } else {
+            dispatch(setAllOutlets(outletsResData));
+          }
+        } else {
+          const response = intersectionWith(
+            filter(outletsResData, (o) => Boolean(o)),
+            user_assigned_outlets ?? [],
+            (arrVal, othVal) => {
+              return arrVal.outlet_id === othVal;
+            }
+          );
+
+          if (response.length === 1) {
+            dispatch(setOutletSelected(response[0]));
+          } else {
+            dispatch(setAllOutlets(response));
+          }
+        }
       } catch (error) {
         console.log(error);
       } finally {
@@ -44,47 +84,92 @@ const SellPage = () => {
       }
     };
 
-    const fetchCustomers = async () => {
-      const res = await axios.get("https://jsonplaceholder.typicode.com/users");
-      const data = await res.data;
-      dispatch(customersAdded(data.slice(0)));
-    };
-
-    fetchCustomers();
     fetchItems();
-  }, [dispatch, outletSelected]);
+  }, [dispatch]);
 
-  if (fetching) {
+  if (fetching || fetching === null) {
     return (
-      <div className="min-h-screen flex-col justify-center items-center w-full">
-        <Spinner />
+      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
+        <Spinner type="TailSpin" width={50} height={50} />
       </div>
     );
   }
 
+  // if (fetching || fetching === null) {
+  //   return (
+  //     <SkeletonTheme color="#fff" highlightColor="#eee">
+  //       {/* <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full"> */}
+  //       <div className="min-h-screen-75 flex flex-col justify-center pb-6 pt-6">
+  //         <div className="flex">
+  //           <div className="w-7/12 xl:w-8/12 px-4">
+  //             <Skeleton height={50} />
+  //             <div className="flex w-full justify-between my-4">
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //               <Skeleton height={100} width={100} />
+  //             </div>
+  //             <div className="flex w-full justify-between">
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //             </div>
+  //             <div className="flex w-full justify-between">
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //             </div>
+  //             <div className="flex w-full justify-between">
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //               <Skeleton height={200} width={150} />
+  //             </div>
+  //           </div>
+  //           <div className="w-5/12 xl:w-4/12 px-4">
+  //             <Skeleton height={50} />
+
+  //             <Skeleton height={500} />
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </SkeletonTheme>
+  //   );
+  // }
+
   return (
-    <>
-      <div className="min-h-screen">
-        {!clickToCheckout && (
-          <motion.div className="flex">
-            <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
-              <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
-            </Modal>
-            <div className="w-full xl:w-8/12 pb-6 pt-12 px-4">
-              <SearchResults />
-            </div>
-            <div className="w-full xl:w-4/12 pb-6 pt-6 px-4">
-              <Cart />
-            </div>
-          </motion.div>
-        )}
-        {clickToCheckout && (
-          <motion.div initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
-            <ProcessSale />
-          </motion.div>
-        )}
-      </div>
-    </>
+    <div className="pb-6 pt-6">
+      {!clickToCheckout && (
+        <div className="flex" initial={{ y: "-20vh" }} animate={{ y: 0 }} transition={{ duration: 0.1, type: "tween" }}>
+          <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
+            <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
+          </Modal>
+          <div className="w-7/12 xl:w-8/12 px-4">
+            <ProductsSelection />
+          </div>
+          <div className="w-5/12 xl:w-4/12 px-4">
+            <Cart />
+          </div>
+        </div>
+      )}
+      {clickToCheckout && (
+        <motion.div className="" initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
+          <ProcessSale />
+        </motion.div>
+      )}
+    </div>
   );
 };
 

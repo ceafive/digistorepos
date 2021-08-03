@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "."
-  }
+  },
+  "include": ["./**/*", "./node_modules/cypress", "./cypress/**/*.js", "./node_modules/@testing-library/cypress"],
+  "exclude": ["node_modules"]
 }

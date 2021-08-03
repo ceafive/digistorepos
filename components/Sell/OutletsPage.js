@@ -1,10 +1,10 @@
 import axios from "axios";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Spinner from "components/Spinner";
+import { onResetCart } from "features/cart/cartSlice";
 import { onSelectCategory, setAllOutlets, setOutletSelected } from "features/products/productsSlice";
 import { intersectionWith } from "lodash";
-import { onResetCart } from "features/cart/cartSlice";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const Outlet = ({ outlet }) => {
   const dispatch = useDispatch();
@@ -72,7 +72,7 @@ const OutletsPage = () => {
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
-        const res = await axios.post("/api/products/get-outlets", user);
+        const res = await axios.post("/api/sell/sell/get-outlets", user);
         const { data } = await res.data;
         const { user_assigned_outlets } = user;
 
