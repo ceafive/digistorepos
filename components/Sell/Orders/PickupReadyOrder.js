@@ -5,22 +5,21 @@ import { useToasts } from "react-toast-notifications";
 import { sentryErrorLogger } from "utils";
 
 const PickuReadyOrder = ({ user, order, fetching, setFetching, onClose }) => {
+  console.log(order);
   const { addToast } = useToasts();
   const [fetchingData, setFetchingData] = React.useState(false);
   const [merchantDeliveryConfig, setMerchantDeliveryConfig] = React.useState(null);
 
   React.useEffect(() => {
     (async () => {
-      if (order?.delivery_type === "DELIVERY") {
-        setFetchingData(true);
-        const processRes = await axios.post("/api/sell/sell/get-delivery-type", {
-          user,
-        });
-        const { data, status: resStatus } = await processRes?.data;
-        //   console.log(processRes);
-        setFetchingData(false);
-        if (Number(resStatus) === 0) setMerchantDeliveryConfig(data);
-      }
+      setFetchingData(true);
+      const processRes = await axios.post("/api/sell/sell/get-delivery-type", {
+        user,
+      });
+      const { data, status: resStatus } = await processRes?.data;
+      //   console.log(processRes);
+      setFetchingData(false);
+      if (Number(resStatus) === 0) setMerchantDeliveryConfig(data);
     })();
   }, []);
 
