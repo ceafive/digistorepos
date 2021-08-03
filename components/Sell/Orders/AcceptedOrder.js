@@ -26,6 +26,7 @@ const ReAssignOrder = ({ user, order, fetching, setFetching, onClose }) => {
       addToast(message, { appearance: Number(resStatus) === 0 ? "success" : "error", autoDismiss: true });
     } catch (error) {
       console.log(error);
+      sentryErrorLogger(error);
     } finally {
       setFetching(false);
       onClose();
@@ -96,6 +97,7 @@ const AcceptedOrder = ({ user, order, fetching, setFetching, onClose }) => {
       addToast(message, { appearance: Number(resStatus) === 0 ? "success" : "error", autoDismiss: true });
     } catch (error) {
       console.log(error);
+      sentryErrorLogger(error);
     } finally {
       setFetching(false);
       onClose();
