@@ -152,6 +152,10 @@ const SalesHistory = () => {
       render(rowData) {
         return <p>{format(new Date(rowData?.order_date), "iii, d MMM yy h:mmaaa")}</p>;
       },
+      cellStyle: {
+        width: "100%",
+        minWidth: 200,
+      },
     },
     {
       title: "Order Amount",
@@ -199,12 +203,18 @@ const SalesHistory = () => {
       field: "delivery_location",
       cellStyle: {
         width: "100%",
-        minWidth: 300,
+        minWidth: 250,
+      },
+      render(rowData) {
+        return <p>{rowData?.delivery_location || "N/A"}</p>;
       },
     },
     {
       title: "Delivery Note",
       field: "delivery_notes",
+      render(rowData) {
+        return <p>{rowData?.delivery_notes || "N/A"}</p>;
+      },
     },
     {
       title: "Delivery Rider",
@@ -312,13 +322,46 @@ const SalesHistory = () => {
 
   return (
     <>
-      <Modal open={openModal} onClose={() => setOpenModal(false)} maxWidth="md">
+      <Modal
+        open={openModal}
+        maxWidth="md"
+        onClose={() => {
+          setOpenModal(false);
+          // setReRun(new Date());
+        }}
+      >
         {componentToRender === "order_actions" && (
-          <OrderActions isAdmin={isAdmin} order={order} user={user} onClose={() => setOpenModal(false)} />
+          <OrderActions
+            isAdmin={isAdmin}
+            order={order}
+            user={user}
+            onClose={() => {
+              setOpenModal(false);
+              setReRun(new Date());
+            }}
+          />
         )}
-        {componentToRender === "details" && <OrderDetailsComponent order={order} user={user} onClose={() => setOpenModal(false)} />}
+
+        {componentToRender === "details" && (
+          <OrderDetailsComponent
+            order={order}
+            user={user}
+            onClose={() => {
+              setOpenModal(false);
+              setReRun(new Date());
+            }}
+          />
+        )}
+
         {componentToRender === "rider" && (
-          <AssignOrderToRider order={order} user={user} onClose={() => setOpenModal(false)} setReRun={setReRun} />
+          <AssignOrderToRider
+            order={order}
+            user={user}
+            onClose={() => {
+              setOpenModal(false);
+              setReRun(new Date());
+            }}
+          />
         )}
       </Modal>
       <div className="flex w-full h-full">
@@ -405,6 +448,16 @@ const SalesHistory = () => {
           options={{
             filtering: true,
           }}
+          actions={[
+            {
+              icon: () => <i className="fas fa-redo text-green-700" />,
+              tooltip: "Refresh",
+              onClick: () => {
+                setReRun(new Date());
+              },
+              isFreeAction: true,
+            },
+          ]}
           onRowClick={(event, rowData) => {
             setComponentToRender("details");
             setOrder(rowData);

@@ -9,25 +9,6 @@ const AssignOrderToRider = ({ order, user, onClose, setReRun }) => {
   const [fetching, setFetching] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
 
-  const statusColors = {
-    PAYMENT_FAILED: {
-      bg: `red-400`,
-      text: `white`,
-      message: `PAYMENT FAILED`,
-    },
-    COMPLETED: {
-      bg: `green-600`,
-      text: `white`,
-      message: `COMPLETED`,
-    },
-
-    PAID: {
-      bg: `green-400`,
-      text: `white`,
-      message: `PAID`,
-    },
-  };
-
   React.useEffect(() => {
     (async () => {
       setFetching(true);
@@ -60,7 +41,6 @@ const AssignOrderToRider = ({ order, user, onClose, setReRun }) => {
     } finally {
       onClose();
       setProcessing(false);
-      setReRun(new Date());
     }
   };
 
