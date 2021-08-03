@@ -83,14 +83,14 @@ const SalesHistory = () => {
     const fetchItems = async () => {
       try {
         setFetching(true);
-        dispatch(setAllOutlets([]));
+        // dispatch(setAllOutlets([]));
         // dispatch(setOrderHistory([]));
         const formCurrentValues = getValues();
         // console.log(formCurrentValues);
         // TODO: Do not remove this object other methods in /api/orders/get-orders rely on it
         const data = {
           merchant: user?.user_merchant_id,
-          outlet: "",
+          outlet: formCurrentValues?.outletSelected,
           start_date: format(formCurrentValues?.startDate || startOfMonth(new Date()), "dd-MM-yyyy"),
           end_date: format(formCurrentValues?.endDate || new Date(), "dd-MM-yyyy"),
           isAdmin,
@@ -99,7 +99,7 @@ const SalesHistory = () => {
         // console.log(data);
 
         const outletsRes = await axios.post("/api/sell/sell/get-outlets", { user });
-        const { data: outletsResData } = await outletsRes.data;
+        const { data: outletsResData = [] } = await outletsRes.data;
         // console.log(outletsResData);
 
         if (isAdmin) {
@@ -113,9 +113,11 @@ const SalesHistory = () => {
             }
           );
 
-          const outletsString = map(response, (o) => o?.outlet_id).join(",");
+          const outletsString = map(response ?? [], (o) => o?.outlet_id).join(",");
           setOutletsString(outletsString);
-          data["outlet"] = outletsString;
+
+          const outletsStringToSend = formCurrentValues?.outletSelected === "All" ? outletsString : formCurrentValues?.outletSelected;
+          data["outlet"] = outletsStringToSend;
 
           dispatch(setAllOutlets(filter(response, (o) => Boolean(o))));
         }
@@ -305,8 +307,8 @@ const SalesHistory = () => {
           (o) => o?.outlet_id
         ).join(",");
 
-        const outletsString = values?.outletSelected === "All" ? stringedOutlets : values?.outletSelected;
-        data["outlet"] = outletsString;
+        const outletsStringToSend = values?.outletSelected === "All" ? outletsString : values?.outletSelected;
+        data["outlet"] = outletsStringToSend;
       }
 
       // console.log(data);
@@ -450,8 +452,8 @@ const SalesHistory = () => {
           }}
           actions={[
             {
-              icon: () => <i className="fas fa-redo text-green-700" />,
-              tooltip: "Refresh",
+              icon: () => <i className="fas fa-redo text-green-600 text-base" />,
+              tooltip: "Reload",
               onClick: () => {
                 setReRun(new Date());
               },
