@@ -132,7 +132,7 @@ const ConfirmPayment = ({
         {processError ? (
           <p
             dangerouslySetInnerHTML={{ __html: processError }}
-            className={`text-center text-sm ${
+            className={`text-center font-bold text-4xl  ${
               processError.includes("FAILED") || processError.includes("Sorry") ? `text-red-500` : `text-green-500`
             } `}
           />
