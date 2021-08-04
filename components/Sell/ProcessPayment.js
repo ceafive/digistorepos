@@ -241,7 +241,7 @@ const ProcessPayment = ({
 
       {["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer && (
         <div className="text-red-500 font-bold text-center">
-          <p>You need to add a cusomter to this delivery type to proceed</p>
+          <p>You need to add a customer to this delivery type to proceed</p>
         </div>
       )}
 
@@ -254,6 +254,7 @@ const ProcessPayment = ({
             !deliveryTypeSelected ||
             deliveryLocationIsEmpty ||
             !amountReceivedFromPayer ||
+            !outletSelected ||
             (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
             balance > 0
           }
@@ -263,6 +264,7 @@ const ProcessPayment = ({
             !deliveryTypeSelected ||
             deliveryLocationIsEmpty ||
             !amountReceivedFromPayer ||
+            !outletSelected ||
             (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
             balance > 0
               ? "bg-gray-400 text-gray-300"

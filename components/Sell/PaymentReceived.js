@@ -1,5 +1,5 @@
 import { onClickToCheckout, onResetCart } from "features/cart/cartSlice";
-import { setProductsOnHold } from "features/products/productsSlice";
+import { setOutletSelected, setProductsOnHold } from "features/products/productsSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
@@ -103,6 +103,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             dispatch(onClickToCheckout(false));
             dispatch(onResetCart());
             dispatch(setProductsOnHold());
+            dispatch(setOutletSelected(null));
           }}
         >
           Close Sale

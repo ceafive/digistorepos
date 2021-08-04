@@ -1,7 +1,7 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
 import { onClickToCheckout, onResetCart, setVerifyTransactionResponse } from "features/cart/cartSlice";
-import { setProductsOnHold } from "features/products/productsSlice";
+import { setOutletSelected, setProductsOnHold } from "features/products/productsSlice";
 import { throttle, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,12 +23,14 @@ const ConfirmPayment = ({
   const [ticking, setTicking] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
+  const statusCheckTotalRunTime = 60000;
+
   const sleep = (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
 
   React.useEffect(() => {
-    const verifyTransaction = async () => {
+    const verifyTransaction = async (firstTimeStarted) => {
       try {
         setFetching(true);
         const getResData = async () => {
@@ -37,29 +39,38 @@ const ConfirmPayment = ({
           return data;
         };
 
-        await sleep(5000);
+        // await sleep(5000);
         const data = await getResData();
         // console.log(data);
         dispatch(setVerifyTransactionResponse(data));
         const { message } = data; // new, awaiting_payment, paid, cancelled, failed, expired   ie message values
+        // console.log(message);
 
         if (message === "new" || message === "awaiting_payment") {
           // console.log("hit 1");
           setLoading(true);
+          if (Date.now() - firstTimeStarted > statusCheckTotalRunTime - 10000) {
+            setConfirmButtonText("Start New Delivery");
+            setProcessError(
+              "Sorry, Payment for your Delivery request is pending confirmation. <br>You will be notified via Email/SMS once your payment is confirmed.<br>And your request will be processed."
+            );
+            setFetching(false);
+            setTicking(false);
+          }
         } else {
           if (message === "paid") {
             // console.log("hit 2");
             setFetching(false);
             setLoading(false);
             setStep(2);
-            // await throttledFn.cancel();
+            setTicking(false);
           } else if (message === "cancelled" || message === "failed" || message === "new" || message === "expired") {
             // console.log("hit 3");
             setLoading(false);
             setFetching(false);
-            // await throttledFn.cancel();
             setConfirmButtonText("Start New Sale");
             setProcessError(`${upperCase(message)} TRANSACTION`);
+            setTicking(false);
           }
         }
 
@@ -69,33 +80,31 @@ const ConfirmPayment = ({
       }
     };
 
-    if (ticking) {
-      const throttledFn = throttle(verifyTransaction, 10000, { trailing: false })();
-      // !loading &&
-      //   verifyTransactionResponse &&
-      //   (verifyTransactionResponse?.message !== "new" || verifyTransactionResponse?.message !== "awaiting_payment") &&
-      //   throttledFn.cancel();
-    }
-  }, [loading, ticking]);
+    // if (ticking) {
+    //   const throttledFn = throttle(verifyTransaction, 10000, { trailing: false })();
+    //   // !loading &&
+    //   //   verifyTransactionResponse &&
+    //   //   (verifyTransactionResponse?.message !== "new" || verifyTransactionResponse?.message !== "awaiting_payment") &&
+    //   //   throttledFn.cancel();
+    // }
 
-  // React.useEffect(() => {
-  //   console.log("hit here", verifyTransactionResponse);
-  //   console.log("effecting 1", isAfter);
-  //   if (isAfter) {
-  //     console.log("effecting 2", isAfter);
-  //     clearInterval(interval);
-  //   }
-  //   if (verifyTransactionResponse?.message === "paid") {
-  //     setStep(2);
-  //   } else if (
-  //     verifyTransactionResponse?.message === "cancelled " ||
-  //     verifyTransactionResponse?.message === "failed" ||
-  //     verifyTransactionResponse?.message === "expired"
-  //   ) {
-  //     setConfirmButtonText("Start New Sale");
-  //     setProcessError(`${upperCase(verifyTransactionResponse?.message)} TRANSACTION`);
-  //   }
-  // }, [interval, isAfter, setConfirmButtonText, setProcessError, setStep, verifyTransactionResponse, verifyTransactionResponse?.message]);
+    // I want to call a Javascript function x times for y seconds
+    if (ticking) {
+      verifyTransaction(Date.now());
+      var started = Date.now();
+      // make it loop every 10 seconds
+      var interval = setInterval(function () {
+        // for 30 seconds
+        if (Date.now() - started > statusCheckTotalRunTime) {
+          // and then pause it
+          clearInterval(interval);
+        } else {
+          // the thing to do every 10 seconds
+          verifyTransaction(started);
+        }
+      }, 10000); // every 10 seconds
+    }
+  }, [ticking]);
 
   return (
     <>
@@ -121,7 +130,12 @@ const ConfirmPayment = ({
         </p> */}
       <div className="py-20 text-center">
         {processError ? (
-          <p className={`font-bold text-4xl ${processError.includes("PAID") ? "text-green-500" : "text-red-500 "}`}>{processError}</p>
+          <p
+            dangerouslySetInnerHTML={{ __html: processError }}
+            className={`text-center text-sm ${
+              processError.includes("FAILED") || processError.includes("Sorry") ? `text-red-500` : `text-green-500`
+            } `}
+          />
         ) : (
           <div>
             <p className="font-bold text-4xl">Awaiting Payment</p>
@@ -146,6 +160,7 @@ const ConfirmPayment = ({
                     dispatch(onClickToCheckout(false));
                     dispatch(onResetCart());
                     dispatch(setProductsOnHold());
+                    dispatch(setOutletSelected(null));
                   })()
                 : setTicking(true);
             }}

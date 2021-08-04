@@ -43,7 +43,7 @@ const ProcessSale = () => {
   const cart = useSelector((state) => state.cart);
   const products = useSelector((state) => state.products);
 
-  // console.log(deliveryTypeSelected);
+  // console.log(products);
 
   // Component State
   const [step, setStep] = React.useState(0);
