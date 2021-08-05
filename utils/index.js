@@ -229,15 +229,17 @@ const categoryTabColors = (productCategories) => {
 };
 
 function repeatFor(size) {
-  const newArr = [];
-  let count = 0;
-  let remaining = categoryColors.length;
-  let offset = categoryColors.length;
+  let no = -1;
+  var newArr = new Array(size);
 
-  for (let i = 0; i < offset; i++) {
-    newArr[i] = categoryColors[i];
-    count++;
-    remaining--;
+  for (var i = 0; i < size; i++) {
+    if (no === categoryColors.length - 1) {
+      no = 0;
+      newArr[i] = categoryColors[no];
+    } else {
+      no++;
+      newArr[i] = categoryColors[no];
+    }
   }
 
   return newArr;

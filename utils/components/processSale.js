@@ -217,22 +217,24 @@ const onRaiseOrder = async (
     const data = await res.data;
     // console.log(data);
 
-    if (data?.status !== 0) {
+    if (Number(data?.status) !== 0) {
       setProcessError(data?.message);
       setFetching(false);
     }
 
-    if (data?.status === 0 && cart?.paymentMethodSet === "CASH") {
-      dispatch(setInvoiceDetails(data));
-      setStep(2);
-      setFetching(false);
-    }
+    if (Number(data?.status) === 0) {
+      if (cart?.paymentMethodSet === "CASH") {
+        dispatch(setInvoiceDetails(data));
+        setStep(2);
+        setFetching(false);
+      }
 
-    if (Number(data?.status) === 0 && cart?.paymentMethodSet !== "CASH") {
-      dispatch(setInvoiceDetails(data));
-      setConfirmPaymentText(data?.message);
-      setStep(1);
-      setFetching(false);
+      if (cart?.paymentMethodSet !== "CASH") {
+        dispatch(setInvoiceDetails(data));
+        setConfirmPaymentText(data?.message);
+        setStep(1);
+        setFetching(false);
+      }
     }
   } catch (error) {
     console.log(error.response.data);

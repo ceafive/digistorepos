@@ -14,7 +14,8 @@ function CategoriesScroll({ setOffset }) {
 
   // console.log(repeatFor(productCategories.length + 1));
 
-  const backgroundColors = React.useMemo(() => categoryTabColors(productCategories), [productCategories]);
+  const backgroundColors = React.useMemo(() => repeatFor(productCategories?.length + 1), [productCategories]);
+  // const backgroundColors = React.useMemo(() => categoryTabColors(productCategories), [productCategories]);
   const allProductCategories = [
     {
       product_category_id: "ALL",
