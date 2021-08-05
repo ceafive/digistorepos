@@ -78,7 +78,7 @@ const MerchantDeliveryType = () => {
   );
 };
 
-const IPAYDeliveryType = ({ setProcessingDeliveryCharge }) => {
+const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   const outletSelected = useSelector((state) => state.products.outletSelected);
@@ -89,19 +89,32 @@ const IPAYDeliveryType = ({ setProcessingDeliveryCharge }) => {
     dispatch(setDeliveryLocationInputted(value));
   }, [dispatch, value]);
 
+  const getStringCoordinates = async (description) => {
+    try {
+      const response = await axios.post("/api/sell/sell/get-coordinates", { description });
+      const responsedata = await response.data;
+      const stringCoordinates = `${responsedata["results"][0]["geometry"]["location"]["lat"]},${responsedata["results"][0]["geometry"]["location"]["lng"]}`;
+      // const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`; // TODO: used with old url in get coordinates backend route
+
+      return stringCoordinates;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   React.useEffect(() => {
     const getCoordinates = async () => {
       setProcessingDeliveryCharge(true);
 
       // console.log({ value });
       // return;
-      const response = await axios.post("/api/sell/sell/get-coordinates", { description: value?.value?.description });
-      const responsedata = await response.data;
-      const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
+
+      const stringCoordinates = await getStringCoordinates(value?.value?.description);
 
       const fetchItems = async (stringCoordinates) => {
         try {
           setProcessingDeliveryCharge(true);
+
           const payload = {
             pickup_id: outletSelected?.outlet_id,
             pickup_gps: outletSelected?.outlet_gps,
@@ -150,42 +163,44 @@ const IPAYDeliveryType = ({ setProcessingDeliveryCharge }) => {
     }
   }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, value]);
 
-  // if (fetching) {
-  //   return (
-  //     <div className="flex flex-col justify-center items-center w-full mt-2">
-  //       <Spinner type="TailSpin" width={30} height={30} />
-  //     </div>
-  //   );
-  // }
-
   return (
     <div>
       <p>Select Delivery Location</p>
-      <GooglePlaces
-        value={value}
-        setValue={(value) => {
-          setValue(value);
-        }}
-        selectProps={{
-          styles: {
-            input: (provided) => ({
-              ...provided,
-              padding: "10px 0",
-            }),
-            option: (provided) => ({
-              ...provided,
-            }),
-            singleValue: (provided) => ({
-              ...provided,
-            }),
-          },
-        }}
-      />
+      <div className="flex items-center w-full ">
+        <div className={`w-full`}>
+          <GooglePlaces
+            value={value}
+            setValue={(value) => {
+              setValue(value);
+            }}
+            selectProps={{
+              styles: {
+                input: (provided) => ({
+                  ...provided,
+                  padding: "10px 0",
+                }),
+                option: (provided) => ({
+                  ...provided,
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                }),
+              },
+            }}
+          />
+        </div>
+
+        {processingDeliveryCharge && (
+          <div className="ml-2">
+            <Spinner type="TailSpin" width={30} height={30} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-const MerchantDistDeliveryType = ({ setProcessingDeliveryCharge }) => {
+const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   const outletSelected = useSelector((state) => state.products.outletSelected);
@@ -255,23 +270,24 @@ const MerchantDistDeliveryType = ({ setProcessingDeliveryCharge }) => {
     }
   }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, value]);
 
-  // if (fetching) {
-  //   return (
-  //     <div className="flex flex-col justify-center items-center w-full mt-2">
-  //       <Spinner type="TailSpin" width={30} height={30} />
-  //     </div>
-  //   );
-  // }
-
   return (
     <div>
       <p>Select Delivery Location</p>
-      <GooglePlaces
-        value={value}
-        setValue={(value) => {
-          setValue(value);
-        }}
-      />
+      <div className="flex items-center w-full">
+        <div className={`w-full`}>
+          <GooglePlaces
+            value={value}
+            setValue={(value) => {
+              setValue(value);
+            }}
+          />
+        </div>
+        {processingDeliveryCharge && (
+          <div className="ml-2">
+            <Spinner type="TailSpin" width={30} height={30} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -296,17 +312,21 @@ const DeliveryNotes = ({ register }) => {
   );
 };
 
-const TypeDelivery = ({ setProcessingDeliveryCharge }) => {
+const TypeDelivery = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
 
+  // console.log(deliveryTypes["option_delivery"]);
+
   if (deliveryTypes["option_delivery"] === "MERCHANT") {
-    return <MerchantDeliveryType setProcessingDeliveryCharge={setProcessingDeliveryCharge} />;
+    return (
+      <MerchantDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
+    );
   }
 
   if (deliveryTypes["option_delivery"] === "IPAY") {
     return (
       <>
-        <IPAYDeliveryType setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
+        <IPAYDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
         <DeliveryNotes />
       </>
     );
@@ -315,7 +335,10 @@ const TypeDelivery = ({ setProcessingDeliveryCharge }) => {
   if (deliveryTypes["option_delivery"] === "MERCHANT-DIST") {
     return (
       <>
-        <MerchantDistDeliveryType setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
+        <MerchantDistDeliveryType
+          processingDeliveryCharge={processingDeliveryCharge}
+          setProcessingDeliveryCharge={setProcessingDeliveryCharge}
+        />
         <DeliveryNotes />
       </>
     );

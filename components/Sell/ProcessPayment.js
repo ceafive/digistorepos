@@ -38,6 +38,7 @@ const ProcessPayment = ({
   const outletSelected = useSelector((state) => state.products.outletSelected);
   const paymentMethodSet = useSelector((state) => state.cart.paymentMethodSet);
   const deliveryLocationInputted = useSelector((state) => state.cart.deliveryLocationInputted);
+  const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
   const cart = useSelector((state) => state.cart);
 
   // Variables
@@ -54,6 +55,7 @@ const ProcessPayment = ({
     return allIntersected;
   }, [activePayments, user?.user_permissions]);
   const deliveryLocationIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryLocationInputted;
+  const deliveryChargeIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryCharge;
   const [processingDeliveryCharge, setProcessingDeliveryCharge] = React.useState(false);
 
   // console.log(deliveryTypeSelected);
@@ -158,7 +160,7 @@ const ProcessPayment = ({
           {merchantUserDeliveryOptions
             .filter((option) => {
               if (option.name === "Dine In") {
-                if (user?.user_merchant_cat_id === "67" || user?.user_merchant_cat_id === "68") {
+                if (["67", "68"].includes(user?.user_merchant_cat_id)) {
                   return true;
                 } else return false;
               }
@@ -166,29 +168,37 @@ const ProcessPayment = ({
             })
             .map((option) => {
               return (
-                <div key={option.name} className="">
-                  <button
-                    className={`${
-                      deliveryTypeSelected === option.name ? "ring-2" : ""
-                    } w-36 h-24 border border-gray-300 text-lg focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
-                    onClick={() => {
+                <button
+                  key={option.name}
+                  disabled={!outletSelected} //TODO: if no outlet selected ie user has more than one outlet
+                  className={`${
+                    deliveryTypeSelected === option.name ? "ring-2" : ""
+                  } w-36 h-24 border border-gray-300 text-lg focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
+                  onClick={() => {
+                    if (!outletSelected) {
+                      addToast(`Please select an outlet`, { appearance: `info`, autoDismiss: true });
+                    } else {
                       if (option?.name !== "Delivery") {
                         dispatch(setDeliveryCharge(null));
                         dispatch(setDeliveryNotes(""));
                       }
                       dispatch(setDeliveryTypeSelected(option?.name));
-                    }}
-                  >
-                    {option.name}
-                  </button>
-                </div>
+                    }
+                  }}
+                >
+                  {option.name}
+                </button>
               );
             })}
         </div>
 
         {deliveryTypeSelected === "Delivery" && (
           <div className="mt-4">
-            <TypeDelivery setFetching={setFetching} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
+            <TypeDelivery
+              setFetching={setFetching}
+              processingDeliveryCharge={processingDeliveryCharge}
+              setProcessingDeliveryCharge={setProcessingDeliveryCharge}
+            />
           </div>
         )}
       </div>
@@ -256,6 +266,7 @@ const ProcessPayment = ({
             !amountReceivedFromPayer ||
             !outletSelected ||
             (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
+            deliveryChargeIsEmpty ||
             balance > 0
           }
           className={`${
@@ -266,6 +277,7 @@ const ProcessPayment = ({
             !amountReceivedFromPayer ||
             !outletSelected ||
             (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
+            deliveryChargeIsEmpty ||
             balance > 0
               ? "bg-gray-400 text-gray-300"
               : "bg-green-700 text-white"

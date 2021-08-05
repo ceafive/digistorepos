@@ -1,5 +1,6 @@
 import axios from "axios";
 import Modal from "components/Modal";
+import Spinner from "components/Spinner";
 import { addCustomer } from "features/cart/cartSlice";
 import debounce from "lodash.debounce";
 import React from "react";
@@ -24,12 +25,16 @@ const AddCustomer = () => {
   const [step, setStep] = React.useState(0);
   const [allCustomers, setAllCustomers] = React.useState([]);
   const [openAddCustomerModal, setOpenAddCustomerModal] = React.useState(false);
+  const [searching, setSearching] = React.useState(false);
 
   const watchCustomerSearch = watch("searchCustomer", "");
 
   React.useEffect(() => {
     const fetchCustomerDetails = async () => {
       try {
+        setSearching(true);
+        setAllCustomers([]);
+        dispatch(addCustomer(null));
         const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: watchCustomerSearch });
         const { data } = await response.data;
 
@@ -43,13 +48,38 @@ const AddCustomer = () => {
       } catch (error) {
         console.log(error);
       } finally {
+        setSearching(false);
       }
     };
 
     if (watchCustomerSearch) {
-      debounce(fetchCustomerDetails, 250, { maxWait: 500 })();
+      debounce(fetchCustomerDetails, 150, { maxWait: 50 })();
     }
   }, [watchCustomerSearch]);
+
+  // React.useEffect(() => {
+  //   const fetchCustomerDetails = async () => {
+  //     try {
+  //       const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: watchCustomerSearch });
+  //       const { data } = await response.data;
+
+  //       if (data) {
+  //         if (Array.isArray(data)) {
+  //           setAllCustomers(data);
+  //         } else {
+  //           setAllCustomers([data]);
+  //         }
+  //       } else setAllCustomers([]);
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //     }
+  //   };
+
+  //   if (watchCustomerSearch) {
+  //     debounce(fetchCustomerDetails, 250, { maxWait: 500 })();
+  //   }
+  // }, [watchCustomerSearch]);
 
   return (
     <div className="w-full">
@@ -82,7 +112,7 @@ const AddCustomer = () => {
               </span>
               <input
                 {...register("searchCustomer")}
-                type="number"
+                type="text"
                 placeholder="Search here..."
                 className="appearance-none border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
               />
@@ -95,7 +125,7 @@ const AddCustomer = () => {
                   setAllCustomers([]);
                 }}
               >
-                <i className="fas fa-times-circle"></i>
+                {searching ? <Spinner width={20} height={20} /> : <i className="fas fa-times-circle"></i>}
               </span>
             </div>
             {watchCustomerSearch && (
@@ -139,16 +169,18 @@ const AddCustomer = () => {
                   })
                 ) : (
                   <div className="flex flex-col justify-between items-center w-full h-full">
-                    <p className="font-medium">No customer found</p>
+                    <p className="font-medium">{searching ? "Searching..." : "No customer found"}</p>
 
-                    <button
-                      className="text-sm text-blue-500 focus:outline-none"
-                      onClick={() => {
-                        setOpenAddCustomerModal(true);
-                      }}
-                    >
-                      Add New Customer
-                    </button>
+                    {!searching && (
+                      <button
+                        className="text-sm text-blue-500 focus:outline-none"
+                        onClick={() => {
+                          setOpenAddCustomerModal(true);
+                        }}
+                      >
+                        Add New Customer
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

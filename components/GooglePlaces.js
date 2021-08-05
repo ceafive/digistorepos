@@ -5,6 +5,12 @@ const GooglePlaces = ({ value, setValue, selectProps }) => {
   return (
     <div>
       <GooglePlacesAutocomplete
+        apiKey="AIzaSyAZxtyoPfteFDtEe0avkN0u3jdWuYiDC0U"
+        apiOptions={{
+          // v: "weekly",
+          // libraries: "places",
+          region: "GH",
+        }}
         selectProps={{
           ...selectProps,
           value,

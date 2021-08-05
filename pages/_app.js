@@ -93,10 +93,10 @@ export default class MyApp extends App {
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
           <title>Digistore :.: POS</title>
-          <script
+          {/* <script 
             type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZxtyoPfteFDtEe0avkN0u3jdWuYiDC0U&libraries=places&v=weekly&region=GH"
-          />
+          /> */}
         </Head>
         <Provider store={store}>
           <ThemeProvider theme={theme}>

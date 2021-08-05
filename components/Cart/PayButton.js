@@ -5,9 +5,11 @@ import {
   onClickToCheckout,
   onResetCart,
   setCartPromoCode,
+  setDeliveryTypeSelected,
   setDiscount,
   setPromoAmount,
 } from "features/cart/cartSlice";
+import { setOutletSelected } from "features/products/productsSlice";
 import { upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -122,6 +124,8 @@ const PayButton = () => {
             className="font-bold text-red-500 focus:outline-none"
             onClick={() => {
               dispatch(onResetCart());
+              dispatch(setOutletSelected(null));
+              dispatch(setDeliveryTypeSelected(null));
             }}
           >
             Clear Cart
