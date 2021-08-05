@@ -7,11 +7,10 @@ export default function Auth({ children }) {
       <main>
         <section className="relative w-full h-full pt-40 py-40 min-h-screen">
           <div
-            className="absolute top-0 w-full h-full bg-white bg-no-repeat bg-full"
+            className="absolute top-0 w-full h-full bg-blueGray-500 bg-no-repeat bg-full"
             style={{
               backgroundImage: "url('/img/register_bg_2.png')",
-            }}
-          ></div>
+            }}></div>
           {children}
           <FooterSmall absolute />
         </section>

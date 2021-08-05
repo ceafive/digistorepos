@@ -26,6 +26,19 @@ const UserDropdown = () => {
   const closeDropdownPopover = () => {
     setDropdownPopoverShow(false);
   };
+
+  React.useEffect(() => {
+    return () => {
+      // console.log("here");
+      dispatch(onAppLogout());
+      dispatch(onAppResetCart());
+      dispatch(onAppResetManageProducts());
+      dispatch(onAppResetProducts());
+      dispatch(onAppResetSales());
+      sessionStorage.removeItem("IPAYPOSUSER");
+    };
+  }, []);
+
   return (
     <>
       <div
@@ -53,12 +66,12 @@ const UserDropdown = () => {
           className="focus:outline-none text-blueGray-600 px-4 w-full"
           onClick={() => {
             router.push("/auth/login");
-            sessionStorage.removeItem("IPAYPOSUSER");
-            dispatch(onAppLogout());
-            dispatch(onAppResetCart());
-            dispatch(onAppResetManageProducts());
-            dispatch(onAppResetProducts());
-            dispatch(onAppResetSales());
+            // dispatch(onAppLogout());
+            // dispatch(onAppResetCart());
+            // dispatch(onAppResetManageProducts());
+            // dispatch(onAppResetProducts());
+            // dispatch(onAppResetSales());
+            // sessionStorage.removeItem("IPAYPOSUSER");
           }}
         >
           Logout

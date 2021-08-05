@@ -12,6 +12,10 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
   const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
 
+  const [compToRender, setCompToRender] = React.useState(null);
+  const [phoneNumber, setPhoneNumber] = React.useState("");
+  const [email, setEmail] = React.useState("");
+
   return (
     <div className="mt-10 py-20 text-center">
       <p className="font-bold text-4xl ">Payment Received</p>
@@ -52,49 +56,113 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             <span>{"Print"}</span>
           </button>
 
-          {currentCustomer?.customer_phone && (
-            <button
-              disabled={sendingNotification}
-              className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xxl mr-6"
-              onClick={() => {
+          {/* {currentCustomer?.customer_phone && ( */}
+          <button
+            disabled={sendingNotification}
+            className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xxl mr-6"
+            onClick={() => {
+              if (currentCustomer?.customer_phone) {
                 handleSendNotification("SMS");
-              }}
-            >
-              <span className="w-6 mr-1">
-                <i className="fas fa-sms" />
-              </span>
-              <span>{"SMS Receipt"}</span>
-            </button>
-          )}
+              } else {
+                addToast(`Enter phone number to send receipt to`, { autoDismiss: true });
+                setCompToRender("phone");
+              }
+            }}
+          >
+            <span className="w-6 mr-1">
+              <i className="fas fa-sms" />
+            </span>
+            <span>{"SMS Receipt"}</span>
+          </button>
+          {/* )} */}
 
-          {currentCustomer?.customer_email && (
-            <button
-              disabled={sendingNotification}
-              className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xxl"
-              onClick={() => {
+          {/* {currentCustomer?.customer_email && ( */}
+          <button
+            disabled={sendingNotification}
+            className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xxl"
+            onClick={() => {
+              if (currentCustomer?.customer_phone) {
                 handleSendNotification("EMAIL");
-              }}
-            >
-              <span className="w-6 mr-1">
-                <i className="fas fa-envelope" />
-              </span>
-              <span>{"Email Receipt"}</span>
-            </button>
-          )}
+              } else {
+                addToast(`Enter email address to send receipt to`, { autoDismiss: true });
+                setCompToRender("email");
+              }
+            }}
+          >
+            <span className="w-6 mr-1">
+              <i className="fas fa-envelope" />
+            </span>
+            <span>{"Email Receipt"}</span>
+          </button>
+          {/* )} */}
         </div>
       </div>
-      {/* <div className="mt-12 text-sm font-semibold">
-            <div className="w-full">
-              <span className="z-10 absolute text-center text-blueGray-800 w-8 pl-3 py-3">
+
+      {compToRender === "phone" && (
+        <div className="mt-6 font-semibold">
+          <div className="w-full">
+            <div className="relative">
+              <span className="z-10 absolute text-center text-blueGray-800 w-8 pl-3 py-5">
+                <i className="fas fa-phone"></i>
+              </span>
+              <input
+                type="number"
+                value={phoneNumber}
+                onChange={(e) => {
+                  e.persist();
+                  setPhoneNumber(e.target.value);
+                }}
+                placeholder="Enter phone number to send receipt to"
+                className="border-0 px-3 py-5 placeholder-blueGray-500 text-blueGray-800 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
+              />
+              <button
+                className="absolute right-5 bg-green-300 px-2 py-1 font-bold"
+                style={{
+                  top: "25%",
+                }}
+                onClick={() => {
+                  addToast(`NOT IMPLEMENTED`, { autoDismiss: true });
+                }}
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {compToRender === "email" && (
+        <div className="mt-6 font-semibold">
+          <div className="w-full">
+            <div className="relative">
+              <span className="z-10 absolute text-center text-blueGray-800 w-8 pl-3 py-5">
                 <i className="fas fa-envelope"></i>
               </span>
               <input
                 type="text"
-                placeholder="Add a customer to email them a receipt"
-                className="border-0 px-3 py-3 placeholder-blueGray-500 text-blueGray-800 relative bg-white  rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
+                value={email}
+                onChange={(e) => {
+                  e.persist();
+                  setEmail(e.target.value);
+                }}
+                placeholder="Enter email address to send receipt to"
+                className="border-0 px-3 py-5 placeholder-blueGray-500 text-blueGray-800 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
               />
+              <button
+                className="absolute right-5 bg-green-300 px-2 py-1 font-bold"
+                style={{
+                  top: "25%",
+                }}
+                onClick={() => {
+                  addToast(`NOT IMPLEMENTED`, { autoDismiss: true });
+                }}
+              >
+                Send
+              </button>
             </div>
-          </div> */}
+          </div>
+        </div>
+      )}
 
       <div className="w-full self-end mt-20">
         <button
