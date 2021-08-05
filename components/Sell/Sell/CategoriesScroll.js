@@ -57,8 +57,8 @@ function Card({ productCatergory, setOffset, categorySelected, backgroundColor }
 
   return (
     <button
-      className={`shadow rounded-3xl text-white font-semibold
-      focus:outline-none transition-colors duration-150 ease-in-out w-32 h-28 mx-2 break-words
+      className={`w-32 h-28 shadow rounded-3xl text-white font-semibold
+      focus:outline-none transition-colors duration-150 ease-in-out mx-2 break-words
       ${categorySelected?.product_category_id === productCatergory?.product_category_id ? "ring-4 ring-gray-400" : ""}
       `}
       style={{ backgroundColor }}

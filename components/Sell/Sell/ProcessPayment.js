@@ -1,6 +1,6 @@
-import AddCustomerProcessPayment from "components/Cart/AddCustomerProcessPayment";
-import TypeDelivery from "components/Sell/TypeDelivery";
-import Spinner from "components/Spinner";
+// import AddCustomerProcessPayment from "components/Cart/AddCustomerProcessPayment";
+// import TypeDelivery from "components/Sell/Sell/TypeDelivery";
+// import Spinner from "components/Spinner";
 import {
   addCustomer,
   onClickToCheckout,
@@ -11,10 +11,15 @@ import {
 } from "features/cart/cartSlice";
 import { setOutletSelected } from "features/products/productsSlice";
 import { intersectionWith, isEqual } from "lodash";
+import dynamic from "next/dynamic";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { loyaltyTabs, merchantUserDeliveryOptions, paymentOptionNames, paymentOptions } from "utils";
+
+const Spinner = dynamic(() => import("components/Spinner"));
+const TypeDelivery = dynamic(() => import("components/Sell/Sell/TypeDelivery"));
+const AddCustomerProcessPayment = dynamic(() => import("components/Cart/AddCustomerProcessPayment"));
 
 const ProcessPayment = ({
   handleRaiseOrder,
@@ -69,8 +74,7 @@ const ProcessPayment = ({
           onClick={() => {
             dispatch(onClickToCheckout());
             // dispatch(setProductsOnHold());
-          }}
-        >
+          }}>
           <i className="fas fa-arrow-left mr-1 "></i>
           <span>Back to Sale</span>
         </button>{" "}
@@ -117,8 +121,7 @@ const ProcessPayment = ({
                     dispatch(setPaymentMethodSet(paymentButton.name));
                     setOpenPhoneNumberInputModal(true);
                   }
-                }}
-              >
+                }}>
                 {paymentOptionNames[paymentButton.name]}
                 {/* <img src={paymentButton.img} alt={paymentButton.name} /> */}
               </button>
@@ -142,8 +145,7 @@ const ProcessPayment = ({
                   } w-36 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
                   onClick={() => {
                     dispatch(setOutletSelected(outlet));
-                  }}
-                >
+                  }}>
                   {outlet.outlet_name}
                 </button>
               );
@@ -184,15 +186,14 @@ const ProcessPayment = ({
                       }
                       dispatch(setDeliveryTypeSelected(option?.name));
                     }
-                  }}
-                >
+                  }}>
                   {option.name}
                 </button>
               );
             })}
         </div>
 
-        {deliveryTypeSelected === "Delivery" && (
+        {["Delivery"].includes(deliveryTypeSelected) && (
           <div className="mt-4">
             <TypeDelivery
               setFetching={setFetching}
@@ -219,8 +220,7 @@ const ProcessPayment = ({
                 className=" focus:outline-none font-bold"
                 onClick={() => {
                   dispatch(addCustomer(null));
-                }}
-              >
+                }}>
                 <i className="fas fa-trash-alt text-red-500"></i>
               </button>
             </div>
@@ -282,14 +282,13 @@ const ProcessPayment = ({
               ? "bg-gray-400 text-gray-300"
               : "bg-green-700 text-white"
           } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}
-          onClick={handleRaiseOrder}
-        >
+          onClick={handleRaiseOrder}>
           {fetching && (
             <div className="inline-block mr-2">
               <Spinner type={"TailSpin"} color="black" width={20} height={20} />
             </div>
           )}
-          Raise Order
+          Complete Sale
         </button>
         {processError && <p className="text-center text-red-500 text-sm">{processError}</p>}
       </div>

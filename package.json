@@ -9,6 +9,7 @@
     "@fortawesome/fontawesome-free": "5.15.3",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
+    "@next/bundle-analyzer": "^11.0.1",
     "@popperjs/core": "2.9.1",
     "@reduxjs/toolkit": "^1.6.0",
     "@sentry/nextjs": "^6.10.0",
@@ -18,16 +19,13 @@
     "cors": "^2.8.5",
     "date-fns": "^2.22.1",
     "form-data": "^4.0.0",
-    "formidable": "^1.2.2",
     "framer-motion": "^4.1.17",
     "lodash": "^4.17.21",
     "material-table": "^1.69.3",
     "next": "^11.0.0",
+    "next-compose-plugins": "^2.2.1",
     "next-translate": "^1.0.7",
-    "npm-run-all": "^4.1.5",
-    "p-iteration": "^1.1.8",
     "react": "^17.0.2",
-    "react-date-picker": "^8.2.0",
     "react-dom": "^17.0.2",
     "react-google-places-autocomplete": "^3.3.1",
     "react-hook-form": "^7.11.0",
@@ -50,7 +48,7 @@
     "dev:client": "next dev",
     "dev": "next dev",
     "build:css": "tailwindcss -i styles/tailwind.css -o styles/index.css",
-    "build": "NODE_OPTIONS=\"--max_old_space_size=4096\" next build",
+    "build": "ANALYZE=true NODE_OPTIONS=\"--max_old_space_size=4096\" next build",
     "test": "yarn run cypress open",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm run build:tailwind && npm run dev",
     "build:tailwind": "tailwind build styles/index.css -o styles/tailwind.css",
@@ -79,6 +77,7 @@
     "@cypress/react": "^5.9.2",
     "@cypress/webpack-dev-server": "^1.4.0",
     "autoprefixer": "10.2.6",
+    "babel-plugin-date-fns": "^2.0.0",
     "babel-plugin-import": "^1.13.3",
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-transform-imports": "^2.0.0",
@@ -104,8 +103,5 @@
     "tailwindcss": "^2.2.4",
     "webpack": "5",
     "webpack-dev-server": "3"
-  },
-  "prettier": {
-    "printWidth": 140
   }
 }

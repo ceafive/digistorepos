@@ -6,10 +6,12 @@ import debounce from "lodash.debounce";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 
 import AddCustomerModal from "./AddCustomerModal";
 
 const AddCustomer = () => {
+  const { addToast } = useToasts();
   const {
     register,
     reset,
@@ -78,7 +80,12 @@ const AddCustomer = () => {
         )}
 
         <div className={`text-sm ${currentCustomer ? "w-full" : "w-6/12"} `}>
-          <button className="text-white focus:outline-none font-bold bg-blue-800 px-4 py-3 rounded w-full" onClick={() => {}}>
+          <button
+            className="text-white focus:outline-none font-bold bg-blue-800 px-4 py-3 rounded w-full"
+            onClick={() => {
+              addToast(`NOT IMPLEMENTED YET`, { autoDismiss: true });
+            }}
+          >
             Quick Sale
           </button>
         </div>

@@ -1,5 +1,4 @@
 import axios from "axios";
-import { forEach } from "p-iteration";
 
 const { reduce, get, capitalize, upperCase, has, replace } = require("lodash");
 
@@ -18,7 +17,7 @@ const fetchFeeCharges = async (dispatch, setTransactionFeeCharges, setFetching, 
     setFetching(true);
     const feeCharges = [];
 
-    await forEach(userPaymentMethods, async (paymentMethod) => {
+    for (let paymentMethod of userPaymentMethods) {
       const res = await axios.post("/api/sell/sell/get-transaction-fee-charges", {
         merchant: user["user_merchant_id"],
         channel: paymentMethod.method,
@@ -29,7 +28,8 @@ const fetchFeeCharges = async (dispatch, setTransactionFeeCharges, setFetching, 
 
       const charge = get(response, "charge", 0);
       feeCharges.push({ ...response, charge: Number(parseFloat(charge).toFixed(3)) });
-    });
+    }
+
     dispatch(setTransactionFeeCharges(feeCharges));
   } catch (error) {
     console.log(error);

@@ -1,9 +1,9 @@
 import axios from "axios";
 import Cart from "components/Cart/Cart";
-import Modal from "components/Modal";
-import InventoryDetails from "components/Product/InventoryDetails";
-import ProcessSale from "components/Sell/ProcessSale";
-import ProductsSelection from "components/Sell/ProductsSelection";
+// import Modal from "components/Modal";
+// import InventoryDetails from "components/Product/InventoryDetails";
+// import ProcessSale from "components/Sell/ProcessSale";
+import ProductsSelection from "components/Sell/Sell/ProductsSelection";
 import Spinner from "components/Spinner";
 import { setActivePayments, setDeliveryTypes } from "features/cart/cartSlice";
 import {
@@ -15,9 +15,13 @@ import {
 } from "features/products/productsSlice";
 import { motion } from "framer-motion";
 import { filter, intersectionWith, upperCase } from "lodash";
+import dynamic from "next/dynamic";
 import React from "react";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useDispatch, useSelector } from "react-redux";
+
+const ProcessSale = dynamic(() => import("components/Sell/Sell/ProcessSale"));
+const InventoryDetails = dynamic(() => import("components/Product/InventoryDetails"));
+const Modal = dynamic(() => import("components/Modal"));
 
 const SellPage = () => {
   const dispatch = useDispatch();
@@ -38,19 +42,21 @@ const SellPage = () => {
 
         const allProductsRes = await axios.post("/api/sell/sell/get-all-products", { user });
         const allCategoriesRes = await axios.post("/api/sell/sell/get-all-categories", { user });
+        const { data: allProductsResData } = await allProductsRes.data;
+        const { data: allCategoriesResData } = await allCategoriesRes.data;
+        dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
+        dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
+        setFetching(false);
+
         const deliveryTypesRes = await axios.post("/api/sell/sell/get-delivery-type", { user });
         const activePaymentsRes = await axios.post("/api/sell/sell/get-active-payments");
         const outletsRes = await axios.post("/api/sell/sell/get-outlets", { user });
 
-        const { data: allProductsResData } = await allProductsRes.data;
-        const { data: allCategoriesResData } = await allCategoriesRes.data;
         const { data: deliveryTypesResData } = await deliveryTypesRes.data;
         const { data: activePaymentsResData } = await activePaymentsRes.data;
         const { data: outletsResData } = await outletsRes.data;
         // console.log({ allCategoriesResData, allProductsResData });
 
-        dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
-        dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
         dispatch(setDeliveryTypes(deliveryTypesResData));
         dispatch(setActivePayments(activePaymentsResData));
 
@@ -77,10 +83,10 @@ const SellPage = () => {
             dispatch(setAllOutlets(response));
           }
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
         setFetching(false);
+      } catch (error) {
+        setFetching(true);
+        console.log(error);
       }
     };
 
@@ -94,60 +100,6 @@ const SellPage = () => {
       </div>
     );
   }
-
-  // if (fetching || fetching === null) {
-  //   return (
-  //     <SkeletonTheme color="#fff" highlightColor="#eee">
-  //       {/* <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full"> */}
-  //       <div className="min-h-screen-75 flex flex-col justify-center pb-6 pt-6">
-  //         <div className="flex">
-  //           <div className="w-7/12 xl:w-8/12 px-4">
-  //             <Skeleton height={50} />
-  //             <div className="flex w-full justify-between my-4">
-  //               <Skeleton height={100} width={100} />
-  //               <Skeleton height={100} width={100} />
-  //               <Skeleton height={100} width={100} />
-  //               <Skeleton height={100} width={100} />
-  //               <Skeleton height={100} width={100} />
-  //               <Skeleton height={100} width={100} />
-  //               <Skeleton height={100} width={100} />
-  //               <Skeleton height={100} width={100} />
-  //             </div>
-  //             <div className="flex w-full justify-between">
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //             </div>
-  //             <div className="flex w-full justify-between">
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //             </div>
-  //             <div className="flex w-full justify-between">
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //               <Skeleton height={200} width={150} />
-  //             </div>
-  //           </div>
-  //           <div className="w-5/12 xl:w-4/12 px-4">
-  //             <Skeleton height={50} />
-
-  //             <Skeleton height={500} />
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </SkeletonTheme>
-  //   );
-  // }
 
   return (
     <div className="pb-6 pt-6">

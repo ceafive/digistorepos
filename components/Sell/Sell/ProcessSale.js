@@ -1,10 +1,13 @@
-import Modal from "components/Modal";
+// import CashPaymentModal from "components/Cart/CashPaymentModal";
+// import CollectUserDetail from "components/Cart/CollectUserDetail";
+// import Modal from "components/Modal";
 import {
   setAmountReceivedFromPayer,
   setInvoiceDetails,
   setTotalAmountToBePaidByBuyer,
   setTransactionFeeCharges,
 } from "features/cart/cartSlice";
+import dynamic from "next/dynamic";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,11 +15,13 @@ import { useReactToPrint } from "react-to-print";
 import { useToasts } from "react-toast-notifications";
 import { configureVariables, onAddPayment, onRaiseOrder, onSendNotification } from "utils";
 
-import CashPaymentModal from "../Cart/CashPaymentModal";
-import CollectUserDetail from "../Cart/CollectUserDetail";
 import PrintComponent from "./PrintComponent";
 import RaiseOrderSection from "./RaiseOrderSection";
 import ReceiptsSection from "./ReceiptsSection";
+
+const CashPaymentModal = dynamic(() => import("components/Cart/CashPaymentModal"));
+const CollectUserDetail = dynamic(() => import("components/Cart/CollectUserDetail"));
+const Modal = dynamic(() => import("components/Modal"));
 
 const ProcessSale = () => {
   const dispatch = useDispatch();

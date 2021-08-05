@@ -35,7 +35,6 @@ const ReceiptsSection = ({ step }) => {
   const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
   const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
   const balance = Number(parseFloat(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(3));
-  // const saleTotal = cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees;
   const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3));
 
   // console.log(deliveryCharge);

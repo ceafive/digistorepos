@@ -1,12 +1,12 @@
 import axios from "axios";
+import GooglePlaces from "components/Misc/GooglePlaces";
 import { setDeliveryCharge, setDeliveryGPS, setDeliveryLocationInputted, setDeliveryNotes } from "features/cart/cartSlice";
 import { get } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
-import GooglePlaces from "../GooglePlaces";
-import Spinner from "../Spinner";
+import Spinner from "../../Spinner";
 
 const Box = ({ option }) => {
   const dispatch = useDispatch();

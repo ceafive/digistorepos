@@ -4,7 +4,7 @@ module.exports = (api) => {
 
   // adapt this to your setup
   const presets = ["next/babel"];
-  const plugins = ["lodash"];
+  const plugins = ["lodash", "date-fns"];
 
   return {
     presets,

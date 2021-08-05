@@ -40,14 +40,14 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
         <div className="flex justify-center w-full">
           <button
             disabled={printing}
-            className="focus:outline-none text-gray-800  xl:text-lg 2xl:text-xl  mr-6"
+            className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xl mr-6"
             onClick={() => {
               addToast(`Opening print dialog`, { appearance: "info", autoDismiss: true });
               handlePrint();
             }}
           >
             <span className="w-6 mr-1">
-              <i className="fas fa-print"></i>
+              <i className="fas fa-print" />
             </span>
             <span>{"Print"}</span>
           </button>
@@ -55,13 +55,13 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
           {currentCustomer?.customer_phone && (
             <button
               disabled={sendingNotification}
-              className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-xxl  mr-6"
+              className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xxl mr-6"
               onClick={() => {
                 handleSendNotification("SMS");
               }}
             >
               <span className="w-6 mr-1">
-                <i className="fas fa-sms"></i>
+                <i className="fas fa-sms" />
               </span>
               <span>{"SMS Receipt"}</span>
             </button>
@@ -70,13 +70,13 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
           {currentCustomer?.customer_email && (
             <button
               disabled={sendingNotification}
-              className="focus:outline-none text-gray-800   xl:text-lg 2xl:text-xxl"
+              className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xxl"
               onClick={() => {
                 handleSendNotification("EMAIL");
               }}
             >
               <span className="w-6 mr-1">
-                <i className="fas fa-envelope"></i>
+                <i className="fas fa-envelope" />
               </span>
               <span>{"Email Receipt"}</span>
             </button>

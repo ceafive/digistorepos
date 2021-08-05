@@ -21,7 +21,6 @@ const ConfirmPayment = ({
   const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
 
   const [ticking, setTicking] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
 
   const statusCheckTotalRunTime = 60000;
 
@@ -47,10 +46,8 @@ const ConfirmPayment = ({
         // console.log(message);
 
         if (message === "new" || message === "awaiting_payment") {
-          // console.log("hit 1");
-          setLoading(true);
           if (Date.now() - firstTimeStarted > statusCheckTotalRunTime - 10000) {
-            setConfirmButtonText("Start New Delivery");
+            setConfirmButtonText("Start New Sale");
             setProcessError(
               "Sorry, Payment for your Delivery request is pending confirmation. <br>You will be notified via Email/SMS once your payment is confirmed.<br>And your request will be processed."
             );
@@ -59,22 +56,16 @@ const ConfirmPayment = ({
           }
         } else {
           if (message === "paid") {
-            // console.log("hit 2");
             setFetching(false);
-            setLoading(false);
             setStep(2);
             setTicking(false);
           } else if (message === "cancelled" || message === "failed" || message === "new" || message === "expired") {
-            // console.log("hit 3");
-            setLoading(false);
             setFetching(false);
             setConfirmButtonText("Start New Sale");
             setProcessError(`${upperCase(message)} TRANSACTION`);
             setTicking(false);
           }
         }
-
-        setLoading(false);
       } catch (error) {
         console.log(error.response);
       }
@@ -128,6 +119,7 @@ const ConfirmPayment = ({
             <span>Park Sale</span>
           </button>
         </p> */}
+
       <div className="py-20 text-center">
         {processError ? (
           <p

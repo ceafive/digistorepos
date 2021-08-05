@@ -43,5 +43,6 @@ module.exports = {
   ],
   globals: {
     React: "writable",
+    Cypress: "writable",
   },
 };
