@@ -1,12 +1,7 @@
 // import CashPaymentModal from "components/Cart/CashPaymentModal";
 // import CollectUserDetail from "components/Cart/CollectUserDetail";
 // import Modal from "components/Modal";
-import {
-  setAmountReceivedFromPayer,
-  setInvoiceDetails,
-  setTotalAmountToBePaidByBuyer,
-  setTransactionFeeCharges,
-} from "features/cart/cartSlice";
+import { setAmountReceivedFromPayer, setInvoiceDetails, setTotalAmountToBePaidByBuyer, setTransactionFeeCharges } from "features/cart/cartSlice";
 import dynamic from "next/dynamic";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -74,9 +69,7 @@ const ProcessSale = () => {
   React.useEffect(() => {
     setPayerAmountEntered(
       Number(
-        parseFloat(
-          amountReceivedFromPayer >= cartTotalMinusDiscountPlusTax ? 0 : cartTotalMinusDiscountPlusTax - amountReceivedFromPayer
-        ).toFixed(2)
+        parseFloat(amountReceivedFromPayer >= cartTotalMinusDiscountPlusTax ? 0 : cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(2)
       )
     );
   }, [amountReceivedFromPayer, cartTotalMinusDiscountPlusTax]);
@@ -108,19 +101,7 @@ const ProcessSale = () => {
   const handleSendNotification = (type) => onSendNotification(type, setSendingNotification, addToast, removeToast, invoiceDetails, user);
 
   const handleRaiseOrder = () =>
-    onRaiseOrder(
-      dispatch,
-      setInvoiceDetails,
-      setConfirmPaymentText,
-      setStep,
-      setFetching,
-      setProcessError,
-      cart,
-      products,
-      fees,
-      saleTotal,
-      user
-    );
+    onRaiseOrder(dispatch, setInvoiceDetails, setConfirmPaymentText, setStep, setFetching, setProcessError, cart, products, fees, saleTotal, user);
 
   return (
     <>

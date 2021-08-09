@@ -233,13 +233,10 @@ function repeatFor(size) {
   var newArr = new Array(size);
 
   for (var i = 0; i < size; i++) {
-    if (no === categoryColors.length - 1) {
-      no = 0;
-      newArr[i] = categoryColors[no];
-    } else {
-      no++;
-      newArr[i] = categoryColors[no];
-    }
+    if (no === categoryColors.length - 1) no = 0;
+    else no++;
+
+    newArr[i] = categoryColors[no];
   }
 
   return newArr;

@@ -6,13 +6,7 @@ import Cart from "components/Cart/Cart";
 import ProductsSelection from "components/Sell/Sell/ProductsSelection";
 import Spinner from "components/Spinner";
 import { setActivePayments, setDeliveryTypes } from "features/cart/cartSlice";
-import {
-  onSetProductCategories,
-  openInventoryModal,
-  productsAdded,
-  setAllOutlets,
-  setOutletSelected,
-} from "features/products/productsSlice";
+import { onSetProductCategories, openInventoryModal, productsAdded, setAllOutlets, setOutletSelected } from "features/products/productsSlice";
 import { motion } from "framer-motion";
 import { filter, intersectionWith, upperCase } from "lodash";
 import dynamic from "next/dynamic";
@@ -86,7 +80,15 @@ const SellPage = () => {
         setFetching(false);
       } catch (error) {
         setFetching(true);
-        console.log(error);
+        let errorResponse = "";
+        if (error.response) {
+          errorResponse = error.response.data;
+        } else if (error.request) {
+          errorResponse = error.request;
+        } else {
+          errorResponse = { error: error.message };
+        }
+        console.log(errorResponse);
       }
     };
 

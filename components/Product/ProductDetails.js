@@ -200,9 +200,9 @@ const ProductDetails = ({ onClose }) => {
                 sortedNewValues[v] = product_property?.variantOptionValue[v];
               });
 
-            return `Variant Combination: ${Object.values(sortedNewValues).join("/")} Price: GHS${
-              product_property?.variantOptionPrice
-            }  Quantity: ${product_property?.variantOptionQuantity}`;
+            return `Variant Combination: ${Object.values(sortedNewValues).join("/")} Price: GHS${product_property?.variantOptionPrice}  Quantity: ${
+              product_property?.variantOptionQuantity
+            }`;
           });
 
           setStep((step) => step - 1);
@@ -218,7 +218,7 @@ const ProductDetails = ({ onClose }) => {
                 {combinations.map((combination, index) => {
                   return (
                     <p key={index} className="mb-2">
-                      <span>{index}.</span> <span>{combination}</span>
+                      <span>{index + 1}.</span> <span>{combination}</span>
                     </p>
                   );
                 })}
@@ -247,12 +247,7 @@ const ProductDetails = ({ onClose }) => {
   return (
     <div className="flex w-full rounded-lg" style={{ maxHeight: 700 }}>
       <div className="w-5/12">
-        <Carousel
-          showArrows={false}
-          showIndicators={false}
-          showThumbs={false}
-          className="flex flex-col justify-center items-center w-full h-full"
-        >
+        <Carousel showArrows={false} showIndicators={false} showThumbs={false} className="flex flex-col justify-center items-center w-full h-full">
           {product?.product_images && product?.product_images?.length > 0 ? (
             product?.product_images?.map((product_image) => {
               return (

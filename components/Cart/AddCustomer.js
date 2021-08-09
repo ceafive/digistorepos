@@ -32,12 +32,15 @@ const AddCustomer = () => {
   const watchCustomerSearch = watch("searchCustomer", "");
 
   React.useEffect(() => {
+    const space = new RegExp("\\s");
+    const testforspace = space.test(watchCustomerSearch);
+
     const fetchCustomerDetails = async () => {
       try {
         setSearching(true);
         setAllCustomers([]);
         dispatch(addCustomer(null));
-        const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: watchCustomerSearch });
+        const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: encodeURIComponent(watchCustomerSearch) });
         const { data } = await response.data;
 
         if (data) {
@@ -55,7 +58,11 @@ const AddCustomer = () => {
     };
 
     if (watchCustomerSearch) {
-      debounce(fetchCustomerDetails, 150, { maxWait: 50 })();
+      if (testforspace || watchCustomerSearch?.length >= 10) {
+        //TODO: this is for Ghana number implentation
+        fetchCustomerDetails();
+      }
+      // debounce(fetchCustomerDetails, 1000, { maxWait: 5000 })();
     }
   }, [watchCustomerSearch]);
 
@@ -83,7 +90,7 @@ const AddCustomer = () => {
           <button
             className="text-white focus:outline-none font-bold bg-blue-800 px-4 py-3 rounded w-full"
             onClick={() => {
-              addToast(`NOT IMPLEMENTED YET`, { autoDismiss: true });
+              addToast(`NOT AVAILABLE`, { autoDismiss: true });
             }}
           >
             Quick Sale

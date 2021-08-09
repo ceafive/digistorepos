@@ -318,9 +318,7 @@ const TypeDelivery = ({ processingDeliveryCharge, setProcessingDeliveryCharge })
   // console.log(deliveryTypes["option_delivery"]);
 
   if (deliveryTypes["option_delivery"] === "MERCHANT") {
-    return (
-      <MerchantDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
-    );
+    return <MerchantDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />;
   }
 
   if (deliveryTypes["option_delivery"] === "IPAY") {
@@ -335,10 +333,7 @@ const TypeDelivery = ({ processingDeliveryCharge, setProcessingDeliveryCharge })
   if (deliveryTypes["option_delivery"] === "MERCHANT-DIST") {
     return (
       <>
-        <MerchantDistDeliveryType
-          processingDeliveryCharge={processingDeliveryCharge}
-          setProcessingDeliveryCharge={setProcessingDeliveryCharge}
-        />
+        <MerchantDistDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
         <DeliveryNotes />
       </>
     );

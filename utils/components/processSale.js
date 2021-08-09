@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const { reduce, get, capitalize, upperCase, has, replace } = require("lodash");
+import { capitalize, get, has, reduce, replace, upperCase } from "lodash";
 
 const configureVariables = (transactionFeeCharges, cartTotalMinusDiscountPlusTax, deliveryCharge) => {
   const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));

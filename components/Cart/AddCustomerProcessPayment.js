@@ -30,12 +30,15 @@ const AddCustomer = () => {
   const watchCustomerSearch = watch("searchCustomer", "");
 
   React.useEffect(() => {
+    const space = new RegExp("\\s");
+    const testforspace = space.test(watchCustomerSearch);
+
     const fetchCustomerDetails = async () => {
       try {
         setSearching(true);
         setAllCustomers([]);
         dispatch(addCustomer(null));
-        const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: watchCustomerSearch });
+        const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: encodeURIComponent(watchCustomerSearch) });
         const { data } = await response.data;
 
         if (data) {
@@ -53,33 +56,13 @@ const AddCustomer = () => {
     };
 
     if (watchCustomerSearch) {
-      debounce(fetchCustomerDetails, 150, { maxWait: 50 })();
+      if (testforspace || watchCustomerSearch?.length >= 10) {
+        fetchCustomerDetails();
+      }
+      // debounce(fetchCustomerDetails, 150, { maxWait: 50 })();
     }
   }, [watchCustomerSearch]);
 
-  // React.useEffect(() => {
-  //   const fetchCustomerDetails = async () => {
-  //     try {
-  //       const response = await axios.post("/api/sell/sell/get-customer", { phoneNumber: watchCustomerSearch });
-  //       const { data } = await response.data;
-
-  //       if (data) {
-  //         if (Array.isArray(data)) {
-  //           setAllCustomers(data);
-  //         } else {
-  //           setAllCustomers([data]);
-  //         }
-  //       } else setAllCustomers([]);
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //     }
-  //   };
-
-  //   if (watchCustomerSearch) {
-  //     debounce(fetchCustomerDetails, 250, { maxWait: 500 })();
-  //   }
-  // }, [watchCustomerSearch]);
 
   return (
     <div className="w-full">
