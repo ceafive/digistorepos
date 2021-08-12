@@ -1,14 +1,13 @@
 import Modal from "components/Modal";
 import ProductDetails from "components/Product/ProductDetails";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
-import { currentSearchTerm, onSelectCategory, openProductModal, setProductToView } from "features/products/productsSlice";
+import { currentSearchTerm, openProductModal, setProductToView } from "features/products/productsSlice";
 import { filter, take } from "lodash";
 import React from "react";
 import ReactPaginate from "react-paginate";
 import { useDispatch, useSelector } from "react-redux";
 import { createFilter } from "react-search-input";
 import { useToasts } from "react-toast-notifications";
-import { categoryTabColors } from "utils";
 
 import CategoriesScroll from "./CategoriesScroll";
 
@@ -299,11 +298,7 @@ const ProductsSelection = () => {
                     }}
                   >
                     <div key={product.product_id} className="relative " style={{ paddingBottom: "95%" }}>
-                      <img
-                        className="absolute h-full w-full object-cover"
-                        src={`${imgUrlBase}${product.product_image}`}
-                        alt={product.product_name}
-                      />
+                      <img className="absolute h-full w-full object-cover" src={`${imgUrlBase}${product.product_image}`} alt={product.product_name} />
                     </div>
                     <div className="p-2 text-sm">
                       <p className="font-semibold leading-none">{product.product_name}</p>
@@ -353,9 +348,7 @@ const ProductsSelection = () => {
                   previousLabel={"prev"}
                   nextLabel={"next"}
                   breakLabel={"..."}
-                  breakClassName={
-                    "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
-                  }
+                  breakClassName={"relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"}
                   previousLinkClassName={
                     "relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   }

@@ -69,8 +69,8 @@ const ManageProductsOrCategories = () => {
       <h1>Products</h1>
       <hr />
       <p>
-        Setup and manage your products and inventory; assign products to your outlet(s) or shop(s) customers can buy from and manage
-        products/orders all in ONE ACCOUNT
+        Setup and manage your products and inventory; assign products to your outlet(s) or shop(s) customers can buy from and manage products/orders
+        all in ONE ACCOUNT
       </p>
       <div className="mt-6">
         <button

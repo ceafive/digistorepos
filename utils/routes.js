@@ -65,6 +65,22 @@ const sidebarRoutes = [
       },
     ],
   },
+  {
+    id: 6,
+    name: "Customers",
+    slug: "customers",
+    path: "/customers",
+    icon: "user-friends",
+    iconColor: "indigo-500",
+    childLinks: [
+      {
+        id: 1,
+        name: "Customers",
+        path: "/customers/customers",
+        slug: "customers/customers",
+      },
+    ],
+  },
 ];
 
 module.exports = {

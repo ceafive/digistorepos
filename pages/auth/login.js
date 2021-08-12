@@ -236,8 +236,10 @@ export default function Login() {
                       className={`${
                         processing ? "bg-gray-300 text-gray-200" : "bg-green-600 text-white"
                       } active:bg-green-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150`}
-                      type="button"
-                      onClick={handleSubmit(step === 0 ? handleGetUserLoginDetails : step === 1 ? handleSetupUserPIN : handleUserSignIn)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleSubmit(step === 0 ? handleGetUserLoginDetails : step === 1 ? handleSetupUserPIN : handleUserSignIn)();
+                      }}
                     >
                       {processing && (
                         <div className="inline-block mr-2">
@@ -250,22 +252,12 @@ export default function Login() {
 
                   <div className="text-center mt-4 text-lg">
                     <p>
-                      By signing you agree to our{" "}
-                      <a
-                        className="underline"
-                        href="https://sell.digistoreafrica.com/digistore-terms-conditions/"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                      By signing in you agree to our{" "}
+                      <a className="underline" href="https://sell.digistoreafrica.com/digistore-terms-conditions/" target="_blank" rel="noreferrer">
                         Terms of Use
                       </a>{" "}
                       and{" "}
-                      <a
-                        className="underline"
-                        href="https://sell.digistoreafrica.com/digistore-privacy-policy/"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                      <a className="underline" href="https://sell.digistoreafrica.com/digistore-privacy-policy/" target="_blank" rel="noreferrer">
                         Privacy Policy
                       </a>
                     </p>

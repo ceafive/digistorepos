@@ -366,6 +366,7 @@ const SalesHistory = () => {
           />
         )}
       </Modal>
+
       <div className="flex w-full h-full">
         <div className="w-full pb-6 pt-12">
           <div>
