@@ -48,9 +48,11 @@ const CustomersPage = () => {
 
   return (
     <div className="mt-6">
-      <h1>Customers</h1>
-      <hr />
-      <p>Manage your customers and their balances, or segment them by demographics and spending habits.</p>
+      <div className="mb-6">
+        <h1 className="font-bold text-blue-500">Customers</h1>
+        <hr />
+        <p>Manage your customers and their balances, or segment them by demographics and spending habits.</p>
+      </div>
 
       <CustomersTable />
     </div>

@@ -181,7 +181,7 @@ const PayButton = () => {
           <p className="font-medium text-blue-900">Total before tax</p>
         </div>
         <div className="flex ">
-          <p>GHC{cartTotalMinusDiscount}</p>
+          <p>GHS{cartTotalMinusDiscount}</p>
         </div>
       </div> */}
 
@@ -190,7 +190,7 @@ const PayButton = () => {
           <p className="font-medium ">Discount</p>
 
           <div className="flex items-center">
-            <p className="mr-2">-GHC{cartDiscountOnCartTotal}</p>
+            <p className="mr-2">-GHS{cartDiscountOnCartTotal}</p>
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
@@ -211,7 +211,7 @@ const PayButton = () => {
           <p className="font-medium ">Promo</p>
 
           <div className="flex items-center">
-            <p className="mr-2">-GHC{cartPromoDiscount}</p>
+            <p className="mr-2">-GHS{cartPromoDiscount}</p>
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
@@ -231,16 +231,14 @@ const PayButton = () => {
           <p className="font-medium ">Tax</p>
           <p>COVID-19 Levy 4%</p>
         </div>
-        <p>GHC{covidTax}</p>
+        <p>GHS{covidTax}</p>
       </div>
 
       {/* Button */}
       <div className="w-full py-2 px-4">
         <button
           disabled={!totalPriceInCart}
-          className={`w-full ${
-            totalPriceInCart ? "bg-green-700 text-white" : "bg-gray-400 text-gray-300"
-          } py-3 px-6  font-medium text-xl rounded`}
+          className={`w-full ${totalPriceInCart ? "bg-green-700 text-white" : "bg-gray-400 text-gray-300"} py-3 px-6  font-medium text-xl rounded`}
           onClick={() => {
             dispatch(onClickToCheckout());
           }}

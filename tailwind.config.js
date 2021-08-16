@@ -7,11 +7,11 @@ const saferoutecolors = sidebarRoutes.map((route) => `text-${route.iconColor}`);
 module.exports = {
   // mode: "jit",
   purge: {
-    content: ["./**/*.js"],
+    content: ["./pages/**/*.{js, jsx}", "./components/**/*.{js, jsx},", "./layouts/**/*.{js, jsx},", "./containers/**/*.{js, jsx},"],
     darkMode: false, // or 'media' or 'class',
     // These options are passed through directly to PurgeCSS
     options: {
-      safelist: [...saferoutecolors, /^[\w:]*grid-cols-/, /^grid-cols-/, "bg-red-400", "bg-gray-200"],
+      safelist: [...saferoutecolors, /^[\w:]*grid-cols-/, /^grid-cols-/, /^-red-400/, /^-gray-200/],
     },
   },
   theme: {

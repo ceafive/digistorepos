@@ -1,7 +1,10 @@
 import axios from "axios";
+import PatchedPagination from "components/Misc/PatchedPagination";
+import { tableIcons } from "components/Misc/TableIcons";
 import Spinner from "components/Spinner";
 import { format, startOfMonth } from "date-fns";
 import { filter } from "lodash";
+import MaterialTable, { MTableToolbar } from "material-table";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { sentryErrorLogger } from "utils";
@@ -32,7 +35,7 @@ const CustomerTransactions = ({ customer, user, onClose }) => {
         });
 
         const { data: transactionsResData } = await transactionsRes.data;
-        // console.log(transactionsResData);
+        console.log(transactionsResData);
         setTransactions(filter(transactionsResData, Boolean));
         setFetching(false);
       } catch (error) {
@@ -62,41 +65,113 @@ const CustomerTransactions = ({ customer, user, onClose }) => {
     }
   };
 
-  if (fetching) {
-    return (
-      <div
-        className="flex justify-center items-center h-full min-w-screen"
-        style={{
-          height: 300,
-        }}
-      >
-        <Spinner type="TailSpin" width={30} height={30} />
-      </div>
-    );
-  }
+  const columns = [
+    { title: "Contact Number", field: "CUSTOMER_CONTACTNO" },
+    {
+      title: "Email",
+      field: "CUSTOMER_EMAIL",
+    },
+    {
+      title: "Customer Name",
+      field: "CUSTOMER_NAME",
+    },
+    {
+      title: "Payment Amount",
+      field: "PAYMENT_AMOUNT",
+    },
+    {
+      title: "Payment Channel",
+      field: "PAYMENT_CHANNEL",
+    },
+    {
+      title: "Payment Description",
+      field: "PAYMENT_DESCRIPTION",
+      cellStyle() {
+        return {
+          width: "100%",
+          minWidth: 200,
+        };
+      },
+    },
+    { title: "Payment Invoice", field: "PAYMENT_INVOICE" },
+    { title: "Payment Reference", field: "PAYMENT_REFERENCE" },
+    { title: "Payment Type", field: "PAYMENT_TYPE" },
+    {
+      title: "Transaction Date",
+      field: "TRANSACTION_DATE",
+      render(rowData) {
+        return (
+          <div>
+            <p>{format(new Date(rowData?.TRANSACTION_DATE ?? ""), "iii, d MMM yy h:mmaaa")}</p>
+          </div>
+        );
+      },
+    },
 
-  if (!fetching && (transactions === null || transactions?.length === 0)) {
-    return (
-      <div
-        className="flex justify-center items-center h-full min-w-screen"
-        style={{
-          height: 300,
-        }}
-      >
-        <h1>No Transaction Details</h1>
-      </div>
-    );
-  }
+    // { title: "Total Counts", field: "total_counts" },
+  ];
 
   return (
-    <div className="w-full p-10 py-5 pt-0">
+    <div className="w-full p-10 py-5">
       <div className="flex w-full justify-center items-center mb-2">
         <h1 className="font-bold text-xl">Transactions</h1>
       </div>
 
       <DateRangerSelector register={register} fetching={fetching} errors={errors} handleSubmit={handleSubmit} handleSubmitQuery={handleSubmitQuery} />
 
-      {transactions.map((transactionDetail) => {
+      {fetching ? (
+        <div
+          className="flex justify-center items-center h-full min-w-screen"
+          style={{
+            height: 300,
+          }}
+        >
+          <Spinner type="TailSpin" width={30} height={30} />
+        </div>
+      ) : !fetching && (transactions === null || transactions?.length === 0) ? (
+        <div
+          className="flex justify-center items-center h-full min-w-screen"
+          style={{
+            height: 300,
+          }}
+        >
+          <h1>No Transaction Details</h1>
+        </div>
+      ) : (
+        <div>
+          <MaterialTable
+            isLoading={fetching}
+            title={
+              <p>
+                <span className="font-bold text-xl">Transactions</span>{" "}
+                <span>{`${getValues()?.startDate?.toDateString() || ""} - ${getValues()?.endDate?.toDateString() || ""}`}</span>
+              </p>
+            }
+            icons={tableIcons}
+            columns={columns}
+            data={transactions?.map((o) => ({ ...o, tableData: {} }))}
+            options={{
+              selection: false,
+              pageSize: 3,
+              pageSizeOptions: [3],
+              padding: "dense",
+            }}
+            components={{
+              Toolbar: function Toolbar(props) {
+                return (
+                  <div>
+                    <MTableToolbar {...props} />
+                  </div>
+                );
+              },
+              Pagination: PatchedPagination,
+            }}
+            //   onRowClick={(event, rowData, togglePanel) => togglePanel()}
+          />
+        </div>
+      )}
+
+      {/* {transactions.map((transactionDetail) => {
         return (
           <div key={transactionDetail?.PAYMENT_REFERENCE}>
             <div key={transactionDetail?.PAYMENT_REFERENCE} className="flex flex-wrap w-full mb-6">
@@ -139,14 +214,13 @@ const CustomerTransactions = ({ customer, user, onClose }) => {
               </div>
               <div className="w-1/4 mb-2">
                 <h1 className="font-bold">Transaction Payment Date</h1>
-                {/* <p>{transactionDetail?.TRANSACTION_DATE || "N/A"}</p> */}
                 <p>{format(new Date(transactionDetail?.TRANSACTION_DATE ?? ""), "iii, d MMM yy h:mmaaa")}</p>
               </div>
             </div>
             <div className="h-1 bg-gray-300"></div>
           </div>
         );
-      })}
+      })} */}
     </div>
   );
 };

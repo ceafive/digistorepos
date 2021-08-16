@@ -199,7 +199,7 @@ const ProductsSelection = () => {
                               <div className="px-4 w-full">
                                 <div className="flex justify-between items-center w-full">
                                   <p className="font-semibold">{product.product_name}</p>
-                                  <p className="font-semibold">GHC{product.product_price}</p>
+                                  <p className="font-semibold">GHS{product.product_price}</p>
                                 </div>
                                 <p>{product.product_category}</p>
                               </div>

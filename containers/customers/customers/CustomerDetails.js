@@ -19,6 +19,7 @@ const CustomerDetails = ({ customer, user, onClose }) => {
         });
 
         const { data: customerDetailsResData } = await customerDetailsRes.data;
+        // console.log(customerDetailsResData);
         setCustomerDetails(customerDetailsResData);
         setFetching(false);
       } catch (error) {
@@ -40,7 +41,7 @@ const CustomerDetails = ({ customer, user, onClose }) => {
     );
   }
 
-  if (!fetching || customerDetails === null) {
+  if (!fetching && customerDetails === null) {
     return (
       <div
         className="flex justify-center items-center h-full min-w-screen"
@@ -61,44 +62,44 @@ const CustomerDetails = ({ customer, user, onClose }) => {
 
       <div className="flex flex-wrap w-full mt-4">
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer ID</h1>
+          <h1 className="font-bold"> ID</h1>
           <p>{customerDetails?.customer_id}</p>
         </div>
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer Name</h1>
+          <h1 className="font-bold"> Name</h1>
           <p>{customerDetails?.customer_name}</p>
         </div>
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer Email</h1>
+          <h1 className="font-bold"> Email</h1>
           <p>{customerDetails?.customer_email}</p>
         </div>
 
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer Phone Number</h1>
+          <h1 className="font-bold"> Phone Number</h1>
           <p>{customerDetails?.customer_phone}</p>
         </div>
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer Alt Phone</h1>
+          <h1 className="font-bold"> Alt Phone</h1>
           <p>{customerDetails?.customer_alt_phone || "N/A"}</p>
         </div>
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer Date Of Birth</h1>
+          <h1 className="font-bold"> Date Of Birth</h1>
           <p>{customerDetails?.customer_dob || "N/A"}</p>
         </div>
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer Status</h1>
+          <h1 className="font-bold"> Status</h1>
           <p>{customerDetails?.customer_status || "N/A"}</p>
         </div>
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer Total Order Count</h1>
+          <h1 className="font-bold"> Total Order Count</h1>
           <p>{customerDetails?.total_counts || "N/A"}</p>
         </div>
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer Total Loyalty Points</h1>
+          <h1 className="font-bold"> Total Loyalty Points</h1>
           <p>{customerDetails?.total_loyalty_points || "N/A"}</p>
         </div>
         <div className="w-1/4 mb-2">
-          <h1 className="font-bold">Customer Total Spend</h1>
+          <h1 className="font-bold"> Total Spend</h1>
           <p>{customerDetails?.total_spends || "N/A"}</p>
         </div>
       </div>

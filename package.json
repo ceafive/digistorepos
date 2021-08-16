@@ -76,7 +76,7 @@
   "devDependencies": {
     "@cypress/react": "^5.9.2",
     "@cypress/webpack-dev-server": "^1.4.0",
-    "autoprefixer": "10.2.6",
+    "autoprefixer": "^10.3.1",
     "babel-plugin-date-fns": "^2.0.0",
     "babel-plugin-import": "^1.13.3",
     "babel-plugin-lodash": "^3.3.4",
@@ -96,11 +96,11 @@
     "lodash-webpack-plugin": "^0.11.6",
     "madge": "^5.0.1",
     "next-transpile-modules": "^8.0.0",
-    "postcss": "8.3.4",
+    "postcss": "^8.3.6",
     "prettier": "^2.3.1",
     "prettier-eslint": "^12.0.0",
     "redux-logger": "^3.0.6",
-    "tailwindcss": "^2.2.4",
+    "tailwindcss": "^2.2.7",
     "webpack": "5",
     "webpack-dev-server": "3"
   }

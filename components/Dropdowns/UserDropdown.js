@@ -27,22 +27,26 @@ const UserDropdown = () => {
     setDropdownPopoverShow(false);
   };
 
+  const onLogout = () => {
+    dispatch(onAppLogout());
+    dispatch(onAppResetCart());
+    dispatch(onAppResetManageProducts());
+    dispatch(onAppResetProducts());
+    dispatch(onAppResetSales());
+    sessionStorage.removeItem("IPAYPOSUSER");
+  };
+
   React.useEffect(() => {
     return () => {
       // console.log("here");
-      dispatch(onAppLogout());
-      dispatch(onAppResetCart());
-      dispatch(onAppResetManageProducts());
-      dispatch(onAppResetProducts());
-      dispatch(onAppResetSales());
-      sessionStorage.removeItem("IPAYPOSUSER");
+      // onLogout()
     };
   }, []);
 
   return (
     <>
       <div
-        className="text-blueGray-500 block"
+        className="text-blueGray-500 block cursor-pointer"
         ref={btnDropdownRef}
         onClick={(e) => {
           e.preventDefault();
@@ -58,20 +62,15 @@ const UserDropdown = () => {
       <div
         ref={popoverDropdownRef}
         className={
-          (dropdownPopoverShow ? "block " : "hidden ") +
-          "bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg min-w-48"
+          (dropdownPopoverShow ? "block " : "hidden ") + "bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg min-w-48"
         }
       >
         <button
           className="focus:outline-none text-blueGray-600 px-4 w-full"
           onClick={() => {
-            router.push("/auth/login");
-            // dispatch(onAppLogout());
-            // dispatch(onAppResetCart());
-            // dispatch(onAppResetManageProducts());
-            // dispatch(onAppResetProducts());
-            // dispatch(onAppResetSales());
-            // sessionStorage.removeItem("IPAYPOSUSER");
+            router.push("/auth/login").then(() => {
+              onLogout();
+            });
           }}
         >
           Logout

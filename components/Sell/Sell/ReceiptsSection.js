@@ -53,7 +53,7 @@ const ReceiptsSection = ({ step }) => {
                 <span className="mr-6">{index + 1}.</span>
                 <span>{upperCase(product.title)}</span>
               </div>
-              <p>GHC{product.totalPrice}</p>
+              <p>GHS{product.totalPrice}</p>
             </div>
           );
         })}
@@ -68,11 +68,11 @@ const ReceiptsSection = ({ step }) => {
 
       {/* Sub amount figures */}
       <div className="pl-5 xl:pl-20">
-        <ListItem text="Order Amount" value={`GHC${totalPriceInCart}`} />
-        <ListItem text="Discount" value={`GHC${cartDiscountOnCartTotal}`} />
-        <ListItem text="Promo Amount" value={`GHC${cartPromoDiscount}`} />
-        <ListItem className="pt-4" text="Total before tax" value={`GHC${cartTotalMinusDiscount}`} />
-        <ListItem text="Tax COVID-19 Levy 4%" value={`GHC${covidTax}`} />
+        <ListItem text="Order Amount" value={`GHS${totalPriceInCart}`} />
+        <ListItem text="Discount" value={`GHS${cartDiscountOnCartTotal}`} />
+        <ListItem text="Promo Amount" value={`GHS${cartPromoDiscount}`} />
+        <ListItem className="pt-4" text="Total before tax" value={`GHS${cartTotalMinusDiscount}`} />
+        <ListItem text="Tax COVID-19 Levy 4%" value={`GHS${covidTax}`} />
       </div>
 
       <hr className="my-2" />
@@ -82,7 +82,7 @@ const ReceiptsSection = ({ step }) => {
           <span className="font-bold text-xl tracking-wide mr-4">SUB TOTAL</span>
           <span className="text-sm">{totalItemsInCart} item(s)</span>
         </p>
-        <p>GHC{cartTotalMinusDiscountPlusTax}</p>
+        <p>GHS{cartTotalMinusDiscountPlusTax}</p>
       </div>
 
       <hr className="my-2" />
@@ -94,7 +94,7 @@ const ReceiptsSection = ({ step }) => {
             <div key={paymentMethod.method + index} className="flex justify-between my-4">
               <div>
                 <p>{paymentOptionNames[paymentMethod.method]}</p>
-                {fee ? <p className="text-sm">Fee: GHC{fee?.charge}</p> : <></>}
+                {fee ? <p className="text-sm">Fee: GHS{fee?.charge}</p> : <></>}
                 {paymentMethod?.payment_number && (
                   <p className="text-sm">
                     {paymentMethod?.method === "VISAG" ? "Phone/Email" : "Payment Number"}: {paymentMethod?.payment_number}
@@ -105,7 +105,7 @@ const ReceiptsSection = ({ step }) => {
 
               <div className="justify-self-end justify-end justify-items-end">
                 <div>
-                  <span>GHC{paymentMethod.amount}</span>
+                  <span>GHS{paymentMethod.amount}</span>
                   {step === 0 && (
                     <button
                       className="focus:outline-none"
@@ -131,7 +131,7 @@ const ReceiptsSection = ({ step }) => {
             <div className="flex justify-between items-center">
               <p className="font-bold tracking-wide mr-4">FEES</p>
               <p>
-                GHC
+                GHS
                 {fees}
               </p>
             </div>
@@ -146,7 +146,7 @@ const ReceiptsSection = ({ step }) => {
             <div className="flex justify-between items-center">
               <p className="font-bold tracking-wide mr-4">DELIVERY FEE</p>
               <p>
-                GHC
+                GHS
                 {deliveryCharge?.price}
               </p>
             </div>
@@ -160,7 +160,7 @@ const ReceiptsSection = ({ step }) => {
           <div className="flex justify-between items-center">
             <p className="font-bold tracking-wide mr-4">SALE TOTAL</p>
             <p>
-              GHC
+              GHS
               {saleTotal}
             </p>
           </div>
@@ -172,7 +172,7 @@ const ReceiptsSection = ({ step }) => {
             <div className="flex justify-between items-center">
               <p className="font-bold tracking-wide mr-4">BALANCE</p>
               <p>
-                GHC
+                GHS
                 {balance}
               </p>
             </div>
