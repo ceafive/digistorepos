@@ -17,7 +17,7 @@ export default function Example({ buttons }) {
       <div>
         <div>
           <button
-            className="inline-flex justify-center items-center w-full py-2 text-sm font-medium text-blue-700 hover:text-blue-800 focus:outline-none"
+            className="inline-flex items-center justify-center w-full py-2 text-sm font-medium text-blue-700 hover:text-blue-800 focus:outline-none"
             onClick={() => {
               setIsOpen((data) => !data);
             }}
@@ -30,7 +30,8 @@ export default function Example({ buttons }) {
           <div
             className={`${
               isOpen ? "h-auto" : "h-0"
-            } origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y transition-all duration-150 ease-out mb-10 overflow-hidden`}
+            } origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-2 ring-black ring-opacity-5 divide-y transition-all duration-150 ease-out mb-10 overflow-hidden mb-5`}
+            style={{ zIndex: 999999999 }}
           >
             {buttons().map((button) => {
               return (

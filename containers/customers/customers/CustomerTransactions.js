@@ -108,7 +108,6 @@ const CustomerTransactions = ({ customer, user, onClose }) => {
       },
     },
 
-    // { title: "Total Counts", field: "total_counts" },
   ];
 
   return (

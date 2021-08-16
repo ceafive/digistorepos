@@ -52,7 +52,7 @@ const CustomersTable = ({}) => {
       },
     },
     {
-      name: "Customers Transaction - Details",
+      name: "Customer Transaction - Details",
       action() {
         setCustomer(data);
         setComponentToRender("trans_details");
@@ -60,7 +60,7 @@ const CustomersTable = ({}) => {
       },
     },
     {
-      name: "Customers Orders - Details",
+      name: "Customer Orders - Details",
       action() {
         setCustomer(data);
         setComponentToRender("order_details");
@@ -92,7 +92,7 @@ const CustomersTable = ({}) => {
       },
       cellStyle() {
         return {
-          width: "100%",
+          width: "50%",
         };
       },
     },
@@ -129,7 +129,7 @@ const CustomersTable = ({}) => {
       },
     },
     { title: "Total Spend", field: "total_spends", defaultSort: "desc" },
-    { title: "Total Counts", field: "total_counts" },
+    { title: "Total Orders", field: "total_counts" },
     // { title: "Addresses", field: "customer_addresses",  },
     {
       title: "Actions",
@@ -185,7 +185,7 @@ const CustomersTable = ({}) => {
       <div>
         <MaterialTable
           isLoading={loading}
-          title={<p className="font-bold text-xl">{`Customers`}</p>}
+          title={<p className="text-xl font-bold">{`Customers`}</p>}
           icons={tableIcons}
           columns={columns}
           data={allCustomers.map((o) => ({ ...o, tableData: {} }))}
