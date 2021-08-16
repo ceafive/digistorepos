@@ -65,6 +65,9 @@ const Accordion = ({ product, index }) => {
 
   const handleOnChange = (field, value) => {
     if (field === "quantity") {
+      if (value && value < 1) {
+        return addToast(`Minimum value allowed is 1`, { appearance: "error", autoDismiss: true });
+      }
       const { status, stock_level } = checkProductQuantity(product, parseInt(value));
 
       if (status) {
@@ -111,7 +114,7 @@ const Accordion = ({ product, index }) => {
 
   return (
     <div className={`${isActive ? "border-l-2 border-green-700 bg-gray-100" : ""} `}>
-      <div className="w-full flex py-3 px-2">
+      <div className="flex w-full px-2 py-3">
         <div className="mr-2 font-bold cursor-pointer" onClick={() => setIsActive(!isActive)}>
           {isActive ? <i className="fas fa-chevron-down"></i> : <i className="fas fa-chevron-right"></i>}
         </div>
@@ -126,7 +129,7 @@ const Accordion = ({ product, index }) => {
                 <div className="flex">
                   {Object.entries(product?.variants).map((variant, index) => {
                     return (
-                      <p key={variant[0]} className="text-xs font-semibold m-0 p-0">
+                      <p key={variant[0]} className="p-0 m-0 text-xs font-semibold">
                         <span>{capitalize(variant[1])}</span>
                         {index !== Object.entries(product?.variants).length - 1 && <span>/ </span>}
                       </p>
@@ -147,7 +150,7 @@ const Accordion = ({ product, index }) => {
                 dispatch(removeItemFromCart(product?.uniqueId));
               }}
             >
-              <i className="fas fa-trash-alt text-red-500 text-sm"></i>
+              <i className="text-sm text-red-500 fas fa-trash-alt"></i>
             </button>
           </div>
 
@@ -156,7 +159,7 @@ const Accordion = ({ product, index }) => {
       </div>
 
       {isActive && (
-        <div className="accordion-content pb-4 px-2">
+        <div className="px-2 pb-4 accordion-content">
           <div className="flex flex-between">
             <div className="mr-2">
               <label htmlFor="quantity" className="text-sm font-bold">
@@ -169,9 +172,10 @@ const Accordion = ({ product, index }) => {
                   e.persist();
                   handleOnChange("quantity", e.target.value);
                 }}
+                min="1"
                 type="number"
                 placeholder="eg. 0"
-                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                className="relative w-full px-3 py-2 text-sm bg-white border-0 rounded outline-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1 "
               />
             </div>
 
@@ -186,7 +190,7 @@ const Accordion = ({ product, index }) => {
                 value={product.price}
                 type="number"
                 placeholder="eg. 0"
-                className="border-0 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-blueGray-100 rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                className="relative w-full py-2 text-sm border-0 rounded outline-none placeholder-blueGray-300 text-blueGray-600 bg-blueGray-100 focus:outline-none focus:ring-1 "
               />
             </div>
 
@@ -205,7 +209,7 @@ const Accordion = ({ product, index }) => {
                 max={100}
                 maxLength={3}
                 placeholder="eg. 0"
-                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                className="relative w-full px-3 py-2 text-sm bg-white border-0 rounded outline-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1 "
               />
             </div> */}
           </div>
@@ -222,7 +226,7 @@ const Accordion = ({ product, index }) => {
               }}
               id="notes"
               type="text"
-              className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full"
+              className="relative w-full px-3 py-3 text-sm bg-white border-0 rounded outline-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1"
             />
           </div> */}
 
@@ -235,7 +239,7 @@ const Accordion = ({ product, index }) => {
               }}
             >
               <span>
-                <i className="fas fa-info-circle mr-1"></i>
+                <i className="mr-1 fas fa-info-circle"></i>
               </span>
               <span>Show inventory &amp; details</span>
             </button>

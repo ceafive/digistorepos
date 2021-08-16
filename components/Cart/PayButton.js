@@ -13,12 +13,14 @@ import { setOutletSelected } from "features/products/productsSlice";
 import { upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 
 import DiscountBox from "./DiscountBox";
 import NoteBox from "./NoteBox";
 import PromoCodeBox from "./PromoCodeBox";
 
 const PayButton = () => {
+  const { addToast } = useToasts();
   const dispatch = useDispatch();
   const totalItemsInCart = useSelector((state) => state.cart.totalItemsInCart);
   const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
@@ -45,8 +47,18 @@ const PayButton = () => {
 
   React.useEffect(() => {
     dispatch(applyDiscount());
-    return () => {};
   }, [totalPriceInCart, totalItemsInCart, cartItemDiscount, cartDiscount, cartPromoDiscount, dispatch]);
+
+  React.useEffect(() => {
+    if (!totalItemsInCart) {
+      dispatch(onChangeCartDiscountType("percent"));
+      dispatch(setDiscount(""));
+      dispatch(setPromoAmount(0));
+    }
+  }, [totalItemsInCart]);
+
+  // console.log(cartDiscountOnCartTotal);
+  // console.log(totalItemsInCart);
 
   const checkingPromoCode = async () => {
     try {
@@ -70,7 +82,7 @@ const PayButton = () => {
         amount: totalPriceInCart,
         merchant: user["user_merchant_id"],
         order_items: JSON.stringify(orderItems),
-        customer: currentCustomer,
+        customer: currentCustomer || "",
         outlet: outletSelected,
       };
 
@@ -96,7 +108,7 @@ const PayButton = () => {
   return (
     <div className="w-full">
       <hr />
-      <div className="relative py-2 px-4">
+      <div className="relative px-4 py-2">
         {showDiscountBox && (
           <div className="absolute bottom-0 left-0">
             <DiscountBox setShowDiscountBox={setShowDiscountBox} />
@@ -136,9 +148,14 @@ const PayButton = () => {
           <div className="flex justify-end w-4/5 font-bold text-blue-500">
             {!cartDiscountOnCartTotal && (
               <button
-                className="font-bold text-blue-500 mr-4 focus:outline-none"
+                className={`mr-4 font-bold ${totalItemsInCart ? `text-blue-500 ` : `text-gray-200 `} focus:outline-none`}
                 onClick={() => {
-                  setShowDiscountBox(true);
+                  if (!totalItemsInCart) {
+                    addToast(`No items in cart`, { appearance: `error`, autoDismiss: true });
+                  }
+                  if (totalItemsInCart) {
+                    setShowDiscountBox(true);
+                  }
                 }}
               >
                 Discount
@@ -146,9 +163,14 @@ const PayButton = () => {
             )}
             {!cartPromoDiscount && (
               <button
-                className="font-bold text-blue-500 mr-4 focus:outline-none"
+                className={`mr-4 font-bold ${totalItemsInCart ? `text-blue-500 ` : `text-gray-200 `} focus:outline-none`}
                 onClick={() => {
-                  setShowPromoCodeBox(true);
+                  if (!totalItemsInCart) {
+                    addToast(`No items in cart`, { appearance: `error`, autoDismiss: true });
+                  }
+                  if (totalItemsInCart) {
+                    setShowPromoCodeBox(true);
+                  }
                 }}
               >
                 Promo Code
@@ -167,16 +189,16 @@ const PayButton = () => {
       </div>
 
       <hr />
-      {/* <div className="flex justify-between font-medium py-1 px-4">
+      <div className="flex justify-between px-4 font-medium">
         <div className="flex justify-between w-2/3">
           <p className="font-medium ">Subtotal</p>
         </div>
         <div className="flex">
           <p>GHS{totalPriceInCart}</p>
         </div>
-      </div> */}
+      </div>
 
-      {/* <div className="flex justify-between font-medium py-1 pt-4 px-4">
+      {/* <div className="flex justify-between px-4 py-1 pt-4 font-medium">
         <div className="flex justify-between w-2/3">
           <p className="font-medium text-blue-900">Total before tax</p>
         </div>
@@ -186,7 +208,7 @@ const PayButton = () => {
       </div> */}
 
       {cartDiscountOnCartTotal ? (
-        <div className="flex justify-between font-medium py-2 px-4">
+        <div className="flex justify-between px-4 font-medium">
           <p className="font-medium ">Discount</p>
 
           <div className="flex items-center">
@@ -198,7 +220,7 @@ const PayButton = () => {
                 dispatch(setDiscount(""));
               }}
             >
-              <i className="fas fa-trash-alt text-red-500 text-sm"></i>
+              <i className="text-sm text-red-500 fas fa-trash-alt"></i>
             </button>
           </div>
         </div>
@@ -207,7 +229,7 @@ const PayButton = () => {
       )}
 
       {cartPromoDiscount ? (
-        <div className="flex justify-between font-medium py-2 px-4">
+        <div className="flex justify-between px-4 font-medium">
           <p className="font-medium ">Promo</p>
 
           <div className="flex items-center">
@@ -218,7 +240,7 @@ const PayButton = () => {
                 dispatch(setPromoAmount(0));
               }}
             >
-              <i className="fas fa-trash-alt text-red-500 text-sm"></i>
+              <i className="text-sm text-red-500 fas fa-trash-alt"></i>
             </button>
           </div>
         </div>
@@ -226,7 +248,7 @@ const PayButton = () => {
         <></>
       )}
 
-      <div className="flex justify-between font-medium py-2 px-4">
+      <div className="flex justify-between px-4 font-medium">
         <div className="flex justify-between w-2/3">
           <p className="font-medium ">Tax</p>
           <p>COVID-19 Levy 4%</p>
@@ -235,7 +257,7 @@ const PayButton = () => {
       </div>
 
       {/* Button */}
-      <div className="w-full py-2 px-4">
+      <div className="w-full px-4 py-2">
         <button
           disabled={!totalPriceInCart}
           className={`w-full ${totalPriceInCart ? "bg-green-700 text-white" : "bg-gray-400 text-gray-300"} py-3 px-6  font-medium text-xl rounded`}
@@ -246,7 +268,7 @@ const PayButton = () => {
           <div className="flex justify-between">
             <p>
               <span>Pay</span>
-              <span className="text-sm ml-2">{totalItemsInCart} item(s)</span>
+              <span className="ml-2 text-sm">{totalItemsInCart} item(s)</span>
             </p>
             <p className="text-xl">
               GHS
