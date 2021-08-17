@@ -463,9 +463,7 @@ const SalesHistory = () => {
           icons={tableIcons}
           columns={columns}
           data={orderHistory.map((o) => ({ ...o, tableData: {} }))}
-          options={{
-            filtering: true,
-          }}
+          options={{}}
           actions={[
             {
               icon: () => <i className="text-base text-green-600 fas fa-redo" />,

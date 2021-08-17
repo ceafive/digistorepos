@@ -188,6 +188,7 @@ const onRaiseOrder = async (
       order_discount_code: cart?.cartPromoCode ?? "",
       order_amount: cart?.totalPriceInCart ?? 0,
       order_discount: cart?.cartDiscountOnCartTotal + cart?.cartPromoDiscount,
+      // order_discount_type: ,
       delivery_charge: cart?.deliveryCharge?.price ?? 0,
       service_charge: fees,
       total_amount: saleTotal,
