@@ -326,6 +326,7 @@ const SalesHistory = () => {
         data["outlet"] = outletsStringToSend;
       }
 
+      // console.log(isAdmin);
       // console.log(data);
       const allOrdersRes = await axios.post("/api/sell/orders/get-orders", data);
       const { data: allOrdersResData } = await allOrdersRes.data;
@@ -421,7 +422,7 @@ const SalesHistory = () => {
                 </div>
               </div>
 
-              {outlets.length > 1 && (
+              {!isAdmin && outlets.length > 1 && (
                 <div className="w-1/3">
                   <label className="text-sm font-bold leading-none">Outlets</label>
                   <select
