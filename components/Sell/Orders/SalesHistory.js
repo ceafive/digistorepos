@@ -383,19 +383,19 @@ const SalesHistory = () => {
         )}
       </Modal>
 
-      <div className="flex w-full h-full">
-        <div className="w-full pt-12 pb-6">
-          <div>
-            <div className="flex items-center justify-between w-full mb-6">
+      <div className="flex w-full h-full ">
+        <div className="w-full pt-12 pb-6 ">
+          <div className="">
+            <div className="flex items-center justify-between w-full">
               <h1 className="font-bold text-blue-700">Orders</h1>
             </div>
             <hr />
             <div className="flex items-center w-full">
-              <div className="flex w-1/2 mr-1 ">
+              <div className="flex w-1/2 mr-1">
                 <div className="w-full">
                   <label className="text-sm font-bold leading-none">Date Range</label>
                   <div className="flex w-full">
-                    <div className="w-1/3">
+                    <div className="">
                       <input
                         className="w-full"
                         defaultValue={format(startOfMonth(new Date()), "yyyy-MM-dd")}
@@ -408,7 +408,7 @@ const SalesHistory = () => {
 
                     <p className="px-6 py-2 pt-3 font-bold text-white bg-blue-500">TO</p>
 
-                    <div className="w-1/3">
+                    <div className="">
                       <input
                         className="w-full"
                         defaultValue={format(new Date(), "yyyy-MM-dd")}
@@ -422,36 +422,38 @@ const SalesHistory = () => {
                 </div>
               </div>
 
-              {!isAdmin && outlets.length > 1 && (
-                <div className="w-1/3">
-                  <label className="text-sm font-bold leading-none">Outlets</label>
-                  <select
-                    {...register("outletSelected")}
-                    className="block w-full py-3 text-gray-700 bg-white border border-gray-200 rounded appearance-none focus:outline-none focus:ring-1"
-                  >
-                    <option value="All">{`All Outlets`}</option>
-                    {outlets?.map((outlet) => {
-                      return (
-                        <option key={outlet?.outlet_id} value={outlet?.outlet_id}>
-                          {outlet?.outlet_name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
-                </div>
-              )}
+              <div className="flex w-1/2">
+                {isAdmin && outlets.length > 1 && (
+                  <div className="">
+                    <label className="text-sm font-bold leading-none">Outlets</label>
+                    <select
+                      {...register("outletSelected")}
+                      className="block w-full py-2 text-gray-700 bg-white border border-gray-200 rounded appearance-none focus:outline-none focus:ring-1"
+                    >
+                      <option value="All">{`All Outlets`}</option>
+                      {outlets?.map((outlet) => {
+                        return (
+                          <option key={outlet?.outlet_id} value={outlet?.outlet_id}>
+                            {outlet?.outlet_name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
+                  </div>
+                )}
 
-              <div className="flex">
-                <button
-                  disabled={fetching}
-                  className={`${
-                    fetching ? `bg-gray-200` : `bg-blue-600  focus:ring focus:ring-blue-500`
-                  }  px-12 py-3 rounded text-white font-semibold focus:outline-none mt-5 ml-5 h-auto`}
-                  onClick={handleSubmit(handleSubmitQuery)}
-                >
-                  Query
-                </button>
+                <div className="flex">
+                  <button
+                    disabled={fetching}
+                    className={`${
+                      fetching ? `bg-gray-200` : `bg-blue-600  focus:ring focus:ring-blue-500`
+                    }  px-12 py-2 rounded text-white font-semibold focus:outline-none mt-5 ml-5 h-auto`}
+                    onClick={handleSubmit(handleSubmitQuery)}
+                  >
+                    Query
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -464,7 +466,9 @@ const SalesHistory = () => {
           icons={tableIcons}
           columns={columns}
           data={orderHistory.map((o) => ({ ...o, tableData: {} }))}
-          options={{}}
+          options={{
+            padding: `dense`,
+          }}
           actions={[
             {
               icon: () => <i className="text-base text-green-600 fas fa-redo" />,
