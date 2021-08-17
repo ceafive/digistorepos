@@ -423,7 +423,7 @@ const SalesHistory = () => {
               </div>
 
               <div className="flex w-1/2">
-                {isAdmin && outlets.length > 1 && (
+                {!isAdmin && outlets.length > 1 && (
                   <div className="">
                     <label className="text-sm font-bold leading-none">Outlets</label>
                     <select
