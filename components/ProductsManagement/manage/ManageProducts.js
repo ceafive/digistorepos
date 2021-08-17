@@ -16,7 +16,7 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import axios from "axios";
 import Dropdown from "components/Misc/Dropdown";
-import { capitalize, filter } from "lodash";
+import { capitalize, filter, lowerCase } from "lodash";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
 import React, { forwardRef } from "react";
@@ -252,12 +252,12 @@ const ManageProducts = ({ setReRUn }) => {
   return (
     <>
       <div className="flex w-full h-full">
-        <div className="w-full pb-6 pt-12">
+        <div className="w-full pt-6 pb-6">
           <div>
-            <div className="flex justify-between items-center w-full mb-6">
+            <div className="flex items-center justify-between w-full mb-6">
               <h1 className="font-bold text-blue-700">Products</h1>
               <button
-                className="bg-green-600 px-2 py-1 rounded text-white font-semibold focus:ring focus:outline-none focus:ring-green-500"
+                className="px-2 py-1 font-semibold text-white bg-green-600 rounded focus:ring focus:outline-none focus:ring-green-500"
                 onClick={() => {
                   router.push("/products/create");
                 }}
@@ -266,12 +266,12 @@ const ManageProducts = ({ setReRUn }) => {
               </button>
             </div>
             <hr />
-            <div className="flex w-full items-center">
+            <div className="flex items-center w-full">
               <div className="w-1/2">
-                <label className="text-sm leading-none  font-bold">Product Categories</label>
+                <label className="text-sm font-bold leading-none">Product Categories</label>
                 <select
                   {...register("productCategory")}
-                  className="block appearance-none w-full border border-gray-200 text-gray-700 py-2 rounded focus:outline-none text-sm bg-white"
+                  className="block w-full py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded appearance-none focus:outline-none"
                 >
                   <option value="All">{`All`}</option>
                   {manageProductCategories?.map((category) => {
@@ -285,7 +285,7 @@ const ManageProducts = ({ setReRUn }) => {
                 <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
               </div>
               {/* <div>
-                <button className="bg-green-500 px-4 py-1 text-white ml-2 rounded font-bold mt-6">View Variance</button>
+                <button className="px-4 py-1 mt-6 ml-2 font-bold text-white bg-green-500 rounded">View Variance</button>
               </div> */}
             </div>
           </div>
@@ -294,12 +294,13 @@ const ManageProducts = ({ setReRUn }) => {
       <div>
         <MaterialTable
           isLoading={loading}
-          title={<p className="font-bold text-xl">{`Products: ${capitalize(categorySelected)}`}</p>}
+          title={<p className="text-xl font-bold">{`Products: ${capitalize(categorySelected)}`}</p>}
           icons={tableIcons}
           columns={columns}
           data={allProducts.map((o) => ({ ...o, tableData: {} }))}
           options={{
             selection: false,
+            padding: "dense",
           }}
           components={{
             Toolbar: (props) => (
@@ -312,6 +313,9 @@ const ManageProducts = ({ setReRUn }) => {
           detailPanel={[
             {
               tooltip: "Show Variants",
+              iconProps: {
+                // color: rowData?.product_properties_variants ? `primary` : `disabled`,
+              },
               render: (rowData) => {
                 if (!rowData?.product_properties_variants) return null;
                 // console.log(rowData);
@@ -322,6 +326,12 @@ const ManageProducts = ({ setReRUn }) => {
                     title: "Option Values",
                     field: "option_values",
                     editable: "never",
+                    searchable: true,
+                    customFilterAndSearch: (term, rowData) => {
+                      const variantdata = Object.values(rowData?.variantOptionValue).map((value) => lowerCase(value));
+                      const result = variantdata.join("").indexOf(lowerCase(term)) != -1;
+                      return result;
+                    },
                     render(rowData) {
                       let header = "";
                       let subheader = "";
@@ -350,7 +360,7 @@ const ManageProducts = ({ setReRUn }) => {
                     render(detailRowData) {
                       return (
                         <button
-                          className="bg-red-500 text-white px-4 py-2 rounded shadow-sm focus:outline-none focus:ring-red-600 focus:ring-2"
+                          className="px-4 py-2 text-white bg-red-500 rounded shadow-sm focus:outline-none focus:ring-red-600 focus:ring-2"
                           onClick={() => {
                             deleteVariant(rowData, detailRowData);
                           }}
@@ -371,10 +381,6 @@ const ManageProducts = ({ setReRUn }) => {
                     cellEditable={{
                       onCellEditApproved: async (newValue, oldValue, childRowData, columnDef) => {
                         await updateProductVariant(newValue, oldValue, rowData, childRowData, columnDef);
-                        // return new Promise((resolve, reject) => {
-                        //   console.log({ newValue, oldValue, rowData, columnDef });
-                        //   setTimeout(resolve, 1000);
-                        // });
                       },
                     }}
                     isLoading={loading}
@@ -382,6 +388,15 @@ const ManageProducts = ({ setReRUn }) => {
                     icons={tableIcons}
                     columns={detailColumns}
                     data={rowData?.product_properties_variants.map((o) => ({ ...o, tableData: {} }))}
+                    options={{
+                      padding: "dense",
+                      headerStyle: {
+                        backgroundColor: "rgba(30, 41, 59)",
+                        color: "#FFF",
+                        fontSize: 14,
+                        // rowStyle: { `&:hover`: {backgroundColor: `#EEE`}}
+                      },
+                    }}
                     components={{
                       Toolbar: (props) => (
                         <div>

@@ -1,19 +1,80 @@
 import axios from "axios";
 import GooglePlaces from "components/Misc/GooglePlaces";
-import { setDeliveryCharge, setDeliveryGPS, setDeliveryLocationInputted, setDeliveryNotes } from "features/cart/cartSlice";
-import { get } from "lodash";
+import {
+  setDeliveryCharge,
+  setDeliveryGPS,
+  setDeliveryLocationInputted,
+  setDeliveryNotes,
+  setPromoAmount,
+  setPromoCodeAppliedOnCartPage,
+} from "features/cart/cartSlice";
+import { get, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
 import Spinner from "../../Spinner";
 
-const Box = ({ option }) => {
+const Box = ({ option, setProcessingDeliveryCharge }) => {
   const dispatch = useDispatch();
+  const { addToast } = useToasts();
+  const outletSelected = useSelector((state) => state.products.outletSelected);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
+  const promoCodeAppliedOnCartPage = useSelector((state) => state.cart.promoCodeAppliedOnCartPage);
+  const cartPromoCode = useSelector((state) => state.cart.cartPromoCode);
+  const productsInCart = useSelector((state) => state.cart.productsInCart);
+  const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+
+  React.useEffect(() => {
+    if (!promoCodeAppliedOnCartPage && deliveryCharge && outletSelected && cartPromoCode) {
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      let orderItems = {};
+
+      productsInCart.forEach((product, index) => {
+        orderItems[index] = {
+          order_item_no: product?.uniqueId,
+          order_item_qty: product?.quantity,
+          order_item: product?.title,
+          order_item_amt: product?.price,
+        };
+      });
+
+      const userData = {
+        code: upperCase(cartPromoCode),
+        amount: totalPriceInCart,
+        merchant: user["user_merchant_id"],
+        order_items: JSON.stringify(orderItems),
+        customer: currentCustomer || "",
+        outlet: outletSelected?.outlet_id || "",
+        type: "DELIVERY",
+        route: deliveryCharge?.delivery_code || "",
+      };
+
+      // console.log(userData);
+      // return;
+
+      (async () => {
+        setProcessingDeliveryCharge(true);
+        // console.log(promoCodeAppliedOnCartPage);
+        // console.log(deliveryCharge);
+        const response = await axios.post("/api/sell/sell/add-discount", userData);
+        const { status, message, discount } = await response.data;
+        console.log({ status, message, discount });
+        // addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
+
+        if (Number(status) === 0) {
+          dispatch(setPromoAmount(discount));
+        }
+        setProcessingDeliveryCharge(false);
+      })();
+    }
+  }, [deliveryCharge, outletSelected]);
 
   return (
-    <div key={option.delivery_location} className="mb-1 w-full">
+    <div key={option.delivery_location} className="w-full mb-1">
       <button
         key={option.delivery_location}
         className={`${
@@ -32,8 +93,9 @@ const Box = ({ option }) => {
   );
 };
 
-const MerchantDeliveryType = () => {
+const MerchantDeliveryType = ({ setProcessingDeliveryCharge }) => {
   const dispatch = useDispatch();
+
   const [fetching, setFetching] = React.useState(false);
   const [listOfValues, setListOfValues] = React.useState([]);
 
@@ -62,7 +124,7 @@ const MerchantDeliveryType = () => {
 
   if (fetching) {
     return (
-      <div className="flex flex-col justify-center items-center w-full mt-2">
+      <div className="flex flex-col items-center justify-center w-full mt-2">
         <Spinner type="TailSpin" width={30} height={30} />
       </div>
     );
@@ -72,8 +134,151 @@ const MerchantDeliveryType = () => {
     <div className="mt-4">
       <p>Select Delivery Location</p>
       {listOfValues.map((option, index) => {
-        return <Box key={index} option={option} />;
+        return <Box key={index} option={option} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />;
       })}
+    </div>
+  );
+};
+
+const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
+  const dispatch = useDispatch();
+  const { addToast } = useToasts();
+  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
+  const promoCodeAppliedOnCartPage = useSelector((state) => state.cart.promoCodeAppliedOnCartPage);
+  const cartPromoCode = useSelector((state) => state.cart.cartPromoCode);
+  const productsInCart = useSelector((state) => state.cart.productsInCart);
+  const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  //   console.log(outletSelected);
+  const [value, setValue] = React.useState(null);
+  //   console.log(value);
+
+  React.useEffect(() => {
+    dispatch(setDeliveryLocationInputted(value));
+  }, [dispatch, value]);
+
+  React.useEffect(() => {
+    if (!promoCodeAppliedOnCartPage && deliveryCharge && outletSelected && cartPromoCode) {
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      let orderItems = {};
+
+      productsInCart.forEach((product, index) => {
+        orderItems[index] = {
+          order_item_no: product?.uniqueId,
+          order_item_qty: product?.quantity,
+          order_item: product?.title,
+          order_item_amt: product?.price,
+        };
+      });
+
+      const userData = {
+        code: upperCase(cartPromoCode),
+        amount: totalPriceInCart,
+        merchant: user["user_merchant_id"],
+        order_items: JSON.stringify(orderItems),
+        customer: currentCustomer || "",
+        outlet: outletSelected?.outlet_id || "",
+        type: "DELIVERY",
+        route: deliveryCharge?.delivery_code || "",
+      };
+
+      // console.log(userData);
+      // return;
+
+      (async () => {
+        // console.log(promoCodeAppliedOnCartPage);
+        // console.log(deliveryCharge);
+        const response = await axios.post("/api/sell/sell/add-discount", userData);
+        const { status, message, discount } = await response.data;
+        console.log({ status, message, discount });
+        // addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
+
+        if (Number(status) === 0) {
+          dispatch(setPromoAmount(discount));
+        }
+      })();
+    }
+  }, [deliveryCharge, outletSelected]);
+
+  React.useEffect(() => {
+    const getCoordinates = async () => {
+      setProcessingDeliveryCharge(true);
+      const response = await axios.post("/api/sell/sell/get-coordinates", { description: value?.value?.description });
+      const responsedata = await response.data;
+      const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
+
+      const fetchItems = async (stringCoordinates) => {
+        try {
+          setProcessingDeliveryCharge(true);
+          let user = sessionStorage.getItem("IPAYPOSUSER");
+          user = JSON.parse(user);
+
+          const payload = {
+            merchant: user["user_merchant_id"],
+            pickup_gps: outletSelected?.outlet_gps,
+            destination_gps: stringCoordinates,
+          };
+          //   console.log({ payload });
+
+          const res = await axios.post("/api/sell/sell/get-merchant-dist-charge", payload);
+
+          if (Number(res?.data?.status) === 91) {
+            addToast(res?.data?.message, { appearance: "error", autoDismiss: true });
+            dispatch(setDeliveryLocationInputted(value));
+            dispatch(setDeliveryCharge(null));
+            setValue(null);
+          } else if (Number(res?.data?.status) === 0) {
+            let { data } = res.data;
+            const price = get(data, "delivery_price", 0);
+            data = { ...data, price: Number(parseFloat(price)) };
+
+            dispatch(setDeliveryCharge(data));
+          } else {
+            addToast(res?.data?.message, { appearance: "error", autoDismiss: true });
+            dispatch(setDeliveryLocationInputted(value));
+            dispatch(setDeliveryCharge(null));
+            setValue(null);
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setProcessingDeliveryCharge(false);
+        }
+      };
+
+      if (stringCoordinates) {
+        dispatch(setDeliveryGPS(stringCoordinates));
+        await fetchItems(stringCoordinates);
+      }
+      setProcessingDeliveryCharge(false);
+    };
+
+    if (value?.value?.description) {
+      getCoordinates();
+    }
+  }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, value]);
+
+  return (
+    <div>
+      <p>Select Delivery Location</p>
+      <div className="flex items-center w-full">
+        <div className={`w-full`}>
+          <GooglePlaces
+            value={value}
+            setValue={(value) => {
+              setValue(value);
+            }}
+          />
+        </div>
+        {processingDeliveryCharge && (
+          <div className="ml-2">
+            <Spinner type="TailSpin" width={30} height={30} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -82,8 +287,61 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   const outletSelected = useSelector((state) => state.products.outletSelected);
+  const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
+  const promoCodeAppliedOnCartPage = useSelector((state) => state.cart.promoCodeAppliedOnCartPage);
+  const cartPromoCode = useSelector((state) => state.cart.cartPromoCode);
+  const productsInCart = useSelector((state) => state.cart.productsInCart);
+  const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
+  const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+
   const [value, setValue] = React.useState(null);
-  // console.log(value);
+
+  React.useEffect(() => {
+    if (!promoCodeAppliedOnCartPage && deliveryCharge && outletSelected && cartPromoCode) {
+      let user = sessionStorage.getItem("IPAYPOSUSER");
+      user = JSON.parse(user);
+
+      let orderItems = {};
+
+      productsInCart.forEach((product, index) => {
+        orderItems[index] = {
+          order_item_no: product?.uniqueId,
+          order_item_qty: product?.quantity,
+          order_item: product?.title,
+          order_item_amt: product?.price,
+        };
+      });
+
+      const userData = {
+        code: upperCase(cartPromoCode),
+        amount: totalPriceInCart,
+        merchant: user["user_merchant_id"],
+        order_items: JSON.stringify(orderItems),
+        customer: currentCustomer || "",
+        outlet: outletSelected?.outlet_id || "",
+        type: "DELIVERY",
+        route: deliveryCharge?.destination || "",
+      };
+
+      // console.log(userData);
+      // return;
+
+      (async () => {
+        setProcessingDeliveryCharge(true);
+        // console.log(promoCodeAppliedOnCartPage);
+        // console.log(deliveryCharge);
+        const response = await axios.post("/api/sell/sell/add-discount", userData);
+        const { status, message, discount } = await response.data;
+        console.log({ status, message, discount });
+        // addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
+
+        if (Number(status) === 0) {
+          dispatch(setPromoAmount(discount));
+        }
+        setProcessingDeliveryCharge(false);
+      })();
+    }
+  }, [deliveryCharge, outletSelected]);
 
   React.useEffect(() => {
     dispatch(setDeliveryLocationInputted(value));
@@ -200,99 +458,7 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
   );
 };
 
-const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
-  const dispatch = useDispatch();
-  const { addToast } = useToasts();
-  const outletSelected = useSelector((state) => state.products.outletSelected);
-  //   console.log(outletSelected);
-  const [value, setValue] = React.useState(null);
-  //   console.log(value);
-
-  React.useEffect(() => {
-    dispatch(setDeliveryLocationInputted(value));
-  }, [dispatch, value]);
-
-  React.useEffect(() => {
-    const getCoordinates = async () => {
-      setProcessingDeliveryCharge(true);
-      const response = await axios.post("/api/sell/sell/get-coordinates", { description: value?.value?.description });
-      const responsedata = await response.data;
-      const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
-
-      const fetchItems = async (stringCoordinates) => {
-        try {
-          setProcessingDeliveryCharge(true);
-          let user = sessionStorage.getItem("IPAYPOSUSER");
-          user = JSON.parse(user);
-
-          const payload = {
-            merchant: user["user_merchant_id"],
-            pickup_gps: outletSelected?.outlet_gps,
-            destination_gps: stringCoordinates,
-          };
-          //   console.log({ payload });
-
-          const res = await axios.post("/api/sell/sell/get-merchant-dist-charge", payload);
-
-          if (Number(res?.data?.status) === 91) {
-            addToast(res?.data?.message, { appearance: "error", autoDismiss: true });
-            dispatch(setDeliveryLocationInputted(value));
-            dispatch(setDeliveryCharge(null));
-            setValue(null);
-          } else if (Number(res?.data?.status) === 0) {
-            let { data } = res.data;
-            const price = get(data, "delivery_price", 0);
-            data = { ...data, price: Number(parseFloat(price)) };
-
-            dispatch(setDeliveryCharge(data));
-          } else {
-            addToast(res?.data?.message, { appearance: "error", autoDismiss: true });
-            dispatch(setDeliveryLocationInputted(value));
-            dispatch(setDeliveryCharge(null));
-            setValue(null);
-          }
-        } catch (error) {
-          console.log(error);
-        } finally {
-          setProcessingDeliveryCharge(false);
-        }
-      };
-
-      if (stringCoordinates) {
-        dispatch(setDeliveryGPS(stringCoordinates));
-        await fetchItems(stringCoordinates);
-      }
-      setProcessingDeliveryCharge(false);
-    };
-
-    if (value?.value?.description) {
-      getCoordinates();
-    }
-  }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, value]);
-
-  return (
-    <div>
-      <p>Select Delivery Location</p>
-      <div className="flex items-center w-full">
-        <div className={`w-full`}>
-          <GooglePlaces
-            value={value}
-            setValue={(value) => {
-              setValue(value);
-            }}
-          />
-        </div>
-        {processingDeliveryCharge && (
-          <div className="ml-2">
-            <Spinner type="TailSpin" width={30} height={30} />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const DeliveryNotes = ({ register }) => {
+const DeliveryNotes = ({}) => {
   const dispatch = useDispatch();
   const deliveryNotes = useSelector((state) => state.cart.deliveryNotes);
   return (
@@ -306,7 +472,7 @@ const DeliveryNotes = ({ register }) => {
         }}
         type="text"
         placeholder="Enter delivery notes here..."
-        className="p-2 text-lg placeholder-blueGray-300 text-blueGray-600 border border-gray-300 bg-white rounded outline-none focus:outline-none focus:ring-1 w-full"
+        className="w-full p-2 text-lg bg-white border border-gray-300 rounded outline-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1"
       />
     </div>
   );
@@ -315,16 +481,10 @@ const DeliveryNotes = ({ register }) => {
 const TypeDelivery = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
 
-  // console.log(deliveryTypes["option_delivery"]);
-
   if (deliveryTypes["option_delivery"] === "MERCHANT") {
-    return <MerchantDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />;
-  }
-
-  if (deliveryTypes["option_delivery"] === "IPAY") {
     return (
       <>
-        <IPAYDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
+        <MerchantDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />{" "}
         <DeliveryNotes />
       </>
     );
@@ -334,6 +494,15 @@ const TypeDelivery = ({ processingDeliveryCharge, setProcessingDeliveryCharge })
     return (
       <>
         <MerchantDistDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
+        <DeliveryNotes />
+      </>
+    );
+  }
+
+  if (deliveryTypes["option_delivery"] === "IPAY") {
+    return (
+      <>
+        <IPAYDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
         <DeliveryNotes />
       </>
     );

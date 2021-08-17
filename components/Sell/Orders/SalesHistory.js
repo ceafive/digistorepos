@@ -165,6 +165,21 @@ const SalesHistory = () => {
     },
     { title: "Discount", field: "order_discount" },
     {
+      title: "Discount Coupon",
+      field: "order_discount",
+      render(rowData) {
+        return <p>{rowData?.discount_coupon || "N/A"}</p>;
+      },
+    },
+    {
+      title: "Discount Type",
+      field: "discount_type",
+      render(rowData) {
+        return <p>{rowData?.discount_type || "N/A"}</p>;
+      },
+    },
+    { title: "Discount", field: "order_discount" },
+    {
       title: "Order Items",
       field: "order_items",
     },
@@ -368,16 +383,16 @@ const SalesHistory = () => {
       </Modal>
 
       <div className="flex w-full h-full">
-        <div className="w-full pb-6 pt-12">
+        <div className="w-full pt-12 pb-6">
           <div>
-            <div className="flex justify-between items-center w-full mb-6">
+            <div className="flex items-center justify-between w-full mb-6">
               <h1 className="font-bold text-blue-700">Orders</h1>
             </div>
             <hr />
-            <div className="flex w-full items-center">
+            <div className="flex items-center w-full">
               <div className="flex w-1/2 mr-1 ">
                 <div className="w-full">
-                  <label className="text-sm leading-none  font-bold">Date Range</label>
+                  <label className="text-sm font-bold leading-none">Date Range</label>
                   <div className="flex w-full">
                     <div className="w-1/3">
                       <input
@@ -387,10 +402,10 @@ const SalesHistory = () => {
                         max={format(new Date(), "yyyy-MM-dd")}
                         type="date"
                       />
-                      <p className="text-red-500 text-xs">{errors?.startDate?.message}</p>
+                      <p className="text-xs text-red-500">{errors?.startDate?.message}</p>
                     </div>
 
-                    <p className="bg-blue-500 px-6 py-2 pt-3 font-bold text-white">TO</p>
+                    <p className="px-6 py-2 pt-3 font-bold text-white bg-blue-500">TO</p>
 
                     <div className="w-1/3">
                       <input
@@ -400,7 +415,7 @@ const SalesHistory = () => {
                         type="date"
                         // min={format(new Date(), "yyyy-MM-dd")}
                       />
-                      <p className="text-red-500 text-xs">{errors?.endDate?.message}</p>
+                      <p className="text-xs text-red-500">{errors?.endDate?.message}</p>
                     </div>
                   </div>
                 </div>
@@ -408,10 +423,10 @@ const SalesHistory = () => {
 
               {outlets.length > 1 && (
                 <div className="w-1/3">
-                  <label className="text-sm leading-none font-bold">Outlets</label>
+                  <label className="text-sm font-bold leading-none">Outlets</label>
                   <select
                     {...register("outletSelected")}
-                    className="block appearance-none w-full border border-gray-200 text-gray-700 py-3 rounded focus:outline-none focus:ring-1 bg-white"
+                    className="block w-full py-3 text-gray-700 bg-white border border-gray-200 rounded appearance-none focus:outline-none focus:ring-1"
                   >
                     <option value="All">{`All Outlets`}</option>
                     {outlets?.map((outlet) => {
@@ -453,7 +468,7 @@ const SalesHistory = () => {
           }}
           actions={[
             {
-              icon: () => <i className="fas fa-redo text-green-600 text-base" />,
+              icon: () => <i className="text-base text-green-600 fas fa-redo" />,
               tooltip: "Reload",
               onClick: () => {
                 setReRun(new Date());

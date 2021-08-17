@@ -8,6 +8,7 @@ import {
   setDeliveryTypeSelected,
   setDiscount,
   setPromoAmount,
+  setPromoCodeAppliedOnCartPage,
 } from "features/cart/cartSlice";
 import { setOutletSelected } from "features/products/productsSlice";
 import { upperCase } from "lodash";
@@ -53,7 +54,9 @@ const PayButton = () => {
     if (!totalItemsInCart) {
       dispatch(onChangeCartDiscountType("percent"));
       dispatch(setDiscount(""));
+      dispatch(setCartPromoCode(null));
       dispatch(setPromoAmount(0));
+      dispatch(setPromoCodeAppliedOnCartPage(false));
     }
   }, [totalItemsInCart]);
 
@@ -83,18 +86,26 @@ const PayButton = () => {
         merchant: user["user_merchant_id"],
         order_items: JSON.stringify(orderItems),
         customer: currentCustomer || "",
-        outlet: outletSelected,
+        outlet: outletSelected?.outlet_id || "",
+        type: "ORDER",
       };
+      dispatch(setCartPromoCode(upperCase(promoCode)));
 
       // console.log(userData);
       // return;
 
       const response = await axios.post("/api/sell/sell/add-discount", userData);
       const { status, message, discount } = await response.data;
-
       // console.log({ status, message, discount });
-      dispatch(setCartPromoCode(upperCase(promoCode)));
-      dispatch(setPromoAmount(discount));
+      addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
+
+      if (Number(status) === 0) {
+        dispatch(setPromoAmount(discount));
+        dispatch(setPromoCodeAppliedOnCartPage(true));
+      } else {
+        dispatch(setPromoAmount(0));
+        dispatch(setPromoCodeAppliedOnCartPage(false));
+      }
     } catch (error) {
       console.log(error);
       setProcessing(false);
@@ -237,7 +248,9 @@ const PayButton = () => {
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
+                dispatch(setCartPromoCode(null));
                 dispatch(setPromoAmount(0));
+                dispatch(setPromoCodeAppliedOnCartPage(false));
               }}
             >
               <i className="text-sm text-red-500 fas fa-trash-alt"></i>

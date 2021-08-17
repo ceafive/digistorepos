@@ -38,6 +38,7 @@ const initialState = {
   deliveryGPS: null,
   invoiceDetails: null,
   verifyTransactionResponse: null,
+  promoCodeAppliedOnCartPage: false,
 };
 
 const initialProductProps = {
@@ -88,6 +89,9 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    setPromoCodeAppliedOnCartPage(state, action) {
+      state.promoCodeAppliedOnCartPage = action.payload;
+    },
     setVerifyTransactionResponse(state, action) {
       state.verifyTransactionResponse = action.payload;
     },
@@ -354,5 +358,6 @@ export const {
   setVerifyTransactionResponse,
   setItemDiscount,
   onAppResetCart,
+  setPromoCodeAppliedOnCartPage,
 } = cartSlice.actions;
 export default cartSlice.reducer;

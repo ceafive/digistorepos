@@ -63,27 +63,27 @@ const ProcessPayment = ({
   const deliveryChargeIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryCharge;
   const [processingDeliveryCharge, setProcessingDeliveryCharge] = React.useState(false);
 
-  // console.log(deliveryTypeSelected);
+  // console.log(outletSelected);
 
   return (
     <div>
       {/* Back To sale */}
-      <p className="text-right mt-4 mb-4 ">
+      <p className="mt-4 mb-4 text-right ">
         <button
-          className="font-bold text-lg focus:outline-none"
+          className="text-lg font-bold focus:outline-none"
           onClick={() => {
             dispatch(onClickToCheckout());
             // dispatch(setProductsOnHold());
           }}
         >
-          <i className="fas fa-arrow-left mr-1 "></i>
+          <i className="mr-1 fas fa-arrow-left "></i>
           <span>Back to Sale</span>
         </button>{" "}
       </p>
       {/* Back To sale */}
 
       {/* Pay Field */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <p className="text-5xl">Pay</p>
         <div>
           <input
@@ -96,14 +96,14 @@ const ProcessPayment = ({
             }}
             type="number"
             placeholder="Enter an amount"
-            className="border border-blue-500 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded shadow focus:outline-none text-2xl"
+            className="relative text-2xl bg-white border border-blue-500 rounded shadow placeholder-blueGray-300 text-blueGray-600 focus:outline-none"
           />
         </div>
       </div>
       {/* Pay Field */}
 
       {/* Payment Buttons */}
-      <div className="grid grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 my-4 mt-8">
+      <div className="grid grid-cols-3 gap-3 my-4 mt-8 xl:grid-cols-3 2xl:grid-cols-4">
         {paymentButtons.map((paymentButton) => {
           return (
             <div key={paymentButton.name}>
@@ -136,16 +136,20 @@ const ProcessPayment = ({
       {/* Outlets */}
       {outlets.length > 1 && (
         <div className="mt-4">
-          <h1 className="font-semibold mb-1">Outlets</h1>
-          <div className="grid grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
+          <h1 className="mb-1 font-semibold">Outlets</h1>
+          <div className="grid grid-cols-3 gap-3 xl:grid-cols-3 2xl:grid-cols-4">
             {outlets.map((outlet) => {
               return (
                 <button
+                  // disabled={!!deliveryCharge} //TODO: disable changing outlets when delivery charge has been calculated
                   key={outlet.outlet_name}
                   className={`${
                     outletSelected?.outlet_name === outlet.outlet_name ? "ring-2" : ""
                   } w-36 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
                   onClick={() => {
+                    // if (!outletSelected) {
+                    //   return
+                    // }
                     dispatch(setOutletSelected(outlet));
                   }}
                 >
@@ -160,8 +164,8 @@ const ProcessPayment = ({
 
       {/* Delivery Options */}
       <div className="mt-4">
-        <h1 className="font-semibold mb-1">Pickup or Delivery?</h1>
-        <div className="grid grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
+        <h1 className="mb-1 font-semibold">Pickup or Delivery?</h1>
+        <div className="grid grid-cols-3 gap-3 xl:grid-cols-3 2xl:grid-cols-4">
           {merchantUserDeliveryOptions
             .filter((option) => {
               if (option.name === "Dine In") {
@@ -175,7 +179,7 @@ const ProcessPayment = ({
               return (
                 <button
                   key={option.name}
-                  disabled={!outletSelected} //TODO: if no outlet selected ie user has more than one outlet
+                  // disabled={!!outletSelected} //TODO: if no outlet selected ie user has more than one outlet
                   className={`${
                     deliveryTypeSelected === option.name ? "ring-2" : ""
                   } w-36 h-24 border border-gray-300 text-lg focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
@@ -212,27 +216,27 @@ const ProcessPayment = ({
       {/* Customer */}
       {currentCustomer ? (
         <div className="w-full mt-4">
-          <h1 className="font-semibold mb-1 text-sm">Current Customer</h1>
-          <div className="flex justify-between items-center">
+          <h1 className="mb-1 text-sm font-semibold">Current Customer</h1>
+          <div className="flex items-center justify-between">
             <div>
               <span className="font-bold">{currentCustomer.customer_name}</span>
-              <span className="text-xs ml-2">{currentCustomer.customer_email}</span>
-              <span className="text-xs ml-2">{currentCustomer.customer_phone}</span>
+              <span className="ml-2 text-xs">{currentCustomer.customer_email}</span>
+              <span className="ml-2 text-xs">{currentCustomer.customer_phone}</span>
             </div>
             <div>
               <button
-                className=" focus:outline-none font-bold"
+                className="font-bold focus:outline-none"
                 onClick={() => {
                   dispatch(addCustomer(null));
                 }}
               >
-                <i className="fas fa-trash-alt text-red-500"></i>
+                <i className="text-red-500 fas fa-trash-alt"></i>
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="w-full mt-4 z-10">
+        <div className="z-10 w-full mt-4">
           <AddCustomerProcessPayment />
         </div>
       )}
@@ -245,7 +249,7 @@ const ProcessPayment = ({
                 <div key={loyaltyTab} className="">
                   <button
                     key={loyaltyTab}
-                    className="bg-gray-400 px-6 py-4 text-gray-200 font-semibold rounded focus:outline-none w-full text-center"
+                    className="w-full px-6 py-4 font-semibold text-center text-gray-200 bg-gray-400 rounded focus:outline-none"
                   >
                     {loyaltyTab}
                   </button>
@@ -255,13 +259,13 @@ const ProcessPayment = ({
           </div> */}
 
       {["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer && (
-        <div className="text-red-500 font-bold text-center">
+        <div className="font-bold text-center text-red-500">
           <p>You need to add a customer to this delivery type to proceed</p>
         </div>
       )}
 
       {/* Raise Order Button */}
-      <div className="w-full self-end mt-5">
+      <div className="self-end w-full mt-5">
         <button
           disabled={
             processingDeliveryCharge ||
@@ -296,7 +300,7 @@ const ProcessPayment = ({
           )}
           Complete Sale
         </button>
-        {processError && <p className="text-center text-red-500 text-sm">{processError}</p>}
+        {processError && <p className="text-sm text-center text-red-500">{processError}</p>}
       </div>
     </div>
   );

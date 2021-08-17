@@ -58,7 +58,7 @@ const ManageProductsOrCategories = () => {
 
   if (fetching || fetching === null) {
     return (
-      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
+      <div className="flex flex-col items-center justify-center w-full h-full min-h-screen-75">
         <Spinner type="TailSpin" width={50} height={50} />
       </div>
     );
@@ -74,7 +74,7 @@ const ManageProductsOrCategories = () => {
       </p>
       <div className="mt-6">
         <button
-          className={`mx-2 font-bold ${tabSelected === "products" ? "text-green-600" : "text-blue-600"}  focus:outline-none`}
+          className={`mr-2 font-bold ${tabSelected === "products" ? "text-green-600" : "text-blue-600"}  focus:outline-none`}
           onClick={() => {
             setTabSelected("products");
           }}

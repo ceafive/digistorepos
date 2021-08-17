@@ -30,6 +30,7 @@ const ReceiptsSection = ({ step }) => {
   const totalItemsInCart = useSelector((state) => state.cart.totalItemsInCart);
   const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
+  const cartPromoCode = useSelector((state) => state.cart.cartPromoCode);
 
   // Variables
   const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
@@ -41,14 +42,14 @@ const ReceiptsSection = ({ step }) => {
 
   return (
     <>
-      <div className="flex items-center font-semibold text-xl">
+      <div className="flex items-center text-xl font-semibold">
         <p className="">Sale Summary</p>
       </div>
 
       <div className="mt-4">
         {productsInCart.map((product, index) => {
           return (
-            <div key={product.uniqueId} className="w-full flex justify-between font-bold my-4">
+            <div key={product.uniqueId} className="flex justify-between w-full my-4 font-bold">
               <div>
                 <span className="mr-6">{index + 1}.</span>
                 <span>{upperCase(product.title)}</span>
@@ -70,16 +71,16 @@ const ReceiptsSection = ({ step }) => {
       <div className="pl-5 xl:pl-20">
         <ListItem text="Order Amount" value={`GHS${totalPriceInCart}`} />
         <ListItem text="Discount" value={`GHS${cartDiscountOnCartTotal}`} />
-        <ListItem text="Promo Amount" value={`GHS${cartPromoDiscount}`} />
+        <ListItem text={`Promo Amount ${cartPromoCode ? `(${cartPromoCode})` : ""}`} value={`GHS${cartPromoDiscount}`} />
         <ListItem className="pt-4" text="Total before tax" value={`GHS${cartTotalMinusDiscount}`} />
         <ListItem text="Tax COVID-19 Levy 4%" value={`GHS${covidTax}`} />
       </div>
 
       <hr className="my-2" />
 
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <p>
-          <span className="font-bold text-xl tracking-wide mr-4">SUB TOTAL</span>
+          <span className="mr-4 text-xl font-bold tracking-wide">SUB TOTAL</span>
           <span className="text-sm">{totalItemsInCart} item(s)</span>
         </p>
         <p>GHS{cartTotalMinusDiscountPlusTax}</p>
@@ -103,7 +104,7 @@ const ReceiptsSection = ({ step }) => {
                 <p className="text-sm">{paymentMethod.date}</p>
               </div>
 
-              <div className="justify-self-end justify-end justify-items-end">
+              <div className="justify-end justify-self-end justify-items-end">
                 <div>
                   <span>GHS{paymentMethod.amount}</span>
                   {step === 0 && (
@@ -116,7 +117,7 @@ const ReceiptsSection = ({ step }) => {
                         dispatch(onRemovePaymentMethod(paymentMethod));
                       }}
                     >
-                      <i className="fas fa-minus-circle ml-2 text-red-500"></i>
+                      <i className="ml-2 text-red-500 fas fa-minus-circle"></i>
                     </button>
                   )}
                 </div>
@@ -128,8 +129,8 @@ const ReceiptsSection = ({ step }) => {
         {transactionFeeCharges.length > 0 ? (
           <>
             {paymentMethodsAndAmount.length > 0 && <hr className="my-2" />}
-            <div className="flex justify-between items-center">
-              <p className="font-bold tracking-wide mr-4">FEES</p>
+            <div className="flex items-center justify-between">
+              <p className="mr-4 font-bold tracking-wide">FEES</p>
               <p>
                 GHS
                 {fees}
@@ -143,8 +144,8 @@ const ReceiptsSection = ({ step }) => {
         {deliveryCharge ? (
           <>
             {transactionFeeCharges.length > 0 && <hr className="my-2" />}
-            <div className="flex justify-between items-center">
-              <p className="font-bold tracking-wide mr-4">DELIVERY FEE</p>
+            <div className="flex items-center justify-between">
+              <p className="mr-4 font-bold tracking-wide">DELIVERY FEE</p>
               <p>
                 GHS
                 {deliveryCharge?.price}
@@ -157,8 +158,8 @@ const ReceiptsSection = ({ step }) => {
 
         <>
           <hr className="my-2" />
-          <div className="flex justify-between items-center">
-            <p className="font-bold tracking-wide mr-4">SALE TOTAL</p>
+          <div className="flex items-center justify-between">
+            <p className="mr-4 font-bold tracking-wide">SALE TOTAL</p>
             <p>
               GHS
               {saleTotal}
@@ -169,8 +170,8 @@ const ReceiptsSection = ({ step }) => {
         {amountReceivedFromPayer ? (
           <>
             <hr className="my-2" />
-            <div className="flex justify-between items-center">
-              <p className="font-bold tracking-wide mr-4">BALANCE</p>
+            <div className="flex items-center justify-between">
+              <p className="mr-4 font-bold tracking-wide">BALANCE</p>
               <p>
                 GHS
                 {balance}
