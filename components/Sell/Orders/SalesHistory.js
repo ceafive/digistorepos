@@ -341,7 +341,7 @@ const SalesHistory = () => {
     <>
       <Modal
         open={openModal}
-        maxWidth="md"
+        maxWidth="sm"
         onClose={() => {
           setOpenModal(false);
           // setReRun(new Date());
