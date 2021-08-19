@@ -178,7 +178,6 @@ const SalesHistory = () => {
         return <p>{rowData?.discount_type || "N/A"}</p>;
       },
     },
-    { title: "Discount", field: "order_discount" },
     {
       title: "Order Items",
       field: "order_items",

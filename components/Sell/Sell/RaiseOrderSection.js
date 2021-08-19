@@ -1,13 +1,13 @@
 import dynamic from "next/dynamic";
 import React from "react";
 
-// import ConfirmPayment from "./ConfirmPayment";
-// import PaymentReceived from "./PaymentReceived";
-// import ProcessPayment from "./ProcessPayment";
+import ConfirmPayment from "./ConfirmPayment";
+import PaymentReceived from "./PaymentReceived";
+import ProcessPayment from "./ProcessPayment";
 
-const ProcessPayment = dynamic(() => import("./ProcessPayment"));
-const ConfirmPayment = dynamic(() => import("./ConfirmPayment"));
-const PaymentReceived = dynamic(() => import("./PaymentReceived"));
+// const ProcessPayment = dynamic(() => import("./ProcessPayment"));
+// const ConfirmPayment = dynamic(() => import("./ConfirmPayment"));
+// const PaymentReceived = dynamic(() => import("./PaymentReceived"));
 
 const RaiseOrderSection = ({
   handleRaiseOrder,

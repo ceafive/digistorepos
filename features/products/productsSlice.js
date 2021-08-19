@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   outlets: [],
-  outletSelected: null,
   products: [],
   searchTerm: "",
   inventoryModalOpen: false,
@@ -39,9 +38,7 @@ const productsSlice = createSlice({
     setAllOutlets(state, action) {
       actionCreator("outlets", state, action.payload);
     },
-    setOutletSelected(state, action) {
-      state.outletSelected = action.payload;
-    },
+
     onSelectCategory(state, action) {
       actionCreator("categorySelected", state, action.payload);
     },
@@ -78,7 +75,7 @@ export const {
   onSetProductCategories,
   onSelectCategory,
   openInventoryModal,
-  setOutletSelected,
+
   setAllOutlets,
   setCategoryProductsCount,
   setProductsOnHold,

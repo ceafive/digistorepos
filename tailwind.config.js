@@ -19,7 +19,11 @@ module.exports = {
       width: {
         34: "8.5rem",
       },
-      colors,
+      colors: {
+        brandBlue: "#21428F",
+        brandGree: "#4AB647",
+        ...colors,
+      },
       fontFamily: {
         print: ["Nunito Sans, sans-serif"],
       },

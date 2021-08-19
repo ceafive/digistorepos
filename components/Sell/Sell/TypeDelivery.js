@@ -1,12 +1,14 @@
 import axios from "axios";
 import GooglePlaces from "components/Misc/GooglePlaces";
 import {
+  setCartPromoCode,
   setDeliveryCharge,
   setDeliveryGPS,
   setDeliveryLocationInputted,
   setDeliveryNotes,
   setPromoAmount,
   setPromoCodeAppliedOnCartPage,
+  setPromoType,
 } from "features/cart/cartSlice";
 import { get, upperCase } from "lodash";
 import React from "react";
@@ -15,10 +17,23 @@ import { useToasts } from "react-toast-notifications";
 
 import Spinner from "../../Spinner";
 
+const getStringCoordinates = async (description) => {
+  try {
+    const response = await axios.post("/api/sell/sell/get-coordinates", { description });
+    const responsedata = await response.data;
+    const stringCoordinates = `${responsedata["results"][0]["geometry"]["location"]["lat"]},${responsedata["results"][0]["geometry"]["location"]["lng"]}`;
+    // const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`; // TODO: used with old url in get coordinates backend route
+
+    return stringCoordinates;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const Box = ({ option, setProcessingDeliveryCharge }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
-  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const outletSelected = useSelector((state) => state.cart.outletSelected);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
   const promoCodeAppliedOnCartPage = useSelector((state) => state.cart.promoCodeAppliedOnCartPage);
   const cartPromoCode = useSelector((state) => state.cart.cartPromoCode);
@@ -44,7 +59,7 @@ const Box = ({ option, setProcessingDeliveryCharge }) => {
 
       const userData = {
         code: upperCase(cartPromoCode),
-        amount: totalPriceInCart,
+        amount: deliveryCharge?.price,
         merchant: user["user_merchant_id"],
         order_items: JSON.stringify(orderItems),
         customer: currentCustomer || "",
@@ -67,7 +82,13 @@ const Box = ({ option, setProcessingDeliveryCharge }) => {
 
         if (Number(status) === 0) {
           dispatch(setPromoAmount(discount));
+          dispatch(setPromoType("DELIVERY"));
+        } else {
+          dispatch(setPromoAmount(0));
+          dispatch(setPromoType(""));
+          dispatch(setCartPromoCode(null));
         }
+
         setProcessingDeliveryCharge(false);
       })();
     }
@@ -79,7 +100,7 @@ const Box = ({ option, setProcessingDeliveryCharge }) => {
         key={option.delivery_location}
         className={`${
           deliveryCharge?.delivery_code === option?.delivery_code ? "ring-1" : ""
-        } w-full h-10 border border-gray-300 rounded overflow-hidden font-bold px-2 break-words focus:outline-none`}
+        } w-full h-10 text-left border border-gray-300 rounded overflow-hidden font-bold px-2 break-words focus:outline-none`}
         onClick={() => {
           const price = get(option, "delivery_price", 0);
           const data = { ...option, price: Number(parseFloat(price)) };
@@ -143,20 +164,15 @@ const MerchantDeliveryType = ({ setProcessingDeliveryCharge }) => {
 const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
-  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const outletSelected = useSelector((state) => state.cart.outletSelected);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
   const promoCodeAppliedOnCartPage = useSelector((state) => state.cart.promoCodeAppliedOnCartPage);
   const cartPromoCode = useSelector((state) => state.cart.cartPromoCode);
   const productsInCart = useSelector((state) => state.cart.productsInCart);
   const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  const deliveryLocationInputted = useSelector((state) => state.cart.deliveryLocationInputted);
   //   console.log(outletSelected);
-  const [value, setValue] = React.useState(null);
-  //   console.log(value);
-
-  React.useEffect(() => {
-    dispatch(setDeliveryLocationInputted(value));
-  }, [dispatch, value]);
 
   React.useEffect(() => {
     if (!promoCodeAppliedOnCartPage && deliveryCharge && outletSelected && cartPromoCode) {
@@ -176,7 +192,7 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
 
       const userData = {
         code: upperCase(cartPromoCode),
-        amount: totalPriceInCart,
+        amount: deliveryCharge?.price,
         merchant: user["user_merchant_id"],
         order_items: JSON.stringify(orderItems),
         customer: currentCustomer || "",
@@ -198,6 +214,11 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
 
         if (Number(status) === 0) {
           dispatch(setPromoAmount(discount));
+          dispatch(setPromoType("DELIVERY"));
+        } else {
+          dispatch(setPromoAmount(0));
+          dispatch(setPromoType(""));
+          dispatch(setCartPromoCode(null));
         }
       })();
     }
@@ -206,9 +227,7 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
   React.useEffect(() => {
     const getCoordinates = async () => {
       setProcessingDeliveryCharge(true);
-      const response = await axios.post("/api/sell/sell/get-coordinates", { description: value?.value?.description });
-      const responsedata = await response.data;
-      const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`;
+      const stringCoordinates = await getStringCoordinates(deliveryLocationInputted?.value?.description);
 
       const fetchItems = async (stringCoordinates) => {
         try {
@@ -227,9 +246,8 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
 
           if (Number(res?.data?.status) === 91) {
             addToast(res?.data?.message, { appearance: "error", autoDismiss: true });
-            dispatch(setDeliveryLocationInputted(value));
+            dispatch(setDeliveryLocationInputted(null));
             dispatch(setDeliveryCharge(null));
-            setValue(null);
           } else if (Number(res?.data?.status) === 0) {
             let { data } = res.data;
             const price = get(data, "delivery_price", 0);
@@ -238,9 +256,8 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
             dispatch(setDeliveryCharge(data));
           } else {
             addToast(res?.data?.message, { appearance: "error", autoDismiss: true });
-            dispatch(setDeliveryLocationInputted(value));
+            dispatch(setDeliveryLocationInputted(null));
             dispatch(setDeliveryCharge(null));
-            setValue(null);
           }
         } catch (error) {
           console.log(error);
@@ -256,10 +273,10 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
       setProcessingDeliveryCharge(false);
     };
 
-    if (value?.value?.description) {
+    if (deliveryLocationInputted?.value?.description) {
       getCoordinates();
     }
-  }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, value]);
+  }, [dispatch, outletSelected, deliveryLocationInputted]);
 
   return (
     <div>
@@ -267,9 +284,9 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
       <div className="flex items-center w-full">
         <div className={`w-full`}>
           <GooglePlaces
-            value={value}
+            value={deliveryLocationInputted}
             setValue={(value) => {
-              setValue(value);
+              dispatch(setDeliveryLocationInputted(value));
             }}
           />
         </div>
@@ -286,15 +303,16 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
 const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
-  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const outletSelected = useSelector((state) => state.cart.outletSelected);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
   const promoCodeAppliedOnCartPage = useSelector((state) => state.cart.promoCodeAppliedOnCartPage);
   const cartPromoCode = useSelector((state) => state.cart.cartPromoCode);
   const productsInCart = useSelector((state) => state.cart.productsInCart);
   const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  const deliveryLocationInputted = useSelector((state) => state.cart.deliveryLocationInputted);
 
-  const [value, setValue] = React.useState(null);
+  // console.log(deliveryLocationInputted);
 
   React.useEffect(() => {
     if (!promoCodeAppliedOnCartPage && deliveryCharge && outletSelected && cartPromoCode) {
@@ -314,7 +332,7 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
 
       const userData = {
         code: upperCase(cartPromoCode),
-        amount: totalPriceInCart,
+        amount: deliveryCharge?.price,
         merchant: user["user_merchant_id"],
         order_items: JSON.stringify(orderItems),
         customer: currentCustomer || "",
@@ -337,38 +355,21 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
 
         if (Number(status) === 0) {
           dispatch(setPromoAmount(discount));
+          dispatch(setPromoType("DELIVERY"));
+        } else {
+          dispatch(setPromoAmount(0));
+          dispatch(setPromoType(""));
+          dispatch(setCartPromoCode(null));
         }
+
         setProcessingDeliveryCharge(false);
       })();
     }
   }, [deliveryCharge, outletSelected]);
 
   React.useEffect(() => {
-    dispatch(setDeliveryLocationInputted(value));
-  }, [dispatch, value]);
-
-  const getStringCoordinates = async (description) => {
-    try {
-      const response = await axios.post("/api/sell/sell/get-coordinates", { description });
-      const responsedata = await response.data;
-      const stringCoordinates = `${responsedata["results"][0]["geometry"]["location"]["lat"]},${responsedata["results"][0]["geometry"]["location"]["lng"]}`;
-      // const stringCoordinates = `${responsedata["candidates"][0]["geometry"]["location"]["lat"]},${responsedata["candidates"][0]["geometry"]["location"]["lng"]}`; // TODO: used with old url in get coordinates backend route
-
-      return stringCoordinates;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  React.useEffect(() => {
     const getCoordinates = async () => {
       setProcessingDeliveryCharge(true);
-
-      // console.log({ value });
-      // return;
-
-      const stringCoordinates = await getStringCoordinates(value?.value?.description);
-
       const fetchItems = async (stringCoordinates) => {
         try {
           setProcessingDeliveryCharge(true);
@@ -377,7 +378,7 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
             pickup_id: outletSelected?.outlet_id,
             pickup_gps: outletSelected?.outlet_gps,
             pickup_location: outletSelected?.outlet_address,
-            destination_location: value?.value?.description,
+            destination_location: deliveryLocationInputted?.value?.description,
             destination_gps: stringCoordinates,
           };
 
@@ -390,9 +391,8 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
             dispatch(setDeliveryCharge(data));
           } else {
             addToast(`We do not deliver to this area. Please select a different area`, { appearance: "error", autoDismiss: true });
-            dispatch(setDeliveryLocationInputted(value));
+            dispatch(setDeliveryLocationInputted(null));
             dispatch(setDeliveryCharge(null));
-            setValue(null);
           }
         } catch (error) {
           let errorResponse = "";
@@ -409,6 +409,8 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
         }
       };
 
+      const stringCoordinates = await getStringCoordinates(deliveryLocationInputted?.value?.description);
+
       if (stringCoordinates) {
         dispatch(setDeliveryGPS(stringCoordinates));
         await fetchItems(stringCoordinates);
@@ -416,10 +418,10 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
       setProcessingDeliveryCharge(false);
     };
 
-    if (value?.label) {
+    if (deliveryLocationInputted?.value?.description) {
       getCoordinates();
     }
-  }, [dispatch, outletSelected?.outlet_address, outletSelected?.outlet_gps, outletSelected?.outlet_id, value]);
+  }, [dispatch, outletSelected, deliveryLocationInputted]);
 
   return (
     <div>
@@ -427,9 +429,9 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
       <div className="flex items-center w-full ">
         <div className={`w-full`}>
           <GooglePlaces
-            value={value}
+            value={deliveryLocationInputted}
             setValue={(value) => {
-              setValue(value);
+              dispatch(setDeliveryLocationInputted(value));
             }}
             selectProps={{
               styles: {
@@ -450,7 +452,7 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
 
         {processingDeliveryCharge && (
           <div className="ml-2">
-            <Spinner type="TailSpin" width={30} height={30} />
+            <Spinner type="TailSpin" color="#21428F" width={30} height={30} />
           </div>
         )}
       </div>
@@ -458,9 +460,10 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
   );
 };
 
-const DeliveryNotes = ({}) => {
+const DeliveryNotes = () => {
   const dispatch = useDispatch();
   const deliveryNotes = useSelector((state) => state.cart.deliveryNotes);
+
   return (
     <div className="mt-2">
       <p>Delivery Notes</p>
@@ -472,7 +475,7 @@ const DeliveryNotes = ({}) => {
         }}
         type="text"
         placeholder="Enter delivery notes here..."
-        className="w-full p-2 text-lg bg-white border border-gray-300 rounded outline-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1"
+        className="w-full p-2 bg-white border border-gray-300 rounded placeholder-blueGray-300 text-blueGray-600 focus:ring-1"
       />
     </div>
   );

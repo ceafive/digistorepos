@@ -69,13 +69,19 @@ const AddCustomer = () => {
   return (
     <div className="w-full">
       <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)} maxWidth="sm">
-        <AddCustomerModal onClose={() => setOpenAddCustomerModal(false)} setStep={setStep} />
+        <AddCustomerModal
+          onClose={() => setOpenAddCustomerModal(false)}
+          functionToRun={(data) => {
+            dispatch(addCustomer(data));
+            setStep(2);
+          }}
+        />
       </Modal>
-      <div className="flex justify-between items-center w-full">
+      <div className="flex items-center justify-between w-full">
         {!currentCustomer && (
-          <div className="text-sm w-6/12 mr-2">
+          <div className="w-6/12 mr-2 text-sm">
             <button
-              className="text-white focus:outline-none font-bold bg-blueGray-800 px-4 py-3 rounded w-full"
+              className="w-full px-4 py-3 font-bold text-white rounded focus:outline-none bg-blueGray-800"
               onClick={() => {
                 setStep(1);
                 // setOpenAddCustomerModal(true);
@@ -88,7 +94,7 @@ const AddCustomer = () => {
 
         <div className={`text-sm ${currentCustomer ? "w-full" : "w-6/12"} `}>
           <button
-            className="text-white focus:outline-none font-bold bg-blue-800 px-4 py-3 rounded w-full"
+            className="w-full px-4 py-3 font-bold text-white bg-blue-800 rounded focus:outline-none"
             onClick={() => {
               addToast(`NOT AVAILABLE`, { autoDismiss: true });
             }}
@@ -101,18 +107,18 @@ const AddCustomer = () => {
         {step === 1 && (
           <div className="relative mt-4" initial={{ y: "-1vw" }} animate={{ y: 0 }}>
             <div>
-              <span className="z-10 absolute text-center text-blueGray-300 w-8 pl-3 py-3">
+              <span className="absolute z-10 w-8 py-3 pl-3 text-center text-blueGray-300">
                 <i className="fas fa-search"></i>
               </span>
               <input
                 {...register("searchCustomer")}
                 type="text"
                 placeholder="Search here..."
-                className="appearance-none border-0 p-2 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
+                className="relative w-full p-2 py-3 pl-10 text-sm bg-white border-0 rounded shadow outline-none appearance-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1"
               />
 
               <span
-                className="z-10 absolute right-0 text-center text-red-500 w-8 pr-3 py-3 cursor-pointer"
+                className="absolute right-0 z-10 w-8 py-3 pr-3 text-center text-red-500 cursor-pointer"
                 onClick={() => {
                   setStep(0);
                   setValue("searchCustomer", "");
@@ -149,11 +155,11 @@ const AddCustomer = () => {
                       >
                         <div className="flex items-center" key={customer.customer_id}>
                           <div className="flex items-center w-full">
-                            <div className="flex justify-between items-center w-full px-1">
+                            <div className="flex items-center justify-between w-full px-1">
                               <div className="flex items-center">
                                 <span className="font-bold">{customer.customer_name}</span>
-                                <span className="text-xs ml-2">{customer.customer_email}</span>
-                                <span className="text-xs ml-2">{customer.customer_phone}</span>
+                                <span className="ml-2 text-xs">{customer.customer_email}</span>
+                                <span className="ml-2 text-xs">{customer.customer_phone}</span>
                               </div>
                             </div>
                           </div>
@@ -162,7 +168,7 @@ const AddCustomer = () => {
                     );
                   })
                 ) : (
-                  <div className="flex flex-col justify-between items-center w-full h-full">
+                  <div className="flex flex-col items-center justify-between w-full h-full">
                     <p className="font-medium">No customer found</p>
 
                     <button
@@ -181,7 +187,7 @@ const AddCustomer = () => {
         )}
 
         {(currentCustomer || step === 2) && (
-          <div className="w-full flex justify-between items-center text-sm pt-3">
+          <div className="flex items-center justify-between w-full pt-3 text-sm">
             <div>
               <span className="mr-2">
                 <i className="fas fa-user-alt"></i>
@@ -189,7 +195,7 @@ const AddCustomer = () => {
               <span className="font-bold">{currentCustomer?.customer_name}</span>
             </div>
             <button
-              className=" focus:outline-none font-bold"
+              className="font-bold focus:outline-none"
               onClick={() => {
                 dispatch(addCustomer(null));
                 setValue("searchCustomer", "");
@@ -197,7 +203,7 @@ const AddCustomer = () => {
                 setAllCustomers([]);
               }}
             >
-              <i className="fas fa-trash-alt text-red-500"></i>
+              <i className="text-red-500 fas fa-trash-alt"></i>
             </button>
           </div>
         )}

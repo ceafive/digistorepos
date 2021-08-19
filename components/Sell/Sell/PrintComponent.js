@@ -47,22 +47,22 @@ const PrintComponent = React.forwardRef((props, ref) => {
       <div className="page-break" />
       <div className="relative w-full p-6" ref={ref}>
         <div className="mb-2">
-          <div className="flex justify-between items-center w-full mb-2">
+          <div className="flex items-center justify-between w-full mb-2">
             <img src={user?.user_merchant_logo} alt={`Merchant Logo`} />
-            <h1 className="font-bold text-3xl">{user?.user_merchant}</h1>
+            <h1 className="text-3xl font-bold">{user?.user_merchant}</h1>
           </div>
 
           <hr />
         </div>
 
-        <div className="flex items-center font-semibold text-xl">
+        <div className="flex items-center text-xl font-semibold">
           <p className="">Sale Summary</p>
         </div>
 
         <div className="mt-4">
           {productsInCart.map((product, index) => {
             return (
-              <div key={product.uniqueId} className="w-full flex justify-between font-bold my-4">
+              <div key={product.uniqueId} className="flex justify-between w-full my-4 font-bold">
                 <div>
                   <span className="mr-6">{index + 1}.</span>
                   <span>{upperCase(product.title)}</span>
@@ -93,9 +93,9 @@ const PrintComponent = React.forwardRef((props, ref) => {
 
         <hr className="my-2" />
 
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <p>
-            <span className="font-bold text-xl tracking-wide mr-4">SUB TOTAL</span>
+            <span className="mr-4 text-xl font-bold tracking-wide">SUB TOTAL</span>
             <span className="text-sm">{totalItemsInCart} item(s)</span>
           </p>
           <p>GHS{cartTotalMinusDiscountPlusTax}</p>
@@ -114,7 +114,7 @@ const PrintComponent = React.forwardRef((props, ref) => {
                   <p className="text-sm">Contact: {paymentMethod?.payment_number}</p>
                   <p className="text-sm">{paymentMethod.date}</p>
                 </div>
-                <div className="justify-self-end justify-end justify-items-end">
+                <div className="justify-end justify-self-end justify-items-end">
                   <div>
                     <span>GHS{paymentMethod.amount}</span>
                   </div>
@@ -126,8 +126,8 @@ const PrintComponent = React.forwardRef((props, ref) => {
           {transactionFeeCharges.length > 0 ? (
             <>
               {paymentMethodsAndAmount.length > 0 && <hr className="my-2" />}
-              <div className="flex justify-between items-center">
-                <p className="font-bold tracking-wide mr-4">FEES</p>
+              <div className="flex items-center justify-between">
+                <p className="mr-4 font-bold tracking-wide">FEES</p>
                 <p>
                   GHS
                   {fees}
@@ -141,8 +141,8 @@ const PrintComponent = React.forwardRef((props, ref) => {
           {deliveryCharge ? (
             <>
               {transactionFeeCharges.length > 0 && <hr className="my-2" />}
-              <div className="flex justify-between items-center">
-                <p className="font-bold tracking-wide mr-4">DELIVERY FEE</p>
+              <div className="flex items-center justify-between">
+                <p className="mr-4 font-bold tracking-wide">DELIVERY FEE</p>
                 <p>
                   GHS
                   {deliveryCharge?.price}
@@ -155,8 +155,8 @@ const PrintComponent = React.forwardRef((props, ref) => {
 
           <>
             <hr className="my-2" />
-            <div className="flex justify-between items-center">
-              <p className="font-bold tracking-wide mr-4">SALE TOTAL</p>
+            <div className="flex items-center justify-between">
+              <p className="mr-4 font-bold tracking-wide">SALE TOTAL</p>
               <p>
                 GHS
                 {saleTotal}
@@ -167,8 +167,8 @@ const PrintComponent = React.forwardRef((props, ref) => {
           {amountReceivedFromPayer ? (
             <>
               <hr className="my-2" />
-              <div className="flex justify-between items-center">
-                <p className="font-bold tracking-wide mr-4">CHANGE</p>
+              <div className="flex items-center justify-between">
+                <p className="mr-4 font-bold tracking-wide">CHANGE</p>
                 <p>
                   GHS
                   {-balance}
@@ -180,7 +180,7 @@ const PrintComponent = React.forwardRef((props, ref) => {
           )}
 
           <div className="fixed bottom-0 left-0 w-full">
-            <div className="flex justify-between items-center text-xs w-full">
+            <div className="flex items-center justify-between w-full text-xs">
               <h1 className="font-bold">Thank You For Your Business</h1>
               <h1 className="font-bold">Contact Us: {user?.user_merchant_phone}</h1>
             </div>

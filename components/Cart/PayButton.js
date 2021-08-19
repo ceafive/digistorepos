@@ -1,20 +1,23 @@
 import axios from "axios";
 import {
   applyDiscount,
+  calculateCartSubTotal,
   onChangeCartDiscountType,
   onClickToCheckout,
   onResetCart,
   setCartPromoCode,
   setDeliveryTypeSelected,
   setDiscount,
+  setOutletSelected,
   setPromoAmount,
   setPromoCodeAppliedOnCartPage,
+  setPromoType,
 } from "features/cart/cartSlice";
-import { setOutletSelected } from "features/products/productsSlice";
 import { upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
+import { configureVariables } from "utils";
 
 import DiscountBox from "./DiscountBox";
 import NoteBox from "./NoteBox";
@@ -28,13 +31,21 @@ const PayButton = () => {
   const cartDiscount = useSelector((state) => state.cart.cartDiscount);
   const cartItemDiscount = useSelector((state) => state.cart.cartItemDiscount);
   const totalTaxes = useSelector((state) => state.cart.totalTaxes);
-  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
-  const cartTotalMinusDiscount = useSelector((state) => state.cart.cartTotalMinusDiscount);
   const cartDiscountOnCartTotal = useSelector((state) => state.cart.cartDiscountOnCartTotal);
   const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const outletSelected = useSelector((state) => state.cart.outletSelected);
   const productsInCart = useSelector((state) => state.cart.productsInCart);
+  const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
+  const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
+  const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
+  const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
+
+  // Variables
+  const { covidTax, saleTotal } = React.useMemo(
+    () => configureVariables({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }),
+    [transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer]
+  );
 
   // Componet State
   const [showAddNoteInput, setShowAddNoteInput] = React.useState(false);
@@ -42,9 +53,17 @@ const PayButton = () => {
   const [showPromoCodeBox, setShowPromoCodeBox] = React.useState(false);
   const [checking, setProcessing] = React.useState(false);
   const [promoCode, setPromoCode] = React.useState("");
+  const [payerAmountEntered, setPayerAmountEntered] = React.useState(saleTotal - amountReceivedFromPayer);
 
-  // Variables
-  const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
+  React.useEffect(() => {
+    setPayerAmountEntered(Number(parseFloat(amountReceivedFromPayer >= saleTotal ? 0 : saleTotal - amountReceivedFromPayer).toFixed(2)));
+  }, [amountReceivedFromPayer, saleTotal]);
+
+  // console.log(payerAmountEntered);
+
+  React.useEffect(() => {
+    dispatch(calculateCartSubTotal());
+  }, [totalPriceInCart, deliveryCharge, cartDiscountOnCartTotal, cartPromoDiscount]);
 
   React.useEffect(() => {
     dispatch(applyDiscount());
@@ -102,6 +121,7 @@ const PayButton = () => {
       if (Number(status) === 0) {
         dispatch(setPromoAmount(discount));
         dispatch(setPromoCodeAppliedOnCartPage(true));
+        dispatch(setPromoType("ORDER"));
       } else {
         dispatch(setPromoAmount(0));
         dispatch(setPromoCodeAppliedOnCartPage(false));
@@ -157,35 +177,47 @@ const PayButton = () => {
         <div className="flex justify-between w-full">
           <p className="font-bold">ADD</p>
           <div className="flex justify-end w-4/5 font-bold text-blue-500">
-            {!cartDiscountOnCartTotal && (
+            {!cartDiscountOnCartTotal ? (
               <button
-                className={`mr-4 font-bold ${totalItemsInCart ? `text-blue-500 ` : `text-gray-200 `} focus:outline-none`}
+                className={`mr-4 font-bold ${totalItemsInCart && payerAmountEntered ? `text-blue-500 ` : `text-gray-200 `} focus:outline-none`}
                 onClick={() => {
                   if (!totalItemsInCart) {
-                    addToast(`No items in cart`, { appearance: `error`, autoDismiss: true });
+                    return addToast(`No items in cart`, { appearance: `error`, autoDismiss: true });
+                  }
+
+                  if (!payerAmountEntered) {
+                    return addToast(`Clear payment types entered to add discount`, { appearance: `error`, autoDismiss: true });
                   }
                   if (totalItemsInCart) {
-                    setShowDiscountBox(true);
+                    return setShowDiscountBox(true);
                   }
                 }}
               >
                 Discount
               </button>
+            ) : (
+              <></>
             )}
-            {!cartPromoDiscount && (
+            {!cartPromoDiscount ? (
               <button
-                className={`mr-4 font-bold ${totalItemsInCart ? `text-blue-500 ` : `text-gray-200 `} focus:outline-none`}
+                className={`mr-4 font-bold ${totalItemsInCart && payerAmountEntered ? `text-blue-500 ` : `text-gray-200 `} focus:outline-none`}
                 onClick={() => {
                   if (!totalItemsInCart) {
-                    addToast(`No items in cart`, { appearance: `error`, autoDismiss: true });
+                    return addToast(`No items in cart`, { appearance: `error`, autoDismiss: true });
+                  }
+
+                  if (!payerAmountEntered) {
+                    return addToast(`Clear payment types entered to add promo code`, { appearance: `error`, autoDismiss: true });
                   }
                   if (totalItemsInCart) {
-                    setShowPromoCodeBox(true);
+                    return setShowPromoCodeBox(true);
                   }
                 }}
               >
                 Promo Code
               </button>
+            ) : (
+              <></>
             )}
             <button
               className="font-bold text-blue-500 focus:outline-none"
@@ -200,7 +232,7 @@ const PayButton = () => {
       </div>
 
       <hr />
-      <div className="flex justify-between px-4 font-medium">
+      <div className="flex justify-between px-4 mt-4 font-medium">
         <div className="flex justify-between w-2/3">
           <p className="font-medium ">Subtotal</p>
         </div>
@@ -261,13 +293,13 @@ const PayButton = () => {
         <></>
       )}
 
-      <div className="flex justify-between px-4 font-medium">
+      {/* <div className="flex justify-between px-4 font-medium">
         <div className="flex justify-between w-2/3">
           <p className="font-medium ">Tax</p>
           <p>COVID-19 Levy 4%</p>
         </div>
         <p>GHS{covidTax}</p>
-      </div>
+      </div> */}
 
       {/* Button */}
       <div className="w-full px-4 py-2">
@@ -285,7 +317,7 @@ const PayButton = () => {
             </p>
             <p className="text-xl">
               GHS
-              {Number(parseFloat(cartTotalMinusDiscountPlusTax).toFixed(2))}
+              {cartSubTotal}
             </p>
           </div>
         </button>

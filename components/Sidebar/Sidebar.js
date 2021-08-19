@@ -14,7 +14,7 @@ const NavLink = ({ sidebarRoute }) => {
   return (
     <li className={`text-center  ${secondPaneOpenPathname === slug ? "bg-white" : ""}`}>
       <button
-        className=" w-full h-full focus:outline-none"
+        className="w-full h-full  focus:outline-none"
         onClick={() => {
           dispatch(
             setSecondPaneOpenPath({
@@ -49,12 +49,10 @@ const ChildNavLink = ({ childLink }) => {
 
   return (
     <li className={`text-left p-3 py-2`}>
-      <button className="focus:outline-none text-xs xl:text-base font-semibold" onClick={(e) => handleClick(e, path)}>
+      <button className="text-xs font-semibold focus:outline-none xl:text-base" onClick={(e) => handleClick(e, path)}>
         <span
           className={
-            router.pathname.indexOf(path) !== -1
-              ? "text-lightBlue-500 hover:text-lightBlue-600"
-              : "text-blueGray-700 hover:text-blueGray-500"
+            router.pathname.indexOf(path) !== -1 ? "text-lightBlue-500 hover:text-lightBlue-600" : "text-blueGray-700 hover:text-blueGray-500"
           }
         >
           {name}
@@ -105,46 +103,6 @@ export default function Sidebar() {
           </div>
 
           <div className={`second-pane py-4 ${openSidebarSecondpane ? "flex-grow" : "w-0"}`}>
-            {/* <p className="text-left text-blueGray-600 block uppercase font-bold p-4">
-              {outlets.find((outlet) => outlet.outlet_id === outletSelected)?.outlet_name}
-            </p>
-            {outlets.length > 1 && (
-              <div>
-                <div className="w-full px-3 mb-6 ">
-                  <div className="relative">
-                    <label htmlFor="" className="text-sm font-bold">
-                      Change Outlet
-                    </label>
-                    <select
-                      onChange={(e) => {
-                        e.persist();
-                        dispatch(setOutletSelected(e.target.value));
-                        dispatch(onResetCart());
-
-                        dispatch(
-                          onSelectCategory({
-                            category_id: "ALL",
-                            category_name: "ALL",
-                            category_description: "All Categories",
-                          })
-                        );
-                      }}
-                      className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-1 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    >
-                      {outlets.map((outlet) => {
-                        return (
-                          <option key={outlet.outlet_name} value={outlet.outlet_id}>
-                            {outlet.outlet_name}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
-            <hr className="my-4 min-w-full" /> */}
-
             <ul className="flex-col list-none">
               {childLinks.map((childLink) => {
                 return <ChildNavLink key={childLink.id} childLink={childLink} />;

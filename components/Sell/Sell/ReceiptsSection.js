@@ -1,8 +1,8 @@
-import { onRemovePaymentMethod } from "features/cart/cartSlice";
-import { find, reduce, upperCase } from "lodash";
+import { applyDiscount, calculateCartSubTotal, onRemovePaymentMethod } from "features/cart/cartSlice";
+import { capitalize, find, reduce, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { paymentOptionNames } from "utils";
+import { configureVariables, paymentOptionNames } from "utils";
 
 const ListItem = ({ text, value, className }) => {
   return (
@@ -31,28 +31,57 @@ const ReceiptsSection = ({ step }) => {
   const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
   const cartPromoCode = useSelector((state) => state.cart.cartPromoCode);
+  const cartDiscount = useSelector((state) => state.cart.cartDiscount);
+  const cartItemDiscount = useSelector((state) => state.cart.cartItemDiscount);
+  const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
 
   // Variables
-  const covidTax = Number(parseFloat(totalTaxes * cartTotalMinusDiscount).toFixed(2));
-  const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
-  const balance = Number(parseFloat(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(3));
-  const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3));
+  const { fees, saleTotal, covidTax, change, grandTotal } = React.useMemo(
+    () => configureVariables({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }),
+    [transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer]
+  );
+  // console.log({ cartSubTotal });
 
-  // console.log(deliveryCharge);
+  React.useEffect(() => {
+    dispatch(calculateCartSubTotal());
+  }, [totalPriceInCart, deliveryCharge, cartDiscountOnCartTotal, cartPromoDiscount]);
+
+  // React.useEffect(() => {
+  //   dispatch(applyDiscount());
+  // }, [totalPriceInCart, totalItemsInCart, cartItemDiscount, cartDiscount, cartPromoDiscount, dispatch]);
 
   return (
     <>
       <div className="flex items-center text-xl font-semibold">
         <p className="">Sale Summary</p>
       </div>
+      <hr className="w-1/3 border-black" />
 
       <div className="mt-4">
         {productsInCart.map((product, index) => {
+          // console.log(product);
           return (
             <div key={product.uniqueId} className="flex justify-between w-full my-4 font-bold">
-              <div>
+              <div className="flex">
                 <span className="mr-6">{index + 1}.</span>
-                <span>{upperCase(product.title)}</span>
+
+                <div>
+                  <span>{upperCase(product.title)}</span>
+                  <>
+                    {product.variants && (
+                      <div className="flex">
+                        {Object.entries(product?.variants).map((variant, index) => {
+                          return (
+                            <p key={variant[0]} className="p-0 m-0 text-xs font-semibold">
+                              <span>{capitalize(variant[1])}</span>
+                              {index !== Object.entries(product?.variants).length - 1 && <span>/ </span>}
+                            </p>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
+                </div>
               </div>
               <p>GHS{product.totalPrice}</p>
             </div>
@@ -60,35 +89,63 @@ const ReceiptsSection = ({ step }) => {
         })}
       </div>
 
-      <div className="flex justify-between pt-2">
-        <p>Note:</p>
-        <p>{cartNote}</p>
-      </div>
+      {cartNote && (
+        <div className="flex justify-between pt-2">
+          <p>Note:</p>
+          <p>{cartNote}</p>
+        </div>
+      )}
 
       <hr className="mt-6 mb-5" />
 
       {/* Sub amount figures */}
       <div className="pl-5 xl:pl-20">
         <ListItem text="Order Amount" value={`GHS${totalPriceInCart}`} />
-        <ListItem text="Discount" value={`GHS${cartDiscountOnCartTotal}`} />
-        <ListItem text={`Promo Amount ${cartPromoCode ? `(${cartPromoCode})` : ""}`} value={`GHS${cartPromoDiscount}`} />
-        <ListItem className="pt-4" text="Total before tax" value={`GHS${cartTotalMinusDiscount}`} />
+        {deliveryCharge && <ListItem text="Delivery Fee" value={`GHS${deliveryCharge?.price}`} />}
+        <ListItem text="Direct Discount" value={`GHS${cartDiscountOnCartTotal}`} />
+        <ListItem text={`Promo Discount ${cartPromoCode ? `(${cartPromoCode})` : ""}`} value={`GHS${cartPromoDiscount}`} />
+        <ListItem className="pt-4" text="Subtotal" value={`GHS${cartSubTotal}`} />
+        {/* <ListItem className="" text="Fees" value={`GHS${fees}`} /> */}
         <ListItem text="Tax COVID-19 Levy 4%" value={`GHS${covidTax}`} />
       </div>
 
       <hr className="my-2" />
 
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <p>
           <span className="mr-4 text-xl font-bold tracking-wide">SUB TOTAL</span>
           <span className="text-sm">{totalItemsInCart} item(s)</span>
         </p>
-        <p>GHS{cartTotalMinusDiscountPlusTax}</p>
+        <p>GHS{cartTotalMinusDiscountPlusTax + deliveryCharge?.price || 0}</p>
       </div>
-
-      <hr className="my-2" />
+      <hr className="my-2" /> */}
 
       <div className="pl-5 xl:pl-20">
+        {/* {deliveryCharge ? (
+          <>
+            {transactionFeeCharges.length > 0 && <hr className="my-2" />}
+            <div className="flex items-center justify-between">
+              <p className="mr-4 font-bold tracking-wide">DELIVERY FEE</p>
+              <p>
+                GHS
+                {deliveryCharge?.price}
+              </p>
+            </div>
+          </>
+        ) : (
+          <> </>
+        )} */}
+
+        <>
+          <div className="flex items-center justify-between">
+            <p className="mr-4 font-bold tracking-wide">TOTAL</p>
+            <p>
+              GHS
+              {saleTotal}
+            </p>
+          </div>
+        </>
+
         {paymentMethodsAndAmount.map((paymentMethod, index) => {
           const fee = find(transactionFeeCharges, { service: paymentMethod.method });
           return (
@@ -126,43 +183,26 @@ const ReceiptsSection = ({ step }) => {
           );
         })}
 
-        {transactionFeeCharges.length > 0 ? (
-          <>
-            {paymentMethodsAndAmount.length > 0 && <hr className="my-2" />}
-            <div className="flex items-center justify-between">
-              <p className="mr-4 font-bold tracking-wide">FEES</p>
-              <p>
-                GHS
-                {fees}
-              </p>
-            </div>
-          </>
-        ) : (
-          <> </>
-        )}
-
-        {deliveryCharge ? (
-          <>
-            {transactionFeeCharges.length > 0 && <hr className="my-2" />}
-            <div className="flex items-center justify-between">
-              <p className="mr-4 font-bold tracking-wide">DELIVERY FEE</p>
-              <p>
-                GHS
-                {deliveryCharge?.price}
-              </p>
-            </div>
-          </>
-        ) : (
-          <> </>
-        )}
-
         <>
-          <hr className="my-2" />
+          {/* {paymentMethodsAndAmount.length > 0 && <hr className="my-2" />} */}
           <div className="flex items-center justify-between">
-            <p className="mr-4 font-bold tracking-wide">SALE TOTAL</p>
+            <p className="mr-4 font-bold tracking-wide">FEES</p>
             <p>
               GHS
-              {saleTotal}
+              {fees}
+            </p>
+          </div>
+        </>
+
+        <hr className="my-2" />
+
+        <>
+          {/* {paymentMethodsAndAmount.length > 0 && <hr className="my-2" />} */}
+          <div className="flex items-center justify-between">
+            <p className="mr-4 font-bold tracking-wide">PAYMENT DUE</p>
+            <p>
+              GHS
+              {grandTotal}
             </p>
           </div>
         </>
@@ -171,10 +211,10 @@ const ReceiptsSection = ({ step }) => {
           <>
             <hr className="my-2" />
             <div className="flex items-center justify-between">
-              <p className="mr-4 font-bold tracking-wide">BALANCE</p>
+              <p className="mr-4 font-bold tracking-wide">CHANGE</p>
               <p>
                 GHS
-                {balance}
+                {-change}
               </p>
             </div>
           </>

@@ -4,6 +4,7 @@ import { filter, intersectionWith, isEqual, remove, subtract } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
+  outletSelected: null,
   cartTotal: 0,
   productsInCart: [],
   totalItemsInCart: 0,
@@ -22,7 +23,7 @@ const initialState = {
   cartDiscountType: "percent",
   cartTotalMinusDiscount: 0,
   cartTotalMinusDiscountPlusTax: 0,
-  totalTaxes: 4 / 100,
+  totalTaxes: 0 / 100,
   amountReceivedFromPayer: 0,
   splitPayment: false,
   currentCustomer: null,
@@ -34,11 +35,13 @@ const initialState = {
   deliveryTypeSelected: null,
   deliveryNotes: "",
   paymentMethodSet: "",
-  deliveryLocationInputted: null,
+  deliveryLocationInputted: "",
   deliveryGPS: null,
   invoiceDetails: null,
   verifyTransactionResponse: null,
   promoCodeAppliedOnCartPage: false,
+  promoType: "",
+  cartSubTotal: 0,
 };
 
 const initialProductProps = {
@@ -89,6 +92,12 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    setOutletSelected(state, action) {
+      state.outletSelected = action.payload;
+    },
+    setPromoType(state, action) {
+      state.promoType = action.payload;
+    },
     setPromoCodeAppliedOnCartPage(state, action) {
       state.promoCodeAppliedOnCartPage = action.payload;
     },
@@ -199,6 +208,16 @@ const cartSlice = createSlice({
       state.cartDiscountOnCartTotal = discountAmount;
       state.cartTotalMinusDiscount = Number(parseFloat(newvalue).toFixed(2));
       state.cartTotalMinusDiscountPlusTax = Number(parseFloat(newvalue + newvalue * state.totalTaxes).toFixed(2));
+    },
+    calculateCartSubTotal(state) {
+      state.cartSubTotal = Number(
+        parseFloat(
+          state.totalPriceInCart +
+            (state?.deliveryCharge ? state?.deliveryCharge?.price || 0 : 0) -
+            state.cartDiscountOnCartTotal -
+            state.cartPromoDiscount
+        ).toFixed(2)
+      );
     },
     setPromoAmount: (state, action) => {
       state.cartPromoDiscount = action.payload;
@@ -344,6 +363,7 @@ export const {
   setTransactionFeeCharges,
   setActivePayments,
   setPromoAmount,
+  setPromoType,
   applyPromoAmount,
   setDeliveryTypes,
   setDeliveryCharge,
@@ -359,5 +379,7 @@ export const {
   setItemDiscount,
   onAppResetCart,
   setPromoCodeAppliedOnCartPage,
+  calculateCartSubTotal,
+  setOutletSelected,
 } = cartSlice.actions;
 export default cartSlice.reducer;

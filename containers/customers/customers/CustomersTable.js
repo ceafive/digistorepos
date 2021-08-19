@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 
 import axios from "axios";
+import AddCustomerModal from "components/Cart/AddCustomerModal";
 import Dropdown from "components/Misc/Dropdown";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import { tableIcons } from "components/Misc/TableIcons";
@@ -16,7 +17,7 @@ import CustomerDetails from "./CustomerDetails";
 import CustomerOrdersDetails from "./CustomerOrdersDetails";
 import CustomerTransactions from "./CustomerTransactions";
 
-const CustomersTable = ({}) => {
+const CustomersTable = ({ setReRUn }) => {
   let user = sessionStorage.getItem("IPAYPOSUSER");
   user = JSON.parse(user);
 
@@ -180,9 +181,31 @@ const CustomersTable = ({}) => {
             }}
           />
         )}
+
+        {componentToRender === "add_customer" && (
+          <AddCustomerModal
+            onClose={() => setOpenModal(false)}
+            functionToRun={() => {
+              setReRUn(new Date());
+            }}
+          />
+        )}
       </Modal>
 
       <div>
+        <div className="justify-end w-full mb-4 ">
+          <div className="justify-end ">
+            <button
+              className="px-4 py-2 font-bold text-white bg-green-700 rounded"
+              onClick={() => {
+                setComponentToRender("add_customer");
+                setOpenModal(true);
+              }}
+            >
+              Add Customer
+            </button>
+          </div>
+        </div>
         <MaterialTable
           isLoading={loading}
           title={<p className="text-xl font-bold">{`Customers`}</p>}

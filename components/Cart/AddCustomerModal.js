@@ -5,8 +5,10 @@ import { addCustomer } from "features/cart/cartSlice";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 
-const AddCustomerModal = ({ onClose, setStep }) => {
+const AddCustomerModal = ({ onClose, functionToRun = () => {} }) => {
+  const { addToast } = useToasts();
   const dispatch = useDispatch();
   const {
     register,
@@ -36,11 +38,12 @@ const AddCustomerModal = ({ onClose, setStep }) => {
       const response = await axios.post("/api/sell/sell/add-customer", userData);
       const { status, message } = await response.data;
 
+      addToast(message, { autoDismiss: true });
+
       if (Number(status) === 0 || Number(status) === 91) {
         const getCustomerRes = await axios.post("/api/sell/sell/get-customer", { phoneNumber: userData?.client_phone });
         const { data } = await getCustomerRes.data;
-        dispatch(addCustomer(data));
-        setStep(2);
+        functionToRun(data);
       }
 
       reset({
@@ -68,51 +71,51 @@ const AddCustomerModal = ({ onClose, setStep }) => {
   return (
     <div className="w-full p-5">
       <div className="flex flex-wrap mb-6">
-        <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Full Name</label>
+        <div className="w-full px-3 mb-6 md:w-1/2 md:mb-0">
+          <label className="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">Full Name</label>
           <input
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            className="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
             {...register("fullName", { required: "Please enter a name" })}
             type="text"
             placeholder="Kofi Adomah"
           />
-          <p className="text-red-500 text-xs italic">{errors?.fullName?.message}</p>
+          <p className="text-xs italic text-red-500">{errors?.fullName?.message}</p>
         </div>
-        <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Email</label>
+        <div className="w-full px-3 mb-6 md:w-1/2 md:mb-0">
+          <label className="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">Email</label>
           <input
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
             {...register("email")}
             type="email"
             placeholder="kofi_adomah@mail.com"
           />
-          <p className="text-red-500 text-xs italic">{errors?.email?.message}</p>
+          <p className="text-xs italic text-red-500">{errors?.email?.message}</p>
         </div>
       </div>
 
       <div className="flex flex-wrap mb-2">
-        <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Phone</label>
+        <div className="w-full px-3 mb-6 md:w-1/2 md:mb-0">
+          <label className="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">Phone</label>
           <input
             {...register("phone", {
               required: "Please enter a phone number",
               validate: (value) => value?.length === 10 || "Phone number should be equal to 10 digits",
             })}
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="block w-full px-4 py-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
             type="number"
             placeholder="0222442455"
           />
-          <p className="text-red-500 text-xs italic">{errors?.phone?.message}</p>
+          <p className="text-xs italic text-red-500">{errors?.phone?.message}</p>
         </div>
-        <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-          <label className="block uppercase tracking-wide text-gray-700  text-xs font-bold mb-2">Date Of Birth</label>
+        <div className="w-full px-3 mb-6 md:w-1/2 md:mb-0">
+          <label className="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">Date Of Birth</label>
           <input
             {...register("dob")}
-            className="appearance-none block w-full text-sm bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="block w-full px-4 py-3 text-sm leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
             type="date"
             placeholder="06/06/1957"
           />
-          <p className="text-red-500 text-xs italic">{errors?.dob?.message}</p>
+          <p className="text-xs italic text-red-500">{errors?.dob?.message}</p>
         </div>
       </div>
 

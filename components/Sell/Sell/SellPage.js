@@ -1,19 +1,19 @@
 import axios from "axios";
 import Cart from "components/Cart/Cart";
+import ProcessSale from "components/Sell/Sell/ProcessSale";
 // import Modal from "components/Modal";
 // import InventoryDetails from "components/Product/InventoryDetails";
 // import ProcessSale from "components/Sell/ProcessSale";
 import ProductsSelection from "components/Sell/Sell/ProductsSelection";
 import Spinner from "components/Spinner";
 import { setActivePayments, setDeliveryTypes } from "features/cart/cartSlice";
-import { onSetProductCategories, openInventoryModal, productsAdded, setAllOutlets, setOutletSelected } from "features/products/productsSlice";
+import { onSetProductCategories, openInventoryModal, productsAdded, setAllOutlets } from "features/products/productsSlice";
 import { motion } from "framer-motion";
 import { filter, intersectionWith, upperCase } from "lodash";
 import dynamic from "next/dynamic";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const ProcessSale = dynamic(() => import("components/Sell/Sell/ProcessSale"));
 const InventoryDetails = dynamic(() => import("components/Product/InventoryDetails"));
 const Modal = dynamic(() => import("components/Modal"));
 
@@ -57,11 +57,7 @@ const SellPage = () => {
         const upperCaseMerchantGroup = upperCase(user_merchant_group);
 
         if (upperCaseMerchantGroup === "ADMINISTRATORS") {
-          if (outletsResData.length === 1) {
-            dispatch(setOutletSelected(outletsResData[0]));
-          } else {
-            dispatch(setAllOutlets(outletsResData));
-          }
+          dispatch(setAllOutlets(outletsResData));
         } else {
           const response = intersectionWith(
             filter(outletsResData, (o) => Boolean(o)),
@@ -71,11 +67,7 @@ const SellPage = () => {
             }
           );
 
-          if (response.length === 1) {
-            dispatch(setOutletSelected(response[0]));
-          } else {
-            dispatch(setAllOutlets(response));
-          }
+          dispatch(setAllOutlets(response));
         }
         setFetching(false);
       } catch (error) {
@@ -97,23 +89,23 @@ const SellPage = () => {
 
   if (fetching || fetching === null) {
     return (
-      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
+      <div className="flex flex-col items-center justify-center w-full h-full min-h-screen-75">
         <Spinner type="TailSpin" width={50} height={50} />
       </div>
     );
   }
 
   return (
-    <div className="pb-6 pt-6">
+    <div className="pt-6 pb-6">
       {!clickToCheckout && (
         <div className="flex" initial={{ y: "-20vh" }} animate={{ y: 0 }} transition={{ duration: 0.1, type: "tween" }}>
           <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
             <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
           </Modal>
-          <div className="w-7/12 xl:w-8/12 px-4">
+          <div className="w-7/12 px-4 xl:w-8/12">
             <ProductsSelection />
           </div>
-          <div className="w-5/12 xl:w-4/12 px-4">
+          <div className="w-5/12 px-4 xl:w-4/12">
             <Cart />
           </div>
         </div>

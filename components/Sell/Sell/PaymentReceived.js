@@ -1,5 +1,5 @@
-import { onClickToCheckout, onResetCart } from "features/cart/cartSlice";
-import { setOutletSelected, setProductsOnHold } from "features/products/productsSlice";
+import { onClickToCheckout, onResetCart, setOutletSelected } from "features/cart/cartSlice";
+import { setProductsOnHold } from "features/products/productsSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
@@ -17,8 +17,8 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
   const [email, setEmail] = React.useState("");
 
   return (
-    <div className="mt-10 py-20 text-center">
-      <p className="font-bold text-4xl ">Payment Received</p>
+    <div className="py-20 mt-10 text-center">
+      <p className="text-4xl font-bold ">Payment Received</p>
       <div>
         {Number(
           parseFloat(
@@ -44,7 +44,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
         <div className="flex justify-center w-full">
           <button
             disabled={printing}
-            className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xl mr-6"
+            className="mr-6 text-gray-800 focus:outline-none xl:text-lg 2xl:text-xl"
             onClick={() => {
               addToast(`Opening print dialog`, { appearance: "info", autoDismiss: true });
               handlePrint();
@@ -59,7 +59,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
           {/* {currentCustomer?.customer_phone && ( */}
           <button
             disabled={sendingNotification}
-            className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xxl mr-6"
+            className="mr-6 text-gray-800 focus:outline-none xl:text-lg 2xl:text-xxl"
             onClick={() => {
               if (currentCustomer?.customer_phone) {
                 handleSendNotification("SMS");
@@ -79,7 +79,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
           {/* {currentCustomer?.customer_email && ( */}
           <button
             disabled={sendingNotification}
-            className="focus:outline-none text-gray-800 xl:text-lg 2xl:text-xxl"
+            className="text-gray-800 focus:outline-none xl:text-lg 2xl:text-xxl"
             onClick={() => {
               if (currentCustomer?.customer_phone) {
                 handleSendNotification("EMAIL");
@@ -102,7 +102,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
         <div className="mt-6 font-semibold">
           <div className="w-full">
             <div className="relative">
-              <span className="z-10 absolute text-center text-blueGray-800 w-8 pl-3 py-5">
+              <span className="absolute z-10 w-8 py-5 pl-3 text-center text-blueGray-800">
                 <i className="fas fa-phone"></i>
               </span>
               <input
@@ -113,10 +113,10 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
                   setPhoneNumber(e.target.value);
                 }}
                 placeholder="Enter phone number to send receipt to"
-                className="border-0 px-3 py-5 placeholder-blueGray-500 text-blueGray-800 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
+                className="relative w-full px-3 py-5 pl-10 text-sm bg-white border-0 rounded shadow outline-none placeholder-blueGray-500 text-blueGray-800 focus:outline-none focus:ring-1"
               />
               <button
-                className="absolute right-5 bg-green-300 px-2 py-1 font-bold"
+                className="absolute px-2 py-1 font-bold bg-green-300 right-5"
                 style={{
                   top: "25%",
                 }}
@@ -135,7 +135,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
         <div className="mt-6 font-semibold">
           <div className="w-full">
             <div className="relative">
-              <span className="z-10 absolute text-center text-blueGray-800 w-8 pl-3 py-5">
+              <span className="absolute z-10 w-8 py-5 pl-3 text-center text-blueGray-800">
                 <i className="fas fa-envelope"></i>
               </span>
               <input
@@ -146,10 +146,10 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
                   setEmail(e.target.value);
                 }}
                 placeholder="Enter email address to send receipt to"
-                className="border-0 px-3 py-5 placeholder-blueGray-500 text-blueGray-800 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring-1 w-full pl-10"
+                className="relative w-full px-3 py-5 pl-10 text-sm bg-white border-0 rounded shadow outline-none placeholder-blueGray-500 text-blueGray-800 focus:outline-none focus:ring-1"
               />
               <button
-                className="absolute right-5 bg-green-300 px-2 py-1 font-bold"
+                className="absolute px-2 py-1 font-bold bg-green-300 right-5"
                 style={{
                   top: "25%",
                 }}
@@ -164,9 +164,9 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
         </div>
       )}
 
-      <div className="w-full self-end mt-20">
+      <div className="self-end w-full mt-20">
         <button
-          className="bg-green-700 px-6 py-4 text-white font-semibold rounded focus:outline-none w-full text-center"
+          className="w-full px-6 py-4 font-semibold text-center text-white bg-green-700 rounded focus:outline-none"
           onClick={() => {
             dispatch(onClickToCheckout(false));
             dispatch(onResetCart());

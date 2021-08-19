@@ -1,13 +1,19 @@
 import axios from "axios";
 import { capitalize, get, has, reduce, replace, upperCase } from "lodash";
 
-const configureVariables = (transactionFeeCharges, cartTotalMinusDiscountPlusTax, deliveryCharge) => {
+const configureVariables = ({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }) => {
   const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
-  const saleTotal = Number(parseFloat(cartTotalMinusDiscountPlusTax + (deliveryCharge?.price || 0) + fees).toFixed(3));
+  const covidTax = Number(parseFloat(totalTaxes * cartSubTotal).toFixed(2));
+  const saleTotal = Number(parseFloat(cartSubTotal + covidTax).toFixed(3));
+  const grandTotal = Number(parseFloat(cartSubTotal + fees + covidTax).toFixed(3));
+  const change = Number(parseFloat(saleTotal - amountReceivedFromPayer).toFixed(3));
 
   return {
     fees,
     saleTotal,
+    covidTax,
+    change,
+    grandTotal,
   };
 };
 
@@ -45,13 +51,14 @@ const onAddPayment = async function (
   paymentMethodsAndAmount,
   paymentMethodSet,
   payerAmountEntered,
+  cartSubTotal,
   setAmountReceivedFromPayer,
   setOpenPhoneNumberInputModal,
   reset,
   currentCustomer,
   values
 ) {
-  // console.log(user, paymentMethodsAndAmount, paymentMethodSet, payerAmountEntered, currentCustomer, values);
+  // console.log(paymentMethodsAndAmount, paymentMethodSet, payerAmountEntered, cartSubTotal, currentCustomer, values);
   // return;
   try {
     await fetchFeeCharges(dispatch, setTransactionFeeCharges, setFetching, user, [
@@ -61,6 +68,7 @@ const onAddPayment = async function (
         amount: Number(parseFloat(payerAmountEntered).toFixed(2)),
       },
     ]);
+
     if (paymentMethodSet === "CASH") {
       dispatch(
         setAmountReceivedFromPayer({
@@ -164,13 +172,15 @@ const onRaiseOrder = async (
           order_item: `${curr?.product_name}${!typeIsNormal ? addVariants : ""}`,
           order_item_amt: curr?.totalPrice,
           order_item_prop: !typeIsNormal ? properties : {},
+          order_item_prop_id: curr?.variantID || "",
         },
       };
     }, {});
 
     const payload = {
       order_notes: cart?.cartNote,
-      order_items: JSON.stringify(productsJSON),
+      order_items: productsJSON,
+      // order_items: JSON.stringify(productsJSON),
       order_outlet: products?.outletSelected?.outlet_id ?? "",
       delivery_type: replace(upperCase(cart?.deliveryTypeSelected), " ", "-"),
       delivery_notes: cart?.deliveryNotes,
@@ -188,7 +198,7 @@ const onRaiseOrder = async (
       order_discount_code: cart?.cartPromoCode ?? "",
       order_amount: cart?.totalPriceInCart ?? 0,
       order_discount: cart?.cartDiscountOnCartTotal + cart?.cartPromoDiscount,
-      // order_discount_type: ,
+      order_discount_type: cart?.promoType,
       delivery_charge: cart?.deliveryCharge?.price ?? 0,
       service_charge: fees,
       total_amount: saleTotal,
@@ -208,10 +218,10 @@ const onRaiseOrder = async (
       mod_by: user["login"],
     };
 
-    // setFetching(false);
-    // console.log({ cart });
-    // console.log({ payload });
-    // return;
+    setFetching(false);
+    console.log({ cart });
+    console.log({ payload });
+    return;
 
     const res = await axios.post("/api/sell/sell/raise-order", payload);
     const data = await res.data;

@@ -1,7 +1,7 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import { onClickToCheckout, onResetCart, setVerifyTransactionResponse } from "features/cart/cartSlice";
-import { setOutletSelected, setProductsOnHold } from "features/products/productsSlice";
+import { onClickToCheckout, onResetCart, setOutletSelected, setVerifyTransactionResponse } from "features/cart/cartSlice";
+import { setProductsOnHold } from "features/products/productsSlice";
 import { throttle, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -99,9 +99,9 @@ const ConfirmPayment = ({
 
   return (
     <>
-      {/* <p className="text-right mt-4 mb-4 ">
+      {/* <p className="mt-4 mb-4 text-right ">
           <button
-            className="font-bold text-lg focus:outline-none"
+            className="text-lg font-bold focus:outline-none"
             onClick={() => {
               console.log("parked", cart);
               localStorage.setItem(
@@ -115,7 +115,7 @@ const ConfirmPayment = ({
               dispatch(onResetCart());
             }}
           >
-            <i className="fas fa-history mr-2"></i>
+            <i className="mr-2 fas fa-history"></i>
             <span>Park Sale</span>
           </button>
         </p> */}
@@ -130,7 +130,7 @@ const ConfirmPayment = ({
           />
         ) : (
           <div>
-            <p className="font-bold text-4xl">Awaiting Payment</p>
+            <p className="text-4xl font-bold">Awaiting Payment</p>
             <div className="mt-4">
               <p>
                 <span className="font-bold">Instructions: </span>
@@ -140,7 +140,7 @@ const ConfirmPayment = ({
           </div>
         )}
 
-        <div className="w-full self-end mt-20">
+        <div className="self-end w-full mt-20">
           <button
             disabled={fetching}
             className={`${
@@ -164,7 +164,7 @@ const ConfirmPayment = ({
             )}
             {confirmButtonText ? confirmButtonText : "Confirm Payment"}
           </button>
-          {/* {processError && <p className="text-center text-red-500 text-sm">{processError}</p>} */}
+          {/* {processError && <p className="text-sm text-center text-red-500">{processError}</p>} */}
         </div>
       </div>
     </>

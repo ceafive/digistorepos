@@ -2,7 +2,7 @@ import React from "react";
 
 import Spinner from "../Spinner";
 
-const CashPaymentInput = ({ paymentMethodSet, register, errors, cartTotalMinusDiscountPlusTax }) => {
+const CashPaymentInput = ({ paymentMethodSet, register, errors, cartSubTotal }) => {
   return (
     <div className="my-3">
       <label className="mb-2 text-sm" htmlFor="">
@@ -12,12 +12,11 @@ const CashPaymentInput = ({ paymentMethodSet, register, errors, cartTotalMinusDi
         type="number"
         {...register(paymentMethodSet, {
           required: "Enter Cash Received",
-          validate: (value) =>
-            Number(value) >= cartTotalMinusDiscountPlusTax || `Amount entered cannot be be less than GHS${cartTotalMinusDiscountPlusTax}`,
+          validate: (value) => Number(value) >= cartSubTotal || `Amount entered cannot be be less than GHS${cartSubTotal}`,
         })}
-        className="border border-blue-500 px-3 4 text-lg placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded outline-none focus:outline-none w-full"
+        className="relative w-full px-3 text-lg bg-white border border-blue-700 rounded outline-none 4 placeholder-blueGray-400 text-blueGray-600 focus:outline-none"
       />
-      <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
+      <p className="text-sm text-red-500">{errors[paymentMethodSet]?.message}</p>
     </div>
   );
 };
@@ -26,9 +25,7 @@ const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors })
   return (
     <div className="my-3">
       <label className="mb-2 text-sm" htmlFor="">
-        {`Enter ${
-          paymentMethodSet === "MTNMM" ? "MTN Mobile Money" : paymentMethodSet === "VODAC" ? "Vodafone Cash" : " AirtelTigo Money"
-        } Number`}
+        {`Enter ${paymentMethodSet === "MTNMM" ? "MTN Mobile Money" : paymentMethodSet === "VODAC" ? "Vodafone Cash" : " AirtelTigo Money"} Number`}
       </label>
       <input
         type="number"
@@ -44,9 +41,9 @@ const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors })
           },
         })}
         placeholder="0547748484"
-        className="border border-blue-500 px-3 4 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-lg outline-none focus:outline-none w-full"
+        className="relative w-full px-3 text-lg bg-white border border-blue-500 rounded outline-none 4 placeholder-blueGray-300 text-blueGray-600 focus:outline-none"
       />
-      <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
+      <p className="text-sm text-red-500">{errors[paymentMethodSet]?.message}</p>
     </div>
   );
 };
@@ -63,25 +60,16 @@ const OtherPaymentInput = ({ paymentMethodSet, register, errors }) => {
           required: "Please enter details",
         })}
         placeholder="0547748484 or jane_doe@mail.com"
-        className="border border-blue-500 px-3 4 text-lg placeholder-blueGray-400 text-blueGray-600 relative bg-white rounded outline-none focus:outline-none w-full"
+        className="relative w-full px-3 text-lg bg-white border border-blue-500 rounded outline-none 4 placeholder-blueGray-400 text-blueGray-600 focus:outline-none"
       />
-      <p className="text-red-500 text-sm">{errors[paymentMethodSet]?.message}</p>
+      <p className="text-sm text-red-500">{errors[paymentMethodSet]?.message}</p>
     </div>
   );
 };
 
-const CollectUserDetail = ({
-  fetching,
-  onAddPayment,
-  paymentMethodSet,
-  register,
-  handleSubmit,
-  lengthOfMobileNumber,
-  errors,
-  cartTotalMinusDiscountPlusTax,
-}) => {
+const CollectUserDetail = ({ fetching, onAddPayment, paymentMethodSet, register, handleSubmit, lengthOfMobileNumber, errors, cartSubTotal }) => {
   // console.log(paymentMethodSet);
-  // console.log(cartTotalMinusDiscountPlusTax);
+  // console.log(cartSubTotal);
   return (
     <>
       {(paymentMethodSet === "MTNMM" || paymentMethodSet === "TIGOC" || paymentMethodSet === "VODAC") && (
@@ -89,18 +77,14 @@ const CollectUserDetail = ({
       )}
 
       {paymentMethodSet === "CASH" && (
-        <CashPaymentInput
-          paymentMethodSet={paymentMethodSet}
-          register={register}
-          errors={errors}
-          cartTotalMinusDiscountPlusTax={cartTotalMinusDiscountPlusTax}
-        />
+        <CashPaymentInput paymentMethodSet={paymentMethodSet} register={register} errors={errors} cartSubTotal={cartSubTotal} />
       )}
+
       {(paymentMethodSet === "VISAG" || paymentMethodSet === "QRPAY") && (
         <OtherPaymentInput paymentMethodSet={paymentMethodSet} register={register} errors={errors} />
       )}
 
-      <div className="text-center">
+      <div className="mb-3 text-center">
         <button
           disabled={fetching}
           className={`${

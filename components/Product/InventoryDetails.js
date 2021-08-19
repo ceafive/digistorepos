@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 const InventoryDetails = ({ onClose }) => {
   const dispatch = useDispatch();
   const product = useSelector((state) => state.products.productToView);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const outletSelected = useSelector((state) => state.cart.outletSelected);
   const [variantQuantity, setVariantQuantity] = React.useState(0);
   // console.log({ product });
   // console.log({ outletSelected });
@@ -26,11 +26,7 @@ const InventoryDetails = ({ onClose }) => {
         <i className="fas fa-times"></i>
       </button>
       <div className="flex items-center">
-        <img
-          className=""
-          src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
-          alt={product?.product_image}
-        />
+        <img className="" src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`} alt={product?.product_image} />
       </div>
       <div className="p-4 pb-0 w-full">
         <div className="text-center">

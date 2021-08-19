@@ -20,7 +20,7 @@ const CashPaymentModal = ({ onClose, payerAmountEntered, cartTotalMinusDiscountP
     <>
       <h1 className="text-4xl ">Collect GHS{cartTotalMinusDiscountPlusTax}</h1>
       <p className="text-gray-500">Quick Cash Payment</p>
-      <button className="my-2 bg-green-700 text-white px-4 py-2 rounded shadow font-semibold focus:outline-none" onClick={setAmount}>
+      <button className="px-4 py-2 my-2 font-semibold text-white bg-green-700 rounded shadow focus:outline-none" onClick={setAmount}>
         GHS{payerAmountEntered}
       </button>
     </>

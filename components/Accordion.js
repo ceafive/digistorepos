@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
+import { configureVariables } from "utils";
 
 const Accordion = ({ product, index }) => {
   // console.log(product);
@@ -17,10 +18,27 @@ const Accordion = ({ product, index }) => {
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
+
+  const totalTaxes = useSelector((state) => state.cart.totalTaxes);
   const productsInCart = useSelector((state) => state.cart.productsInCart);
+  const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
+  const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
+  const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
+
+  // Variables
+  const { covidTax, saleTotal } = React.useMemo(
+    () => configureVariables({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }),
+    [transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer]
+  );
+
+  const [payerAmountEntered, setPayerAmountEntered] = React.useState(saleTotal - amountReceivedFromPayer);
   // console.log(productsInCart);
 
   const [isActive, setIsActive] = useState(false);
+
+  React.useEffect(() => {
+    setPayerAmountEntered(Number(parseFloat(amountReceivedFromPayer >= saleTotal ? 0 : saleTotal - amountReceivedFromPayer).toFixed(2)));
+  }, [amountReceivedFromPayer, saleTotal]);
 
   const checkProductQuantity = (product, value) => {
     try {
@@ -147,6 +165,10 @@ const Accordion = ({ product, index }) => {
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
+                if (!payerAmountEntered) {
+                  return addToast(`Clear payment types entered to delete item`, { appearance: `error`, autoDismiss: true });
+                }
+
                 dispatch(removeItemFromCart(product?.uniqueId));
               }}
             >

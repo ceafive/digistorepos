@@ -1,7 +1,15 @@
 // import CashPaymentModal from "components/Cart/CashPaymentModal";
 // import CollectUserDetail from "components/Cart/CollectUserDetail";
 // import Modal from "components/Modal";
-import { setAmountReceivedFromPayer, setInvoiceDetails, setTotalAmountToBePaidByBuyer, setTransactionFeeCharges } from "features/cart/cartSlice";
+import CashPaymentModal from "components/Cart/CashPaymentModal";
+import CollectUserDetail from "components/Cart/CollectUserDetail";
+import {
+  calculateCartSubTotal,
+  setAmountReceivedFromPayer,
+  setInvoiceDetails,
+  setTotalAmountToBePaidByBuyer,
+  setTransactionFeeCharges,
+} from "features/cart/cartSlice";
 import dynamic from "next/dynamic";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -14,8 +22,6 @@ import PrintComponent from "./PrintComponent";
 import RaiseOrderSection from "./RaiseOrderSection";
 import ReceiptsSection from "./ReceiptsSection";
 
-const CashPaymentModal = dynamic(() => import("components/Cart/CashPaymentModal"));
-const CollectUserDetail = dynamic(() => import("components/Cart/CollectUserDetail"));
 const Modal = dynamic(() => import("components/Modal"));
 
 const ProcessSale = () => {
@@ -32,7 +38,8 @@ const ProcessSale = () => {
   });
 
   // Selectors
-  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
+  const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
+  const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
   const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
   const paymentMethodsAndAmount = useSelector((state) => state.cart.paymentMethodsAndAmount);
   const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
@@ -42,12 +49,21 @@ const ProcessSale = () => {
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
   const cart = useSelector((state) => state.cart);
   const products = useSelector((state) => state.products);
+  const totalTaxes = useSelector((state) => state.cart.totalTaxes);
+  const cartDiscountOnCartTotal = useSelector((state) => state.cart.cartDiscountOnCartTotal);
+  const cartPromoDiscount = useSelector((state) => state.cart.cartPromoDiscount);
 
-  // console.log(products);
+  // Variables
+  const user = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
+  const lengthOfMobileNumber = 10;
+  const { fees, saleTotal } = React.useMemo(
+    () => configureVariables({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }),
+    [transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer]
+  );
 
   // Component State
   const [step, setStep] = React.useState(0);
-  const [payerAmountEntered, setPayerAmountEntered] = React.useState(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer);
+  const [payerAmountEntered, setPayerAmountEntered] = React.useState(saleTotal - amountReceivedFromPayer);
   const [openCashModal, setOpenCashModal] = React.useState(false);
   const [fetching, setFetching] = React.useState(false);
   const [openPhoneNumberInputModal, setOpenPhoneNumberInputModal] = React.useState(false);
@@ -57,22 +73,17 @@ const ProcessSale = () => {
   const [confirmPaymentText, setConfirmPaymentText] = React.useState("");
   const [confirmButtonText, setConfirmButtonText] = React.useState("");
 
-  // Variables
-  const user = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
-  const lengthOfMobileNumber = 10;
-  const { fees, saleTotal } = configureVariables(transactionFeeCharges, cartTotalMinusDiscountPlusTax, deliveryCharge);
+  // React.useEffect(() => {
+  //   dispatch(setTotalAmountToBePaidByBuyer(saleTotal));
+  // }, [dispatch, saleTotal]);
 
   React.useEffect(() => {
-    dispatch(setTotalAmountToBePaidByBuyer(saleTotal));
-  }, [dispatch, saleTotal]);
+    setPayerAmountEntered(Number(parseFloat(amountReceivedFromPayer >= saleTotal ? 0 : saleTotal - amountReceivedFromPayer).toFixed(2)));
+  }, [amountReceivedFromPayer, saleTotal]);
 
   React.useEffect(() => {
-    setPayerAmountEntered(
-      Number(
-        parseFloat(amountReceivedFromPayer >= cartTotalMinusDiscountPlusTax ? 0 : cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(2)
-      )
-    );
-  }, [amountReceivedFromPayer, cartTotalMinusDiscountPlusTax]);
+    dispatch(calculateCartSubTotal());
+  }, [totalPriceInCart, deliveryCharge, cartDiscountOnCartTotal, cartPromoDiscount]);
 
   // console.log({ fetching, amountReceivedFromPayer, balance });
 
@@ -85,6 +96,7 @@ const ProcessSale = () => {
       paymentMethodsAndAmount,
       paymentMethodSet,
       payerAmountEntered,
+      cartSubTotal,
       setAmountReceivedFromPayer,
       setOpenPhoneNumberInputModal,
       reset,
@@ -106,11 +118,7 @@ const ProcessSale = () => {
   return (
     <>
       <Modal open={openCashModal} onClose={() => setOpenCashModal(false)} maxWidth="sm">
-        <CashPaymentModal
-          onClose={() => setOpenCashModal(false)}
-          payerAmountEntered={payerAmountEntered}
-          cartTotalMinusDiscountPlusTax={cartTotalMinusDiscountPlusTax}
-        />
+        <CashPaymentModal onClose={() => setOpenCashModal(false)} payerAmountEntered={payerAmountEntered} cartSubTotal={cartSubTotal} />
       </Modal>
       <Modal open={openPhoneNumberInputModal} onClose={() => setOpenPhoneNumberInputModal(false)} maxWidth="sm">
         <CollectUserDetail
@@ -121,14 +129,14 @@ const ProcessSale = () => {
           handleSubmit={handleSubmit}
           lengthOfMobileNumber={lengthOfMobileNumber}
           errors={errors}
-          cartTotalMinusDiscountPlusTax={cartTotalMinusDiscountPlusTax}
+          cartSubTotal={cartSubTotal}
           onClose={() => setOpenPhoneNumberInputModal(false)}
         />
       </Modal>
       <div style={{ display: "none" }}>
         <PrintComponent ref={componentRef} />
       </div>
-      <div className="flex divide-x divide-gray-200 bg-white rounded shadow">
+      <div className="flex bg-white divide-x divide-gray-200 rounded shadow">
         <div className={`${step !== 2 ? "w-2/5 xl:w-1/2" : "w-1/2 xl:w-1/2"} p-6 transition-all`}>
           <ReceiptsSection step={step} />
         </div>

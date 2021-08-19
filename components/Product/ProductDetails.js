@@ -8,7 +8,7 @@ import { useToasts } from "react-toast-notifications";
 const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantName, setStepsClicked }) => {
   return (
     <button
-      className="font-bold border border-gray-200 focus:outline-none w-32 h-32"
+      className="w-32 h-32 font-bold border border-gray-200 focus:outline-none"
       onClick={() => {
         setStepsClicked((data) => [...data, { step, variantName }]);
         // console.log(variantName);
@@ -25,7 +25,7 @@ const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantN
   );
 };
 
-const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuantity }) => {
+const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, variantQuantity }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   const productsInCart = useSelector((state) => state.cart.productsInCart);
@@ -50,6 +50,7 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
       imgURL: product.product_image,
       quantity: Number(Quantity),
       variants: rest,
+      variantID,
     };
 
     // console.log({ data });
@@ -111,7 +112,7 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
         return (
           <button
             key={quantity}
-            className="font-bold border border-gray-200 focus:outline-none w-32 h-32"
+            className="w-32 h-32 font-bold border border-gray-200 focus:outline-none"
             onClick={() => {
               checkProductQuantity(product, quantity); //check stock quantity before add to cart
             }}
@@ -120,11 +121,11 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, variantQuan
           </button>
         );
       })}
-      {/* <div className="flex flex-col justify-center items-center border border-gray-200 w-32 h-32">
+      {/* <div className="flex flex-col items-center justify-center w-32 h-32 border border-gray-200">
           <input
             // type="number"
             placeholder="Enter Quantity"
-            className="appearance-none focus:appearance-none font-bold focus:text-4xl text-center w-full h-full "
+            className="w-full h-full font-bold text-center appearance-none focus:appearance-none focus:text-4xl "
           ></input>
         </div> */}
     </>
@@ -158,6 +159,7 @@ const ProductDetails = ({ onClose }) => {
   const [step, setStep] = React.useState(0);
   const [currentStep, setCurrentStep] = React.useState([allVariants[step]]);
   const [variantQuantity, setVariantQuantity] = React.useState(0);
+  const [variantID, setVariantID] = React.useState("");
 
   const [stepsClicked, setStepsClicked] = React.useState([]);
 
@@ -213,7 +215,7 @@ const ProductDetails = ({ onClose }) => {
                 .map(([key, value]) => `${value}`)
                 .join("/")}' is not possible`}</p>
 
-              <div className="text-black mt-2 text-center">
+              <div className="mt-2 text-center text-black">
                 <p className="font-bold">Available combinations</p>
                 {combinations.map((combination, index) => {
                   return (
@@ -235,6 +237,7 @@ const ProductDetails = ({ onClose }) => {
           removeAllToasts();
           setProductPrice(Number(parseFloat(found?.variantOptionPrice).toFixed(2)));
           setVariantQuantity(found?.variantOptionQuantity);
+          setVariantID(found?.variantOptionId);
         }
       } else {
         setVariantQuantity(product?.product_quantity === "-99" ? "Unlimited" : parseInt(product?.product_quantity));
@@ -247,13 +250,13 @@ const ProductDetails = ({ onClose }) => {
   return (
     <div className="flex w-full rounded-lg" style={{ maxHeight: 700 }}>
       <div className="w-5/12">
-        <Carousel showArrows={false} showIndicators={false} showThumbs={false} className="flex flex-col justify-center items-center w-full h-full">
+        <Carousel showArrows={false} showIndicators={false} showThumbs={false} className="flex flex-col items-center justify-center w-full h-full">
           {product?.product_images && product?.product_images?.length > 0 ? (
             product?.product_images?.map((product_image) => {
               return (
                 <div key={product_image} className="">
                   <img
-                    className="h-full w-full object-cover"
+                    className="object-cover w-full h-full"
                     key={product_image}
                     src={`https://payments.ipaygh.com/app/webroot/img/products/${product_image}`}
                     alt={product_image}
@@ -265,7 +268,7 @@ const ProductDetails = ({ onClose }) => {
           ) : (
             <div className="">
               <img
-                className="h-full w-full object-cover"
+                className="object-cover w-full h-full"
                 src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
                 alt={product?.product_image}
               />
@@ -278,12 +281,12 @@ const ProductDetails = ({ onClose }) => {
         <div className="w-full">
           <div className="text-center">
             <p className="font-bold ">
-              <span className="text-xl mr-4">{upperCase(product.product_name)}</span>
+              <span className="mr-4 text-xl">{upperCase(product.product_name)}</span>
             </p>
             <p className="text-sm">Product ID: {product.product_id}</p>
             <div className="mt-4">
-              {step === noOfSteps && <span className="font-bold text-sm mr-2">Variant Quantity: {variantQuantity}</span>}
-              {step === noOfSteps && <span className="font-bold text-sm">Variant Price: GHS{productPrice}</span>}
+              {step === noOfSteps && <span className="mr-2 text-sm font-bold">Variant Quantity: {variantQuantity}</span>}
+              {step === noOfSteps && <span className="text-sm font-bold">Variant Price: GHS{productPrice}</span>}
             </div>
           </div>
 
@@ -293,12 +296,12 @@ const ProductDetails = ({ onClose }) => {
               currentStep?.map(([key, value], index) => {
                 return (
                   <div key={key + index} className="w-full h-full">
-                    <div className="flex justify-center items-center w-full">
+                    <div className="flex items-center justify-center w-full">
                       {stepsClicked?.map((stepClicked, index) => {
                         return (
                           <button
                             key={stepClicked?.variantName}
-                            className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2 mr-2 focus:outline-none"
+                            className="block mb-2 mr-2 text-sm font-bold tracking-wide text-center text-gray-700 uppercase focus:outline-none"
                             onClick={() => {
                               setStep(stepClicked?.step);
                               const sliced = stepsClicked.slice(0, index);
@@ -311,7 +314,7 @@ const ProductDetails = ({ onClose }) => {
                           </button>
                         );
                       })}
-                      <p className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2">{key}</p>
+                      <p className="block mb-2 text-sm font-bold tracking-wide text-center text-gray-700 uppercase">{key}</p>
                     </div>
                     <div className="grid grid-cols-3 gap-4 xl:gap-3">
                       {value.map((item) => {
@@ -334,7 +337,7 @@ const ProductDetails = ({ onClose }) => {
               })
             ) : (
               <div className="w-full h-full">
-                <div className="flex justify-center items-center w-full">
+                <div className="flex items-center justify-center w-full">
                   {stepsClicked?.map((stepClicked, index) => {
                     return (
                       <button
@@ -345,7 +348,7 @@ const ProductDetails = ({ onClose }) => {
                           setStepsClicked(sliced);
                         }}
                         key={stepClicked?.variantName}
-                        className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2 mr-2 focus:outline-none "
+                        className="block mb-2 mr-2 text-sm font-bold tracking-wide text-center text-gray-700 uppercase focus:outline-none "
                       >
                         <span className="border-b-2 border-blue-500">{stepClicked?.variantName}</span>
                         <span> {">"}</span>
@@ -353,7 +356,7 @@ const ProductDetails = ({ onClose }) => {
                     );
                   })}
 
-                  <p className="block uppercase tracking-wide text-gray-700 text-center text-sm font-bold mb-2">Quantity</p>
+                  <p className="block mb-2 text-sm font-bold tracking-wide text-center text-gray-700 uppercase">Quantity</p>
                 </div>
                 <div className="grid grid-cols-3 gap-4 xl:gap-3">
                   <RenderQuantityTap
@@ -361,6 +364,8 @@ const ProductDetails = ({ onClose }) => {
                     productPrice={productPrice}
                     formData={formData}
                     reset={reset}
+                    variantQuantity={variantQuantity}
+                    variantID={variantID}
                     variantQuantity={variantQuantity}
                   />
                 </div>

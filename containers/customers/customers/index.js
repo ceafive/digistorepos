@@ -54,7 +54,7 @@ const CustomersPage = () => {
         <p>Manage your customers and their balances, or segment them by demographics and spending habits.</p>
       </div>
 
-      <CustomersTable />
+      <CustomersTable setReRUn={setReRUn} />
     </div>
   );
 };

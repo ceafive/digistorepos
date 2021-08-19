@@ -3,19 +3,24 @@
 // import Spinner from "components/Spinner";
 import {
   addCustomer,
+  applyDiscount,
   onClickToCheckout,
+  setCartPromoCode,
   setDeliveryCharge,
+  setDeliveryLocationInputted,
   setDeliveryNotes,
   setDeliveryTypeSelected,
+  setOutletSelected,
   setPaymentMethodSet,
+  setPromoAmount,
+  setPromoType,
 } from "features/cart/cartSlice";
-import { setOutletSelected } from "features/products/productsSlice";
-import { intersectionWith, isEqual } from "lodash";
+import { filter, intersectionWith, isEqual, upperCase } from "lodash";
 import dynamic from "next/dynamic";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
-import { loyaltyTabs, merchantUserDeliveryOptions, paymentOptionNames, paymentOptions } from "utils";
+import { configureVariables, merchantUserDeliveryOptions, paymentOptionNames, paymentOptions } from "utils";
 
 const Spinner = dynamic(() => import("components/Spinner"));
 const TypeDelivery = dynamic(() => import("components/Sell/Sell/TypeDelivery"));
@@ -34,21 +39,26 @@ const ProcessPayment = ({
   const { addToast } = useToasts();
 
   // Selectors
-  const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
   const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
   const outlets = useSelector((state) => state.products.outlets);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
   const activePayments = useSelector((state) => state.cart.activePayments);
   const deliveryTypeSelected = useSelector((state) => state.cart.deliveryTypeSelected);
-  const outletSelected = useSelector((state) => state.products.outletSelected);
+  const outletSelected = useSelector((state) => state.cart.outletSelected);
   const paymentMethodSet = useSelector((state) => state.cart.paymentMethodSet);
   const deliveryLocationInputted = useSelector((state) => state.cart.deliveryLocationInputted);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
-  const cart = useSelector((state) => state.cart);
+  const promoType = useSelector((state) => state.cart.promoType);
+  const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
+  const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
+  const totalTaxes = useSelector((state) => state.cart.totalTaxes);
 
   // Variables
-  const balance = Number(parseFloat(cartTotalMinusDiscountPlusTax - amountReceivedFromPayer).toFixed(3));
   const user = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
+  const { saleTotal, change } = React.useMemo(
+    () => configureVariables({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }),
+    [transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer]
+  );
 
   const paymentButtons = React.useMemo(() => {
     const intersected = intersectionWith(paymentOptions, user?.user_permissions, (arrVal, othVal) => {
@@ -57,13 +67,34 @@ const ProcessPayment = ({
     const allIntersected = intersectionWith(intersected, activePayments, (arrVal, othVal) => {
       return isEqual(arrVal.name, othVal);
     });
+
     return allIntersected;
   }, [activePayments, user?.user_permissions]);
+
   const deliveryLocationIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryLocationInputted;
   const deliveryChargeIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryCharge;
   const [processingDeliveryCharge, setProcessingDeliveryCharge] = React.useState(false);
 
-  // console.log(outletSelected);
+  // console.log({ cartSubTotal });
+  // console.log({ outletSelected });
+
+  //Select outlet
+  React.useEffect(() => {
+    const upperCaseMerchantGroup = upperCase(user?.user_merchant_group);
+    if (upperCaseMerchantGroup === "ADMINISTRATORS") {
+      if (outlets?.length === 1) {
+        dispatch(setOutletSelected(outlets[0]));
+      }
+    } else {
+      const response = intersectionWith(filter(outlets, Boolean), user?.user_assigned_outlets ?? [], (arrVal, othVal) => {
+        return arrVal.outlet_id === othVal;
+      });
+
+      if (response.length === 1) {
+        dispatch(setOutletSelected(response[0]));
+      }
+    }
+  }, [outlets]);
 
   return (
     <div>
@@ -101,37 +132,6 @@ const ProcessPayment = ({
         </div>
       </div>
       {/* Pay Field */}
-
-      {/* Payment Buttons */}
-      <div className="grid grid-cols-3 gap-3 my-4 mt-8 xl:grid-cols-3 2xl:grid-cols-4">
-        {paymentButtons.map((paymentButton) => {
-          return (
-            <div key={paymentButton.name}>
-              <button
-                // disabled={!payerAmountEntered || Number(payerAmountEntered) === 0}
-                className={`${
-                  paymentMethodSet === paymentButton.name ? "ring-4" : ""
-                }  w-40 h-12 font-bold bg-blue-500 text-white focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`}
-                onClick={() => {
-                  if (Number(payerAmountEntered) === 0) {
-                    addToast(`You must delete currently selected payment to select a different one`, {
-                      appearance: "info",
-                      autoDismiss: true,
-                    });
-                  } else {
-                    dispatch(setPaymentMethodSet(paymentButton.name));
-                    setOpenPhoneNumberInputModal(true);
-                  }
-                }}
-              >
-                {paymentOptionNames[paymentButton.name]}
-                {/* <img src={paymentButton.img} alt={paymentButton.name} /> */}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-      {/* Payment Buttons */}
 
       {/* Outlets */}
       {outlets.length > 1 && (
@@ -190,7 +190,22 @@ const ProcessPayment = ({
                       if (option?.name !== "Delivery") {
                         dispatch(setDeliveryCharge(null));
                         dispatch(setDeliveryNotes(""));
+                        dispatch(setDeliveryLocationInputted(null));
+
+                        if (promoType === "DELIVERY") {
+                          dispatch(setCartPromoCode(null));
+                          dispatch(setPromoType(""));
+                          dispatch(setPromoAmount(0));
+                        }
                       }
+
+                      if (option?.name === "Delivery" && Number(payerAmountEntered) === 0) {
+                        return addToast(`You must remove payment options entered to change delivery type`, {
+                          appearance: "info",
+                          autoDismiss: true,
+                        });
+                      }
+
                       dispatch(setDeliveryTypeSelected(option?.name));
                     }
                   }}
@@ -212,6 +227,42 @@ const ProcessPayment = ({
         )}
       </div>
       {/* Delivery Options */}
+
+      {/* Payment Buttons */}
+      <div className="grid grid-cols-3 gap-3 my-4 mt-8 xl:grid-cols-3 2xl:grid-cols-4">
+        {paymentButtons.map((paymentButton) => {
+          return (
+            <div key={paymentButton.name}>
+              <button
+                // disabled={!payerAmountEntered || Number(payerAmountEntered) === 0}
+                className={`${
+                  paymentMethodSet === paymentButton.name ? "ring-4" : ""
+                }  w-40 h-12 font-bold bg-blue-500 text-white focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`}
+                onClick={() => {
+                  if (!deliveryTypeSelected) {
+                    return addToast(`Select pickup or delivery type before payment`, {
+                      appearance: "info",
+                      autoDismiss: true,
+                    });
+                  } else if (Number(payerAmountEntered) === 0) {
+                    return addToast(`You must delete currently selected payment to select a different one`, {
+                      appearance: "info",
+                      autoDismiss: true,
+                    });
+                  } else {
+                    dispatch(setPaymentMethodSet(paymentButton.name));
+                    setOpenPhoneNumberInputModal(true);
+                  }
+                }}
+              >
+                {paymentOptionNames[paymentButton.name]}
+                {/* <img src={paymentButton.img} alt={paymentButton.name} /> */}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      {/* Payment Buttons */}
 
       {/* Customer */}
       {currentCustomer ? (
@@ -276,7 +327,7 @@ const ProcessPayment = ({
             !outletSelected ||
             (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
             deliveryChargeIsEmpty ||
-            balance > 0
+            change > 0
           }
           className={`${
             processingDeliveryCharge ||
@@ -287,7 +338,7 @@ const ProcessPayment = ({
             !outletSelected ||
             (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
             deliveryChargeIsEmpty ||
-            balance > 0
+            change > 0
               ? "bg-gray-400 text-gray-300"
               : "bg-green-700 text-white"
           } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}

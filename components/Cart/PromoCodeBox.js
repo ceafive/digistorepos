@@ -21,7 +21,7 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
 
         <div className="flex justify-end w-full p-2 mt-2 bg-gray-300">
           <button
-            disabled={checking || !promoCode}
+            disabled={checking}
             className="px-3 py-1 mr-2 font-bold text-white bg-red-700 rounded"
             onClick={() => {
               setShowPromoCodeBox(false);
