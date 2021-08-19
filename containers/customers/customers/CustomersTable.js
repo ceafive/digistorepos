@@ -214,6 +214,7 @@ const CustomersTable = ({ setReRUn }) => {
           data={allCustomers.map((o) => ({ ...o, tableData: {} }))}
           options={{
             selection: false,
+            padding: `dense`,
           }}
           components={{
             Toolbar: (props) => (
