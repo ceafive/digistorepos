@@ -104,7 +104,7 @@ const ReceiptsSection = ({ step }) => {
         {deliveryCharge && <ListItem text="Delivery Fee" value={`GHS${deliveryCharge?.price}`} />}
         <ListItem text="Direct Discount" value={`GHS${cartDiscountOnCartTotal}`} />
         <ListItem text={`Promo Discount ${cartPromoCode ? `(${cartPromoCode})` : ""}`} value={`GHS${cartPromoDiscount}`} />
-        <ListItem className="pt-4" text="Subtotal" value={`GHS${cartSubTotal}`} />
+        <ListItem className="pt-4" text={`Subtotal    ${totalItemsInCart} item(s)`} value={`GHS${cartSubTotal}`} />
         {/* <ListItem className="" text="Fees" value={`GHS${fees}`} /> */}
         <ListItem text="Tax COVID-19 Levy 4%" value={`GHS${covidTax}`} />
       </div>

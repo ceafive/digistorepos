@@ -218,10 +218,10 @@ const onRaiseOrder = async (
       mod_by: user["login"],
     };
 
-    setFetching(false);
-    console.log({ cart });
-    console.log({ payload });
-    return;
+    // setFetching(false);
+    // console.log({ cart });
+    // console.log({ payload });
+    // return;
 
     const res = await axios.post("/api/sell/sell/raise-order", payload);
     const data = await res.data;
