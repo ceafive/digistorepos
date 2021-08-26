@@ -9,6 +9,7 @@ const ShowItems = () => {
   return (
     <div className="w-full overflow-x-hidden overflow-scroll" style={{ height: 400 }}>
       {productsInCart.map((product, index) => {
+        // console.log(product);
         return (
           <motion.div key={product.uniqueId} initial={{ x: "50vw" }} animate={{ x: 0 }} transition={{ type: "tween", duration: 0.05 }}>
             <Accordion product={product} index={index} key={product.uniqueId} />

@@ -1,32 +1,18 @@
 import axios from "axios";
-import Modal from "components/Modal";
 import Spinner from "components/Spinner";
 import { addCustomer } from "features/cart/cartSlice";
 import debounce from "lodash.debounce";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { useToasts } from "react-toast-notifications";
 
-import AddCustomerModal from "./AddCustomerModal";
-
-const AddCustomer = () => {
-  const { addToast } = useToasts();
-  const {
-    register,
-    reset,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm();
+const AddCustomer = ({ step, setStep, setOpenModal, setComponentToRender }) => {
+  const { register, watch, setValue } = useForm();
   const dispatch = useDispatch();
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
 
   // console.log(currentCustomer);
-
-  const [step, setStep] = React.useState(0);
   const [allCustomers, setAllCustomers] = React.useState([]);
-  const [openAddCustomerModal, setOpenAddCustomerModal] = React.useState(false);
   const [searching, setSearching] = React.useState(false);
 
   const watchCustomerSearch = watch("searchCustomer", "");
@@ -67,42 +53,7 @@ const AddCustomer = () => {
   }, [watchCustomerSearch]);
 
   return (
-    <div className="w-full">
-      <Modal open={openAddCustomerModal} onClose={() => setOpenAddCustomerModal(false)} maxWidth="sm">
-        <AddCustomerModal
-          onClose={() => setOpenAddCustomerModal(false)}
-          functionToRun={(data) => {
-            dispatch(addCustomer(data));
-            setStep(2);
-          }}
-        />
-      </Modal>
-      <div className="flex items-center justify-between w-full">
-        {!currentCustomer && (
-          <div className="w-6/12 mr-2 text-sm">
-            <button
-              className="w-full px-4 py-3 font-bold text-white rounded focus:outline-none bg-blueGray-800"
-              onClick={() => {
-                setStep(1);
-                // setOpenAddCustomerModal(true);
-              }}
-            >
-              Add Customer
-            </button>
-          </div>
-        )}
-
-        <div className={`text-sm ${currentCustomer ? "w-full" : "w-6/12"} `}>
-          <button
-            className="w-full px-4 py-3 font-bold text-white bg-blue-800 rounded focus:outline-none"
-            onClick={() => {
-              addToast(`NOT AVAILABLE`, { autoDismiss: true });
-            }}
-          >
-            Quick Sale
-          </button>
-        </div>
-      </div>
+    <>
       <div className="w-full">
         {step === 1 && (
           <div className="relative mt-4" initial={{ y: "-1vw" }} animate={{ y: 0 }}>
@@ -174,7 +125,8 @@ const AddCustomer = () => {
                     <button
                       className="text-sm text-blue-500 focus:outline-none"
                       onClick={() => {
-                        setOpenAddCustomerModal(true);
+                        setComponentToRender("addCustomerModal");
+                        setOpenModal(true);
                       }}
                     >
                       Add New Customer
@@ -208,7 +160,7 @@ const AddCustomer = () => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

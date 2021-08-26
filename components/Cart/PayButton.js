@@ -119,10 +119,11 @@ const PayButton = () => {
       addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
 
       if (Number(status) === 0) {
-        dispatch(setPromoAmount(discount));
-        dispatch(setPromoCodeAppliedOnCartPage(true));
         dispatch(setPromoType("ORDER"));
+        dispatch(setPromoCodeAppliedOnCartPage(true));
+        dispatch(setPromoAmount(discount));
       } else {
+        // dispatch(setPromoType(""));
         dispatch(setPromoAmount(0));
         dispatch(setPromoCodeAppliedOnCartPage(false));
       }

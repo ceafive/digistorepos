@@ -5,7 +5,7 @@ const configureVariables = ({ transactionFeeCharges, cartSubTotal, totalTaxes, a
   const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
   const covidTax = Number(parseFloat(totalTaxes * cartSubTotal).toFixed(2));
   const saleTotal = Number(parseFloat(cartSubTotal + covidTax).toFixed(3));
-  const grandTotal = Number(parseFloat(cartSubTotal + fees + covidTax).toFixed(3));
+  const grandTotal = Number(parseFloat(cartSubTotal + fees + covidTax).toFixed(3)); 
   const change = Number(parseFloat(saleTotal - amountReceivedFromPayer).toFixed(3));
 
   return {
@@ -179,17 +179,17 @@ const onRaiseOrder = async (
 
     const payload = {
       order_notes: cart?.cartNote,
-      order_items: productsJSON,
-      // order_items: JSON.stringify(productsJSON),
-      order_outlet: products?.outletSelected?.outlet_id ?? "",
+      // order_items: productsJSON,
+      order_items: JSON.stringify(productsJSON),
+      order_outlet: cart?.outletSelected?.outlet_id ?? "",
       delivery_type: replace(upperCase(cart?.deliveryTypeSelected), " ", "-"),
       delivery_notes: cart?.deliveryNotes,
       delivery_id:
         cart?.deliveryTypeSelected === "Pickup" || cart?.deliveryTypeSelected === "Walk In" || cart?.deliveryTypeSelected === "Dine In"
-          ? products?.outletSelected?.outlet_id ?? ""
+          ? cart?.outletSelected?.outlet_id ?? ""
           : cart?.deliveryTypes["option_delivery"] === "MERCHANT" || cart?.deliveryTypes["option_delivery"] === "MERCHANT-DIST"
           ? cart?.deliveryCharge?.delivery_code ?? ""
-          : products?.outletSelected?.outlet_id ?? "",
+          : cart?.outletSelected?.outlet_id ?? "",
       delivery_location: cart?.deliveryLocationInputted?.label ?? "",
       delivery_gps: cart?.deliveryGPS ?? "",
       delivery_name: cart?.currentCustomer?.customer_name ?? "",

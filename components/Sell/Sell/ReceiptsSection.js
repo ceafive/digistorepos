@@ -34,6 +34,7 @@ const ReceiptsSection = ({ step }) => {
   const cartDiscount = useSelector((state) => state.cart.cartDiscount);
   const cartItemDiscount = useSelector((state) => state.cart.cartItemDiscount);
   const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
+  const cartDiscountType = useSelector((state) => state.cart.cartDiscountType);
 
   // Variables
   const { fees, saleTotal, covidTax, change, grandTotal } = React.useMemo(
@@ -66,7 +67,9 @@ const ReceiptsSection = ({ step }) => {
                 <span className="mr-6">{index + 1}.</span>
 
                 <div>
-                  <span>{upperCase(product.title)}</span>
+                  <span>
+                    {upperCase(product.title)} x {product?.quantity}
+                  </span>
                   <>
                     {product.variants && (
                       <div className="flex">
@@ -102,11 +105,16 @@ const ReceiptsSection = ({ step }) => {
       <div className="pl-5 xl:pl-20">
         <ListItem text="Order Amount" value={`GHS${totalPriceInCart}`} />
         {deliveryCharge && <ListItem text="Delivery Fee" value={`GHS${deliveryCharge?.price}`} />}
-        <ListItem text="Direct Discount" value={`GHS${cartDiscountOnCartTotal}`} />
-        <ListItem text={`Promo Discount ${cartPromoCode ? `(${cartPromoCode})` : ""}`} value={`GHS${cartPromoDiscount}`} />
+        <ListItem
+          text={`Discount ${cartDiscountOnCartTotal && cartDiscountType === "percent" ? `(Percent)` : ""} ${
+            cartDiscountOnCartTotal && cartDiscountType === "amount" ? `(Flat)` : ""
+          }`}
+          value={`GHS${cartDiscountOnCartTotal}`}
+        />
+        <ListItem text={`Promo Code ${cartPromoCode ? `(${cartPromoCode})` : ""}`} value={`GHS${cartPromoDiscount}`} />
         <ListItem className="pt-4" text={`Subtotal    ${totalItemsInCart} item(s)`} value={`GHS${cartSubTotal}`} />
         {/* <ListItem className="" text="Fees" value={`GHS${fees}`} /> */}
-        <ListItem text="Tax COVID-19 Levy 4%" value={`GHS${covidTax}`} />
+        {/* <ListItem text="Tax COVID-19 Levy 4%" value={`GHS${covidTax}`} /> */}
       </div>
 
       <hr className="my-2" />

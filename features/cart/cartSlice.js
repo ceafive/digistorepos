@@ -331,6 +331,7 @@ const cartSlice = createSlice({
       state.totalPriceInCart = Number(parseFloat(totalPrice).toFixed(2));
       state.totalItemsInCart = totalQuantity;
     },
+
     removeItemFromCart: (state, action) => {
       const filtered = filter(state.productsInCart, (o) => o.uniqueId !== action.payload);
       state.productsInCart = filtered;
