@@ -5,7 +5,7 @@ const configureVariables = ({ transactionFeeCharges, cartSubTotal, totalTaxes, a
   const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
   const covidTax = Number(parseFloat(totalTaxes * cartSubTotal).toFixed(2));
   const saleTotal = Number(parseFloat(cartSubTotal + covidTax).toFixed(3));
-  const grandTotal = Number(parseFloat(cartSubTotal + fees + covidTax).toFixed(3)); 
+  const grandTotal = Number(parseFloat(cartSubTotal + fees + covidTax).toFixed(3));
   const change = Number(parseFloat(saleTotal - amountReceivedFromPayer).toFixed(3));
 
   return {
