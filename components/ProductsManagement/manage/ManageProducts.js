@@ -63,6 +63,8 @@ const ManageProducts = ({ setReRUn }) => {
   const manageProductProducts = useSelector((state) => state.manageproducts.manageProductProducts);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
 
+  // console.log({ manageProductProducts });
+
   const [allProducts, setAllProducts] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
@@ -323,8 +325,31 @@ const ManageProducts = ({ setReRUn }) => {
                 const detailColumns = [
                   { title: "ID", field: "variantOptionId", editable: "never" },
                   {
-                    title: "Option Values",
-                    field: "option_values",
+                    title: "Name",
+                    field: "name",
+                    editable: "never",
+                    searchable: true,
+                    customFilterAndSearch: (term, rowData) => {
+                      const variantdata = Object.keys(rowData?.variantOptionValue).map((value) => lowerCase(value));
+                      const result = variantdata.join("").indexOf(lowerCase(term)) != -1;
+                      return result;
+                    },
+                    render(rowData) {
+                      let subheader = "";
+                      const variantdata = Object.entries(rowData?.variantOptionValue);
+                      variantdata.forEach(([key, value], index) => {
+                        subheader += `${value}${index === variantdata?.length - 1 ? " " : " / "}`;
+                      });
+                      return (
+                        <div>
+                          <h6>{subheader}</h6>
+                        </div>
+                      );
+                    },
+                  },
+                  {
+                    title: "Description",
+                    field: "description",
                     editable: "never",
                     searchable: true,
                     customFilterAndSearch: (term, rowData) => {
@@ -334,25 +359,21 @@ const ManageProducts = ({ setReRUn }) => {
                     },
                     render(rowData) {
                       let header = "";
-                      let subheader = "";
-
-                      // console.log({ rowData });
-
                       const variantdata = Object.entries(rowData?.variantOptionValue);
                       variantdata.forEach(([key, value], index) => {
                         header += `${key}${index === variantdata?.length - 1 ? " " : " / "}`;
-                        subheader += `${value}${index === variantdata?.length - 1 ? " " : " / "}`;
                       });
                       return (
                         <div>
-                          <h6 className="font-bold">{header}</h6>
-                          <p>{subheader}</p>
+                          <h6>{header}</h6>
                         </div>
                       );
                     },
                   },
                   { title: "Price", field: "variantOptionPrice" },
-                  { title: "Quantity", field: "variantOptionQuantity" },
+                  { title: "In Stock", field: "variantOptionQuantity" },
+                  { title: "Qty. Sold", field: "variantOptionQuantitySold", editable: "never" },
+                  { title: "Last Stock Date", field: "variantOptionLastStockUpdated", editable: "never" },
                   {
                     title: "Action",
                     field: "delete",
@@ -371,6 +392,7 @@ const ManageProducts = ({ setReRUn }) => {
                     },
                   },
                 ];
+
                 return (
                   <MaterialTable
                     style={{

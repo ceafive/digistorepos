@@ -52,6 +52,9 @@ const ProcessPayment = ({
   const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
   const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
   const totalTaxes = useSelector((state) => state.cart.totalTaxes);
+  const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
+
+  // console.log(deliveryTypes);
 
   // Variables
   const user = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
@@ -200,7 +203,7 @@ const ProcessPayment = ({
                       }
 
                       if (option?.name === "Delivery" && Number(payerAmountEntered) === 0) {
-                        return addToast(`You must remove payment options entered to change delivery type`, {
+                        return addToast(`You must remove payment option(s) entered to change delivery type`, {
                           appearance: "info",
                           autoDismiss: true,
                         });
@@ -231,14 +234,26 @@ const ProcessPayment = ({
       {/* Payment Buttons */}
       <div className="grid grid-cols-3 gap-3 my-4 mt-8 xl:grid-cols-3 2xl:grid-cols-4">
         {paymentButtons.map((paymentButton) => {
+          const generalClasses = `w-40 h-12 font-bold text-white focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`;
+          const enableClasses = `bg-blue-500`;
+          const disabledClasses = `bg-gray-200`;
+          const applyDisabledClasses =
+            paymentButton.name === "CASH" && deliveryTypes["option_delivery"] === "IPAY" && deliveryTypeSelected === "Delivery";
           return (
             <div key={paymentButton.name}>
               <button
                 // disabled={!payerAmountEntered || Number(payerAmountEntered) === 0}
-                className={`${
-                  paymentMethodSet === paymentButton.name ? "ring-4" : ""
-                }  w-40 h-12 font-bold bg-blue-500 text-white focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`}
+                className={`${paymentMethodSet === paymentButton.name ? "ring-4" : ""} ${generalClasses} ${
+                  applyDisabledClasses ? disabledClasses : enableClasses
+                }`}
                 onClick={() => {
+                  if (paymentButton.name === "CASH" && deliveryTypes["option_delivery"] === "IPAY" && deliveryTypeSelected === "Delivery") {
+                    return addToast(`Cash payment not available for Digistore delivery`, {
+                      appearance: "info",
+                      autoDismiss: true,
+                    });
+                  }
+
                   if (!deliveryTypeSelected) {
                     return addToast(`Select pickup or delivery type before payment`, {
                       appearance: "info",
@@ -339,9 +354,9 @@ const ProcessPayment = ({
             (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
             deliveryChargeIsEmpty ||
             change > 0
-              ? "bg-gray-400 text-gray-300"
-              : "bg-green-700 text-white"
-          } px-6 py-4 font-semibold rounded focus:outline-none w-full text-center`}
+              ? "bg-gray-200"
+              : "bg-green-700"
+          } px-6 py-4 text-white font-semibold rounded focus:outline-none w-full text-center`}
           onClick={handleRaiseOrder}
         >
           {fetching && (
