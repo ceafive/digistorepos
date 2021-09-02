@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 
 import axios from "axios";
-import AddCustomerModal from "components/Cart/AddCustomerModal";
+import AddCustomerModal from "containers/sell/sell/cart/AddCustomerModal";
 import Dropdown from "components/Misc/Dropdown";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import { tableIcons } from "components/Misc/TableIcons";
@@ -13,6 +13,7 @@ import React, { forwardRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
+
 import CustomerDetails from "./CustomerDetails";
 import CustomerOrdersDetails from "./CustomerOrdersDetails";
 import CustomerTransactions from "./CustomerTransactions";

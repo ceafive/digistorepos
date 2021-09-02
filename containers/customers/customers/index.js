@@ -12,12 +12,16 @@ const CustomersPage = () => {
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
   const [reRUn, setReRUn] = React.useState(new Date());
+
   // Compnent State
+  const allCustomers = useSelector((state) => state.customers.allCustomers);
 
   React.useEffect(() => {
     const fetchItems = async () => {
       try {
-        setFetching(true);
+        if (allCustomers.length === 0) {
+          setFetching(true);
+        }
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 

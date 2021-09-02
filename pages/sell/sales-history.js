@@ -1,4 +1,4 @@
-import SalesHistory from "components/Sell/Orders/SalesHistory";
+import SalesHistory from "containers/sell/orders/SalesHistory";
 import Admin from "layouts/Admin";
 import React from "react";
 import { useDispatch } from "react-redux";

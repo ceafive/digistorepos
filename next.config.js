@@ -20,6 +20,7 @@ const nextConfig = {
     // Important: return the modified config
     return config;
   },
+  // webpack5: false,
   eslint: {
     ignoreDuringBuilds: true,
   },

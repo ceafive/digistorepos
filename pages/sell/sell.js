@@ -1,4 +1,4 @@
-import SellPage from "components/Sell/Sell/SellPage";
+import SellPage from "containers/sell/sell/SellPage";
 import Admin from "layouts/Admin.js";
 import React from "react";
 

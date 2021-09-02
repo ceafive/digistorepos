@@ -1,4 +1,4 @@
-import ManageProductsOrCategories from "components/ProductsManagement/manage/ManageProductsOrCategories";
+import ManageProductsOrCategories from "containers/productmanagement/manage/ManageProductsOrCategories";
 import Admin from "layouts/Admin";
 import React from "react";
 

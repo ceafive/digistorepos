@@ -21,7 +21,7 @@ module.exports = {
       },
       colors: {
         brandBlue: "#21428F",
-        brandGree: "#4AB647",
+        brandGreen: "#4AB647",
         ...colors,
       },
       fontFamily: {

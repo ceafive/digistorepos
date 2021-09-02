@@ -1,7 +1,7 @@
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import "../styles/tailwind.css";
+import "../styles/index.css";
 
 import { Box, createTheme, CssBaseline, LinearProgress, ThemeProvider } from "@material-ui/core";
 import { responsiveFontSizes } from "@material-ui/core/styles";

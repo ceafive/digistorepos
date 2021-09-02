@@ -35,7 +35,7 @@ const CustomerTransactions = ({ customer, user, onClose }) => {
         });
 
         const { data: transactionsResData } = await transactionsRes.data;
-        console.log(transactionsResData);
+        // console.log(transactionsResData);
         setTransactions(filter(transactionsResData, Boolean));
         setFetching(false);
       } catch (error) {
@@ -107,7 +107,6 @@ const CustomerTransactions = ({ customer, user, onClose }) => {
         );
       },
     },
-
   ];
 
   return (

@@ -1,4 +1,4 @@
-import ViewEditAProduct from "components/ProductsManagement/edit/ViewEditAProduct";
+import ViewEditAProduct from "containers/productmanagement/edit/ViewEditAProduct";
 import Admin from "layouts/Admin.js";
 import React from "react";
 
