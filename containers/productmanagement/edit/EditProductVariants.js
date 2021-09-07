@@ -203,7 +203,7 @@ const EditProduct = ({ setGoToVarianceConfig }) => {
     };
 
     fetchItems();
-  }, []);
+  }, [refetch]);
 
   const updateProduct = async (values) => {
     try {
@@ -418,6 +418,7 @@ const EditProduct = ({ setGoToVarianceConfig }) => {
         if (Number(status) === 0) {
           addToast(message, { appearance: "success", autoDismiss: true });
           remove(index);
+          setRefetch(new Date());
         } else {
           addToast(message, { appearance: "error", autoDismiss: true });
           //console.log(productWithVariants?.product_properties_variants); // TODO: automatically delete all product property variants
