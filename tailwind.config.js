@@ -7,8 +7,7 @@ const saferoutecolors = sidebarRoutes.map((route) => `text-${route.iconColor}`);
 module.exports = {
   // mode: "jit",
   purge: {
-    enabled: false,
-    content: ["./**/*.{js,jsx},"],
+    content: ["./pages/**/*.{js, jsx}", "./components/**/*.{js,jsx}", "./layouts/**/*.{js,jsx}", "./containers/**/*.{js,jsx}"],
     darkMode: false, // or 'media' or 'class',
     // These options are passed through directly to PurgeCSS
     options: {
@@ -87,6 +86,21 @@ module.exports = {
       },
     },
   },
+  // variants: [
+  //   "responsive",
+  //   // // "group-hover",
+  //   // // "focus-within",
+  //   // // "first",
+  //   // // "last",
+  //   // // "odd",
+  //   // // "even",
+  //   "hover",
+  //   "focus",
+  //   // // "active",
+  //   // // "visited",
+  //   "checked",
+  //   // // "disabled",
+  // ],
 
   variants: {
     extend: {
