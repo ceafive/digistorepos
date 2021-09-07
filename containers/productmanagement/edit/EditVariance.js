@@ -217,7 +217,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           price: parseFloat(sellingPrice),
           cost: costPerItem ? parseFloat(costPerItem) : "",
           quantity: setInventoryQuantity ? parseInt(inventoryQuantity) : -99,
-          category: productCategory,
+          category: productCategory || "Test",
           tag: "NORMAL",
           taxable: applyTax ? "YES" : "NO",
           sku,
@@ -257,7 +257,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
         if (Number(response?.status) === 0) {
           addToast(response?.message, { appearance: "success", autoDismiss: true });
           // router.push("/products/manage");
-          setRefetch(new Date());
+          // setRefetch(new Date());
           setGoToVarianceConfig(false);
         } else {
           addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
@@ -325,6 +325,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
     }
   };
 
+  // return null;
   return (
     <div className="px-4 pb-6 pt-6">
       <h1>Setup Product Variant Permutations</h1>

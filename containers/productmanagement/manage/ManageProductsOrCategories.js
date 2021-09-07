@@ -62,8 +62,8 @@ const ManageProductsOrCategories = () => {
 
     // clear data
     return () => {
-      dispatch(setProductHasVariants(false));
-      dispatch(setProductWithVariants({}));
+      // dispatch(setProductHasVariants(false));
+      // dispatch(setProductWithVariants({}));
     };
   }, [reRUn]);
 
