@@ -1,6 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import { capitalize, filter, intersectionWith, isEmpty, isEqual, join, map, omit, sortBy, split, trim } from "lodash";
+import { capitalize, filter, forEach, fromPairs, intersectionWith, isEmpty, isEqual, join, map, mapValues, omit, sortBy, split, trim } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -8,12 +8,11 @@ import { useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { v4 as uuidv4 } from "uuid";
 
-const EditProductVariance = ({ setGoToVarianceConfig }) => {
+const EditProductNoVariantsVariance = ({ setGoToVarianceConfig, setRefetch }) => {
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
   const {
     register,
-
     formState: { errors },
     handleSubmit,
   } = useForm({});
@@ -25,7 +24,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
   } = useForm({});
 
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
-  console.log(productWithVariants);
+  // console.log(productWithVariants);
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [varianceDistribution, setVarianceDistribution] = React.useState({});
@@ -141,7 +140,26 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           };
         }, {});
 
-        const varianceDistributionValues = Object.values(varianceDistribution);
+        const sortByKeys = (object) => {
+          const sortedNewValues = {};
+          Object.keys(object)
+            .sort()
+            .forEach(function (v, i) {
+              sortedNewValues[v] = object[v];
+            });
+          return sortedNewValues;
+        };
+
+        const sortObject = (object) => {
+          const newDistribution = {};
+          forEach(object, (v, k) => {
+            newDistribution[k] = sortByKeys(v);
+          });
+
+          return newDistribution;
+        };
+
+        const varianceDistributionValues = Object.values(sortObject(varianceDistribution));
         const variants_options = varianceDistributionValues?.reduce((acc, val) => {
           variantOptionsIndexIncrease += 1;
           const newVal = { ...val };
@@ -199,7 +217,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           price: parseFloat(sellingPrice),
           cost: costPerItem ? parseFloat(costPerItem) : "",
           quantity: setInventoryQuantity ? parseInt(inventoryQuantity) : -99,
-          category: productCategory,
+          category: productCategory || "Test",
           tag: "NORMAL",
           taxable: applyTax ? "YES" : "NO",
           sku,
@@ -211,10 +229,10 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           outlet_list: JSON.stringify(outlets),
           merchant: user["user_merchant_id"],
           mod_by: user["login"],
-          // property_list: property_list,
           property_list: JSON.stringify(property_list),
-          // variants_options: variants_options,
           variants_options: JSON.stringify(variants_options),
+          // variants_options: variants_options,
+          // property_list: property_list,
         };
 
         if (typeof imagesToUpload[0] !== "string" && typeof imagesToUpload[0] !== "undefined") {
@@ -226,17 +244,21 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           };
         }
 
-        // console.log({ payload });
+        console.log({ payload });
         // return;
+
         const updateProductRes = await axios.post("/api/products/update-product", {
           data: payload,
         });
+
         const response = await updateProductRes.data;
         // console.log(response);
 
         if (Number(response?.status) === 0) {
           addToast(response?.message, { appearance: "success", autoDismiss: true });
-          router.push("/products/manage");
+          // router.push("/products/manage");
+          // setRefetch(new Date());
+          setGoToVarianceConfig(false);
         } else {
           addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
         }
@@ -303,8 +325,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
     }
   };
 
-  // console.log(productWithVariants);
-
+  // return null;
   return (
     <div className="px-4 pb-6 pt-6">
       <h1>Setup Product Variant Permutations</h1>
@@ -319,7 +340,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
           {/* AddVariants Section */}
           <div className="overflow-scroll" style={{ height: 600 }}>
             <div className={`grid grid-cols-${productWithVariants?.variants.length + 1} gap-3 my-2`}>
-              {sortBy(productWithVariants?.variants, (o) => o?.name)?.map((variant, index) => {
+              {sortBy(productWithVariants?.variants, ["name"])?.map((variant, index) => {
                 const variantValues = map(
                   filter(map(split(variant?.values, ","), trim), (o) => Boolean(o)),
                   capitalize
@@ -358,7 +379,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
             {allVarianceDistribution?.length > 0 && (
               <div className="mt-4">
                 <div className={`grid grid-cols-${productWithVariants?.variants?.length + 3} gap-3`}>
-                  {sortBy(productWithVariants?.variants, (o) => o?.name)?.map((variant) => {
+                  {sortBy(productWithVariants?.variants, ["name"])?.map((variant) => {
                     const capitalizeName = capitalize(variant?.name);
                     return (
                       <div key={capitalizeName} className="self-center">
@@ -386,7 +407,6 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
 
                     const oldValue = { ...variance[1] };
                     const newValue = { ...variance[1] };
-                    // console.log({ oldValue });
 
                     const variantOptionId = oldValue?.variantOptionId;
                     variantOptionId && delete newValue["variantOptionId"];
@@ -398,12 +418,17 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                         sortedNewValues[v] = newValue[v];
                       });
 
+                    // console.log({ newValue });
+                    // console.log({ sortedNewValues });
+
                     const formattedVarianceEntries = Object.entries(sortedNewValues);
 
                     const removeKeys = formattedVarianceEntries.filter(([key]) => {
                       if (key === "Quantity" || key === "Price") return false;
                       else return true;
                     });
+
+                    // console.log({ removeKeys });
 
                     const removePriceAndQuantty = formattedVarianceEntries.filter(([key]) => {
                       if (key === "Quantity" || key === "Price") return true;
@@ -492,7 +517,7 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
                     <Spinner type={"TailSpin"} color="black" width={10} height={10} />
                   </div>
                 )}
-                <span>Update Product</span>
+                <span>Done</span>
               </button>
             </div>
           </div>
@@ -502,4 +527,4 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
   );
 };
 
-export default EditProductVariance;
+export default EditProductNoVariantsVariance;

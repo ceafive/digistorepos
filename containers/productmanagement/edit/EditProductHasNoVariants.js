@@ -1,44 +1,15 @@
 import React from "react";
 
 import EditProductNoVariants from "./EditProductNoVariants";
-import EditVariance from "./EditVariance";
+import EditProductNoVariantsVariance from "./EditProductNoVariantsVariance";
 
-const EditProductAndVariants = ({
-  fields,
-  append,
-  remove,
-  control,
-  register,
-  reset,
-  watch,
-  setValue,
-  clearErrors,
-  errors,
-  handleSubmit,
-  fetching,
-}) => {
+const EditProductAndVariants = ({}) => {
   const [goToVarianceConfig, setGoToVarianceConfig] = React.useState(false);
 
   return (
     <div>
-      {!goToVarianceConfig && (
-        <EditProductNoVariants
-          fields={fields}
-          append={append}
-          remove={remove}
-          fetching={fetching}
-          register={register}
-          reset={reset}
-          watch={watch}
-          setValue={setValue}
-          errors={errors}
-          handleSubmit={handleSubmit}
-          clearErrors={clearErrors}
-          control={control}
-          setGoToVarianceConfig={setGoToVarianceConfig}
-        />
-      )}
-      {goToVarianceConfig && <EditVariance setGoToVarianceConfig={setGoToVarianceConfig} />}
+      {!goToVarianceConfig && <EditProductNoVariants setGoToVarianceConfig={setGoToVarianceConfig} />}
+      {goToVarianceConfig && <EditProductNoVariantsVariance setGoToVarianceConfig={setGoToVarianceConfig} />}
     </div>
   );
 };

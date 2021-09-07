@@ -4,6 +4,7 @@ import Modal from "components/Modal";
 import Spinner from "components/Spinner";
 import {
   setManageProductCategories,
+  setManageProductOutlets,
   setProductHasVariants,
   setProductWithVariants,
   setShowAddCategoryModal,
@@ -18,8 +19,8 @@ import { useToasts } from "react-toast-notifications";
 import AddCategory from "../create/AddCategory";
 import UploadImage from "../create/UploadImage";
 
-const EditProduct = ({ register, reset, watch, setValue, errors, clearErrors, handleSubmit, fields, append, remove, setGoToVarianceConfig }) => {
-  const { addToast, removeToast } = useToasts();
+const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
+  const { addToast, removeToast, updateToast } = useToasts();
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -29,12 +30,30 @@ const EditProduct = ({ register, reset, watch, setValue, errors, clearErrors, ha
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
+  const {
+    control,
+    register,
+    reset,
+    watch,
+    setValue,
+    clearErrors,
+    formState: { errors },
+    handleSubmit,
+  } = useForm();
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variants",
+  });
+
   // console.log(productWithVariants);
   // console.log(productHasVariants);
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
-
+  const [showAddNewVariantName, setShowAddNewVariantName] = React.useState(false);
+  const [showAddNewVariantValue, setShowAddNewVariantValue] = React.useState(false);
+  const [variantClicked, setVariantClicked] = React.useState(null);
   const [images, setImages] = React.useState(productWithVariants?.productImages ?? []);
 
   const {
@@ -46,12 +65,125 @@ const EditProduct = ({ register, reset, watch, setValue, errors, clearErrors, ha
 
   const isInventorySet = watch("setInventoryQuantity", false);
   const productCategory = watch("productCategory", false);
-  const allVariants = watch("variants", false);
+  const allVariants = watch("variants", []);
   const maxNumber = 1;
+
+  let user = sessionStorage.getItem("IPAYPOSUSER");
+  user = JSON.parse(user);
 
   const watchAddVariants = watch(`addVariants`, productHasVariants);
 
-  // console.log({ watchAddVariants });
+  const [fetching, setFetching] = React.useState(false);
+  const [refetch, setRefetch] = React.useState(new Date());
+
+  React.useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        setFetching(true);
+        let user = sessionStorage.getItem("IPAYPOSUSER");
+        user = JSON.parse(user);
+
+        let allCategories = manageProductCategories;
+        let allOutlets = manageProductOutlets;
+
+        if (manageProductCategories?.length === 0) {
+          const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
+          const { data: allCategoriesResData } = await allCategoriesRes.data;
+          allCategories = filter(allCategoriesResData, (o) => Boolean(o));
+          dispatch(setManageProductCategories(allCategories));
+        }
+
+        if (manageProductOutlets?.length === 0) {
+          const allOutletsRes = await axios.post("/api/products/get-outlets", { user });
+          const { data: allOutletsResData } = await allOutletsRes.data;
+          allOutlets = filter(allOutletsResData, (o) => Boolean(o));
+          dispatch(setManageProductOutlets(allOutlets));
+        }
+
+        const {
+          data: { data: product },
+        } = await axios.post(`/api/products/get-product-details`, { productID: router?.query?.product_id });
+
+        const filteredOutlets = filter(product?.product_outlets ?? [], Boolean);
+        const intersectedOutlets = intersectionWith(allOutlets, filteredOutlets, (arrVal, othVal) => arrVal?.outlet_id === othVal?.outlet_id);
+
+        // merge props
+        const initial = {
+          id: product?.product_id,
+          productName: product?.product_name,
+          productDescription: product?.product_description,
+          sellingPrice: product?.product_price,
+          costPerItem: product?.product_unit_cost,
+          inventoryQuantity: product?.product_quantity === "-99" ? "" : product?.product_quantity,
+          productCategory: allCategories.find((category) => category?.product_category === product?.product_category)?.product_category_id,
+          tag: "NORMAL",
+          sku: product?.product_sku,
+          weight: product?.product_weight,
+          barcode: product?.product_barcode,
+          is_price_global: "YES",
+          setInventoryQuantity: product?.product_quantity === "-99" ? false : true,
+          applyTax: product?.product_taxed === "YES" ? true : false,
+          old_outlet_list: JSON.stringify(map(product?.product_outlets ?? [], (o) => o?.outlet_id)),
+          outlets: map(intersectedOutlets ?? [], (o) => o?.outlet_id),
+          productImages: product?.product_images?.map((image) => `https://payments.ipaygh.com/app/webroot/img/products/${image}`) ?? [],
+          productImage: `https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}` ?? "",
+          product_properties_variants: product?.product_properties_variants ?? [],
+          product_properties: product?.product_properties
+            ? Object.entries(product?.product_properties ?? {})?.map(([key, value]) => {
+                return {
+                  name: capitalize(key),
+                  values: value.map((value) => value?.property_value).join(","),
+                };
+              })
+            : [],
+        };
+
+        const valuesToDispatch = {
+          id: initial?.id,
+          applyTax: initial?.applyTax,
+          barcode: initial?.barcode,
+          costPerItem: initial?.costPerItem,
+          inventoryQuantity: initial?.inventoryQuantity,
+          is_price_global: initial?.is_price_global,
+          outlets: initial?.outlets,
+          old_outlet_list: initial?.old_outlet_list,
+          productCategory: initial?.productCategory,
+          productDescription: initial?.productDescription,
+          productName: initial?.productName,
+          productImage: initial?.productImage,
+          productImages: initial?.productImages,
+          sellingPrice: initial?.sellingPrice,
+          setInventoryQuantity: initial?.setInventoryQuantity,
+          sku: initial?.sku,
+          tag: initial?.tag,
+          variants: initial?.product_properties || [],
+          variantsDistribution: initial?.product_properties_variants || [],
+          weight: initial?.weight,
+        };
+
+        // console.log({ valuesToDispatch });
+        // console.log(Object.entries(valuesToDispatch));
+
+        // Object.entries(valuesToDispatch).forEach(([key, value]) => setValue(key, value));
+        const hasVariants = valuesToDispatch?.variants && !isEmpty(valuesToDispatch?.variants);
+
+        reset({ ...valuesToDispatch, addVariants: hasVariants });
+        // {
+        //   defaultValues: { ...productWithVariants, addVariants: productHasVariants },
+        // }
+        // console.log({ hasVariants });
+
+        dispatch(setProductWithVariants(valuesToDispatch));
+        dispatch(setProductHasVariants(!!hasVariants));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchItems();
+  }, [refetch]);
 
   const updateProduct = async (values) => {
     try {
@@ -112,8 +244,6 @@ const EditProduct = ({ register, reset, watch, setValue, errors, clearErrors, ha
         };
       }, {});
 
-      console.log({ variants });
-      console.log({ property_list });
       // return;
 
       const payload = {
@@ -149,7 +279,7 @@ const EditProduct = ({ register, reset, watch, setValue, errors, clearErrors, ha
         };
       }
 
-      console.log({ payload });
+      // console.log({ payload });
       // return;
 
       const updateProductRes = await axios.post("/api/products/update-product", {
@@ -364,6 +494,14 @@ const EditProduct = ({ register, reset, watch, setValue, errors, clearErrors, ha
     }
   }, [productCategory]);
 
+  if (fetching || isEmpty(productWithVariants)) {
+    return (
+      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
+        <Spinner type="TailSpin" width={50} height={50} />
+      </div>
+    );
+  }
+
   return (
     <div>
       <Modal open={showAddCategoryModal} onClose={() => dispatch(setShowAddCategoryModal())} maxWidth="md">
@@ -567,7 +705,7 @@ const EditProduct = ({ register, reset, watch, setValue, errors, clearErrors, ha
                                   {...register(`variants[${index}].name`, {
                                     validate: {
                                       notDuplicate: (value) => {
-                                        const foundItems = filter(allVariants, (o) => capitalize(o?.name) === capitalize(value));
+                                        const foundItems = filter(allVariants, (o) => capitalize(o?.name?.trim()) === capitalize(value?.trim()));
                                         // console.log(value, foundItems?.length, allVariants);
                                         return foundItems?.length < 2 || `Duplicate variant entered`;
                                       },
@@ -605,8 +743,12 @@ const EditProduct = ({ register, reset, watch, setValue, errors, clearErrors, ha
                               <div id="add-variant-buttons" className="w-1/5 flex">
                                 {fields.length > 1 && (
                                   <div
-                                    className="font-bold bg-red-500 rounded py-1 px-4 ml-4 mt-4 cursor-pointer"
+                                    className="font-bold bg-red-500 rounded w-9 h-9 ml-2 mt-5 cursor-pointer flex justify-center items-center"
                                     onClick={async () => {
+                                      clearErrors(`variants[${index}]`);
+                                      remove(index);
+
+                                      return;
                                       if (name) await deleteVariant(name, index);
                                       else {
                                         clearErrors(`variants[${index}]`);
@@ -710,4 +852,4 @@ const EditProduct = ({ register, reset, watch, setValue, errors, clearErrors, ha
   );
 };
 
-export default EditProduct;
+export default EditProductNoVariants;

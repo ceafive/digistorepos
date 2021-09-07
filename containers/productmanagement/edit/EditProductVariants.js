@@ -233,6 +233,40 @@ const EditProduct = ({ setGoToVarianceConfig }) => {
       const imagesToUpload = productImages?.map((productImage) => productImage) ?? [];
       let propertyListIndexIncrease = -1;
 
+      const property_list = variants?.reduce((acc, val) => {
+        const values = Object.values(val);
+        const variantName = capitalize(values[0]);
+        const variantsStringArray = map(
+          filter(map(split(values[1], ","), trim), (o) => Boolean(o)),
+          capitalize
+        );
+
+        const entries = variantsStringArray.reduce((acc, value, index) => {
+          propertyListIndexIncrease += 1;
+          return {
+            ...acc,
+            [propertyListIndexIncrease]: {
+              propertyId: variantName,
+              propertyValue: value,
+              propertyPriceSet: "NO",
+              propertyPrice: "0",
+            },
+          };
+        }, {});
+
+        return {
+          ...acc,
+          ...entries,
+        };
+      }, {});
+
+      const variant_options = productWithVariants?.variantsDistribution?.reduce((acc, value, index) => {
+        return {
+          ...acc,
+          [index]: value,
+        };
+      }, {});
+
       const payload = {
         id,
         name: productName,
@@ -252,46 +286,8 @@ const EditProduct = ({ setGoToVarianceConfig }) => {
         merchant: user["user_merchant_id"],
         mod_by: user["login"],
         property_delete_all: addVariants ? "NO" : "YES",
-        property_list: addVariants
-          ? JSON.stringify(
-              variants?.reduce((acc, val) => {
-                const values = Object.values(val);
-                const variantName = capitalize(values[0]);
-                const variantsStringArray = map(
-                  filter(map(split(values[1], ","), trim), (o) => Boolean(o)),
-                  capitalize
-                );
-
-                const entries = variantsStringArray.reduce((acc, value, index) => {
-                  propertyListIndexIncrease += 1;
-                  return {
-                    ...acc,
-                    [propertyListIndexIncrease]: {
-                      propertyId: variantName,
-                      propertyValue: value,
-                      propertyPriceSet: "NO",
-                      propertyPrice: "0",
-                    },
-                  };
-                }, {});
-
-                return {
-                  ...acc,
-                  ...entries,
-                };
-              }, {})
-            )
-          : JSON.stringify({ 0: {} }),
-        variants_options: addVariants
-          ? JSON.stringify(
-              productWithVariants?.variantsDistribution?.reduce((acc, value, index) => {
-                return {
-                  ...acc,
-                  [index]: value,
-                };
-              }, {})
-            )
-          : JSON.stringify({ 0: {} }),
+        property_list: addVariants ? JSON.stringify(!isEmpty(property_list) ? property_list : { 0: {} }) : JSON.stringify({ 0: {} }),
+        variants_options: addVariants ? JSON.stringify(!isEmpty(variant_options) ? variant_options : { 0: {} }) : JSON.stringify({ 0: {} }),
       };
 
       // console.log(imagesToUpload);
@@ -304,8 +300,8 @@ const EditProduct = ({ setGoToVarianceConfig }) => {
         };
       }
 
-      console.log(payload);
-      return;
+      // console.log(payload);
+      // return;
 
       const updateProductRes = await axios.post("/api/products/update-product", {
         data: payload,

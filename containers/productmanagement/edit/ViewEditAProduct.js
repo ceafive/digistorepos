@@ -157,37 +157,7 @@ const ViewEditAProduct = () => {
 
   return (
     <>
-      {router?.query?.hasVariants === "yes" ? (
-        <EditProductHasVariants
-        // register={register}
-        // reset={reset}
-        // watch={watch}
-        // setValue={setValue}
-        // errors={errors}
-        // handleSubmit={handleSubmit}
-        // clearErrors={clearErrors}
-        // fields={fields}
-        // append={append}
-        // remove={remove}
-        // setRefetch={setRefetch}
-        />
-      ) : router?.query?.hasVariants === "no" ? (
-        <EditProductHasNoVariants
-          register={register}
-          reset={reset}
-          watch={watch}
-          setValue={setValue}
-          errors={errors}
-          handleSubmit={handleSubmit}
-          clearErrors={clearErrors}
-          fields={fields}
-          append={append}
-          remove={remove}
-          setRefetch={setRefetch}
-        />
-      ) : (
-        <></>
-      )}
+      {router?.query?.hasVariants === "yes" ? <EditProductHasVariants /> : router?.query?.hasVariants === "no" ? <EditProductHasNoVariants /> : <></>}
     </>
   );
 };
