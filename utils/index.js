@@ -5,7 +5,7 @@ import { cors } from "services/middlewares";
 import { configureVariables, fetchFeeCharges, onAddPayment, onRaiseOrder, onSendNotification } from "./components/processSale";
 import { sidebarRoutes } from "./routes";
 
-const qs = require("querystring");
+const qs = require("qs");
 const crypto = require("crypto");
 
 const productColors = [
@@ -24,13 +24,6 @@ const productColors = [
   "#b1ccfe",
   "#2df5b0",
 ];
-
-const productTabColors = (productsDisplay) => {
-  return Array.from({ length: productsDisplay?.length + 1 }, () => {
-    const randomIndex = Math.floor(Math.random() * productColors.length);
-    return productColors[randomIndex];
-  });
-};
 
 export function microtime() {
   return (Date.now ? Date.now() : new Date().getTime()) / 1000;

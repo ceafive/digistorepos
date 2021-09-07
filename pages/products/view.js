@@ -1,62 +1,54 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import AddBasicProductDetails from "containers/productmanagement/create/AddBasicProductDetails";
+import ViewProduct from "containers/productmanagement/edit/ViewProduct";
 import {
   setManageProductCategories,
   setManageProductOutlets,
+  setManageProductProducts,
   setProductHasVariants,
   setProductWithVariants,
 } from "features/manageproducts/manageprodcutsSlice";
+import Admin from "layouts/Admin";
 import { capitalize, filter, intersectionWith, isEmpty, map } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
-import EditProductHasNoVariants from "./EditProductHasNoVariants";
-import EditProductHasVariants from "./EditProductHasVariants";
-
-const ViewEditAProduct = () => {
+const ViewProductDetails = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-
-  const manageProductProducts = useSelector((state) => state.manageproducts.manageProductProducts);
-  const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
-  const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
-  const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
-  const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
-
-  // console.log(manageProductOutlets);
-
-  const {
-    control,
-    register,
-    reset,
-    watch,
-    setValue,
-    clearErrors,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({
-    defaultValues: { ...productWithVariants, addVariants: productHasVariants },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "variants",
-  });
-
-  // Compnent State
   const [fetching, setFetching] = React.useState(false);
-  const [refetch, setRefetch] = React.useState(new Date());
+
+  const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
+  const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
+
+  const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
 
   React.useEffect(() => {
-    // const product = manageProductProducts.find((product) => product?.product_id === router?.query?.product_id);
-    // console.log(product);
-
     const fetchItems = async () => {
       try {
         setFetching(true);
+
+        let user = sessionStorage.getItem("IPAYPOSUSER");
+        user = JSON.parse(user);
+
+        let allCategories = manageProductCategories;
+        let allOutlets = manageProductOutlets;
+
+        if (manageProductCategories?.length === 0) {
+          const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
+          const { data: allCategoriesResData } = await allCategoriesRes.data;
+          allCategories = filter(allCategoriesResData, (o) => Boolean(o));
+          dispatch(setManageProductCategories(allCategories));
+        }
+
+        if (manageProductOutlets?.length === 0) {
+          const allOutletsRes = await axios.post("/api/products/get-outlets", { user });
+          const { data: allOutletsResData } = await allOutletsRes.data;
+          allOutlets = filter(allOutletsResData, (o) => Boolean(o));
+          dispatch(setManageProductOutlets(allOutlets));
+        }
 
         const {
           data: { data: product },
@@ -65,11 +57,7 @@ const ViewEditAProduct = () => {
         // console.log(product);
 
         const filteredOutlets = filter(product?.product_outlets ?? [], Boolean);
-        const intersectedOutlets = intersectionWith(
-          manageProductOutlets,
-          filteredOutlets,
-          (arrVal, othVal) => arrVal?.outlet_id === othVal?.outlet_id
-        );
+        const intersectedOutlets = intersectionWith(allOutlets, filteredOutlets, (arrVal, othVal) => arrVal?.outlet_id === othVal?.outlet_id);
 
         // merge props
         const initial = {
@@ -79,7 +67,7 @@ const ViewEditAProduct = () => {
           sellingPrice: product?.product_price,
           costPerItem: product?.product_unit_cost,
           inventoryQuantity: product?.product_quantity === "-99" ? "" : product?.product_quantity,
-          productCategory: manageProductCategories.find((category) => category?.product_category === product?.product_category)?.product_category_id,
+          productCategory: allCategories.find((category) => category?.product_category === product?.product_category)?.product_category_id,
           tag: "NORMAL",
           sku: product?.product_sku,
           weight: product?.product_weight,
@@ -125,16 +113,7 @@ const ViewEditAProduct = () => {
           weight: initial?.weight,
         };
 
-        // console.log({ valuesToDispatch });
-        // console.log(Object.entries(valuesToDispatch));
-
-        Object.entries(valuesToDispatch).forEach(([key, value]) => setValue(key, value));
-        const hasVariants = valuesToDispatch?.variants && !isEmpty(valuesToDispatch?.variants);
-
-        // console.log({ hasVariants });
-
         dispatch(setProductWithVariants(valuesToDispatch));
-        dispatch(setProductHasVariants(!!hasVariants));
       } catch (error) {
         console.log(error);
       } finally {
@@ -145,10 +124,9 @@ const ViewEditAProduct = () => {
     fetchItems();
 
     return () => {
-      dispatch(setProductHasVariants(false));
       dispatch(setProductWithVariants({}));
     };
-  }, [router, refetch]);
+  }, []);
 
   if (fetching || isEmpty(productWithVariants)) {
     return (
@@ -158,41 +136,9 @@ const ViewEditAProduct = () => {
     );
   }
 
-  return (
-    <>
-      {router?.query?.hasVariants === "yes" ? (
-        <EditProductHasVariants
-          register={register}
-          reset={reset}
-          watch={watch}
-          setValue={setValue}
-          errors={errors}
-          handleSubmit={handleSubmit}
-          clearErrors={clearErrors}
-          fields={fields}
-          append={append}
-          remove={remove}
-          setRefetch={setRefetch}
-        />
-      ) : router?.query?.hasVariants === "no" ? (
-        <EditProductHasNoVariants
-          register={register}
-          reset={reset}
-          watch={watch}
-          setValue={setValue}
-          errors={errors}
-          handleSubmit={handleSubmit}
-          clearErrors={clearErrors}
-          fields={fields}
-          append={append}
-          remove={remove}
-          setRefetch={setRefetch}
-        />
-      ) : (
-        <></>
-      )}
-    </>
-  );
+  return <ViewProduct />;
 };
 
-export default ViewEditAProduct;
+export default ViewProductDetails;
+
+ViewProductDetails.layout = Admin;

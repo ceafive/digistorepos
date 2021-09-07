@@ -42,6 +42,7 @@ const QuickSaleModal = ({ onClose }) => {
           product_has_property: "NO",
           merchant_name: user?.user_merchant_id,
           product_quantity: "-99",
+          type: "quicksale",
         })
       );
       reset({

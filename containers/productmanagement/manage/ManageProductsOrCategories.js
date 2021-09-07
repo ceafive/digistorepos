@@ -30,24 +30,27 @@ const ManageProductsOrCategories = () => {
   React.useEffect(() => {
     const fetchItems = async () => {
       try {
-        if (manageProductProducts?.length === 0 || manageProductCategories?.length === 0 || manageProductOutlets?.length === 0) {
-          setFetching(true);
-        }
-
+        setFetching(true);
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
+        // if (manageProductProducts?.length === 0) {
         const allProductsRes = await axios.post("/api/products/get-products", { user });
-        const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
-        const allOutletsRes = await axios.post("/api/products/get-outlets", { user });
-
         const { data: allProductsResData } = await allProductsRes.data;
-        const { data: allCategoriesResData } = await allCategoriesRes.data;
-        const { data: allOutletsResData } = await allOutletsRes.data;
-
-        dispatch(setManageProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
         dispatch(setManageProductProducts(filter(allProductsResData, (o) => Boolean(o))));
+        // }
+
+        // if (manageProductCategories?.length === 0) {
+        const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
+        const { data: allCategoriesResData } = await allCategoriesRes.data;
+        dispatch(setManageProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
+        // }
+
+        // if (manageProductOutlets?.length === 0) {
+        const allOutletsRes = await axios.post("/api/products/get-outlets", { user });
+        const { data: allOutletsResData } = await allOutletsRes.data;
         dispatch(setManageProductOutlets(filter(allOutletsResData, (o) => Boolean(o))));
+        // }
       } catch (error) {
         console.log(error);
       } finally {

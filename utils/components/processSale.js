@@ -167,7 +167,7 @@ const onRaiseOrder = async (
       return {
         ...acc,
         [index]: {
-          order_item_no: curr?.product_id,
+          order_item_no: curr?.type === "quicksale" ? "" : curr?.product_id,
           order_item_qty: curr?.quantity,
           order_item: `${curr?.product_name}${!typeIsNormal ? addVariants : ""}`,
           order_item_amt: curr?.totalPrice,

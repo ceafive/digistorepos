@@ -1,11 +1,9 @@
-import { setProductHasVariants, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
 import React from "react";
-import { useDispatch } from "react-redux";
 
-import EditProduct from "./EditProduct";
+import EditProductVariants from "./EditProductVariants";
 import EditVariance from "./EditVariance";
 
-const EditProductAndVariants = ({
+const EditProductHasVariants = ({
   fields,
   append,
   remove,
@@ -18,13 +16,14 @@ const EditProductAndVariants = ({
   errors,
   handleSubmit,
   fetching,
+  setRefetch,
 }) => {
   const [goToVarianceConfig, setGoToVarianceConfig] = React.useState(false);
 
   return (
     <div>
       {!goToVarianceConfig && (
-        <EditProduct
+        <EditProductVariants
           fields={fields}
           append={append}
           remove={remove}
@@ -38,11 +37,13 @@ const EditProductAndVariants = ({
           clearErrors={clearErrors}
           control={control}
           setGoToVarianceConfig={setGoToVarianceConfig}
+          setRefetch={setRefetch}
         />
       )}
-      {goToVarianceConfig && <EditVariance setGoToVarianceConfig={setGoToVarianceConfig} />}
+
+      {goToVarianceConfig && <EditVariance setGoToVarianceConfig={setGoToVarianceConfig} setRefetch={setRefetch} />}
     </div>
   );
 };
 
-export default EditProductAndVariants;
+export default EditProductHasVariants;

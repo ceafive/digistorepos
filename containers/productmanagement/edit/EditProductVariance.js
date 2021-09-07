@@ -18,19 +18,7 @@ import { useToasts } from "react-toast-notifications";
 import AddCategory from "../create/AddCategory";
 import UploadImage from "../create/UploadImage";
 
-const EditProduct = ({
-  register,
-  reset,
-  watch,
-  setValue,
-  errors,
-  clearErrors,
-  handleSubmit,
-  fields,
-  append,
-  remove,
-  setGoToVarianceConfig,
-}) => {
+const EditProductVariance = ({ register, reset, watch, setValue, errors, clearErrors, handleSubmit, fields, append, remove, setGoToVarianceConfig }) => {
   const { addToast, removeToast } = useToasts();
   const dispatch = useDispatch();
   const router = useRouter();
@@ -41,7 +29,8 @@ const EditProduct = ({
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
-  // console.log(productWithVariants);
+  console.log(productWithVariants);
+  console.log(productHasVariants);
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
@@ -425,214 +414,217 @@ const EditProduct = ({
             </div>
 
             <div>
-              <h1 className="font-bold text-blue-700">Pricing</h1>
-              <div className="flex w-full justify-between items-center">
-                <div className="w-1/2 mr-2">
-                  <label className="text-sm leading-none  font-bold">Selling Price</label>
-                  <input
-                    {...register("sellingPrice", { required: "Selling price is required" })}
-                    type="number"
-                    placeholder="12"
-                    className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                  />
-                  <p className="text-xs text-red-500">{errors["sellingPrice"]?.message}</p>
-                </div>
-
-                <div className="w-1/2">
-                  <label className="text-sm leading-none  font-bold">
-                    Cost Per Item <span className="text-xs">(Your customers won't see this)</span>
-                  </label>
-                  <input
-                    {...register("costPerItem")}
-                    type="number"
-                    placeholder="Enter cost of product"
-                    className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                  />
-                  <p className="text-xs text-red-500">{errors["costPerItem"]?.message}</p>
-                </div>
-              </div>
-              <div className="flex w-full justify-between items-center">
-                <div className="w-1/2 mr-2">
-                  <label className="text-sm leading-none font-bold">Inventory</label>
-                  <div className="flex items-center w-full mb-2">
-                    <input
-                      {...register("setInventoryQuantity")}
-                      type="checkbox"
-                      className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
-                    />
-                    <label className="text-sm leading-none  font-bold">Set number of units in stock</label>
-                  </div>
-                  {isInventorySet && (
-                    <>
+              {!productHasVariants && (
+                <div>
+                  <h1 className="font-bold text-blue-700">Pricing</h1>
+                  <div className="flex w-full justify-between items-center">
+                    <div className="w-1/2 mr-2">
+                      <label className="text-sm leading-none  font-bold">Selling Price</label>
                       <input
-                        {...register("inventoryQuantity", {
-                          validate: (value) => (isInventorySet ? Boolean(value) && Number(value) > 0 : true) || "Quantity is required",
-                        })}
+                        {...register("sellingPrice", { required: "Selling price is required" })}
                         type="number"
-                        placeholder="Quantity in stock"
+                        placeholder="12"
                         className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                       />
-                      <p className="text-xs text-red-500">{errors["inventoryQuantity"]?.message}</p>
-                    </>
-                  )}
-                </div>
+                      <p className="text-xs text-red-500">{errors["sellingPrice"]?.message}</p>
+                    </div>
 
-                <div className="w-1/2 mt-6">
-                  <label className="text-sm leading-none  font-bold">SKU (Stock Keeping Unit)</label>
-                  <input
-                    {...register("sku")}
-                    type="text"
-                    placeholder=""
-                    className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                  />
-                  <p className="text-xs text-red-500">{errors["sku"]?.message}</p>
-                </div>
-              </div>
+                    <div className="w-1/2">
+                      <label className="text-sm leading-none  font-bold">
+                        Cost Per Item <span className="text-xs">(Your customers won't see this)</span>
+                      </label>
+                      <input
+                        {...register("costPerItem")}
+                        type="number"
+                        placeholder="Enter cost of product"
+                        className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                      />
+                      <p className="text-xs text-red-500">{errors["costPerItem"]?.message}</p>
+                    </div>
+                  </div>
+                  <div className="flex w-full justify-between items-center">
+                    <div className="w-1/2 mr-2">
+                      <label className="text-sm leading-none font-bold">Inventory</label>
+                      <div className="flex items-center w-full mb-2">
+                        <input
+                          {...register("setInventoryQuantity")}
+                          type="checkbox"
+                          className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
+                        />
+                        <label className="text-sm leading-none  font-bold">Set number of units in stock</label>
+                      </div>
+                      {isInventorySet && (
+                        <>
+                          <input
+                            {...register("inventoryQuantity", {
+                              validate: (value) => (isInventorySet ? Boolean(value) && Number(value) > 0 : true) || "Quantity is required",
+                            })}
+                            type="number"
+                            placeholder="Quantity in stock"
+                            className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                          />
+                          <p className="text-xs text-red-500">{errors["inventoryQuantity"]?.message}</p>
+                        </>
+                      )}
+                    </div>
 
-              <div className="flex w-full justify-between items-center">
-                <div className="w-1/2 mr-2">
-                  <label className="text-sm leading-none  font-bold">Barcode (ISBN,UPC,GTIN, etc)</label>
-                  <input
-                    {...register("barcode")}
-                    type="text"
-                    placeholder="Click and scan product barcode in here"
-                    className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                  />
-                  <p className="text-xs text-red-500">{errors["barcode"]?.message}</p>
-                </div>
+                    <div className="w-1/2 mt-6">
+                      <label className="text-sm leading-none  font-bold">SKU (Stock Keeping Unit)</label>
+                      <input
+                        {...register("sku")}
+                        type="text"
+                        placeholder=""
+                        className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                      />
+                      <p className="text-xs text-red-500">{errors["sku"]?.message}</p>
+                    </div>
+                  </div>
 
-                <div className="w-1/2">
-                  <label className="text-xs leading-none font-bold">
-                    Weight of the item in Kilograms <span className="text-xs">(Used to calculate shipping rates at checkout)</span>
-                  </label>
-                  <input
-                    {...register("weight")}
-                    type="number"
-                    placeholder=""
-                    className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                  />
-                  <p className="text-xs text-red-500">{errors["weight"]?.message}</p>
+                  <div className="flex w-full justify-between items-center">
+                    <div className="w-1/2 mr-2">
+                      <label className="text-sm leading-none  font-bold">Barcode (ISBN,UPC,GTIN, etc)</label>
+                      <input
+                        {...register("barcode")}
+                        type="text"
+                        placeholder="Click and scan product barcode in here"
+                        className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                      />
+                      <p className="text-xs text-red-500">{errors["barcode"]?.message}</p>
+                    </div>
+
+                    <div className="w-1/2">
+                      <label className="text-xs leading-none font-bold">
+                        Weight of the item in Kilograms <span className="text-xs">(Used to calculate shipping rates at checkout)</span>
+                      </label>
+                      <input
+                        {...register("weight")}
+                        type="number"
+                        placeholder=""
+                        className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                      />
+                      <p className="text-xs text-red-500">{errors["weight"]?.message}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="w-full mr-2">
-                <input
-                  {...register("applyTax")}
-                  type="checkbox"
-                  className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
-                />
+                <input {...register("applyTax")} type="checkbox" className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2" />
 
                 <label className="text-sm leading-none  font-bold">Apply tax on this product</label>
               </div>
 
               {/* Variants */}
-              <div className="w-full mt-6 bg-gray-200 p-6 rounded">
-                <div className="flex justify-between items-center w-full">
-                  <h1 className="font-bold text-blue-700">Does your product have variants?</h1>
-                  <div className="flex justify-between items-center cursor-pointer" onClick={productHasVariantsButton}>
-                    <div
-                      className={`${
-                        productHasVariants ? "bg-green-400" : ""
-                      } w-10 h-6 flex items-center bg-gray-300 rounded-full p-1 duration-300 ease-in-out`}
-                    >
+              {!productHasVariants && (
+                <div className="w-full mt-6 bg-gray-200 p-6 rounded">
+                  <div className="flex justify-between items-center w-full">
+                    <h1 className="font-bold text-blue-700">Does your product have variants?</h1>
+                    <div className="flex justify-between items-center cursor-pointer" onClick={productHasVariantsButton}>
                       <div
                         className={`${
-                          productHasVariants ? "translate-x-4" : ""
-                        } bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out`}
-                      />
+                          productHasVariants ? "bg-green-400" : ""
+                        } w-10 h-6 flex items-center bg-gray-300 rounded-full p-1 duration-300 ease-in-out`}
+                      >
+                        <div
+                          className={`${
+                            productHasVariants ? "translate-x-4" : ""
+                          } bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out`}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-                <h1>Multiple options of the same product which customers can choose from</h1>
-                <hr className="text-blue-500 bg-blue-500" />
-                {productHasVariants && (
-                  <div className="mt-2">
-                    <div className="flex flex-wrap justify-center items-center w-full">
-                      {fields?.map(({ id, name, values }, index) => {
-                        // console.log({ name });
-                        return (
-                          <div key={id} className="w-full my-3">
-                            <div key={id} className="flex w-full justify-between items-center">
-                              <div className=" mr-2">
-                                <label className="text-xs leading-none font-bold">Variant Name</label>
-                                <input
-                                  {...register(`variants[${index}].name`, {
-                                    validate: {
-                                      notDuplicate: (value) => {
-                                        const foundItems = filter(allVariants, (o) => capitalize(o?.name) === capitalize(value));
-                                        // console.log(value, foundItems?.length, allVariants);
-                                        return foundItems?.length < 2 || `Duplicate variant entered`;
+                  <h1>Multiple options of the same product which customers can choose from</h1>
+                  <hr className="text-blue-500 bg-blue-500" />
+                  {productHasVariants && (
+                    <div className="mt-2">
+                      <div className="flex flex-wrap justify-center items-center w-full">
+                        {fields?.map(({ id, name, values }, index) => {
+                          // console.log({ name });
+                          return (
+                            <div key={id} className="w-full my-3">
+                              <div key={id} className="flex w-full justify-between items-center">
+                                <div className=" mr-2">
+                                  <label className="text-xs leading-none font-bold">Variant Name</label>
+                                  <input
+                                    {...register(`variants[${index}].name`, {
+                                      validate: {
+                                        notDuplicate: (value) => {
+                                          const foundItems = filter(allVariants, (o) => capitalize(o?.name) === capitalize(value));
+                                          // console.log(value, foundItems?.length, allVariants);
+                                          return foundItems?.length < 2 || `Duplicate variant entered`;
+                                        },
+                                        notEmpty: (value) => (productHasVariants ? Boolean(value) : true) || "Variant name must be entered",
                                       },
-                                      notEmpty: (value) => (productHasVariants ? Boolean(value) : true) || "Variant name must be entered",
-                                    },
-                                  })}
-                                  defaultValue={name}
-                                  type="text"
-                                  placeholder="eg. Size"
-                                  className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                                />
-                                {errors[`variants`] && errors[`variants`][index] && (
-                                  <p className="text-xs text-red-500">{errors[`variants`][index]?.name?.message}</p>
-                                )}
-                              </div>
+                                    })}
+                                    defaultValue={name}
+                                    type="text"
+                                    placeholder="eg. Size"
+                                    className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                                  />
+                                  {errors[`variants`] && errors[`variants`][index] && (
+                                    <p className="text-xs text-red-500">{errors[`variants`][index]?.name?.message}</p>
+                                  )}
+                                </div>
 
-                              <div className="">
-                                <label className="text-xs leading-none font-bold">
-                                  Variant Values <span className="text-xs">(Separated by comma ",")</span>
-                                </label>
-                                <input
-                                  {...register(`variants[${index}].values`, {
-                                    validate: (value) => (productHasVariants ? Boolean(value) : true) || "Variant values must be entered",
-                                  })}
-                                  defaultValue={values}
-                                  type="text"
-                                  placeholder="eg. Small,Medium,Large"
-                                  className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                                />
-                                {errors[`variants`] && errors[`variants`][index] && (
-                                  <p className="text-xs text-red-500">{errors[`variants`][index]?.values?.message}</p>
-                                )}
-                              </div>
+                                <div className="">
+                                  <label className="text-xs leading-none font-bold">
+                                    Variant Values <span className="text-xs">(Separated by comma ",")</span>
+                                  </label>
+                                  <input
+                                    {...register(`variants[${index}].values`, {
+                                      validate: (value) => (productHasVariants ? Boolean(value) : true) || "Variant values must be entered",
+                                    })}
+                                    defaultValue={values}
+                                    type="text"
+                                    placeholder="eg. Small,Medium,Large"
+                                    className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                                  />
+                                  {errors[`variants`] && errors[`variants`][index] && (
+                                    <p className="text-xs text-red-500">{errors[`variants`][index]?.values?.message}</p>
+                                  )}
+                                </div>
 
-                              <div id="add-variant-buttons" className="w-1/5 flex">
-                                {fields.length > 1 && (
-                                  <div
-                                    className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
-                                    onClick={async () => {
-                                      if (name) await deleteVariant(name, index);
-                                      else {
-                                        clearErrors(`variants[${index}]`);
-                                        remove(index);
-                                      }
-                                    }}
-                                  >
-                                    <button className="justify-self-end focus:outline-none">
-                                      <i className="fas fa-trash-alt text-white"></i>
-                                    </button>
-                                  </div>
-                                )}
+                                <div id="add-variant-buttons" className="w-1/5 flex">
+                                  {fields.length > 1 && (
+                                    <div
+                                      className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
+                                      onClick={async () => {
+                                        if (name) await deleteVariant(name, index);
+                                        else {
+                                          clearErrors(`variants[${index}]`);
+                                          remove(index);
+                                        }
+                                      }}
+                                    >
+                                      <button className="justify-self-end focus:outline-none">
+                                        <i className="fas fa-trash-alt text-white"></i>
+                                      </button>
+                                    </div>
+                                  )}
 
-                                {fields?.length < 5 && index === fields.length - 1 && (
-                                  <div
-                                    className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-4 cursor-pointer"
-                                    onClick={() => {
-                                      append({});
-                                    }}
-                                  >
-                                    <button className="justify-self-end focus:outline-none">
-                                      <i className="fas fa-plus text-white" />
-                                    </button>
-                                  </div>
-                                )}
+                                  {fields?.length < 5 && index === fields.length - 1 && (
+                                    <div
+                                      className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-4 cursor-pointer"
+                                      onClick={() => {
+                                        append({});
+                                      }}
+                                    >
+                                      <button className="justify-self-end focus:outline-none">
+                                        <i className="fas fa-plus text-white" />
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
+                              <hr />
                             </div>
-                            <hr />
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
+
               {/* Variants */}
             </div>
           </div>
@@ -647,14 +639,7 @@ const EditProduct = ({
 
               <div className="bg-white m-2" style={{ height: 200 }}>
                 <div className="flex flex-col justify-center items-center border border-gray-200 h-full w-full">
-                  <UploadImage
-                    maxNumber={maxNumber}
-                    classes=""
-                    setValue={setValue}
-                    images={images}
-                    setImages={setImages}
-                    deleteImage={deleteImage}
-                  />
+                  <UploadImage maxNumber={maxNumber} classes="" setValue={setValue} images={images} setImages={setImages} deleteImage={deleteImage} />
                 </div>
               </div>
             </div>
@@ -710,4 +695,4 @@ const EditProduct = ({
   );
 };
 
-export default EditProduct;
+export default EditProductVariance;

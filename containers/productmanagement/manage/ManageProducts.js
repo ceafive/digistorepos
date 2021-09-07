@@ -17,7 +17,7 @@ import ViewColumn from "@material-ui/icons/ViewColumn";
 import axios from "axios";
 import Dropdown from "components/Misc/Dropdown";
 import PatchedPagination from "components/Misc/PatchedPagination";
-import { capitalize, filter, lowerCase } from "lodash";
+import { capitalize, filter, isEmpty, lowerCase } from "lodash";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
 import React, { forwardRef } from "react";
@@ -83,7 +83,7 @@ const ManageProducts = ({ setReRUn }) => {
       setAllProducts(manageProductProducts);
       setLoading(false);
     }
-  }, [categorySelected]);
+  }, [categorySelected, manageProductProducts]);
 
   const deleteProduct = async (id) => {
     try {
@@ -121,29 +121,34 @@ const ManageProducts = ({ setReRUn }) => {
     }
   };
 
-  const buttons = (data) => [
-    {
-      name: "View",
-      action() {
-        const viewLink = `/products/edit?product_id=${data?.product_id}&action=view`;
-        router.push(viewLink);
+  const buttons = (data) => {
+    // console.log(data);
+    return [
+      {
+        name: "View",
+        action() {
+          const viewLink = `/products/view?product_id=${data?.product_id}`;
+          router.push(viewLink);
+        },
       },
-    },
-    {
-      name: "Modify",
-      action() {
-        const viewLink = `/products/edit?product_id=${data?.product_id}&action=edit`;
-        router.push(viewLink);
+      {
+        name: "Modify",
+        action() {
+          const viewLink = `/products/edit?product_id=${data?.product_id}&hasVariants=${
+            data?.product_properties && !isEmpty(data?.product_properties) ? "yes" : "no"
+          }`;
+          router.push(viewLink);
+        },
       },
-    },
-    {
-      name: "Delete",
-      classes: "text-red-500",
-      async action() {
-        await deleteProduct(data?.product_id);
+      {
+        name: "Delete",
+        classes: "text-red-500",
+        async action() {
+          await deleteProduct(data?.product_id);
+        },
       },
-    },
-  ];
+    ];
+  };
 
   const columns = [
     { title: "Product ID", field: "product_id" },
@@ -225,7 +230,7 @@ const ManageProducts = ({ setReRUn }) => {
           mod_by: user?.login,
         };
 
-        console.log({ data });
+        // console.log({ data });
 
         const deleteVariantRes = await axios.post("/api/products/delete-product-variant", { data });
         const { status, message } = await deleteVariantRes.data;

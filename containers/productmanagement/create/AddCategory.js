@@ -1,14 +1,7 @@
 import Spinner from "components/Spinner";
 import React from "react";
 
-const AddCategory = ({
-  btnText = "Add New Category",
-  processing,
-  addCategoryRegister,
-  addCategoryErrors,
-  addCategoryHandleSumbit,
-  action,
-}) => {
+const AddCategory = ({ btnText = "Add New Category", processing, addCategoryRegister, addCategoryErrors, addCategoryHandleSumbit, action }) => {
   return (
     <div className="w-full p-5">
       <div className="w-full px-3 mb-6 md:mb-2">
