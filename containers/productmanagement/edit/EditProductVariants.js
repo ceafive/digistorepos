@@ -395,7 +395,7 @@ const EditProduct = ({
         }
       } else {
         setValue(`addVariants`, true);
-        if (fields.length === 0) append({});
+        // if (fields.length === 0) append({});
       }
     } catch (error) {
       console.log(error);
@@ -902,19 +902,13 @@ const EditProduct = ({
                                         <p className="mr-1">{value}</p>
                                         <button
                                           onClick={async () => {
-                                            // console.log({ value });
-                                            // console.log(productWithVariants?.variantsDistribution);
                                             if (productWithVariants?.variantsDistribution?.length > 0) {
-                                              // console.log(productWithVariants?.variantsDistribution);
                                               const variantsDistribution = productWithVariants?.variantsDistribution;
 
                                               const foundVariantNames = variantsDistribution.filter((variant) => {
                                                 const optionValues = Object.values(variant?.variantOptionValue);
-
                                                 return optionValues.includes(value);
                                               });
-
-                                              // console.log({ foundVariantNames });
 
                                               if (foundVariantNames?.length > 0) {
                                                 const r = window.confirm(
