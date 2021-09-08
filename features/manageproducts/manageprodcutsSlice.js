@@ -7,6 +7,7 @@ const initialState = {
   manageProductProducts: [],
   manageProductOutlets: [],
   showAddCategoryModal: false,
+  productDetailsToUpdate: {},
 };
 
 const actionCreator = (key, state, payload) => {
@@ -37,11 +38,10 @@ const manageproductsSlice = createSlice({
       actionCreator("productWithVariants", state, action?.payload);
     },
     setProductHasVariants(state, action) {
-      actionCreator(
-        "productHasVariants",
-        state,
-        action?.payload === true || action?.payload === false ? action.payload : !state.productHasVariants
-      );
+      actionCreator("productHasVariants", state, action?.payload === true || action?.payload === false ? action.payload : !state.productHasVariants);
+    },
+    setProductDetailsToUpdate(state, action) {
+      actionCreator("productDetailsToUpdate", state, action?.payload);
     },
   },
 });
@@ -54,5 +54,6 @@ export const {
   setManageProductOutlets,
   setShowAddCategoryModal,
   onAppResetManageProducts,
+  setProductDetailsToUpdate,
 } = manageproductsSlice.actions;
 export default manageproductsSlice.reducer;

@@ -165,14 +165,14 @@ const ManageProducts = ({ setReRUn }) => {
     { title: "Qty. Sold", field: "product_quantity_sold" },
     { title: "Date Added", field: "product_create_date", defaultSort: "desc" },
     { title: "Category", field: "product_category" },
-    {
-      title: "Actions",
-      field: "actions",
-      render(rowData) {
-        return <Dropdown rowData={rowData} buttons={() => buttons(rowData)} />;
-      },
-      disableClick: true,
-    },
+    // {
+    //   title: "Actions",
+    //   field: "actions",
+    //   render(rowData) {
+    //     return <Dropdown rowData={rowData} buttons={() => buttons(rowData)} />;
+    //   },
+    //   disableClick: true,
+    // },
   ];
 
   const updateProductVariant = async (newValue, oldValue, parentData, childData, columnDef) => {
@@ -257,6 +257,15 @@ const ManageProducts = ({ setReRUn }) => {
     }
   };
 
+  const Tooltip = () => {
+    return (
+      <div>
+        <p>Hello</p>
+        <p>Bye</p>
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="flex w-full h-full">
@@ -306,9 +315,46 @@ const ManageProducts = ({ setReRUn }) => {
           icons={tableIcons}
           columns={columns}
           data={allProducts.map((o) => ({ ...o, tableData: {} }))}
+          actions={[
+            {
+              icon: "visibility",
+              tooltip: `View Details`,
+              iconProps: {
+                color: "secondary",
+              },
+              onClick(e, row) {
+                const viewLink = `/products/view?product_id=${row?.product_id}`;
+                router.push(viewLink);
+              },
+            },
+            {
+              icon: "edit",
+              tooltip: `Edit Product`,
+              iconProps: {
+                color: "primary",
+              },
+              onClick(e, row) {
+                const viewLink = `/products/edit?product_id=${row?.product_id}&hasVariants=${
+                  row?.product_properties && !isEmpty(row?.product_properties) ? "yes" : "no"
+                }`;
+                router.push(viewLink);
+              },
+            },
+            {
+              icon: "delete",
+              tooltip: `Delete Product`,
+              iconProps: {
+                color: "error",
+              },
+              async onClick(e, row) {
+                await deleteProduct(row?.product_id);
+              },
+            },
+          ]}
           options={{
             selection: false,
             padding: "dense",
+            actionsColumnIndex: -1,
           }}
           components={{
             Toolbar: (props) => (

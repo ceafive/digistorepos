@@ -1,14 +1,16 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
+import { setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
 import { capitalize, filter, forEach, fromPairs, intersectionWith, isEmpty, isEqual, join, map, mapValues, omit, sortBy, split, trim } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { v4 as uuidv4 } from "uuid";
 
 const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
+  const dispatch = useDispatch();
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
   const {
@@ -24,7 +26,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
   } = useForm({});
 
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
-  // console.log(productWithVariants);
+  // console.log({ productWithVariants });
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [varianceDistribution, setVarianceDistribution] = React.useState({});
@@ -59,14 +61,19 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
 
   React.useEffect(() => {
     const values = productWithVariants?.variantsDistribution?.reduce((acc, variantDistribution) => {
+      const data = {
+        Quantity: variantDistribution?.variantOptionQuantity,
+        Price: variantDistribution?.variantOptionPrice,
+        ...variantDistribution?.variantOptionValue,
+      };
+
+      if (variantDistribution?.variantOptionId) {
+        data[`variantOptionId`] = variantDistribution?.variantOptionId;
+      }
+
       return {
         ...acc,
-        [uuidv4()]: {
-          variantOptionId: variantDistribution?.variantOptionId,
-          Quantity: variantDistribution?.variantOptionQuantity,
-          Price: variantDistribution?.variantOptionPrice,
-          ...variantDistribution?.variantOptionValue,
-        },
+        [uuidv4()]: data,
       };
     }, {});
 
@@ -74,7 +81,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
   }, []);
 
   const allVarianceDistribution = Object.entries(varianceDistribution);
-  // console.log(varianceDistribution);
+  // console.log({ varianceDistribution });
   // console.log(allVarianceDistribution);
 
   const handleUpdateProduct = async () => {
@@ -178,13 +185,19 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           // console.log(values);
           // console.log(optionValues);
 
+          const data = {
+            variantOptionValue: optionValues,
+            variantOptionPrice: val?.Price,
+            variantOptionQuantity: val?.Quantity,
+          };
+
+          if (val?.variantOptionId) {
+            data[`variantOptionId`] = val?.variantOptionId;
+          }
+
           return {
             ...acc,
-            [variantOptionsIndexIncrease]: {
-              variantOptionValue: optionValues,
-              variantOptionPrice: val?.Price,
-              variantOptionQuantity: val?.Quantity,
-            },
+            [variantOptionsIndexIncrease]: data,
           };
         }, {});
 
@@ -202,8 +215,9 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           productImages,
           inventoryQuantity,
           setInventoryQuantity,
-          applyTax,
           old_outlet_list,
+          applyTax,
+          addVariants,
         } = productWithVariants;
 
         let user = sessionStorage.getItem("IPAYPOSUSER");
@@ -229,10 +243,15 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           outlet_list: JSON.stringify(outlets),
           merchant: user["user_merchant_id"],
           mod_by: user["login"],
-          property_list: JSON.stringify(property_list),
-          variants_options: JSON.stringify(variants_options),
-          // variants_options: variants_options,
-          // property_list: property_list,
+          // property_list: JSON.stringify(property_list),
+          // variants_options: JSON.stringify(variants_options),
+          variants_options: variants_options,
+          property_list: property_list,
+        };
+
+        const dataToSendBack = {
+          ...productWithVariants,
+          variantsDistribution: Object.values(payload?.variants_options),
         };
 
         if (typeof imagesToUpload[0] !== "string" && typeof imagesToUpload[0] !== "undefined") {
@@ -244,8 +263,12 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           };
         }
 
-        console.log({ payload });
-        // return;
+        // console.log({ payload });
+        console.log({ dataToSendBack });
+
+        dispatch(setProductWithVariants(dataToSendBack));
+        setGoToVarianceConfig(false);
+        return;
 
         const updateProductRes = await axios.post("/api/products/update-product", {
           data: payload,

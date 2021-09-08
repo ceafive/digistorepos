@@ -97,6 +97,7 @@ export default class MyApp extends App {
             type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZxtyoPfteFDtEe0avkN0u3jdWuYiDC0U&libraries=places&v=weekly&region=GH"
           /> */}
+          <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
         </Head>
         <Provider store={store}>
           <ThemeProvider theme={theme}>

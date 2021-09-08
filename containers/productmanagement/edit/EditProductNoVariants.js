@@ -279,7 +279,7 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
         };
       }
 
-      // console.log({ payload });
+      console.log({ payload });
       // return;
 
       const updateProductRes = await axios.post("/api/products/update-product", {

@@ -30,7 +30,7 @@ export default function Example({ buttons }) {
           <div
             className={`${
               isOpen ? "h-auto" : "h-0"
-            } origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-2 ring-black ring-opacity-5 divide-y transition-all duration-150 ease-out mb-10 overflow-hidden mb-5`}
+            } origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-2 ring-black ring-opacity-5 divide-y transition-all duration-150 ease-out mb-10 overflow-hidden z-20`}
             style={{ zIndex: 999999999 }}
           >
             {buttons().map((button) => {

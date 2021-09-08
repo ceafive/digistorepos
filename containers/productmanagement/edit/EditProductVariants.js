@@ -39,32 +39,33 @@ import UploadImage from "../create/UploadImage";
 import AddNewVariantName from "./AddNewVariantName";
 import AddNewVariantValue from "./AddNewVariantValue";
 
-const EditProduct = ({ setGoToVarianceConfig }) => {
+const EditProduct = ({
+  setGoToVarianceConfig,
+  setRefetch,
+  control,
+  register,
+  reset,
+  watch,
+  setValue,
+  getValues,
+  clearErrors,
+  errors,
+  handleSubmit,
+}) => {
   const { addToast, removeToast, updateToast } = useToasts();
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variants",
+  });
 
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
   const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
-
-  const {
-    control,
-    register,
-    reset,
-    watch,
-    setValue,
-    clearErrors,
-    formState: { errors },
-    handleSubmit,
-  } = useForm();
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "variants",
-  });
 
   // console.log(productWithVariants);
   // console.log(productHasVariants);
@@ -93,117 +94,9 @@ const EditProduct = ({ setGoToVarianceConfig }) => {
 
   const watchAddVariants = watch(`addVariants`, productHasVariants);
 
-  const [fetching, setFetching] = React.useState(false);
-  const [refetch, setRefetch] = React.useState(new Date());
-
-  React.useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        setFetching(true);
-        let user = sessionStorage.getItem("IPAYPOSUSER");
-        user = JSON.parse(user);
-
-        let allCategories = manageProductCategories;
-        let allOutlets = manageProductOutlets;
-
-        if (manageProductCategories?.length === 0) {
-          const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
-          const { data: allCategoriesResData } = await allCategoriesRes.data;
-          allCategories = filter(allCategoriesResData, (o) => Boolean(o));
-          dispatch(setManageProductCategories(allCategories));
-        }
-
-        if (manageProductOutlets?.length === 0) {
-          const allOutletsRes = await axios.post("/api/products/get-outlets", { user });
-          const { data: allOutletsResData } = await allOutletsRes.data;
-          allOutlets = filter(allOutletsResData, (o) => Boolean(o));
-          dispatch(setManageProductOutlets(allOutlets));
-        }
-
-        const {
-          data: { data: product },
-        } = await axios.post(`/api/products/get-product-details`, { productID: router?.query?.product_id });
-
-        const filteredOutlets = filter(product?.product_outlets ?? [], Boolean);
-        const intersectedOutlets = intersectionWith(allOutlets, filteredOutlets, (arrVal, othVal) => arrVal?.outlet_id === othVal?.outlet_id);
-
-        // merge props
-        const initial = {
-          id: product?.product_id,
-          productName: product?.product_name,
-          productDescription: product?.product_description,
-          sellingPrice: product?.product_price,
-          costPerItem: product?.product_unit_cost,
-          inventoryQuantity: product?.product_quantity === "-99" ? "" : product?.product_quantity,
-          productCategory: allCategories.find((category) => category?.product_category === product?.product_category)?.product_category_id,
-          tag: "NORMAL",
-          sku: product?.product_sku,
-          weight: product?.product_weight,
-          barcode: product?.product_barcode,
-          is_price_global: "YES",
-          setInventoryQuantity: product?.product_quantity === "-99" ? false : true,
-          applyTax: product?.product_taxed === "YES" ? true : false,
-          old_outlet_list: JSON.stringify(map(product?.product_outlets ?? [], (o) => o?.outlet_id)),
-          outlets: map(intersectedOutlets ?? [], (o) => o?.outlet_id),
-          productImages: product?.product_images?.map((image) => `https://payments.ipaygh.com/app/webroot/img/products/${image}`) ?? [],
-          productImage: `https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}` ?? "",
-          product_properties_variants: product?.product_properties_variants ?? [],
-          product_properties: product?.product_properties
-            ? Object.entries(product?.product_properties ?? {})?.map(([key, value]) => {
-                return {
-                  name: capitalize(key),
-                  values: value.map((value) => value?.property_value).join(","),
-                };
-              })
-            : [],
-        };
-
-        const valuesToDispatch = {
-          id: initial?.id,
-          applyTax: initial?.applyTax,
-          barcode: initial?.barcode,
-          costPerItem: initial?.costPerItem,
-          inventoryQuantity: initial?.inventoryQuantity,
-          is_price_global: initial?.is_price_global,
-          outlets: initial?.outlets,
-          old_outlet_list: initial?.old_outlet_list,
-          productCategory: initial?.productCategory,
-          productDescription: initial?.productDescription,
-          productName: initial?.productName,
-          productImage: initial?.productImage,
-          productImages: initial?.productImages,
-          sellingPrice: initial?.sellingPrice,
-          setInventoryQuantity: initial?.setInventoryQuantity,
-          sku: initial?.sku,
-          tag: initial?.tag,
-          variants: initial?.product_properties || [],
-          variantsDistribution: initial?.product_properties_variants || [],
-          weight: initial?.weight,
-        };
-
-        // console.log({ valuesToDispatch });
-        // console.log(Object.entries(valuesToDispatch));
-
-        // Object.entries(valuesToDispatch).forEach(([key, value]) => setValue(key, value));
-        const hasVariants = valuesToDispatch?.variants && !isEmpty(valuesToDispatch?.variants);
-
-        reset({ ...valuesToDispatch, addVariants: hasVariants });
-        // {
-        //   defaultValues: { ...productWithVariants, addVariants: productHasVariants },
-        // }
-        // console.log({ hasVariants });
-
-        dispatch(setProductWithVariants(valuesToDispatch));
-        dispatch(setProductHasVariants(!!hasVariants));
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setFetching(false);
-      }
-    };
-
-    fetchItems();
-  }, [refetch]);
+  // React.useEffect(() => {
+  //   console.log(getValues());
+  // }, [getValues()]);
 
   const updateProduct = async (values) => {
     try {
@@ -300,7 +193,7 @@ const EditProduct = ({ setGoToVarianceConfig }) => {
         };
       }
 
-      // console.log(payload);
+      console.log(payload);
       // return;
 
       const updateProductRes = await axios.post("/api/products/update-product", {
@@ -713,12 +606,16 @@ const EditProduct = ({ setGoToVarianceConfig }) => {
         // property_list: property_list,
         // variants_options: newVarianceDistribution,
         property_list: JSON.stringify(property_list),
-        variants_options: JSON.stringify(newVarianceDistribution),
+        variants_options: JSON.stringify(!isEmpty(newVarianceDistribution) ? newVarianceDistribution : { 0: {} }),
+        // variants_options: JSON.stringify(newVarianceDistribution),
+
         merchant: user?.user_merchant_id,
         mod_by: user?.login,
         option: capitalize(values?.variantName),
       };
 
+      // console.log(data);
+      // return;
       const addVariantValueRes = await axios.post("/api/products/add-product-variant", data);
       const { status, message = "" } = await addVariantValueRes.data;
 
@@ -746,16 +643,6 @@ const EditProduct = ({ setGoToVarianceConfig }) => {
       setProcessing(false);
     }
   };
-
-  // console.log(productWithVariants?.variants?.length);
-
-  if (fetching || isEmpty(productWithVariants)) {
-    return (
-      <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
-        <Spinner type="TailSpin" width={50} height={50} />
-      </div>
-    );
-  }
 
   return (
     <div>
