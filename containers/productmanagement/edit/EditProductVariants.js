@@ -21,6 +21,7 @@ import {
   isEmpty,
   isEqual,
   map,
+  sortBy,
   split,
   trim,
   union,
@@ -644,6 +645,8 @@ const EditProduct = ({
     }
   };
 
+  // console.log({ fields });
+
   return (
     <div>
       <Modal open={showAddCategoryModal} onClose={() => dispatch(setShowAddCategoryModal())} maxWidth="sm">
@@ -880,7 +883,7 @@ const EditProduct = ({
                 {watchAddVariants && (
                   <div className="mt-2 ">
                     <div className="flex flex-wrap justify-center items-center w-full ">
-                      {fields?.map(({ id, name, values }, index) => {
+                      {sortBy(fields, ["name"])?.map(({ id, name, values }, index) => {
                         // console.log(values);
                         return (
                           <div key={id} className="w-full my-1 ">

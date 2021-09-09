@@ -94,7 +94,7 @@ const CustomersTable = ({ setReRUn }) => {
       },
       cellStyle() {
         return {
-          width: "50%",
+          width: "20%",
         };
       },
     },
@@ -124,11 +124,6 @@ const CustomersTable = ({ setReRUn }) => {
     {
       title: "Date of Birth",
       field: "customer_dob",
-      cellStyle() {
-        return {
-          width: "100%",
-        };
-      },
     },
     { title: "Total Spend", field: "total_spends", defaultSort: "desc" },
     { title: "Total Orders", field: "total_counts" },

@@ -42,6 +42,7 @@ const initialState = {
   promoCodeAppliedOnCartPage: false,
   promoType: "",
   cartSubTotal: 0,
+  deliveryRouteCosts: null,
 };
 
 const initialProductProps = {
@@ -140,6 +141,9 @@ const cartSlice = createSlice({
     },
     setDeliveryCharge(state, action) {
       state.deliveryCharge = action.payload;
+    },
+    setDeliveryRouteCosts(state, action) {
+      state.deliveryRouteCosts = action.payload;
     },
     setDeliveryTypes(state, action) {
       state.deliveryTypes = action.payload;
@@ -382,5 +386,6 @@ export const {
   setPromoCodeAppliedOnCartPage,
   calculateCartSubTotal,
   setOutletSelected,
+  setDeliveryRouteCosts,
 } = cartSlice.actions;
 export default cartSlice.reducer;

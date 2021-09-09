@@ -200,6 +200,8 @@ const onRaiseOrder = async (
       order_discount: cart?.cartDiscountOnCartTotal + cart?.cartPromoDiscount,
       order_discount_type: cart?.promoType,
       delivery_charge: cart?.deliveryCharge?.price ?? 0,
+      delivery_charge_type: cart?.deliveryCharge?.pricingtype || "",
+      delivery_charge_ref: cart?.deliveryCharge?.estimateId || "",
       service_charge: fees,
       total_amount: saleTotal,
       payment_type:

@@ -22,14 +22,14 @@ const ConfirmPayment = ({
 
   const [ticking, setTicking] = React.useState(false);
 
-  const statusCheckTotalRunTime = 60000;
+  const statusCheckTotalRunTime = 30000;
 
   const sleep = (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
 
   React.useEffect(() => {
-    const verifyTransaction = async (firstTimeStarted) => {
+    const verifyTransaction = async (firstTimeStarted, interval) => {
       try {
         setFetching(true);
         const getResData = async () => {
@@ -46,24 +46,27 @@ const ConfirmPayment = ({
         // console.log(message);
 
         if (message === "new" || message === "awaiting_payment") {
-          if (Date.now() - firstTimeStarted > statusCheckTotalRunTime - 10000) {
+          if (Date.now() - firstTimeStarted > statusCheckTotalRunTime) {
             setConfirmButtonText("Start New Sale");
             setProcessError(
               "Sorry, Payment for your Delivery request is pending confirmation. <br>You will be notified via Email/SMS once your payment is confirmed.<br>And your request will be processed."
             );
             setFetching(false);
             setTicking(false);
+            clearInterval(interval);
           }
         } else {
           if (message === "paid") {
             setFetching(false);
             setStep(2);
             setTicking(false);
+            clearInterval(interval);
           } else if (message === "cancelled" || message === "failed" || message === "new" || message === "expired") {
             setFetching(false);
             setConfirmButtonText("Start New Sale");
             setProcessError(`${upperCase(message)} TRANSACTION`);
             setTicking(false);
+            clearInterval(interval);
           }
         }
       } catch (error) {
@@ -81,18 +84,10 @@ const ConfirmPayment = ({
 
     // I want to call a Javascript function x times for y seconds
     if (ticking) {
-      verifyTransaction(Date.now());
+      setFetching(true);
       var started = Date.now();
-      // make it loop every 10 seconds
-      var interval = setInterval(function () {
-        // for 30 seconds
-        if (Date.now() - started > statusCheckTotalRunTime) {
-          // and then pause it
-          clearInterval(interval);
-        } else {
-          // the thing to do every 10 seconds
-          verifyTransaction(started);
-        }
+      var interval = setInterval(() => {
+        verifyTransaction(started, interval);
       }, 10000); // every 10 seconds
     }
   }, [ticking]);

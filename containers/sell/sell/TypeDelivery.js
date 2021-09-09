@@ -6,12 +6,14 @@ import {
   setDeliveryGPS,
   setDeliveryLocationInputted,
   setDeliveryNotes,
+  setDeliveryRouteCosts,
   setPromoAmount,
   setPromoCodeAppliedOnCartPage,
   setPromoType,
 } from "features/cart/cartSlice";
 import { get, upperCase } from "lodash";
 import React from "react";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
@@ -311,8 +313,21 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
   const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
   const deliveryLocationInputted = useSelector((state) => state.cart.deliveryLocationInputted);
+  const deliveryRouteCosts = useSelector((state) => state.cart.deliveryRouteCosts);
+  const cart = useSelector((state) => state.cart);
 
-  // console.log(deliveryLocationInputted);
+  const {
+    register,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm({
+    mode: "all",
+  });
+
+  // console.log({ deliveryRouteCosts });
+
+  const deliveryEstimate = watch(`deliveryEstimate`, null);
 
   React.useEffect(() => {
     if (!promoCodeAppliedOnCartPage && deliveryCharge && outletSelected && cartPromoCode) {
@@ -370,10 +385,13 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
   React.useEffect(() => {
     const getCoordinates = async () => {
       setProcessingDeliveryCharge(true);
+      setValue(`deliveryEstimate`, null);
+      dispatch(setDeliveryRouteCosts(null));
       const fetchItems = async (stringCoordinates) => {
         try {
           setProcessingDeliveryCharge(true);
-
+          setValue(`deliveryEstimate`, null);
+          dispatch(setDeliveryRouteCosts(null));
           const payload = {
             pickup_id: outletSelected?.outlet_id,
             pickup_gps: outletSelected?.outlet_gps,
@@ -386,9 +404,13 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
 
           if (Number(res?.data?.status) === 0) {
             let { data } = await res.data;
-            const price = get(data, "price", 0);
-            data = { ...data, price: Number(parseFloat(price)) };
-            dispatch(setDeliveryCharge(data));
+            // console.log({ data });
+
+            // const price = get(data, "price", 0);
+            // data = { ...data, price: Number(parseFloat(price)) };
+            // dispatch(setDeliveryCharge(data));
+
+            dispatch(setDeliveryRouteCosts(data));
           } else {
             addToast(`We do not deliver to this area. Please select a different area`, { appearance: "error", autoDismiss: true });
             dispatch(setDeliveryLocationInputted(null));
@@ -423,9 +445,22 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
     }
   }, [dispatch, outletSelected, deliveryLocationInputted]);
 
+  React.useEffect(() => {
+    if (deliveryEstimate) {
+      let parsedDeliveryEstimate = JSON.parse(deliveryEstimate);
+      // console.log(parsedDeliveryEstimate);
+
+      const price = get(parsedDeliveryEstimate, "price", 0);
+      parsedDeliveryEstimate = { ...parsedDeliveryEstimate, price: Number(parseFloat(price)) };
+      dispatch(setDeliveryCharge(parsedDeliveryEstimate));
+    } else {
+      dispatch(setDeliveryCharge(null));
+    }
+  }, [deliveryEstimate]);
+
   return (
     <div>
-      <p>Select Delivery Location</p>
+      <p>Enter Delivery Location</p>
       <div className="flex items-center w-full ">
         <div className={`w-full`}>
           <GooglePlaces
@@ -446,6 +481,7 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
                   ...provided,
                 }),
               },
+              placeholder: `Enter Delivery Location`,
             }}
           />
         </div>
@@ -455,6 +491,30 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
             <Spinner type="TailSpin" color="#21428F" width={30} height={30} />
           </div>
         )}
+      </div>
+
+      <div className="mt-3">
+        <label className="mb-2 text-sm leading-none">
+          Select Delivery Option {deliveryRouteCosts?.distance ? `(${deliveryRouteCosts?.distance} from outlet)` : ``}
+        </label>
+        <select
+          {...register("deliveryEstimate", {
+            required: `Please enter a delivery location and select a delivery rate`,
+          })}
+          defaultValue=""
+          className="block w-full px-2 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded focus:outline-none focus:border-black"
+        >
+          <option value="" disabled="disabled">{`Select Option`}</option>
+          {(deliveryRouteCosts?.pricingestimate || [])?.map((estimate, index) => {
+            return (
+              <option key={estimate.estimateName + index} value={JSON.stringify(estimate)}>
+                {estimate.estimateName} @ {estimate.currency}
+                {estimate.price}
+              </option>
+            );
+          })}
+        </select>
+        {errors?.deliveryEstimate && <p className="text-12px text-error">{errors?.deliveryEstimate?.message}</p>}
       </div>
     </div>
   );
