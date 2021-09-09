@@ -30,6 +30,7 @@ const SellPage = () => {
 
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
+  const [reFetch, setReFetch] = React.useState(new Date());
 
   React.useEffect(() => {
     const fetchItems = async () => {
@@ -93,7 +94,7 @@ const SellPage = () => {
     };
 
     fetchItems();
-  }, [dispatch]);
+  }, [reFetch]);
 
   if (fetching || fetching === null) {
     return (
@@ -120,7 +121,7 @@ const SellPage = () => {
       )}
       {clickToCheckout && (
         <motion.div className="" initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
-          <ProcessSale />
+          <ProcessSale setReFetch={setReFetch} />
         </motion.div>
       )}
     </div>

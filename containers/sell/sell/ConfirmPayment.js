@@ -16,6 +16,7 @@ const ConfirmPayment = ({
   confirmButtonText,
   userDetails,
   setConfirmButtonText,
+  setReFetch,
 }) => {
   const dispatch = useDispatch();
   const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
@@ -119,7 +120,7 @@ const ConfirmPayment = ({
         {processError ? (
           <p
             dangerouslySetInnerHTML={{ __html: processError }}
-            className={`text-center font-bold text-4xl  ${
+            className={`text-center font-bold text-2xl  ${
               processError.includes("FAILED") || processError.includes("Sorry") ? `text-red-500` : `text-green-500`
             } `}
           />
@@ -148,6 +149,7 @@ const ConfirmPayment = ({
                     dispatch(onResetCart());
                     dispatch(setProductsOnHold());
                     dispatch(setOutletSelected(null));
+                    setReFetch(new Date());
                   })()
                 : setTicking(true);
             }}

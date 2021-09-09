@@ -4,7 +4,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
-const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendingNotification }) => {
+const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendingNotification, setReFetch }) => {
   const { addToast } = useToasts();
   const dispatch = useDispatch();
   // Selectors
@@ -172,6 +172,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             dispatch(onResetCart());
             dispatch(setProductsOnHold());
             dispatch(setOutletSelected(null));
+            setReFetch(new Date());
           }}
         >
           Close Sale

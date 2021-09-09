@@ -153,6 +153,14 @@ const ProcessPayment = ({
                     // if (!outletSelected) {
                     //   return
                     // }
+
+                    if (Number(payerAmountEntered) === 0) {
+                      return addToast(`You must remove payment option(s) entered to change outlet`, {
+                        appearance: "info",
+                        autoDismiss: true,
+                      });
+                    }
+
                     dispatch(setOutletSelected(outlet));
                   }}
                 >
@@ -190,6 +198,13 @@ const ProcessPayment = ({
                     if (!outletSelected) {
                       addToast(`Please select an outlet`, { appearance: `info`, autoDismiss: true });
                     } else {
+                      if (Number(payerAmountEntered) === 0) {
+                        return addToast(`You must remove payment option(s) entered to change delivery type`, {
+                          appearance: "info",
+                          autoDismiss: true,
+                        });
+                      }
+
                       if (option?.name !== "Delivery") {
                         dispatch(setDeliveryCharge(null));
                         dispatch(setDeliveryNotes(""));
@@ -200,13 +215,6 @@ const ProcessPayment = ({
                           dispatch(setPromoType(""));
                           dispatch(setPromoAmount(0));
                         }
-                      }
-
-                      if (option?.name === "Delivery" && Number(payerAmountEntered) === 0) {
-                        return addToast(`You must remove payment option(s) entered to change delivery type`, {
-                          appearance: "info",
-                          autoDismiss: true,
-                        });
                       }
 
                       dispatch(setDeliveryTypeSelected(option?.name));
@@ -223,6 +231,7 @@ const ProcessPayment = ({
           <div className="mt-4">
             <TypeDelivery
               setFetching={setFetching}
+              payerAmountEntered={payerAmountEntered}
               processingDeliveryCharge={processingDeliveryCharge}
               setProcessingDeliveryCharge={setProcessingDeliveryCharge}
             />
@@ -256,6 +265,11 @@ const ProcessPayment = ({
 
                   if (!deliveryTypeSelected) {
                     return addToast(`Select pickup or delivery type before payment`, {
+                      appearance: "info",
+                      autoDismiss: true,
+                    });
+                  } else if (deliveryTypeSelected === "Delivery" && !deliveryCharge) {
+                    return addToast(`You must select a delivery option`, {
                       appearance: "info",
                       autoDismiss: true,
                     });

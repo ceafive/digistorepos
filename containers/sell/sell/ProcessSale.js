@@ -24,7 +24,7 @@ import ReceiptsSection from "./ReceiptsSection";
 
 const Modal = dynamic(() => import("components/Modal"));
 
-const ProcessSale = () => {
+const ProcessSale = ({ setReFetch }) => {
   const dispatch = useDispatch();
   const { addToast, removeToast } = useToasts();
   const componentRef = React.useRef();
@@ -160,6 +160,7 @@ const ProcessSale = () => {
             setConfirmButtonText={setConfirmButtonText}
             setProcessError={setProcessError}
             userDetails={user}
+            setReFetch={setReFetch}
           />
         </div>
       </div>

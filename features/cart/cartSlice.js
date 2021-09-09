@@ -43,6 +43,7 @@ const initialState = {
   promoType: "",
   cartSubTotal: 0,
   deliveryRouteCosts: null,
+  deliveryEstimate: null,
 };
 
 const initialProductProps = {
@@ -145,6 +146,10 @@ const cartSlice = createSlice({
     setDeliveryRouteCosts(state, action) {
       state.deliveryRouteCosts = action.payload;
     },
+    setDeliveryEstimate(state, action) {
+      state.deliveryEstimate = action.payload;
+    },
+
     setDeliveryTypes(state, action) {
       state.deliveryTypes = action.payload;
     },
@@ -387,5 +392,6 @@ export const {
   calculateCartSubTotal,
   setOutletSelected,
   setDeliveryRouteCosts,
+  setDeliveryEstimate,
 } = cartSlice.actions;
 export default cartSlice.reducer;

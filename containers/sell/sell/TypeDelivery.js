@@ -10,6 +10,7 @@ import {
   setPromoAmount,
   setPromoCodeAppliedOnCartPage,
   setPromoType,
+  setDeliveryEstimate,
 } from "features/cart/cartSlice";
 import { get, upperCase } from "lodash";
 import React from "react";
@@ -302,7 +303,7 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
   );
 };
 
-const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
+const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharge, payerAmountEntered }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   const outletSelected = useSelector((state) => state.cart.outletSelected);
@@ -319,15 +320,12 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
   const {
     register,
     formState: { errors },
-    watch,
+    clearErrors,
     setValue,
+    trigger,
   } = useForm({
     mode: "all",
   });
-
-  // console.log({ deliveryRouteCosts });
-
-  const deliveryEstimate = watch(`deliveryEstimate`, null);
 
   React.useEffect(() => {
     if (!promoCodeAppliedOnCartPage && deliveryCharge && outletSelected && cartPromoCode) {
@@ -404,13 +402,8 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
 
           if (Number(res?.data?.status) === 0) {
             let { data } = await res.data;
-            // console.log({ data });
-
-            // const price = get(data, "price", 0);
-            // data = { ...data, price: Number(parseFloat(price)) };
-            // dispatch(setDeliveryCharge(data));
-
             dispatch(setDeliveryRouteCosts(data));
+            trigger(`deliveryEstimate`, { shouldFocus: true });
           } else {
             addToast(`We do not deliver to this area. Please select a different area`, { appearance: "error", autoDismiss: true });
             dispatch(setDeliveryLocationInputted(null));
@@ -445,18 +438,23 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
     }
   }, [dispatch, outletSelected, deliveryLocationInputted]);
 
-  React.useEffect(() => {
-    if (deliveryEstimate) {
-      let parsedDeliveryEstimate = JSON.parse(deliveryEstimate);
-      // console.log(parsedDeliveryEstimate);
+  const handleOnChangeDeliveryEstimate = (e) => {
+    const deliveryEstimate = e.target?.value;
 
-      const price = get(parsedDeliveryEstimate, "price", 0);
-      parsedDeliveryEstimate = { ...parsedDeliveryEstimate, price: Number(parseFloat(price)) };
-      dispatch(setDeliveryCharge(parsedDeliveryEstimate));
-    } else {
-      dispatch(setDeliveryCharge(null));
+    let parsedDeliveryEstimate = JSON.parse(deliveryEstimate);
+    // console.log(parsedDeliveryEstimate);
+
+    const price = get(parsedDeliveryEstimate, "price", 0);
+    parsedDeliveryEstimate = { ...parsedDeliveryEstimate, price: Number(parseFloat(price)) };
+    dispatch(setDeliveryCharge(parsedDeliveryEstimate));
+    if (parsedDeliveryEstimate) {
+      clearErrors(`deliveryEstimate`);
     }
-  }, [deliveryEstimate]);
+  };
+
+  const deliveryEstimate = register("deliveryEstimate", {
+    required: `Please select a delivery option`,
+  });
 
   return (
     <div>
@@ -482,6 +480,7 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
                 }),
               },
               placeholder: `Enter Delivery Location`,
+              isDisabled: Number(payerAmountEntered) === 0 ? true : false,
             }}
           />
         </div>
@@ -493,29 +492,35 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
         )}
       </div>
 
-      <div className="mt-3">
-        <label className="mb-2 text-sm leading-none">
-          Select Delivery Option {deliveryRouteCosts?.distance ? `(${deliveryRouteCosts?.distance} from outlet)` : ``}
-        </label>
-        <select
-          {...register("deliveryEstimate", {
-            required: `Please enter a delivery location and select a delivery rate`,
-          })}
-          defaultValue=""
-          className="block w-full px-2 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded focus:outline-none focus:border-black"
-        >
-          <option value="" disabled="disabled">{`Select Option`}</option>
-          {(deliveryRouteCosts?.pricingestimate || [])?.map((estimate, index) => {
-            return (
-              <option key={estimate.estimateName + index} value={JSON.stringify(estimate)}>
-                {estimate.estimateName} @ {estimate.currency}
-                {estimate.price}
-              </option>
-            );
-          })}
-        </select>
-        {errors?.deliveryEstimate && <p className="text-12px text-error">{errors?.deliveryEstimate?.message}</p>}
-      </div>
+      {deliveryRouteCosts && (
+        <div className="mt-3">
+          <label className="mb-2 text-sm leading-none">
+            Select Delivery Option {deliveryRouteCosts?.distance ? `(${deliveryRouteCosts?.distance} from outlet)` : ``}
+          </label>
+          <select
+            onChange={(e) => {
+              deliveryEstimate.onChange(e); // method from hook form register
+              handleOnChangeDeliveryEstimate(e); // your method
+            }}
+            disabled={Number(payerAmountEntered) === 0 ? true : false}
+            onBlur={deliveryEstimate.onBlur}
+            ref={deliveryEstimate.ref}
+            defaultValue=""
+            className="w-full p-2 bg-white border border-gray-300 rounded placeholder-blueGray-300 text-blueGray-600 focus:ring-1"
+          >
+            <option value="" disabled="disabled">{`Select Option`}</option>
+            {(deliveryRouteCosts?.pricingestimate || [])?.map((estimate, index) => {
+              return (
+                <option key={estimate.estimateName + index} value={JSON.stringify(estimate)}>
+                  {estimate.estimateName} @ {estimate.currency}
+                  {estimate.price}
+                </option>
+              );
+            })}
+          </select>
+          {errors?.deliveryEstimate && <p className="text-xs text-red-500">{errors?.deliveryEstimate?.message}</p>}
+        </div>
+      )}
     </div>
   );
 };
@@ -541,13 +546,17 @@ const DeliveryNotes = () => {
   );
 };
 
-const TypeDelivery = ({ processingDeliveryCharge, setProcessingDeliveryCharge }) => {
+const TypeDelivery = ({ processingDeliveryCharge, setProcessingDeliveryCharge, payerAmountEntered }) => {
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
 
   if (deliveryTypes["option_delivery"] === "MERCHANT") {
     return (
       <>
-        <MerchantDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />{" "}
+        <MerchantDeliveryType
+          processingDeliveryCharge={processingDeliveryCharge}
+          setProcessingDeliveryCharge={setProcessingDeliveryCharge}
+          payerAmountEntered={payerAmountEntered}
+        />{" "}
         <DeliveryNotes />
       </>
     );
@@ -556,7 +565,11 @@ const TypeDelivery = ({ processingDeliveryCharge, setProcessingDeliveryCharge })
   if (deliveryTypes["option_delivery"] === "MERCHANT-DIST") {
     return (
       <>
-        <MerchantDistDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
+        <MerchantDistDeliveryType
+          processingDeliveryCharge={processingDeliveryCharge}
+          setProcessingDeliveryCharge={setProcessingDeliveryCharge}
+          payerAmountEntered={payerAmountEntered}
+        />
         <DeliveryNotes />
       </>
     );
@@ -565,7 +578,11 @@ const TypeDelivery = ({ processingDeliveryCharge, setProcessingDeliveryCharge })
   if (deliveryTypes["option_delivery"] === "IPAY") {
     return (
       <>
-        <IPAYDeliveryType processingDeliveryCharge={processingDeliveryCharge} setProcessingDeliveryCharge={setProcessingDeliveryCharge} />
+        <IPAYDeliveryType
+          processingDeliveryCharge={processingDeliveryCharge}
+          setProcessingDeliveryCharge={setProcessingDeliveryCharge}
+          payerAmountEntered={payerAmountEntered}
+        />
         <DeliveryNotes />
       </>
     );

@@ -29,6 +29,7 @@ const RaiseOrderSection = ({
   setConfirmButtonText,
   setProcessError,
   userDetails,
+  setReFetch,
 }) => {
   return (
     <>
@@ -62,6 +63,7 @@ const RaiseOrderSection = ({
           setProcessError={setProcessError}
           userDetails={userDetails}
           setFetching={setFetching}
+          setReFetch={setReFetch}
         />
       )}
 
@@ -71,6 +73,7 @@ const RaiseOrderSection = ({
           handleSendNotification={handleSendNotification}
           printing={printing}
           sendingNotification={sendingNotification}
+          setReFetch={setReFetch}
         />
       )}
     </>
