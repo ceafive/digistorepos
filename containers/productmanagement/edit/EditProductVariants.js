@@ -609,13 +609,12 @@ const EditProduct = ({
         property_list: JSON.stringify(property_list),
         variants_options: JSON.stringify(!isEmpty(newVarianceDistribution) ? newVarianceDistribution : { 0: {} }),
         // variants_options: JSON.stringify(newVarianceDistribution),
-
         merchant: user?.user_merchant_id,
         mod_by: user?.login,
         option: capitalize(values?.variantName),
       };
 
-      // console.log(data);
+      console.log(data);
       // return;
       const addVariantValueRes = await axios.post("/api/products/add-product-variant", data);
       const { status, message = "" } = await addVariantValueRes.data;

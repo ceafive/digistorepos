@@ -17,7 +17,7 @@ const AddNewVariantName = ({ processing, action }) => {
           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
           {...register("variantName", {
             required: "Please enter a variant name",
-            validate: (value) => !value.includes(",") || "You can only add one value, please remove comma",
+            validate: (value) => !value.includes(",") || "YYou can only add 1 variant value at a time. Remove commas and try again",
           })}
           type="text"
           placeholder="eg. Size"
@@ -31,7 +31,7 @@ const AddNewVariantName = ({ processing, action }) => {
           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
           {...register("variantValue", {
             required: "Please enter a variant value",
-            validate: (value) => !value.includes(",") || "You can only add one value, please remove comma",
+            validate: (value) => !value.includes(",") || "You can only add 1 variant value at a time. Remove commas and try again",
           })}
           type="text"
           placeholder="eg. Small"

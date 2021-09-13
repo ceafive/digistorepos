@@ -68,6 +68,7 @@ const ManageProducts = ({ setReRUn }) => {
 
   const [allProducts, setAllProducts] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [enableQuantityField, setEnableQuantityField] = React.useState({ status: false, id: "" });
 
   React.useEffect(() => {
     if (categorySelected !== "All") {
@@ -175,11 +176,12 @@ const ManageProducts = ({ setReRUn }) => {
     // },
   ];
 
-  const updateProductVariant = async (newValue, oldValue, parentData, childData, columnDef) => {
+  const updateProductVariant = async (newValue, parentData, childData, columnDef) => {
     try {
       addToast(`Updating Variant...`, { appearance: "info", autoDismiss: true, id: "update-variant" });
       let user = sessionStorage.getItem("IPAYPOSUSER");
       user = JSON.parse(user);
+      // console.log(newValue, oldValue, parentData, childData, columnDef);
 
       const data = {
         variant: childData?.variantOptionId,
@@ -189,6 +191,9 @@ const ManageProducts = ({ setReRUn }) => {
         merchant: user?.user_merchant_id,
         mod_by: user?.login,
       };
+
+      console.log({ data });
+      // return;
 
       const updateVariantRes = await axios.post("/api/products/update-product-variant-props", { data });
       const { status, message } = await updateVariantRes.data;
@@ -255,15 +260,6 @@ const ManageProducts = ({ setReRUn }) => {
         console.log(errorResponse);
       }
     }
-  };
-
-  const Tooltip = () => {
-    return (
-      <div>
-        <p>Hello</p>
-        <p>Bye</p>
-      </div>
-    );
   };
 
   return (
@@ -423,8 +419,55 @@ const ManageProducts = ({ setReRUn }) => {
                       );
                     },
                   },
-                  { title: "Price", field: "variantOptionPrice" },
-                  { title: "In Stock", field: "variantOptionQuantity" },
+                  {
+                    title: "Price",
+                    field: "variantOptionPrice",
+                    cellStyle() {
+                      return {
+                        width: 400,
+                      };
+                    },
+                  },
+                  {
+                    title: "In Stock",
+                    field: "variantOptionQuantity",
+                    editable: () => false,
+                    cellStyle() {
+                      return {
+                        width: 400,
+                      };
+                    },
+                    render(detailRowData) {
+                      const disabled = ["Unlimited", "-99"].includes(detailRowData?.variantOptionQuantity);
+                      return <button disabled={disabled}>{detailRowData?.variantOptionQuantity}</button>;
+                    },
+                  },
+                  {
+                    title: "Is Quantity Unlimited",
+                    field: "quantityUnlimited",
+                    editable: "never",
+                    render(detailRowData) {
+                      // console.log({ detailRowData });
+                      return (
+                        <input
+                          name="quantityUnlimited"
+                          type="checkbox"
+                          onChange={async (e) => {
+                            console.log(e.target.checked);
+                            // console.log(rowData);
+                            // console.log(detailRowData);
+
+                            if (!e.target.checked) {
+                              await updateProductVariant("-99", rowData, detailRowData, { field: `variantOptionQuantity` });
+                            } else {
+                              await updateProductVariant("1", rowData, detailRowData, { field: `variantOptionQuantity` });
+                            }
+                          }}
+                          checked={["Unlimited", "-99"].includes(detailRowData?.variantOptionQuantity)}
+                        />
+                      );
+                    },
+                  },
                   { title: "Qty. Sold", field: "variantOptionQuantitySold", editable: "never" },
                   { title: "Last Stock Date", field: "variantOptionLastStockUpdated", editable: "never" },
                   {
@@ -449,13 +492,13 @@ const ManageProducts = ({ setReRUn }) => {
                 return (
                   <MaterialTable
                     style={{
-                      // backgroundColor: "lightgray",
+                      backgroundColor: "rgb(249, 250, 251)",
                       border: "1px solid green",
                       overflow: "hidden",
                     }}
                     cellEditable={{
                       onCellEditApproved: async (newValue, oldValue, childRowData, columnDef) => {
-                        await updateProductVariant(newValue, oldValue, rowData, childRowData, columnDef);
+                        await updateProductVariant(newValue, rowData, childRowData, columnDef);
                       },
                     }}
                     isLoading={loading}

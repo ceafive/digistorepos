@@ -1,7 +1,7 @@
 import Spinner from "components/Spinner";
 import React from "react";
 
-const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, setShowPromoCodeBox }) => {
+const PromoCodeBox = ({ processing, setPromoCode, setShowPromoCodeBox, promoCodeTyped, setPromoCodeTyped }) => {
   return (
     <div className="z-10 w-full overflow-hidden font-medium bg-white border border-gray-500 rounded shadow h-38">
       <div className="h-full">
@@ -9,10 +9,10 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
         <hr />
         <div className="flex items-center px-2 mt-4">
           <input
-            value={promoCode}
+            value={promoCodeTyped}
             onChange={(e) => {
               e.persist();
-              setPromoCode(e.target.value);
+              setPromoCodeTyped(e.target.value);
             }}
             type="text"
             className="w-full text-sm border border-gray-200 rounded outline-none appearance-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none"
@@ -21,7 +21,7 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
 
         <div className="flex justify-end w-full p-2 mt-2 bg-gray-300">
           <button
-            disabled={checking}
+            disabled={processing}
             className="px-3 py-1 mr-2 font-bold text-white bg-red-700 rounded"
             onClick={() => {
               setShowPromoCodeBox(false);
@@ -32,16 +32,16 @@ const PromoCodeBox = ({ checking, promoCode, setPromoCode, checkingPromoCode, se
           </button>
           <div className="text-center">
             <button
-              disabled={checking || !promoCode}
+              disabled={processing || !promoCodeTyped}
               className={`${
-                checking ? "bg-gray-300 text-gray-200" : "bg-green-500 text-white"
+                processing ? "bg-gray-300 text-gray-200" : "bg-green-500 text-white"
               } font-bold px-3 py-1  rounded focus:outline-none ease-linear transition-all duration-150`}
               type="button"
               onClick={() => {
-                checkingPromoCode();
+                setPromoCode(promoCodeTyped);
               }}
             >
-              {checking && (
+              {processing && (
                 <div className="inline-block mr-2">
                   <Spinner type={"TailSpin"} color="black" width="10" height="10" />
                 </div>

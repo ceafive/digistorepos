@@ -40,6 +40,8 @@ const PayButton = () => {
   const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
   const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
   const deliveryCharge = useSelector((state) => state.cart.deliveryCharge);
+  const hasAutoDiscount = useSelector((state) => state.cart.hasAutoDiscount);
+  const cartPromoCode = useSelector((state) => state.cart.cartPromoCode);
 
   // Variables
   const { covidTax, saleTotal } = React.useMemo(
@@ -51,8 +53,9 @@ const PayButton = () => {
   const [showAddNoteInput, setShowAddNoteInput] = React.useState(false);
   const [showDiscountBox, setShowDiscountBox] = React.useState(false);
   const [showPromoCodeBox, setShowPromoCodeBox] = React.useState(false);
-  const [checking, setProcessing] = React.useState(false);
+  const [processing, setProcessing] = React.useState(false);
   const [promoCode, setPromoCode] = React.useState("");
+  const [promoCodeTyped, setPromoCodeTyped] = React.useState("");
   const [payerAmountEntered, setPayerAmountEntered] = React.useState(saleTotal - amountReceivedFromPayer);
 
   React.useEffect(() => {
@@ -82,7 +85,7 @@ const PayButton = () => {
   // console.log(cartDiscountOnCartTotal);
   // console.log(totalItemsInCart);
 
-  const checkingPromoCode = async () => {
+  const checkingPromoCode = async (promoCode = "") => {
     try {
       setProcessing(true);
       let user = sessionStorage.getItem("IPAYPOSUSER");
@@ -116,26 +119,50 @@ const PayButton = () => {
       const response = await axios.post("/api/sell/sell/add-discount", userData);
       const { status, message, discount } = await response.data;
       // console.log({ status, message, discount });
-      addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
+      // addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
 
-      if (Number(status) === 0) {
-        dispatch(setPromoType("ORDER"));
-        dispatch(setPromoCodeAppliedOnCartPage(true));
-        dispatch(setPromoAmount(discount));
-      } else {
-        // dispatch(setPromoType(""));
-        dispatch(setPromoAmount(0));
-        dispatch(setPromoCodeAppliedOnCartPage(false));
+      if (promoCode) {
+        if (Number(status) === 0) {
+          dispatch(setPromoType("ORDER"));
+          dispatch(setPromoCodeAppliedOnCartPage(true));
+          dispatch(setPromoAmount(discount));
+        } else {
+          // dispatch(setPromoType(""));
+          dispatch(setPromoAmount(0));
+          dispatch(setPromoCodeAppliedOnCartPage(false));
+          if (hasAutoDiscount === "YES") checkingPromoCode("");
+        }
+      }
+
+      if (!promoCode) {
+        if (Number(status) === 0) {
+          dispatch(setPromoType("ORDER"));
+          dispatch(setPromoCodeAppliedOnCartPage(true));
+          dispatch(setPromoAmount(discount));
+        } else {
+          // dispatch(setPromoType(""));
+          dispatch(setPromoAmount(0));
+          dispatch(setPromoCodeAppliedOnCartPage(false));
+        }
       }
     } catch (error) {
       console.log(error);
       setProcessing(false);
     } finally {
       setPromoCode("");
+      setPromoCodeTyped("");
       setProcessing(false);
       setShowPromoCodeBox(false);
     }
   };
+
+  React.useEffect(() => {
+    if (productsInCart && productsInCart.length) {
+      if (!promoCode) {
+        if (hasAutoDiscount === "YES") checkingPromoCode("");
+      } else checkingPromoCode(promoCode);
+    }
+  }, [promoCode, productsInCart]);
 
   return (
     <div className="w-full">
@@ -154,10 +181,12 @@ const PayButton = () => {
         {showPromoCodeBox && (
           <div className="absolute bottom-0 left-0 w-2/3">
             <PromoCodeBox
-              checking={checking}
+              processing={processing}
               setShowPromoCodeBox={setShowPromoCodeBox}
               promoCode={promoCode}
               setPromoCode={setPromoCode}
+              promoCodeTyped={promoCodeTyped}
+              setPromoCodeTyped={setPromoCodeTyped}
               checkingPromoCode={checkingPromoCode}
             />
           </div>
@@ -199,7 +228,7 @@ const PayButton = () => {
             ) : (
               <></>
             )}
-            {!cartPromoDiscount ? (
+            {!cartPromoDiscount || hasAutoDiscount !== "YES" ? (
               <button
                 className={`mr-4 font-bold ${totalItemsInCart && payerAmountEntered ? `text-blue-500 ` : `text-gray-200 `} focus:outline-none`}
                 onClick={() => {
@@ -274,7 +303,7 @@ const PayButton = () => {
 
       {cartPromoDiscount ? (
         <div className="flex justify-between px-4 font-medium">
-          <p className="font-medium ">Promo</p>
+          <p className="font-medium ">Promo {cartPromoCode ? `(${cartPromoCode})` : hasAutoDiscount === "YES" ? `(AUTO)` : ""}</p>
 
           <div className="flex items-center">
             <p className="mr-2">-GHS{cartPromoDiscount}</p>
@@ -305,8 +334,10 @@ const PayButton = () => {
       {/* Button */}
       <div className="w-full px-4 py-2">
         <button
-          disabled={!totalPriceInCart}
-          className={`w-full ${totalPriceInCart ? "bg-green-700 text-white" : "bg-gray-400 text-gray-300"} py-3 px-6  font-medium text-xl rounded`}
+          disabled={!totalPriceInCart || processing}
+          className={`w-full ${
+            totalPriceInCart /*&& !processing*/ ? "bg-green-700 text-white" : "bg-gray-400 text-gray-300"
+          } py-3 px-6  font-medium text-xl rounded`}
           onClick={() => {
             dispatch(onClickToCheckout());
           }}

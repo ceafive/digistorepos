@@ -6,7 +6,7 @@ import ProcessSale from "containers/sell/sell/ProcessSale";
 // import ProcessSale from "components/Sell/ProcessSale";
 import ProductsSelection from "containers/sell/sell/ProductsSelection";
 import Spinner from "components/Spinner";
-import { setActivePayments, setDeliveryTypes } from "features/cart/cartSlice";
+import { setActivePayments, setAutoDiscount, setDeliveryTypes } from "features/cart/cartSlice";
 import { onSetProductCategories, openInventoryModal, productsAdded, setAllOutlets } from "features/products/productsSlice";
 import { motion } from "framer-motion";
 import { filter, intersectionWith, upperCase } from "lodash";
@@ -54,14 +54,17 @@ const SellPage = () => {
         const deliveryTypesRes = await axios.post("/api/sell/sell/get-delivery-type", { user });
         const activePaymentsRes = await axios.post("/api/sell/sell/get-active-payments");
         const outletsRes = await axios.post("/api/sell/sell/get-outlets", { user });
+        const autoDiscountRes = await axios.post("/api/sell/sell/get-automatic-discount", { user });
 
         const { data: deliveryTypesResData } = await deliveryTypesRes.data;
         const { data: activePaymentsResData } = await activePaymentsRes.data;
         const { data: outletsResData } = await outletsRes.data;
+        const { has_auto_discount } = await autoDiscountRes.data;
         // console.log({ allCategoriesResData, allProductsResData });
 
         dispatch(setDeliveryTypes(deliveryTypesResData));
         dispatch(setActivePayments(activePaymentsResData));
+        dispatch(setAutoDiscount(has_auto_discount));
 
         const upperCaseMerchantGroup = upperCase(user_merchant_group);
 

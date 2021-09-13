@@ -44,6 +44,7 @@ const initialState = {
   cartSubTotal: 0,
   deliveryRouteCosts: null,
   deliveryEstimate: null,
+  hasAutoDiscount: null,
 };
 
 const initialProductProps = {
@@ -349,6 +350,9 @@ const cartSlice = createSlice({
       state.totalPriceInCart = Number(parseFloat(totalPrice).toFixed(2));
       state.totalItemsInCart = totalQuantity;
     },
+    setAutoDiscount(state, action) {
+      state.hasAutoDiscount = action.payload;
+    },
   },
 });
 
@@ -393,5 +397,6 @@ export const {
   setOutletSelected,
   setDeliveryRouteCosts,
   setDeliveryEstimate,
+  setAutoDiscount,
 } = cartSlice.actions;
 export default cartSlice.reducer;

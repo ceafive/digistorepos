@@ -30,27 +30,32 @@ const ManageProductsOrCategories = () => {
   React.useEffect(() => {
     const fetchItems = async () => {
       try {
-        setFetching(true);
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
 
-        // if (manageProductProducts?.length === 0) {
+        if (manageProductProducts?.length === 0) {
+          setFetching(true);
+        }
+
+        if (manageProductOutlets?.length === 0) {
+          setFetching(true);
+        }
+
+        if (manageProductCategories?.length === 0) {
+          setFetching(true);
+        }
+
         const allProductsRes = await axios.post("/api/products/get-products", { user });
         const { data: allProductsResData } = await allProductsRes.data;
         dispatch(setManageProductProducts(filter(allProductsResData, (o) => Boolean(o))));
-        // }
 
-        // if (manageProductCategories?.length === 0) {
         const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
         const { data: allCategoriesResData } = await allCategoriesRes.data;
         dispatch(setManageProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
-        // }
 
-        // if (manageProductOutlets?.length === 0) {
         const allOutletsRes = await axios.post("/api/products/get-outlets", { user });
         const { data: allOutletsResData } = await allOutletsRes.data;
         dispatch(setManageProductOutlets(filter(allOutletsResData, (o) => Boolean(o))));
-        // }
       } catch (error) {
         console.log(error);
       } finally {

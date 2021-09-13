@@ -35,6 +35,7 @@ const ReceiptsSection = ({ step }) => {
   const cartItemDiscount = useSelector((state) => state.cart.cartItemDiscount);
   const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
   const cartDiscountType = useSelector((state) => state.cart.cartDiscountType);
+  const hasAutoDiscount = useSelector((state) => state.cart.hasAutoDiscount);
 
   // Variables
   const { fees, saleTotal, covidTax, change, grandTotal } = React.useMemo(
@@ -86,7 +87,7 @@ const ReceiptsSection = ({ step }) => {
                   </>
                 </div>
               </div>
-              <p>GHS{product.totalPrice}</p>
+              <p>GHS{parseFloat(product.totalPrice).toFixed(2)}</p>
             </div>
           );
         })}
@@ -111,7 +112,10 @@ const ReceiptsSection = ({ step }) => {
           }`}
           value={`GHS${cartDiscountOnCartTotal}`}
         />
-        <ListItem text={`Promo Code ${cartPromoCode ? `(${cartPromoCode})` : ""}`} value={`GHS${cartPromoDiscount}`} />
+        <ListItem
+          text={`Promo Code ${cartPromoCode ? `(${cartPromoCode})` : hasAutoDiscount === "YES" ? `(AUTO)` : ""}`}
+          value={`GHS${cartPromoDiscount}`}
+        />
         <ListItem className="pt-4" text={`Subtotal    ${totalItemsInCart} item(s)`} value={`GHS${cartSubTotal}`} />
         {/* <ListItem className="" text="Fees" value={`GHS${fees}`} /> */}
         {/* <ListItem text="Tax COVID-19 Levy 4%" value={`GHS${covidTax}`} /> */}
