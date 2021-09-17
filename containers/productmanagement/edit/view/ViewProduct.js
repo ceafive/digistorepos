@@ -2,13 +2,12 @@ import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const ViewProduct = ({}) => {
+const ViewProduct = ({ productToView }) => {
   const router = useRouter();
 
-  const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
 
-  // console.log({ productWithVariants });
+  console.log(productToView?.product);
   // console.log({ manageProductCategories });
 
   return (
@@ -16,82 +15,79 @@ const ViewProduct = ({}) => {
       <button
         className="focus:outline-none font-bold mt-2"
         onClick={() => {
-          router.back();
+          router.replace("/products/manage");
         }}
       >
         Back
       </button>
       <div className="flex w-full h-full">
-        <div className="w-7/12 xl:w-8/12 pb-6 pt-12 px-4">
+        <div className="w-7/12 xl:w-8/12 pb-6 pt-6 px-4">
           <div>
-            <h1 className="font-bold text-blue-700 text-center mb-2 text-2xl">Details for {productWithVariants?.productName}</h1>
+            <h1 className="font-bold text-blue-700 text-center mb-2 text-2xl">Details for {productToView?.productName}</h1>
 
-            <div className="flex flex-wrap w-full justify-between items-center">
-              <div className="mb-8 mr-8">
+            <div className="flex flex-wrap w-full  items-center">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product ID</label>
-                <p>{productWithVariants?.id}</p>
+                <p>{productToView?.id}</p>
               </div>
 
-              <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Name</label>
-                <p>{productWithVariants?.productName}</p>
+                <p>{productToView?.productName}</p>
               </div>
 
-              <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Category</label>
                 <p>
-                  {
-                    manageProductCategories.find((category) => category?.product_category_id === productWithVariants?.productCategory)
-                      ?.product_category
-                  }
+                  {manageProductCategories.find((category) => category?.product_category_id === productToView?.productCategory)?.product_category}
                 </p>
               </div>
 
-              <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Description</label>
-                <p>{productWithVariants?.productDescription || "No Description"}</p>
+                <p>{productToView?.productDescription || "No Description"}</p>
               </div>
 
-              <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Price</label>
-                <p>GHS{productWithVariants?.sellingPrice}</p>
+                <p>GHS{productToView?.sellingPrice}</p>
               </div>
 
-              <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Quantity</label>
-                <p>{!productWithVariants?.setInventoryQuantity ? "Unlimited" : productWithVariants?.inventoryQuantity}</p>
+                <p>{!productToView?.setInventoryQuantity ? "Unlimited" : productToView?.inventoryQuantity}</p>
               </div>
 
-              <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Taxed</label>
-                <p>{productWithVariants?.applyTax === true ? "YES" : "NO"}</p>
+                <p>{productToView?.applyTax === true ? "YES" : "NO"}</p>
               </div>
 
-              <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Unit Cost</label>
-                <p>{productWithVariants?.costPerItem ? `GHS${productWithVariants?.costPerItem}` : "Not Entered"}</p>
+                <p>{productToView?.costPerItem ? `GHS${productToView?.costPerItem}` : "Not Entered"}</p>
               </div>
 
-              <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Weight</label>
-                <p>{productWithVariants?.weight || "Not Entered"}</p>
+                <p>{productToView?.weight || "Not Entered"}</p>
               </div>
 
-              {/* <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Create Date</label>
-                <p>{productWithVariants?.product_create_date}</p>
-              </div> */}
+                <p>{productToView?.product?.product_create_date}</p>
+              </div>
 
-              {/* <div className="mb-8 mr-8">
+              <div className="w-1/3 mb-8">
                 <label className="text-sm leading-none  font-bold">Product Merchant Name</label>
-                <p>{productWithVariants?.merchant_name}</p>
-              </div> */}
+                <p>{productToView?.product?.merchant_name}</p>
+              </div>
 
-              {productWithVariants?.product_properties && (
-                <div className="mb-8 mr-8">
+              {productToView?.product?.product_properties && (
+                <div className="w-full mb-8">
                   <label className="text-sm leading-none font-bold">Product Properties</label>
                   <div className="flex">
-                    {Object.entries(productWithVariants?.product_properties ?? {})?.map((product_property) => {
+                    {Object.entries(productToView?.product?.product_properties ?? {})?.map((product_property) => {
                       return (
                         <div key={product_property[0]} className="mr-8">
                           <p className="font-bold">{product_property[0]}</p>
@@ -111,11 +107,11 @@ const ViewProduct = ({}) => {
                 </div>
               )}
 
-              {productWithVariants?.product_properties_variants && (
-                <div className="mb-8 mr-8">
+              {productToView?.product?.product_properties_variants && (
+                <div className="w-1/3 mb-8">
                   <label className="text-sm leading-none font-bold">Product Variants</label>
                   <div className="flex ">
-                    {productWithVariants?.product_properties_variants?.map((product_property) => {
+                    {productToView?.product?.product_properties_variants?.map((product_property) => {
                       return (
                         <div key={product_property?.variantOptionId} className="mr-8">
                           <p className="text-sm">
@@ -133,12 +129,8 @@ const ViewProduct = ({}) => {
           </div>
         </div>
 
-        <div className="w-5/12 xl:w-4/12 pb-6 pt-12 px-4">
-          <img
-            className="w-full h-full object-cover rounded shadow-sm"
-            src={productWithVariants?.productImage}
-            alt={productWithVariants?.productName}
-          />
+        <div className="w-5/12 xl:w-4/12 pb-6 pt-6 px-4">
+          <img className="w-full h-84 object-cover rounded shadow-sm" src={productToView?.productImage} alt={productToView?.productName} />
         </div>
       </div>
     </>

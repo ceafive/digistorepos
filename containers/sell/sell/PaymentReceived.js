@@ -3,6 +3,7 @@ import { setProductsOnHold } from "features/products/productsSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
+import { configureVariables } from "utils";
 
 const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendingNotification, setReFetch }) => {
   const { addToast } = useToasts();
@@ -11,29 +12,29 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
   const cartTotalMinusDiscountPlusTax = useSelector((state) => state.cart.cartTotalMinusDiscountPlusTax);
   const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
   const currentCustomer = useSelector((state) => state.cart.currentCustomer);
+  const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
+  const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
+  const totalTaxes = useSelector((state) => state.cart.totalTaxes);
 
   const [compToRender, setCompToRender] = React.useState(null);
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [email, setEmail] = React.useState("");
 
+  const { change } = React.useMemo(
+    () => configureVariables({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }),
+    [transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer]
+  );
+
   return (
     <div className="py-20 mt-10 text-center">
       <p className="text-4xl font-bold ">Payment Received</p>
       <div>
-        {Number(
-          parseFloat(
-            amountReceivedFromPayer - cartTotalMinusDiscountPlusTax <= 0 ? 0 : amountReceivedFromPayer - cartTotalMinusDiscountPlusTax
-          ).toFixed(2)
-        ) > 0 && (
+        {change > 0 && (
           <p className="mt-2 text-4xl 2xl:text-5xl text-blueGray-900">
             <span className="font-bold">Give </span>
             <span className="font-bold">
               GHS
-              {Number(
-                parseFloat(
-                  amountReceivedFromPayer - cartTotalMinusDiscountPlusTax <= 0 ? 0 : amountReceivedFromPayer - cartTotalMinusDiscountPlusTax
-                ).toFixed(2)
-              )}
+              {change}
             </span>
             <span className="font-bold"> Change</span>
           </p>

@@ -18,7 +18,7 @@ import axios from "axios";
 import Dropdown from "components/Misc/Dropdown";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import { capitalize, filter, isEmpty, lowerCase } from "lodash";
-import MaterialTable, { MTableToolbar } from "material-table";
+import MaterialTable, { MTableEditField, MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
 import React, { forwardRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -516,9 +516,9 @@ const ManageProducts = ({ setReRUn }) => {
                       },
                     }}
                     components={{
-                      Toolbar: (props) => (
-                        <div>
-                          <MTableToolbar {...props} />
+                      EditField: (props) => (
+                        <div style={{ backgroundColor: "#e8eaf5" }}>
+                          <MTableEditField {...props} />
                         </div>
                       ),
                       Pagination: PatchedPagination,

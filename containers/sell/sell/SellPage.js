@@ -1,11 +1,11 @@
 import axios from "axios";
+import Spinner from "components/Spinner";
 import Cart from "containers/sell/sell/cart/Cart";
 import ProcessSale from "containers/sell/sell/ProcessSale";
 // import Modal from "components/Modal";
 // import InventoryDetails from "components/Product/InventoryDetails";
 // import ProcessSale from "components/Sell/ProcessSale";
 import ProductsSelection from "containers/sell/sell/ProductsSelection";
-import Spinner from "components/Spinner";
 import { setActivePayments, setAutoDiscount, setDeliveryTypes } from "features/cart/cartSlice";
 import { onSetProductCategories, openInventoryModal, productsAdded, setAllOutlets } from "features/products/productsSlice";
 import { motion } from "framer-motion";

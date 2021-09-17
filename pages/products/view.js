@@ -1,18 +1,11 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import ViewProduct from "containers/productmanagement/edit/ViewProduct";
-import {
-  setManageProductCategories,
-  setManageProductOutlets,
-  setManageProductProducts,
-  setProductHasVariants,
-  setProductWithVariants,
-} from "features/manageproducts/manageprodcutsSlice";
+import ViewProduct from "containers/productmanagement/edit/view/ViewProduct";
+import { setManageProductCategories, setManageProductOutlets, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
 import Admin from "layouts/Admin";
 import { capitalize, filter, intersectionWith, isEmpty, map } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
-import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
 const ViewProductDetails = () => {
@@ -23,7 +16,7 @@ const ViewProductDetails = () => {
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
 
-  const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
+  const [productToView, setProductToView] = React.useState(null);
 
   React.useEffect(() => {
     const fetchItems = async () => {
@@ -111,9 +104,12 @@ const ViewProductDetails = () => {
           variants: initial?.product_properties,
           variantsDistribution: initial?.product_properties_variants,
           weight: initial?.weight,
+          product,
         };
 
         dispatch(setProductWithVariants(valuesToDispatch));
+
+        setProductToView(valuesToDispatch);
       } catch (error) {
         console.log(error);
       } finally {
@@ -128,7 +124,7 @@ const ViewProductDetails = () => {
     };
   }, []);
 
-  if (fetching || isEmpty(productWithVariants)) {
+  if (fetching || !productToView) {
     return (
       <div className="min-h-screen-75 flex flex-col justify-center items-center h-full w-full">
         <Spinner type="TailSpin" width={50} height={50} />
@@ -136,7 +132,7 @@ const ViewProductDetails = () => {
     );
   }
 
-  return <ViewProduct />;
+  return <ViewProduct productToView={productToView} />;
 };
 
 export default ViewProductDetails;
