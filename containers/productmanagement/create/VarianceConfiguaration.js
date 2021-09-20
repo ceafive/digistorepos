@@ -16,6 +16,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
     register,
     reset,
     watch,
+    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm({});
@@ -53,6 +54,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
         const newValue = { ...objectValue };
         delete newValue?.Quantity;
         delete newValue?.Price;
+        delete newValue["QuantityUnlimited"];
 
         return newValue;
       });
@@ -65,14 +67,17 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
         return addToast(`Variant already added`, { appearance: "error", autoDismiss: true });
       }
 
-      setVarianceDistribution((varianceData) => ({ ...varianceData, [uuidv4()]: { ...values, Quantity: "", Price: "" } }));
+      setVarianceDistribution((varianceData) => ({
+        ...varianceData,
+        [uuidv4()]: { ...values, Quantity: "", QuantityUnlimited: false, Price: "" },
+      }));
     } catch (error) {
       console.log(error);
     }
   };
 
   const allVarianceDistribution = Object.entries(varianceDistribution);
-  console.log(Object.values(varianceDistribution));
+  // console.log(Object.values(varianceDistribution));
   // console.log(varianceDistribution);
   // console.log(allVarianceDistribution);
 
@@ -84,13 +89,17 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
 
       for (const [key, value] of Object.entries(varianceDistribution)) {
         for (const [keyOfKey, valueOfValue] of Object.entries(value)) {
+          // console.log(keyOfKey);
           // console.log({ keyOfKey, valueOfValue });
-          if (!valueOfValue) {
-            errorObjects.push({
-              error: true,
-              errorID: key,
-              errorKey: keyOfKey,
-            });
+
+          if (keyOfKey !== "QuantityUnlimited") {
+            if (!valueOfValue) {
+              errorObjects.push({
+                error: true,
+                errorID: key,
+                errorKey: keyOfKey,
+              });
+            }
           }
         }
       }
@@ -103,6 +112,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           errorKey: errorObject?.errorKey,
         });
       });
+
+      // console.log({ errorObjects });
 
       if (errorObjects.length === 0) {
         let propertyListIndexIncrease = -1;
@@ -136,11 +147,14 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
         }, {});
 
         const varianceDistributionValues = Object.values(varianceDistribution);
+
+        // console.log({ varianceDistributionValues });
         const variants_options = varianceDistributionValues?.reduce((acc, val) => {
           variantOptionsIndexIncrease += 1;
           const newVal = { ...val };
           delete newVal?.Price;
           delete newVal?.Quantity;
+          delete newVal["QuantityUnlimited"];
 
           const values = Object.entries(newVal);
 
@@ -158,7 +172,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
             [variantOptionsIndexIncrease]: {
               variantOptionValue: optionValues,
               variantOptionPrice: val?.Price,
-              variantOptionQuantity: val?.Quantity,
+              variantOptionQuantity: val["QuantityUnlimited"] ? "-99" : val?.Quantity,
             },
           };
         }, {});
@@ -203,10 +217,12 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           merchant: user["user_merchant_id"],
           mod_by: user["login"],
           property_list: JSON.stringify(property_list),
-          variants_options: JSON.stringify(variants_options),
+          variants_options: varianceDistributionValues.length > 0 ? JSON.stringify(variants_options) : JSON.stringify({ 0: {} }),
         };
 
         // console.log(payload);
+        // return;
+
         const addProductRes = await axios.post("/api/products/create-product", { data: payload });
 
         const response = await addProductRes.data;
@@ -214,6 +230,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
 
         if (Number(response?.status) === 0) {
           addToast(response?.message, { appearance: "success", autoDismiss: true });
+
           router.push("/products/manage");
         } else {
           addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
@@ -230,6 +247,20 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
   };
 
   // console.log(submitFormErrors);
+
+  const handleQuantityUnlimited = (e, variance) => {
+    if (e.target.checked) {
+      setVarianceDistribution((values) => ({
+        ...values,
+        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "-99", ["QuantityUnlimited"]: true },
+      }));
+    } else {
+      setVarianceDistribution((values) => ({
+        ...values,
+        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "", ["QuantityUnlimited"]: false },
+      }));
+    }
+  };
 
   return (
     <div className="px-4">
@@ -288,7 +319,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
             {/* Variance Distribution */}
             {allVarianceDistribution?.length > 0 && (
               <div className="mt-4">
-                <div className={`grid grid-cols-${productWithVariants?.variants?.length + 3} gap-3`}>
+                <div className={`grid grid-cols-${productWithVariants?.variants?.length + 4} gap-3`}>
                   {productWithVariants?.variants?.map((variant) => {
                     const capitalizeName = capitalize(variant?.name);
                     return (
@@ -298,6 +329,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                     );
                   })}
                   <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Quantity Unlimited</h1>
                   <h1 className="font-bold text-blue-700 self-center">Price</h1>
                   <h1 className="font-bold text-blue-700 self-center">Actions</h1>
                 </div>
@@ -315,7 +347,9 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                             return (
                               <div key={key} className="self-center ">
                                 <input
+                                  disabled={key === "Quantity" && value === "-99" ? true : false}
                                   type="number"
+                                  min="1"
                                   value={varianceDistribution[variance[0]][key] ?? ""}
                                   onChange={(e) => {
                                     e.persist();
@@ -330,6 +364,20 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                                 {errorObject?.errorID === formattedVarianceKey && key === errorObject?.errorKey && (
                                   <p className="text-xs text-red-500">{errorObject?.message}</p>
                                 )}
+                              </div>
+                            );
+                          } else if (key === "QuantityUnlimited") {
+                            return (
+                              <div key={key} className="flex self-center">
+                                <input
+                                  type="checkbox"
+                                  checked={value}
+                                  onChange={(e) => {
+                                    handleQuantityUnlimited(e, variance); // your method
+                                  }}
+                                />
+
+                                <label className="text-xs ml-1">Unlimited</label>
                               </div>
                             );
                           } else {

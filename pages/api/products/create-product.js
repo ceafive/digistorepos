@@ -11,7 +11,7 @@ async function handler(req, res) {
   const payload = req.body.data;
   const url = `/products/product`;
 
-  console.log({ payload });
+  // console.log({ payload });
   Object.entries(payload).forEach(([key, value]) => {
     if (key === "image") {
       const dataURL = value?.dataURL;

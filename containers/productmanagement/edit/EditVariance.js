@@ -41,6 +41,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
         delete newValue?.Quantity;
         delete newValue?.Price;
         delete newValue?.variantOptionId;
+        delete newValue["QuantityUnlimited"];
 
         return newValue;
       });
@@ -53,7 +54,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
         return addToast(`Variant already added`, { appearance: "error", autoDismiss: true });
       }
 
-      setVarianceDistribution((varianceData) => ({ ...varianceData, [uuidv4()]: { ...values, Quantity: "", Price: "" } }));
+      setVarianceDistribution((varianceData) => ({ ...varianceData, [uuidv4()]: { ...values, Price: "", Quantity: "", QuantityUnlimited: false } }));
     } catch (error) {
       console.log(error);
     }
@@ -61,8 +62,10 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
 
   React.useEffect(() => {
     const values = productWithVariants?.variantsDistribution?.reduce((acc, variantDistribution) => {
+      // console.log(variantDistribution);
       const data = {
         Quantity: variantDistribution?.variantOptionQuantity,
+        QuantityUnlimited: variantDistribution?.variantOptionQuantity === "-99" ? true : false,
         Price: variantDistribution?.variantOptionPrice,
         ...variantDistribution?.variantOptionValue,
       };
@@ -97,12 +100,14 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
       for (const [key, value] of Object.entries(varianceDistribution)) {
         for (const [keyOfKey, valueOfValue] of Object.entries(value)) {
           // console.log({ keyOfKey, valueOfValue });
-          if (!valueOfValue) {
-            errorObjects.push({
-              error: true,
-              errorID: key,
-              errorKey: keyOfKey,
-            });
+          if (keyOfKey !== "QuantityUnlimited") {
+            if (!valueOfValue) {
+              errorObjects.push({
+                error: true,
+                errorID: key,
+                errorKey: keyOfKey,
+              });
+            }
           }
         }
       }
@@ -173,6 +178,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           delete newVal?.Price;
           delete newVal?.Quantity;
           delete newVal?.variantOptionId;
+          delete newVal["QuantityUnlimited"];
 
           const values = Object.entries(newVal);
 
@@ -188,7 +194,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           const data = {
             variantOptionValue: optionValues,
             variantOptionPrice: val?.Price,
-            variantOptionQuantity: val?.Quantity,
+            variantOptionQuantity: val["QuantityUnlimited"] ? "-99" : val?.Quantity,
           };
 
           if (val?.variantOptionId) {
@@ -263,13 +269,14 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           };
         }
 
-        // console.log({ payload });
+        console.log({ payload });
         console.log({ dataToSendBack });
+        // return;
 
         dispatch(setProductWithVariants(dataToSendBack));
         setGoToVarianceConfig(false);
-        return;
 
+        return;
         const updateProductRes = await axios.post("/api/products/update-product", {
           data: payload,
         });
@@ -349,6 +356,21 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
   };
 
   // return null;
+
+  const handleQuantityUnlimited = (e, variance) => {
+    if (e.target.checked) {
+      setVarianceDistribution((values) => ({
+        ...values,
+        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "-99", ["QuantityUnlimited"]: true },
+      }));
+    } else {
+      setVarianceDistribution((values) => ({
+        ...values,
+        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "", ["QuantityUnlimited"]: false },
+      }));
+    }
+  };
+
   return (
     <div className="px-4 pb-6 pt-6">
       <h1>Setup Product Variant Permutations</h1>
@@ -401,7 +423,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
             {/* Variance Distribution */}
             {allVarianceDistribution?.length > 0 && (
               <div className="mt-4">
-                <div className={`grid grid-cols-${productWithVariants?.variants?.length + 3} gap-3`}>
+                <div className={`grid grid-cols-${productWithVariants?.variants?.length + 4} gap-3`}>
                   {sortBy(productWithVariants?.variants, ["name"])?.map((variant) => {
                     const capitalizeName = capitalize(variant?.name);
                     return (
@@ -417,6 +439,9 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                   </div>
                   <div className="self-center">
                     <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
+                  </div>
+                  <div className="self-center">
+                    <h1 className="font-bold text-blue-700 self-center">Quantity Unlimited</h1>
                   </div>
                   <div className="self-center">
                     <h1 className="font-bold text-blue-700 self-center">Actions</h1>
@@ -447,7 +472,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                     const formattedVarianceEntries = Object.entries(sortedNewValues);
 
                     const removeKeys = formattedVarianceEntries.filter(([key]) => {
-                      if (key === "Quantity" || key === "Price") return false;
+                      if (key === "Quantity" || key === "Price" || key === "QuantityUnlimited") return false;
                       else return true;
                     });
 
@@ -455,6 +480,11 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
 
                     const removePriceAndQuantty = formattedVarianceEntries.filter(([key]) => {
                       if (key === "Quantity" || key === "Price") return true;
+                      else return false;
+                    });
+
+                    const removeQuantityUnlimited = formattedVarianceEntries.filter(([key]) => {
+                      if (key === "QuantityUnlimited") return true;
                       else return false;
                     });
 
@@ -472,6 +502,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                           return (
                             <div key={key} className="self-center ">
                               <input
+                                disabled={key === "Quantity" && value === "-99" ? true : false}
                                 type="number"
                                 value={varianceDistribution[variance[0]][key] ?? ""}
                                 onChange={(e) => {
@@ -487,6 +518,22 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                               {errorObject?.errorID === formattedVarianceKey && key === errorObject?.errorKey && (
                                 <p className="text-xs text-red-500">{errorObject?.message}</p>
                               )}
+                            </div>
+                          );
+                        })}
+
+                        {removeQuantityUnlimited.map(([key, value]) => {
+                          return (
+                            <div key={key} className="flex self-center">
+                              <input
+                                type="checkbox"
+                                checked={value}
+                                onChange={(e) => {
+                                  handleQuantityUnlimited(e, variance); // your method
+                                }}
+                              />
+
+                              <label className="text-xs ml-1">Unlimited</label>
                             </div>
                           );
                         })}

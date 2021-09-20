@@ -24,6 +24,8 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  console.log({ router });
+
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
   const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
@@ -309,6 +311,7 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
         });
         setImages([]);
         router.push("/products/manage");
+        // router.push(`/products/edit?product_id=${router?.query?.product_id}&hasVariants=yes`);
       } else {
         addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
       }
@@ -618,6 +621,7 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
                             validate: (value) => (isInventorySet ? Boolean(value) && Number(value) > 0 : true) || "Quantity is required",
                           })}
                           type="number"
+                          min="1"
                           placeholder="Quantity in stock"
                           className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                         />

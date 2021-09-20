@@ -18,7 +18,19 @@ import { useToasts } from "react-toast-notifications";
 import AddCategory from "../create/AddCategory";
 import UploadImage from "../create/UploadImage";
 
-const EditProductVariance = ({ register, reset, watch, setValue, errors, clearErrors, handleSubmit, fields, append, remove, setGoToVarianceConfig }) => {
+const EditProductVariance = ({
+  register,
+  reset,
+  watch,
+  setValue,
+  errors,
+  clearErrors,
+  handleSubmit,
+  fields,
+  append,
+  remove,
+  setGoToVarianceConfig,
+}) => {
   const { addToast, removeToast } = useToasts();
   const dispatch = useDispatch();
   const router = useRouter();
@@ -29,8 +41,8 @@ const EditProductVariance = ({ register, reset, watch, setValue, errors, clearEr
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
-  console.log(productWithVariants);
-  console.log(productHasVariants);
+  // console.log(productWithVariants);
+  // console.log(productHasVariants);
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);

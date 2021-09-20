@@ -18,7 +18,7 @@ import axios from "axios";
 import Dropdown from "components/Misc/Dropdown";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import { capitalize, filter, isEmpty, lowerCase } from "lodash";
-import MaterialTable, { MTableEditField, MTableToolbar } from "material-table";
+import MaterialTable, { MTableEditCell, MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
 import React, { forwardRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -176,8 +176,10 @@ const ManageProducts = ({ setReRUn }) => {
     // },
   ];
 
-  const updateProductVariant = async (newValue, parentData, childData, columnDef) => {
+  const updateProductVariant = async (newValue, parentData, childData, columnDef, isUnlimited) => {
     try {
+      // console.log(isUnlimited, newValue);
+      // return;
       addToast(`Updating Variant...`, { appearance: "info", autoDismiss: true, id: "update-variant" });
       let user = sessionStorage.getItem("IPAYPOSUSER");
       user = JSON.parse(user);
@@ -186,7 +188,14 @@ const ManageProducts = ({ setReRUn }) => {
       const data = {
         variant: childData?.variantOptionId,
         price: columnDef?.field === "variantOptionPrice" ? newValue : childData?.variantOptionPrice,
-        quantity: columnDef?.field === "variantOptionQuantity" ? newValue : childData?.variantOptionQuantity,
+        quantity:
+          columnDef?.field === "variantOptionQuantity"
+            ? isUnlimited
+              ? "-99"
+              : newValue
+            : childData?.variantOptionQuantity === "Unlimited"
+            ? "-99"
+            : childData?.variantOptionQuantity,
         product: parentData?.product_id,
         merchant: user?.user_merchant_id,
         mod_by: user?.login,
@@ -431,43 +440,13 @@ const ManageProducts = ({ setReRUn }) => {
                   {
                     title: "In Stock",
                     field: "variantOptionQuantity",
-                    editable: () => false,
                     cellStyle() {
                       return {
                         width: 400,
                       };
                     },
-                    render(detailRowData) {
-                      const disabled = ["Unlimited", "-99"].includes(detailRowData?.variantOptionQuantity);
-                      return <button disabled={disabled}>{detailRowData?.variantOptionQuantity}</button>;
-                    },
                   },
-                  {
-                    title: "Is Quantity Unlimited",
-                    field: "quantityUnlimited",
-                    editable: "never",
-                    render(detailRowData) {
-                      // console.log({ detailRowData });
-                      return (
-                        <input
-                          name="quantityUnlimited"
-                          type="checkbox"
-                          onChange={async (e) => {
-                            console.log(e.target.checked);
-                            // console.log(rowData);
-                            // console.log(detailRowData);
 
-                            if (!e.target.checked) {
-                              await updateProductVariant("-99", rowData, detailRowData, { field: `variantOptionQuantity` });
-                            } else {
-                              await updateProductVariant("1", rowData, detailRowData, { field: `variantOptionQuantity` });
-                            }
-                          }}
-                          checked={["Unlimited", "-99"].includes(detailRowData?.variantOptionQuantity)}
-                        />
-                      );
-                    },
-                  },
                   { title: "Qty. Sold", field: "variantOptionQuantitySold", editable: "never" },
                   { title: "Last Stock Date", field: "variantOptionLastStockUpdated", editable: "never" },
                   {
@@ -497,8 +476,8 @@ const ManageProducts = ({ setReRUn }) => {
                       overflow: "hidden",
                     }}
                     cellEditable={{
-                      onCellEditApproved: async (newValue, oldValue, childRowData, columnDef) => {
-                        await updateProductVariant(newValue, rowData, childRowData, columnDef);
+                      onCellEditApproved: async (newValue, oldValue, childRowData, columnDef, isUnlimited) => {
+                        await updateProductVariant(newValue, rowData, childRowData, columnDef, isUnlimited);
                       },
                     }}
                     isLoading={loading}
@@ -516,11 +495,80 @@ const ManageProducts = ({ setReRUn }) => {
                       },
                     }}
                     components={{
-                      EditField: (props) => (
-                        <div style={{ backgroundColor: "#e8eaf5" }}>
-                          <MTableEditField {...props} />
-                        </div>
-                      ),
+                      EditCell: (props) => {
+                        console.log(props);
+                        const [isUnlimited, setIsUnlimited] = React.useState(["Unlimited", "-99"].includes(props?.rowData?.variantOptionQuantity));
+                        const [newQuantity, setNewQuantity] = React.useState(props?.rowData?.variantOptionQuantity);
+
+                        if (props?.columnDef?.field === "variantOptionQuantity") {
+                          return (
+                            <td
+                              style={{
+                                boxShadow: "2px 0px 15px rgba(125,147,178,.25)",
+                                color: "inherit",
+                                width: props.columnDef.tableData.width,
+                                fontSize: "inherit",
+                                fontFamily: "inherit",
+                                fontWeight: "inherit",
+                                padding: "0 16px",
+                              }}
+                            >
+                              <div className="flex items-center w-full">
+                                <input
+                                  disabled={isUnlimited}
+                                  value={newQuantity}
+                                  onChange={(e) => {
+                                    e.persist();
+                                    setNewQuantity(e.target.value);
+                                  }}
+                                  min="1"
+                                  type="number"
+                                  placeholder="eg. 0"
+                                  className="w-32 px-3 py-2 text-sm bg-white border border-black rounded outline-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1 "
+                                />
+
+                                <div className="flex items-center ml-2">
+                                  <input
+                                    name="quantityUnlimited"
+                                    type="checkbox"
+                                    checked={isUnlimited}
+                                    onChange={async (e) => {
+                                      setIsUnlimited(e.target.checked);
+                                    }}
+                                  />
+
+                                  <label className="text-xs ml-1">Unlimited</label>
+                                  <button
+                                    className="p-2 focus:outline-none text-green-500"
+                                    onClick={() => {
+                                      props.cellEditable?.onCellEditApproved(
+                                        newQuantity,
+                                        props.rowData[props.columnDef.field],
+                                        props.rowData,
+                                        props.columnDef,
+                                        isUnlimited
+                                      );
+                                    }}
+                                  >
+                                    <i className="fas fa-check"></i>
+                                  </button>
+                                  <button
+                                    className="p-2 focus:outline-none text-red-500"
+                                    onClick={() => {
+                                      props.onCellEditFinished(props.rowData, props.columnDef);
+                                    }}
+                                  >
+                                    <i className="fas fa-times"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </td>
+                          );
+                        } else {
+                          return <MTableEditCell {...props} />;
+                        }
+                      },
+
                       Pagination: PatchedPagination,
                     }}
                   />
