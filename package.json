@@ -45,7 +45,7 @@
   },
   "scripts": {
     "start": "next start",
-    "dev": "next dev",
+    "dev": "next dev -p 5000",
     "build": "ANALYZE=true NODE_OPTIONS=\"--max_old_space_size=4096\" next build",
     "test": "yarn run cypress open",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm run build:tailwind && npm run dev",

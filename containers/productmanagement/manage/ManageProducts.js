@@ -201,7 +201,7 @@ const ManageProducts = ({ setReRUn }) => {
         mod_by: user?.login,
       };
 
-      console.log({ data });
+      // console.log({ data });
       // return;
 
       const updateVariantRes = await axios.post("/api/products/update-product-variant-props", { data });
@@ -445,6 +445,17 @@ const ManageProducts = ({ setReRUn }) => {
                         width: 400,
                       };
                     },
+                    render(rowData) {
+                      return (
+                        <p>
+                          {rowData?.variantOptionQuantity === "-99"
+                            ? "Unlimited"
+                            : rowData?.variantOptionQuantity === "0"
+                            ? "Out of Stock"
+                            : rowData?.variantOptionQuantity}
+                        </p>
+                      );
+                    },
                   },
 
                   { title: "Qty. Sold", field: "variantOptionQuantitySold", editable: "never" },
@@ -496,7 +507,7 @@ const ManageProducts = ({ setReRUn }) => {
                     }}
                     components={{
                       EditCell: (props) => {
-                        console.log(props);
+                        // console.log(props);
                         const [isUnlimited, setIsUnlimited] = React.useState(["Unlimited", "-99"].includes(props?.rowData?.variantOptionQuantity));
                         const [newQuantity, setNewQuantity] = React.useState(props?.rowData?.variantOptionQuantity);
 

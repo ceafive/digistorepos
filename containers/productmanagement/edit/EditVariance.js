@@ -269,8 +269,8 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           };
         }
 
-        console.log({ payload });
-        console.log({ dataToSendBack });
+        // console.log({ payload });
+        // console.log({ dataToSendBack });
         // return;
 
         dispatch(setProductWithVariants(dataToSendBack));

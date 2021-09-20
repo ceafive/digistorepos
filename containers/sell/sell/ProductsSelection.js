@@ -274,6 +274,7 @@ const ProductsSelection = () => {
             {/* <h1 className="text-center my-1">Products</h1> */}
             <div className="grid grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
               {productsDisplay.map((product, index) => {
+                console.log(product);
                 const imgUrlBase = "https://payments.ipaygh.com/app/webroot/img/products/";
                 return (
                   <div
