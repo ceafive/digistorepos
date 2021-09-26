@@ -39,7 +39,6 @@ export default function Login() {
     message: "",
   });
   const [displayMessage, setDisplayMessage] = React.useState("");
-
   const [step, setStep] = React.useState(0);
 
   const handleUserSignIn = async (values) => {
@@ -173,6 +172,7 @@ export default function Login() {
               <div className="mb-4 text-gray-700">
                 <p className="text-center px-10 font-medium">{displayMessage}</p>
               </div>
+
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
                 <form>
                   <div className="relative w-full mb-3">

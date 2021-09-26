@@ -89,8 +89,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
 
       for (const [key, value] of Object.entries(varianceDistribution)) {
         for (const [keyOfKey, valueOfValue] of Object.entries(value)) {
-          // console.log(keyOfKey);
-          // console.log({ keyOfKey, valueOfValue });
+          console.log(keyOfKey);
+          console.log({ keyOfKey, valueOfValue });
 
           if (keyOfKey !== "QuantityUnlimited") {
             if (!valueOfValue) {
@@ -220,7 +220,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           variants_options: varianceDistributionValues.length > 0 ? JSON.stringify(variants_options) : JSON.stringify({ 0: {} }),
         };
 
-        // console.log(payload);
+        console.log(payload);
         // return;
 
         const addProductRes = await axios.post("/api/products/create-product", { data: payload });
@@ -252,7 +252,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
     if (e.target.checked) {
       setVarianceDistribution((values) => ({
         ...values,
-        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "-99", ["QuantityUnlimited"]: true },
+        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "Unlimited", ["QuantityUnlimited"]: true },
       }));
     } else {
       setVarianceDistribution((values) => ({
@@ -347,8 +347,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                             return (
                               <div key={key} className="self-center ">
                                 <input
-                                  disabled={key === "Quantity" && value === "-99" ? true : false}
-                                  type="number"
+                                  disabled={key === "Quantity" && value === "Unlimited" ? true : false}
+                                  type={key === "Quantity" && value === "Unlimited" ? "text" : "number"}
                                   min="1"
                                   value={varianceDistribution[variance[0]][key] ?? ""}
                                   onChange={(e) => {

@@ -361,7 +361,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
     if (e.target.checked) {
       setVarianceDistribution((values) => ({
         ...values,
-        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "-99", ["QuantityUnlimited"]: true },
+        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "Unlimited", ["QuantityUnlimited"]: true },
       }));
     } else {
       setVarianceDistribution((values) => ({
@@ -503,7 +503,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                             <div key={key} className="self-center ">
                               <input
                                 disabled={key === "Quantity" && value === "-99" ? true : false}
-                                type="number"
+                                type={key === "Quantity" && value === "Unlimited" ? "text" : "number"}
                                 value={varianceDistribution[variance[0]][key] ?? ""}
                                 onChange={(e) => {
                                   e.persist();

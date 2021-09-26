@@ -68,7 +68,6 @@ const ManageProducts = ({ setReRUn }) => {
 
   const [allProducts, setAllProducts] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [enableQuantityField, setEnableQuantityField] = React.useState({ status: false, id: "" });
 
   React.useEffect(() => {
     if (categorySelected !== "All") {
@@ -178,8 +177,15 @@ const ManageProducts = ({ setReRUn }) => {
 
   const updateProductVariant = async (newValue, parentData, childData, columnDef, isUnlimited) => {
     try {
-      // console.log(isUnlimited, newValue);
+      // console.log(isUnlimited, newValue, columnDef?.field);
+      // console.log(columnDef?.field === "variantOptionQuantity" && !isUnlimited && newValue);
       // return;
+
+      if (columnDef?.field === "variantOptionQuantity" && !isUnlimited && !newValue) {
+        addToast(`Value must be entered...`, { appearance: "error", autoDismiss: true });
+        return;
+      }
+
       addToast(`Updating Variant...`, { appearance: "info", autoDismiss: true, id: "update-variant" });
       let user = sessionStorage.getItem("IPAYPOSUSER");
       user = JSON.parse(user);
@@ -509,7 +515,9 @@ const ManageProducts = ({ setReRUn }) => {
                       EditCell: (props) => {
                         // console.log(props);
                         const [isUnlimited, setIsUnlimited] = React.useState(["Unlimited", "-99"].includes(props?.rowData?.variantOptionQuantity));
-                        const [newQuantity, setNewQuantity] = React.useState(props?.rowData?.variantOptionQuantity);
+                        const [newQuantity, setNewQuantity] = React.useState(
+                          props?.rowData?.variantOptionQuantity === "-99" ? "" : props?.rowData?.variantOptionQuantity
+                        );
 
                         if (props?.columnDef?.field === "variantOptionQuantity") {
                           return (
@@ -533,8 +541,8 @@ const ManageProducts = ({ setReRUn }) => {
                                     setNewQuantity(e.target.value);
                                   }}
                                   min="1"
-                                  type="number"
-                                  placeholder="eg. 0"
+                                  type={isUnlimited ? "text" : "number"}
+                                  placeholder="eg. 100"
                                   className="w-32 px-3 py-2 text-sm bg-white border border-black rounded outline-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1 "
                                 />
 

@@ -9,6 +9,7 @@ import {
   setShowAddCategoryModal,
 } from "features/manageproducts/manageprodcutsSlice";
 import { filter, get } from "lodash";
+import { useRouter } from "next/router";
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +19,7 @@ import AddCategory from "./AddCategory";
 import UploadImage from "./UploadImage";
 
 const AddProductDetails = ({ setGoToVarianceConfig }) => {
+  const router = useRouter();
   const { addToast, removeToast } = useToasts();
   const dispatch = useDispatch();
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
@@ -275,6 +277,14 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
           action={sumbitNewCategoryToServer}
         />
       </Modal>
+      <button
+        className="focus:outline-none font-bold"
+        onClick={() => {
+          router.back();
+        }}
+      >
+        Back
+      </button>
       <h1>Setup Products</h1>
       <div className="flex w-full h-full">
         <div className="w-7/12 xl:w-8/12 pb-6 pt-12 px-4">
@@ -414,11 +424,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
               </div>
             </div>
             <div className="w-full mr-2">
-              <input
-                {...register("applyTax")}
-                type="checkbox"
-                className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
-              />
+              <input {...register("applyTax")} type="checkbox" className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2" />
 
               <label className="text-sm leading-none  font-bold">Apply tax on this product</label>
             </div>
