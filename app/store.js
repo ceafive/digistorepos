@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import * as Sentry from "@sentry/react";
-import logger from "redux-logger";
+// import logger from "redux-logger";
 
 import appReducer from "../features/app/appSlice";
 import cartReducer from "../features/cart/cartSlice";
@@ -24,6 +24,6 @@ const rootReducer = {
 
 export const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+  // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
   enhancers: [sentryReduxEnhancer],
 });
