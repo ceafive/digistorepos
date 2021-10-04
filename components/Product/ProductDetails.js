@@ -203,7 +203,7 @@ const ProductDetails = ({ onClose }) => {
               });
 
             return `Variant Combination: ${Object.values(sortedNewValues).join("/")} Price: GHS${product_property?.variantOptionPrice}  Quantity: ${
-              product_property?.variantOptionQuantity
+              product_property?.variantOptionQuantity === "-99" ? "Unlimited" : product_property?.variantOptionQuantity
             }`;
           });
 

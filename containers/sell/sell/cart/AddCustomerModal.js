@@ -42,8 +42,12 @@ const AddCustomerModal = ({ onClose, functionToRun = () => {} }) => {
 
       if (Number(status) === 0 || Number(status) === 91) {
         const getCustomerRes = await axios.post("/api/sell/sell/get-customer", { phoneNumber: userData?.client_phone });
+
+        // console.log({ getCustomerRes });
         const { data } = await getCustomerRes.data;
-        functionToRun(data);
+        const user = Array.isArray(data) ? data[0] : data;
+
+        functionToRun(user);
       }
 
       reset({
@@ -72,7 +76,7 @@ const AddCustomerModal = ({ onClose, functionToRun = () => {} }) => {
     <div className="w-full p-5">
       <div className="flex flex-wrap mb-6">
         <div className="w-full px-3 mb-6 md:w-1/2 md:mb-0">
-          <label className="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">Full Name</label>
+          <label className="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">Full Name (mandatory) </label>
           <input
             className="block w-full px-4 py-3 mb-3 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white"
             {...register("fullName", { required: "Please enter a name" })}
@@ -95,7 +99,7 @@ const AddCustomerModal = ({ onClose, functionToRun = () => {} }) => {
 
       <div className="flex flex-wrap mb-2">
         <div className="w-full px-3 mb-6 md:w-1/2 md:mb-0">
-          <label className="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">Phone</label>
+          <label className="block mb-2 text-xs font-bold tracking-wide text-gray-700 uppercase">Phone (mandatory)</label>
           <input
             {...register("phone", {
               required: "Please enter a phone number",

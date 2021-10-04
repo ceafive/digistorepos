@@ -20,7 +20,7 @@ import PatchedPagination from "components/Misc/PatchedPagination";
 import Modal from "components/Modal";
 import { setManageProductCategories } from "features/manageproducts/manageprodcutsSlice";
 import { capitalize, filter } from "lodash";
-import MaterialTable, { MTableToolbar } from "material-table";
+import MaterialTable, { MTableBodyRow, MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
 import React, { forwardRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -72,6 +72,8 @@ const ManageCategories = ({ setReRUn }) => {
   } = useForm();
 
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
+
+  // console.log({ manageProductCategories });
 
   const [processing, setProcessing] = React.useState(false);
   const [allCategories, setAllCategories] = React.useState([]);
@@ -258,7 +260,7 @@ const ManageCategories = ({ setReRUn }) => {
       field: "product_count",
     },
     { title: "Mod. By", field: "mod_by" },
-    { title: "Mod. Date", field: "mod_date", defaultSort: "desc" },
+    { title: "Mod. Date", field: "mod_date" },
     {
       title: "Actions",
       field: "actions",
@@ -269,6 +271,32 @@ const ManageCategories = ({ setReRUn }) => {
   ];
 
   const buttonAction = isEditing ? updateCategory : addNewCategory;
+
+  const DragState = {
+    row: -1,
+    dropIndex: -1, // drag target
+  };
+
+  const onRowSelected = (_evt, rowData) => {
+    // console.log({ rowData });
+  };
+
+  const displaceObject = (fromIndex, toIndex, arrayToBeModified) => {
+    let modCollection = [...arrayToBeModified];
+    if (fromIndex < toIndex) {
+      let start = arrayToBeModified.slice(0, fromIndex),
+        between = arrayToBeModified.slice(fromIndex + 1, toIndex + 1),
+        end = arrayToBeModified.slice(toIndex + 1);
+      modCollection = [...start, ...between, arrayToBeModified[fromIndex], ...end];
+    }
+    if (fromIndex > toIndex) {
+      let start = arrayToBeModified.slice(0, toIndex),
+        between = arrayToBeModified.slice(toIndex, fromIndex),
+        end = arrayToBeModified.slice(fromIndex + 1);
+      modCollection = [...start, arrayToBeModified[fromIndex], ...between, ...end];
+    }
+    return modCollection;
+  };
 
   return (
     <>
@@ -338,7 +366,35 @@ const ManageCategories = ({ setReRUn }) => {
               </div>
             ),
             Pagination: PatchedPagination,
+            Row: (interProps) => (
+              <MTableBodyRow
+                {...interProps}
+                draggable="true"
+                onDragStart={() => {
+                  DragState.row = interProps.data.tableData.id;
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                }}
+                onDragEnter={() => {
+                  // console.log(interProps);
+                  if (interProps.data.tableData.id !== DragState.row) {
+                    DragState.dropIndex = interProps.data.tableData.id;
+                  }
+                }}
+                onDragEnd={() => {
+                  if (DragState.dropIndex !== -1) {
+                    const data = displaceObject(DragState.row, DragState.dropIndex, manageProductCategories);
+                    // console.log({ data });
+                    dispatch(setManageProductCategories(data));
+                  }
+                  DragState.row = -1;
+                  DragState.dropIndex = -1;
+                }}
+              />
+            ),
           }}
+          onRowClick={onRowSelected}
         />
       </div>
     </>

@@ -79,62 +79,67 @@ const AddCustomer = ({ step, setStep, setOpenModal, setComponentToRender }) => {
                 {searching ? <Spinner width={20} height={20} /> : <i className="fas fa-times-circle"></i>}
               </span>
             </div>
-            {watchCustomerSearch && (
-              <div
-                className={`z-10 absolute w-full p-2 bg-white border border-gray-500 rounded shadow-3xl 
+            <div
+              className={`z-10 absolute w-full p-2 bg-white border border-gray-500 rounded shadow-3xl 
            
               `}
-                // ${ allCustomers.length > 0 && "overflow-x-hidden overflow-scroll" }
-                style={{
-                  top: 50,
-                  // height: allCustomers.length > 0 ? 90 : "auto",
-                }}
-              >
-                {allCustomers.length > 0 ? (
-                  allCustomers?.map((customer) => {
-                    // console.log(customer);
-                    return (
-                      <div
-                        className="w-full py-1 cursor-pointer"
-                        key={customer.customer_id}
-                        onClick={() => {
-                          dispatch(addCustomer(customer));
-                          setStep(2);
-                          setAllCustomers([]);
-                          // console.log(customer);
-                        }}
-                      >
-                        <div className="flex items-center" key={customer.customer_id}>
-                          <div className="flex items-center w-full">
-                            <div className="flex items-center justify-between w-full px-1">
-                              <div className="flex items-center">
-                                <span className="font-bold">{customer.customer_name}</span>
-                                <span className="ml-2 text-xs">{customer.customer_email}</span>
-                                <span className="ml-2 text-xs">{customer.customer_phone}</span>
+              // ${ allCustomers.length > 0 && "overflow-x-hidden overflow-scroll" }
+              style={{
+                top: 50,
+                // height: allCustomers.length > 0 ? 90 : "auto",
+              }}
+            >
+              {watchCustomerSearch && (
+                <>
+                  {allCustomers.length > 0 ? (
+                    <>
+                      {allCustomers?.map((customer) => {
+                        // console.log(customer);
+                        return (
+                          <div
+                            className="w-full py-1 cursor-pointer"
+                            key={customer.customer_id}
+                            onClick={() => {
+                              dispatch(addCustomer(customer));
+                              setStep(2);
+                              setAllCustomers([]);
+                              // console.log(customer);
+                            }}
+                          >
+                            <div className="flex items-center" key={customer.customer_id}>
+                              <div className="flex items-center w-full">
+                                <div className="flex items-center justify-between w-full px-1">
+                                  <div className="flex items-center">
+                                    <span className="font-bold">{customer.customer_name}</span>
+                                    <span className="ml-2 text-xs">{customer.customer_email}</span>
+                                    <span className="ml-2 text-xs">{customer.customer_phone}</span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="flex flex-col items-center justify-between w-full h-full">
-                    <p className="font-medium">No customer found</p>
-
-                    <button
-                      className="text-sm text-blue-500 focus:outline-none"
-                      onClick={() => {
-                        setComponentToRender("addCustomerModal");
-                        setOpenModal(true);
-                      }}
-                    >
-                      Add New Customer
-                    </button>
-                  </div>
-                )}
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-between w-full h-full">
+                      <p className="font-medium">No customer found</p>
+                    </div>
+                  )}
+                </>
+              )}
+              <div className="flex flex-col items-center justify-between w-full h-full">
+                <button
+                  className="text-sm text-blue-500 focus:outline-none"
+                  onClick={() => {
+                    setComponentToRender("addCustomerModal");
+                    setOpenModal(true);
+                  }}
+                >
+                  Add New Customer
+                </button>
               </div>
-            )}
+            </div>
           </div>
         )}
 

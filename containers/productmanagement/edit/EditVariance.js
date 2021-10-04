@@ -499,12 +499,18 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                         })}
 
                         {removePriceAndQuantty.map(([key, value]) => {
+                          const newValue = key === "Quantity" && (value === "-99" || value === "Unlimited") ? "Unlimited" : value;
+                          // console.log(varianceDistribution[variance[0]][key]);
+
+                          const disabled = key === "Quantity" && (value === "-99" || value === "Unlimited") ? true : false;
+                          const type = key === "Quantity" && (value === "-99" || value === "Unlimited") ? "text" : "number";
                           return (
                             <div key={key} className="self-center ">
                               <input
-                                disabled={key === "Quantity" && value === "-99" ? true : false}
-                                type={key === "Quantity" && value === "Unlimited" ? "text" : "number"}
-                                value={varianceDistribution[variance[0]][key] ?? ""}
+                                disabled={disabled}
+                                type={type}
+                                value={newValue}
+                                // value={varianceDistribution[variance[0]][key] ?? ""}
                                 onChange={(e) => {
                                   e.persist();
                                   setVarianceDistribution((values) => ({
