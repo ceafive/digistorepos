@@ -357,7 +357,6 @@ const AddProductWithVariants = ({ onClose }) => {
 
                     <div className="grid grid-cols-3 gap-4 xl:gap-3">
                       {value.map((item) => {
-                        // console.log("here", item?.property_value);
                         return (
                           <RenderTap
                             key={item?.property_value}
@@ -370,7 +369,6 @@ const AddProductWithVariants = ({ onClose }) => {
                             variantName={key}
                             disabled={founds?.includes(item?.property_value)}
                             formData={formData}
-                            // variantName={capitalize(key)}
                           />
                         );
                       })}

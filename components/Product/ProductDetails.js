@@ -183,65 +183,64 @@ const ProductDetails = ({ onClose }) => {
     }
 
     if (step === noOfSteps) {
-      if (product?.product_properties_variants && product?.product_properties_variants?.length > 0) {
-        const found = find(product?.product_properties_variants, (o) => {
-          return isEqual(formData, o?.variantOptionValue);
-        });
+      // if (product?.product_properties_variants && product?.product_properties_variants?.length > 0) {
+      //   const found = find(product?.product_properties_variants, (o) => {
+      //     return isEqual(formData, o?.variantOptionValue);
+      //   });
 
-        if (!found) {
-          // const sortedNewValues = {};
-          // product?.product_properties_variants.sort().forEach(function (v, i) {
-          //   sortedNewValues[v] = product?.product_properties_variants[v];
-          // });
+      //   if (!found) {
+      //     // const sortedNewValues = {};
+      //     // product?.product_properties_variants.sort().forEach(function (v, i) {
+      //     //   sortedNewValues[v] = product?.product_properties_variants[v];
+      //     // });
 
-          const combinations = product?.product_properties_variants?.map((product_property) => {
-            const sortedNewValues = {};
-            Object.keys(product_property?.variantOptionValue)
-              .sort()
-              .forEach(function (v, i) {
-                sortedNewValues[v] = product_property?.variantOptionValue[v];
-              });
+      //     const combinations = product?.product_properties_variants?.map((product_property) => {
+      //       const sortedNewValues = {};
+      //       Object.keys(product_property?.variantOptionValue)
+      //         .sort()
+      //         .forEach(function (v, i) {
+      //           sortedNewValues[v] = product_property?.variantOptionValue[v];
+      //         });
 
-            return `Variant Combination: ${Object.values(sortedNewValues).join("/")} Price: GHS${product_property?.variantOptionPrice}  Quantity: ${
-              product_property?.variantOptionQuantity === "-99" ? "Unlimited" : product_property?.variantOptionQuantity
-            }`;
-          });
+      //       return `Variant Combination: ${Object.values(sortedNewValues).join("/")} Price: GHS${product_property?.variantOptionPrice}  Quantity: ${
+      //         product_property?.variantOptionQuantity === "-99" ? "Unlimited" : product_property?.variantOptionQuantity
+      //       }`;
+      //     });
 
-          setStep((step) => step - 1);
-          setStepsClicked((data) => data.slice(0, -1));
-          addToast(
-            <div className="w-full">
-              <p className="text-center text-red-500">{`Product variant combination '${Object.entries(formData)
-                .map(([key, value]) => `${value}`)
-                .join("/")}' is not possible`}</p>
+      //     setStep((step) => step - 1);
+      //     setStepsClicked((data) => data.slice(0, -1));
+      //     addToast(
+      //       <div className="w-full">
+      //         <p className="text-center text-red-500">{`Product variant combination '${Object.entries(formData)
+      //           .map(([key, value]) => `${value}`)
+      //           .join("/")}' is not possible`}</p>
 
-              <div className="mt-2 text-center text-black">
-                <p className="font-bold">Available combinations</p>
-                {combinations.map((combination, index) => {
-                  return (
-                    <p key={index} className="mb-2">
-                      <span>{index + 1}.</span> <span>{combination}</span>
-                    </p>
-                  );
-                })}
-              </div>
-            </div>,
+      //         <div className="mt-2 text-center text-black">
+      //           <p className="font-bold">Available combinations</p>
+      //           {combinations.map((combination, index) => {
+      //             return (
+      //               <p key={index} className="mb-2">
+      //                 <span>{index + 1}.</span> <span>{combination}</span>
+      //               </p>
+      //             );
+      //           })}
+      //         </div>
+      //       </div>,
 
-            {
-              appearance: `info`,
-              autoDismiss: true,
-              autoDismissTimeout: 50000,
-            }
-          );
-        } else {
-          removeAllToasts();
-          setProductPrice(Number(parseFloat(found?.variantOptionPrice).toFixed(2)));
-          setVariantQuantity(found?.variantOptionQuantity);
-          setVariantID(found?.variantOptionId);
-        }
-      } else {
-        setVariantQuantity(product?.product_quantity === "-99" ? "Unlimited" : parseInt(product?.product_quantity));
-      }
+      //       {
+      //         appearance: `info`,
+      //         autoDismiss: true,
+      //         autoDismissTimeout: 50000,
+      //       }
+      //     );
+      //   } else {
+      //     removeAllToasts();
+      //     setProductPrice(Number(parseFloat(found?.variantOptionPrice).toFixed(2)));
+      //     setVariantQuantity(found?.variantOptionQuantity);
+      //     setVariantID(found?.variantOptionId);
+      //   }
+      // }
+      setVariantQuantity(product?.product_quantity === "-99" ? "Unlimited" : parseInt(product?.product_quantity));
     }
   }, [noOfSteps, step]);
 
@@ -285,7 +284,9 @@ const ProductDetails = ({ onClose }) => {
             </p>
             <p className="text-sm">Product ID: {product.product_id}</p>
             <div className="mt-4">
-              {step === noOfSteps && <span className="mr-2 text-sm font-bold">Variant Quantity: {variantQuantity}</span>}
+              {step === noOfSteps && (
+                <span className="mr-2 text-sm font-bold">Variant Quantity: {variantQuantity === "-99" ? "Unlimited" : variantQuantity}</span>
+              )}
               {step === noOfSteps && <span className="text-sm font-bold">Variant Price: GHS{productPrice}</span>}
             </div>
           </div>
