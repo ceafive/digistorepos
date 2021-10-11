@@ -311,7 +311,9 @@ const AddProductWithVariants = ({ onClose }) => {
             </p>
             <p className="text-sm">Product ID: {product.product_id}</p>
             <div className="mt-4">
-              {step === noOfSteps && <span className="mr-2 text-sm font-bold">Variant Quantity: {variantQuantity}</span>}
+              {step === noOfSteps && (
+                <span className="mr-2 text-sm font-bold">Variant Quantity: {variantQuantity === "-99" ? "Unlimited" : variantQuantity}</span>
+              )}
               {step === noOfSteps && <span className="text-sm font-bold">Variant Price: GHS{productPrice}</span>}
             </div>
           </div>
@@ -320,17 +322,7 @@ const AddProductWithVariants = ({ onClose }) => {
           <div className="w-full">
             {currentStep ? (
               currentStep?.map(([key, value], index) => {
-                // console.log(key);
-                // console.log(value);
                 const length = value?.length;
-
-                // const result = value.map((item) => {
-                //   return {
-                //     ...formData,
-                //     [key]: item?.property_value,
-                //   };
-                // });
-
                 const founds = [];
 
                 for (let i = 0; i < length; i++) {
@@ -340,10 +332,6 @@ const AddProductWithVariants = ({ onClose }) => {
                   }
                 }
 
-                // console.log(founds);
-
-                // console.log({ uniqTransformedVariantOptionValue });
-                // console.log({ result });
                 return (
                   <div key={key + index} className="w-full h-full">
                     <div className="flex items-center justify-center w-full">
