@@ -1,7 +1,8 @@
 import Modal from "components/Modal";
+import AddProductWithVariants from "components/Product/AddProductWithVariants";
 import ProductDetails from "components/Product/ProductDetails";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
-import { currentSearchTerm, openProductModal, setProductToView } from "features/products/productsSlice";
+import { currentSearchTerm, openProductModal, openVariantsModal, setProductToView } from "features/products/productsSlice";
 import { filter, take } from "lodash";
 import React from "react";
 import ReactPaginate from "react-paginate";
@@ -18,6 +19,7 @@ const ProductsSelection = () => {
   const searchTerm = useSelector((state) => state.products.searchTerm);
   const categorySelected = useSelector((state) => state.products.categorySelected);
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
+  const productWithVariantsOpen = useSelector((state) => state.products.productWithVariantsOpen);
   const productsInCart = useSelector((state) => state.cart.productsInCart);
 
   var width = window.innerWidth > 0 ? window.innerWidth : screen.width;
@@ -108,6 +110,9 @@ const ProductsSelection = () => {
       <Modal open={productModalOpen} onClose={() => dispatch(openProductModal())} maxWidth="md">
         <ProductDetails onClose={() => dispatch(openProductModal())} />
       </Modal>
+      <Modal open={productWithVariantsOpen} onClose={() => dispatch(openVariantsModal())} maxWidth="md">
+        <AddProductWithVariants onClose={() => dispatch(openVariantsModal())} />
+      </Modal>
       <div className="relative w-full h-full">
         <div className="mx-auto w-full">
           {/* Search bar and results */}
@@ -172,17 +177,6 @@ const ProductsSelection = () => {
                               dispatch(openProductModal());
                             } else {
                               setProductSelected(data);
-                              // dispatch(increaseTotalItemsInCart());
-                              // dispatch(
-                              //   addItemToCart({
-                              //     ...product,
-                              //     id: product.product_id,
-                              //     title: product.product_name,
-                              //     price: Number(parseFloat(product.product_price).toFixed(2)),
-                              //     imgURL: product.product_image,
-                              //     variants: { Type: "Normal" },
-                              //   })
-                              // );
                             }
                           }}
                         >
@@ -290,7 +284,11 @@ const ProductsSelection = () => {
                         variants: { Type: "Normal" },
                       };
 
-                      if (product?.product_has_property === "YES") {
+                      if (product?.product_properties_variants?.length) {
+                        dispatch(setProductToView(product));
+                        dispatch(openVariantsModal());
+                        return;
+                      } else if (product?.product_has_property === "YES") {
                         dispatch(setProductToView(product));
                         dispatch(openProductModal());
                       } else {

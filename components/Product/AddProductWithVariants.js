@@ -1,22 +1,34 @@
 import Carousel from "components/Carousel";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
-import { capitalize, find, isEqual, lowerCase, reduce, snakeCase, upperCase } from "lodash";
+import {
+  capitalize,
+  compact,
+  find,
+  findIndex,
+  flatten,
+  flattenDeep,
+  isEqual,
+  keys,
+  lowerCase,
+  map,
+  reduce,
+  snakeCase,
+  uniq,
+  upperCase,
+  zipObject,
+} from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
-const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantName, setStepsClicked }) => {
+const RenderTap = ({ item, step, setStep, setFormData, variantName, setStepsClicked, disabled }) => {
   return (
     <button
-      className="w-32 h-32 font-bold border border-gray-200 focus:outline-none"
+      disabled={disabled}
+      className={`${disabled ? "bg-gray-50 text-gray-200" : ""} w-32 h-32 font-bold  border border-gray-200 focus:outline-none`}
       onClick={() => {
         setStepsClicked((data) => [...data, { step, variantName }]);
-        // console.log(variantName);
-        // console.log(step);
         setFormData((data) => ({ ...data, [variantName]: item.property_value }));
-        if (item?.property_price_set === "YES") {
-          setProductPrice(Number(parseFloat(item?.property_price).toFixed(2)));
-        }
         setStep(step + 1);
       }}
     >
@@ -33,13 +45,7 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
   const quantities = [1, 2, 3, 4, 5, 6];
 
   const submitFormData = (values) => {
-    const res = reduce(
-      values,
-      function (result, value, key) {
-        return { ...result, [capitalize(key)]: value };
-      },
-      {}
-    );
+    const res = reduce(values, (result, value, key) => ({ ...result, [capitalize(key)]: value }), {});
 
     const { Quantity, ...rest } = res;
     const data = {
@@ -132,25 +138,100 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
   );
 };
 
-const ProductDetails = ({ onClose }) => {
+const AddProductWithVariants = ({ onClose }) => {
   const { addToast, removeAllToasts } = useToasts();
   const product = useSelector((state) => state.products.productToView);
-  // console.log(product);
-  // const variants = Object.values(product.product_properties);
-  // const groupVariants = variants.reduce((acc, variant) => {
-  //   const found = acc[variant.property_id] || [];
-  //   return { ...acc, [variant.property_id]: [...found, variant] };
-  // }, {});
+
+  const transformedVariants = product?.product_properties_variants.map((p) => {
+    const sortedVariantProperties = {};
+    Object.keys({ ...p?.variantOptionValue })
+      .sort((a, b) => {
+        const fa = a.toLowerCase();
+        const fb = b.toLowerCase();
+
+        if (fa < fb) {
+          return -1;
+        }
+
+        if (fa > fb) {
+          return 1;
+        }
+
+        return 0;
+      })
+      .forEach(function (v, i) {
+        let key = v.toLowerCase();
+        sortedVariantProperties[key] = p?.variantOptionValue[v];
+      });
+    return {
+      ...p,
+      variantOptionValue: sortedVariantProperties,
+    };
+  });
+
+  const transformedVariantOptionValue = Object.values(transformedVariants?.map((p) => p?.variantOptionValue)).reduce((acc, val) => {
+    const newArr = [];
+    const keys = Object.keys(val);
+
+    keys.forEach((key, i) => {
+      const newObj = {
+        [key]: val[key],
+      };
+
+      newArr.push(newObj);
+    });
+
+    const newestArray = [];
+    let i = 0;
+    let length = newArr?.length;
+
+    do {
+      i = i + 1;
+
+      const newResult = [...newArr].slice(0, i);
+      const reduced = newResult.reduce((acc, val) => {
+        return {
+          ...acc,
+          ...val,
+        };
+      }, {});
+
+      newestArray.push(reduced);
+    } while (i < length);
+
+    return [...acc, ...newestArray];
+  }, []);
+
+  const uniqTransformedVariantOptionValue = Array.from(new Set(transformedVariantOptionValue.map((item) => JSON.stringify(item)))).map((item) =>
+    JSON.parse(item)
+  );
+
+  // var arrKeys = uniq(flatten(map(transformedVariantOptionValue, keys)));
+  // var arrValues = map(arrKeys, (key) => compact(map(transformedVariantOptionValue, key)));
+  // var result = zipObject(arrKeys, arrValues);
 
   const sortedNewProductProperties = {};
-  Object.keys(product.product_properties)
-    .sort()
-    .forEach(function (v, i) {
-      sortedNewProductProperties[v] = product.product_properties[v];
-    });
-  const allVariants = Object.entries(sortedNewProductProperties);
+  Object.keys({ ...product?.product_properties })
+    .sort((a, b) => {
+      const fa = a.toLowerCase();
+      const fb = b.toLowerCase();
 
-  // console.log(allVariants);
+      if (fa < fb) {
+        return -1;
+      }
+
+      if (fa > fb) {
+        return 1;
+      }
+
+      return 0;
+    })
+    .forEach(function (v, i) {
+      let key = v.toLowerCase();
+      sortedNewProductProperties[key] = product.product_properties[v];
+    });
+
+  const allVariants = Object.entries(sortedNewProductProperties);
   const noOfSteps = allVariants.length;
 
   // Component State
@@ -160,11 +241,7 @@ const ProductDetails = ({ onClose }) => {
   const [currentStep, setCurrentStep] = React.useState([allVariants[step]]);
   const [variantQuantity, setVariantQuantity] = React.useState(0);
   const [variantID, setVariantID] = React.useState("");
-
   const [stepsClicked, setStepsClicked] = React.useState([]);
-
-  // console.log(stepsClicked);
-  // console.log(formData);
 
   const reset = () => {
     onClose();
@@ -183,65 +260,14 @@ const ProductDetails = ({ onClose }) => {
     }
 
     if (step === noOfSteps) {
-      if (product?.product_properties_variants && product?.product_properties_variants?.length > 0) {
-        const found = find(product?.product_properties_variants, (o) => {
-          return isEqual(formData, o?.variantOptionValue);
-        });
+      const found = find(transformedVariants, (o) => {
+        return isEqual(formData, o?.variantOptionValue);
+      });
 
-        if (!found) {
-          // const sortedNewValues = {};
-          // product?.product_properties_variants.sort().forEach(function (v, i) {
-          //   sortedNewValues[v] = product?.product_properties_variants[v];
-          // });
-
-          const combinations = product?.product_properties_variants?.map((product_property) => {
-            const sortedNewValues = {};
-            Object.keys(product_property?.variantOptionValue)
-              .sort()
-              .forEach(function (v, i) {
-                sortedNewValues[v] = product_property?.variantOptionValue[v];
-              });
-
-            return `Variant Combination: ${Object.values(sortedNewValues).join("/")} Price: GHS${product_property?.variantOptionPrice}  Quantity: ${
-              product_property?.variantOptionQuantity === "-99" ? "Unlimited" : product_property?.variantOptionQuantity
-            }`;
-          });
-
-          setStep((step) => step - 1);
-          setStepsClicked((data) => data.slice(0, -1));
-          addToast(
-            <div className="w-full">
-              <p className="text-center text-red-500">{`Product variant combination '${Object.entries(formData)
-                .map(([key, value]) => `${value}`)
-                .join("/")}' is not possible`}</p>
-
-              <div className="mt-2 text-center text-black">
-                <p className="font-bold">Available combinations</p>
-                {combinations.map((combination, index) => {
-                  return (
-                    <p key={index} className="mb-2">
-                      <span>{index + 1}.</span> <span>{combination}</span>
-                    </p>
-                  );
-                })}
-              </div>
-            </div>,
-
-            {
-              appearance: `info`,
-              autoDismiss: true,
-              autoDismissTimeout: 50000,
-            }
-          );
-        } else {
-          removeAllToasts();
-          setProductPrice(Number(parseFloat(found?.variantOptionPrice).toFixed(2)));
-          setVariantQuantity(found?.variantOptionQuantity);
-          setVariantID(found?.variantOptionId);
-        }
-      } else {
-        setVariantQuantity(product?.product_quantity === "-99" ? "Unlimited" : parseInt(product?.product_quantity));
-      }
+      removeAllToasts();
+      setProductPrice(Number(parseFloat(found?.variantOptionPrice).toFixed(2)));
+      setVariantQuantity(found?.variantOptionQuantity);
+      setVariantID(found?.variantOptionId);
     }
   }, [noOfSteps, step]);
 
@@ -294,6 +320,30 @@ const ProductDetails = ({ onClose }) => {
           <div className="w-full">
             {currentStep ? (
               currentStep?.map(([key, value], index) => {
+                // console.log(key);
+                // console.log(value);
+                const length = value?.length;
+
+                // const result = value.map((item) => {
+                //   return {
+                //     ...formData,
+                //     [key]: item?.property_value,
+                //   };
+                // });
+
+                const founds = [];
+
+                for (let i = 0; i < length; i++) {
+                  const found = findIndex(uniqTransformedVariantOptionValue, { ...formData, [key]: value[i]?.property_value });
+                  if (found === -1) {
+                    founds.push(value[i]?.property_value);
+                  }
+                }
+
+                // console.log(founds);
+
+                // console.log({ uniqTransformedVariantOptionValue });
+                // console.log({ result });
                 return (
                   <div key={key + index} className="w-full h-full">
                     <div className="flex items-center justify-center w-full">
@@ -316,8 +366,10 @@ const ProductDetails = ({ onClose }) => {
                       })}
                       <p className="block mb-2 text-sm font-bold tracking-wide text-center text-gray-700 uppercase">{key}</p>
                     </div>
+
                     <div className="grid grid-cols-3 gap-4 xl:gap-3">
                       {value.map((item) => {
+                        // console.log("here", item?.property_value);
                         return (
                           <RenderTap
                             key={item?.property_value}
@@ -327,7 +379,10 @@ const ProductDetails = ({ onClose }) => {
                             step={step}
                             setFormData={setFormData}
                             setStepsClicked={setStepsClicked}
-                            variantName={capitalize(key)}
+                            variantName={key}
+                            disabled={founds?.includes(item?.property_value)}
+                            formData={formData}
+                            // variantName={capitalize(key)}
                           />
                         );
                       })}
@@ -377,4 +432,4 @@ const ProductDetails = ({ onClose }) => {
   );
 };
 
-export default ProductDetails;
+export default AddProductWithVariants;

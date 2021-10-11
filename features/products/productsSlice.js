@@ -16,6 +16,7 @@ const initialState = {
   },
   categoryProductsCount: [],
   productsOnHold: false,
+  productWithVariantsOpen: false,
 };
 
 const actionCreator = (key, state, payload) => {
@@ -57,6 +58,9 @@ const productsSlice = createSlice({
     openProductModal(state) {
       state.productModalOpen = !state.productModalOpen;
     },
+    openVariantsModal(state) {
+      state.productWithVariantsOpen = !state.productWithVariantsOpen;
+    },
     openInventoryModal(state) {
       state.inventoryModalOpen = !state.inventoryModalOpen;
     },
@@ -69,6 +73,7 @@ const productsSlice = createSlice({
 export const {
   customersAdded,
   openProductModal,
+  openVariantsModal,
   productsAdded,
   setProductToView,
   currentSearchTerm,
