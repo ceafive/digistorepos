@@ -85,7 +85,7 @@ const PayButton = () => {
   // console.log(cartDiscountOnCartTotal);
   // console.log(totalItemsInCart);
 
-  const checkingPromoCode = async (promoCode = "") => {
+  const checkingPromoCode = async (promoCode) => {
     try {
       setProcessing(true);
       let user = sessionStorage.getItem("IPAYPOSUSER");
@@ -95,9 +95,9 @@ const PayButton = () => {
 
       productsInCart.forEach((product, index) => {
         orderItems[index] = {
-          order_item_no: product?.uniqueId,
+          order_item_no: product?.product_id,
+          order_item: product?.product_name,
           order_item_qty: product?.quantity,
-          order_item: product?.title,
           order_item_amt: product?.price,
         };
       });
@@ -111,14 +111,15 @@ const PayButton = () => {
         outlet: outletSelected?.outlet_id || "",
         type: "ORDER",
       };
+
       dispatch(setCartPromoCode(upperCase(promoCode)));
 
       // console.log(userData);
       // return;
 
       const response = await axios.post("/api/sell/sell/add-discount", userData);
-      const { status, message, discount } = await response.data;
-      // console.log({ status, message, discount });
+      const { status, message, discount, coupon } = await response.data;
+      // console.log({ status, message, discount, coupon });
       // addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
 
       if (promoCode) {
@@ -126,8 +127,8 @@ const PayButton = () => {
           dispatch(setPromoType("ORDER"));
           dispatch(setPromoCodeAppliedOnCartPage(true));
           dispatch(setPromoAmount(discount));
+          dispatch(setCartPromoCode(upperCase(coupon)));
         } else {
-          // dispatch(setPromoType(""));
           dispatch(setPromoAmount(0));
           dispatch(setPromoCodeAppliedOnCartPage(false));
           if (hasAutoDiscount === "YES") checkingPromoCode("");
@@ -139,10 +140,11 @@ const PayButton = () => {
           dispatch(setPromoType("ORDER"));
           dispatch(setPromoCodeAppliedOnCartPage(true));
           dispatch(setPromoAmount(discount));
+          dispatch(setCartPromoCode(upperCase(coupon)));
         } else {
-          // dispatch(setPromoType(""));
           dispatch(setPromoAmount(0));
           dispatch(setPromoCodeAppliedOnCartPage(false));
+          dispatch(setCartPromoCode(null));
         }
       }
     } catch (error) {
@@ -157,9 +159,11 @@ const PayButton = () => {
   };
 
   React.useEffect(() => {
-    if (productsInCart && productsInCart.length) {
+    if (productsInCart?.length) {
       if (!promoCode) {
-        if (hasAutoDiscount === "YES") checkingPromoCode("");
+        if (typeof promoCode !== "undefined") {
+          if (hasAutoDiscount === "YES") checkingPromoCode("");
+        }
       } else checkingPromoCode(promoCode);
     }
   }, [promoCode, productsInCart]);

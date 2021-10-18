@@ -276,31 +276,46 @@ const AddProductWithVariants = ({ onClose }) => {
   return (
     <div className="flex w-full rounded-lg" style={{ maxHeight: 700 }}>
       <div className="w-5/12">
-        <Carousel showArrows={false} showIndicators={false} showThumbs={false} className="flex flex-col items-center justify-center w-full h-full">
-          {product?.product_images && product?.product_images?.length > 0 ? (
-            product?.product_images?.map((product_image) => {
+        {product?.product_images?.length > 1 ? (
+          <Carousel showArrows={false} showIndicators={false} showThumbs={false} className="flex flex-col items-center justify-center w-full h-full">
+            {product?.product_images?.map((product_image) => {
               return (
-                <div key={product_image} className="">
+                // <div key={product_image} className="">
+                //   <img
+                //     className="object-cover w-full h-full"
+                //     key={product_image}
+                //     src={`https://payments.ipaygh.com/app/webroot/img/products/${product_image}`}
+                //     alt={product_image}
+                //     // style={{ minHeight: "100%" }}
+                //   />
+                // </div>
+
+                <div key={product_image} className="relative " style={{ paddingBottom: "50%" }}>
                   <img
-                    className="object-cover w-full h-full"
-                    key={product_image}
+                    className="absolute h-full w-full object-cover"
                     src={`https://payments.ipaygh.com/app/webroot/img/products/${product_image}`}
                     alt={product_image}
-                    // style={{ minHeight: "100%" }}
                   />
                 </div>
               );
-            })
-          ) : (
-            <div className="">
-              <img
-                className="object-cover w-full h-full"
-                src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
-                alt={product?.product_image}
-              />
-            </div>
-          )}
-        </Carousel>
+            })}
+          </Carousel>
+        ) : (
+          // <div className="">
+          //   <img
+          //     className="object-cover w-full h-full"
+          //     src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
+          //     alt={product?.product_image}
+          //   />
+          // </div>
+          <div className="relative " style={{ paddingBottom: "100%" }}>
+            <img
+              className="absolute h-full w-full object-cover"
+              src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
+              alt={product?.product_image}
+            />{" "}
+          </div>
+        )}
       </div>
 
       <div className="w-7/12 p-4">

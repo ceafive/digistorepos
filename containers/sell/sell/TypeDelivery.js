@@ -53,9 +53,9 @@ const Box = ({ option, setProcessingDeliveryCharge }) => {
 
       productsInCart.forEach((product, index) => {
         orderItems[index] = {
-          order_item_no: product?.uniqueId,
+          order_item_no: product?.product_id,
+          order_item: product?.product_name,
           order_item_qty: product?.quantity,
-          order_item: product?.title,
           order_item_amt: product?.price,
         };
       });
@@ -186,9 +186,9 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
 
       productsInCart.forEach((product, index) => {
         orderItems[index] = {
-          order_item_no: product?.uniqueId,
+          order_item_no: product?.product_id,
+          order_item: product?.product_name,
           order_item_qty: product?.quantity,
-          order_item: product?.title,
           order_item_amt: product?.price,
         };
       });
@@ -336,9 +336,9 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
 
       productsInCart.forEach((product, index) => {
         orderItems[index] = {
-          order_item_no: product?.uniqueId,
+          order_item_no: product?.product_id,
+          order_item: product?.product_name,
           order_item_qty: product?.quantity,
-          order_item: product?.title,
           order_item_amt: product?.price,
         };
       });
@@ -363,7 +363,7 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
         // console.log(deliveryCharge);
         const response = await axios.post("/api/sell/sell/add-discount", userData);
         const { status, message, discount } = await response.data;
-        console.log({ status, message, discount });
+        // console.log({ status, message, discount });
         // addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
 
         if (Number(status) === 0) {

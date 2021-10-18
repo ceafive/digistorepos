@@ -52,6 +52,8 @@ const ReceiptsSection = ({ step }) => {
   //   dispatch(applyDiscount());
   // }, [totalPriceInCart, totalItemsInCart, cartItemDiscount, cartDiscount, cartPromoDiscount, dispatch]);
 
+  console.log({ cartPromoCode });
+
   return (
     <>
       <div className="flex items-center text-xl font-semibold">
@@ -112,10 +114,12 @@ const ReceiptsSection = ({ step }) => {
           }`}
           value={`GHS${cartDiscountOnCartTotal}`}
         />
-        <ListItem
-          text={`Promo Code ${cartPromoCode ? `(${cartPromoCode})` : hasAutoDiscount === "YES" ? `(AUTO)` : ""}`}
-          value={`GHS${cartPromoDiscount}`}
-        />
+        {cartPromoCode !== null && (
+          <ListItem
+            text={`Promo Code ${cartPromoCode ? `(${cartPromoCode})` : hasAutoDiscount === "YES" ? `(AUTO)` : ""}`}
+            value={`GHS${cartPromoDiscount}`}
+          />
+        )}
         <ListItem className="pt-4" text={`Subtotal    ${totalItemsInCart} item(s)`} value={`GHS${cartSubTotal}`} />
         {/* <ListItem className="" text="Fees" value={`GHS${fees}`} /> */}
         {/* <ListItem text="Tax COVID-19 Levy 4%" value={`GHS${covidTax}`} /> */}
