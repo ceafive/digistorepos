@@ -7,6 +7,7 @@ import {
   calculateCartSubTotal,
   setAmountReceivedFromPayer,
   setInvoiceDetails,
+  setRewardPoints,
   setTotalAmountToBePaidByBuyer,
   setTransactionFeeCharges,
 } from "features/cart/cartSlice";
@@ -113,7 +114,20 @@ const ProcessSale = ({ setReFetch }) => {
   const handleSendNotification = (type) => onSendNotification(type, setSendingNotification, addToast, removeToast, invoiceDetails, user);
 
   const handleRaiseOrder = () =>
-    onRaiseOrder(dispatch, setInvoiceDetails, setConfirmPaymentText, setStep, setFetching, setProcessError, cart, products, fees, saleTotal, user);
+    onRaiseOrder(
+      dispatch,
+      setInvoiceDetails,
+      setConfirmPaymentText,
+      setStep,
+      setFetching,
+      setProcessError,
+      cart,
+      products,
+      fees,
+      saleTotal,
+      user,
+      setRewardPoints
+    );
 
   return (
     <>

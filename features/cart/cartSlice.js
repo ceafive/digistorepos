@@ -45,6 +45,7 @@ const initialState = {
   deliveryRouteCosts: null,
   deliveryEstimate: null,
   hasAutoDiscount: null,
+  rewardPoints: null,
 };
 
 const initialProductProps = {
@@ -290,6 +291,9 @@ const cartSlice = createSlice({
     decreaseTotalItemsInCart: (state) => {
       state.totalItemsInCart = state.totalItemsInCart !== 0 ? state.totalItemsInCart-- : 0;
     },
+    setRewardPoints: (state, action) => {
+      state.rewardPoints = action.payload;
+    },
     addItemToCart: (state, action) => {
       const productsInCart = state.productsInCart;
       // console.log("productsInCart", JSON.parse(JSON.stringify(productsInCart)));
@@ -398,5 +402,6 @@ export const {
   setDeliveryRouteCosts,
   setDeliveryEstimate,
   setAutoDiscount,
+  setRewardPoints,
 } = cartSlice.actions;
 export default cartSlice.reducer;

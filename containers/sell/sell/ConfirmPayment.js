@@ -1,6 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import { onClickToCheckout, onResetCart, setOutletSelected, setVerifyTransactionResponse } from "features/cart/cartSlice";
+import { onClickToCheckout, onResetCart, setOutletSelected, setRewardPoints, setVerifyTransactionResponse } from "features/cart/cartSlice";
 import { setProductsOnHold } from "features/products/productsSlice";
 import { throttle, upperCase } from "lodash";
 import React from "react";
@@ -58,6 +58,13 @@ const ConfirmPayment = ({
           }
         } else {
           if (message === "paid") {
+            dispatch(
+              setRewardPoints({
+                reward_message: data?.reward_message,
+                reward_points_earned: data?.reward_points_earned,
+                reward_total_points: data?.reward_total_points,
+              })
+            );
             setFetching(false);
             setStep(2);
             setTicking(false);

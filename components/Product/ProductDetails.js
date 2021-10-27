@@ -135,7 +135,7 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
 const ProductDetails = ({ onClose }) => {
   const { addToast, removeAllToasts } = useToasts();
   const product = useSelector((state) => state.products.productToView);
-  console.log(product);
+  // console.log(product);
   // const variants = Object.values(product.product_properties);
   // const groupVariants = variants.reduce((acc, variant) => {
   //   const found = acc[variant.property_id] || [];

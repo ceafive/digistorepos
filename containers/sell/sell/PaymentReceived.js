@@ -15,6 +15,9 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
   const transactionFeeCharges = useSelector((state) => state.cart.transactionFeeCharges);
   const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
   const totalTaxes = useSelector((state) => state.cart.totalTaxes);
+  const rewardPoints = useSelector((state) => state.cart.rewardPoints);
+
+  // console.log(rewardPoints);
 
   const [compToRender, setCompToRender] = React.useState(null);
   const [phoneNumber, setPhoneNumber] = React.useState("");
@@ -28,18 +31,36 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
   return (
     <div className="py-20 mt-10 text-center">
       <p className="text-4xl font-bold ">Payment Received</p>
-      <div>
-        {change > 0 && (
+      {change ? (
+        <div>
           <p className="mt-2 text-4xl 2xl:text-5xl text-blueGray-900">
             <span className="font-bold">Give </span>
             <span className="font-bold">
               GHS
-              {change}
+              {-change}
             </span>
             <span className="font-bold"> Change</span>
           </p>
-        )}
-      </div>
+        </div>
+      ) : (
+        <></>
+      )}
+
+      {rewardPoints && (
+        <div className="w-full">
+          <p className="my-2 text-blueGray-900">
+            <span className="">{rewardPoints?.reward_message}</span>
+          </p>
+          <p className="my-2 text-blueGray-900">
+            <span className="font-bold">Reward Points Earned </span>
+            <span className="">{rewardPoints?.reward_points_earned} pts</span>
+          </p>
+          <p className="my-2 text-blueGray-900">
+            <span className="font-bold">Total Reward Points </span>
+            <span className="">{rewardPoints?.reward_total_points} pts</span>
+          </p>
+        </div>
+      )}
 
       <div className="flex justify-center mt-12 text-sm font-semibold">
         <div className="flex justify-center w-full">

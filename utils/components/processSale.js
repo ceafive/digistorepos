@@ -146,7 +146,8 @@ const onRaiseOrder = async (
   products,
   fees,
   saleTotal,
-  user
+  user,
+  setRewardPoints
 ) => {
   try {
     setFetching(true);
@@ -227,7 +228,7 @@ const onRaiseOrder = async (
 
     const res = await axios.post("/api/sell/sell/raise-order", payload);
     const data = await res.data;
-    // console.log(data);
+    console.log(data);
 
     if (Number(data?.status) !== 0) {
       setProcessError(data?.message);
@@ -237,6 +238,13 @@ const onRaiseOrder = async (
     if (Number(data?.status) === 0) {
       if (cart?.paymentMethodSet === "CASH") {
         dispatch(setInvoiceDetails(data));
+        dispatch(
+          setRewardPoints({
+            reward_message: data?.reward_message,
+            reward_points_earned: data?.reward_points_earned,
+            reward_total_points: data?.reward_total_points,
+          })
+        );
         setStep(2);
         setFetching(false);
       }
@@ -249,7 +257,7 @@ const onRaiseOrder = async (
       }
     }
   } catch (error) {
-    console.log(error.response.data);
+    console.log(error);
     setFetching(false);
   } finally {
     setFetching(false);

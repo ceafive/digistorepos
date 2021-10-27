@@ -52,7 +52,7 @@ const ReceiptsSection = ({ step }) => {
   //   dispatch(applyDiscount());
   // }, [totalPriceInCart, totalItemsInCart, cartItemDiscount, cartDiscount, cartPromoDiscount, dispatch]);
 
-  console.log({ cartPromoCode });
+  // console.log({ cartPromoCode });
 
   return (
     <>
