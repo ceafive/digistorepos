@@ -48,17 +48,23 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
 
       {rewardPoints && (
         <div className="w-full">
-          <p className="my-2 text-blueGray-900">
-            <span className="">{rewardPoints?.reward_message}</span>
-          </p>
-          <p className="my-2 text-blueGray-900">
-            <span className="font-bold">Reward Points Earned </span>
-            <span className="">{rewardPoints?.reward_points_earned} pts</span>
-          </p>
-          <p className="my-2 text-blueGray-900">
-            <span className="font-bold">Total Reward Points </span>
-            <span className="">{rewardPoints?.reward_total_points} pts</span>
-          </p>
+          {rewardPoints?.reward_message && (
+            <p className="my-2 text-blueGray-900">
+              <span className="">{rewardPoints?.reward_message}</span>
+            </p>
+          )}
+          {rewardPoints?.reward_points_earned && (
+            <p className="my-2 text-blueGray-900">
+              <span className="font-bold">Reward Points Earned </span>
+              <span className="">{rewardPoints?.reward_points_earned} pts</span>
+            </p>
+          )}
+          {rewardPoints?.reward_total_points && (
+            <p className="my-2 text-blueGray-900">
+              <span className="font-bold">Total Reward Points </span>
+              <span className="">{rewardPoints?.reward_total_points} pts</span>
+            </p>
+          )}
         </div>
       )}
 

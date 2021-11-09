@@ -25,12 +25,20 @@ const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantN
   );
 };
 
-const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, variantQuantity }) => {
+const RenderQuantityTap = ({ product, productPrice, formData, reset, setStep, setStepsClicked }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   const productsInCart = useSelector((state) => state.cart.productsInCart);
 
-  const quantities = [1, 2, 3, 4, 5, 6];
+  const quantities = product?.product_quantity === "-99" ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6].slice(0, parseInt(product?.product_quantity));
+
+  React.useEffect(() => {
+    if (parseInt(product?.product_quantity) === 0) {
+      addToast(`Product sold out`, { appearance: "warning", autoDismiss: true });
+      setStep((steps) => steps - 1);
+      setStepsClicked((stepsClicked) => stepsClicked.slice(0, -1));
+    }
+  }, []);
 
   const submitFormData = (values) => {
     const res = reduce(
@@ -50,7 +58,7 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
       imgURL: product.product_image,
       quantity: Number(Quantity),
       variants: rest,
-      variantID,
+      variantID: "",
     };
 
     // console.log({ data });
@@ -64,11 +72,8 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
   const checkProductQuantity = (product, quantity) => {
     try {
       let stock_level;
-      if (variantQuantity) {
-        stock_level = variantQuantity === "-99" ? 10000000000000 : parseInt(variantQuantity);
-      } else {
-        stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
-      }
+      stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
+
       const productSoldOut = stock_level <= 0;
 
       if (productSoldOut) {
@@ -105,6 +110,10 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
       console.log(error);
     }
   };
+
+  if (parseInt(product?.product_quantity) === 0) {
+    return <></>;
+  }
 
   return (
     <>
@@ -187,13 +196,11 @@ const ProductDetails = ({ onClose }) => {
       //   const found = find(product?.product_properties_variants, (o) => {
       //     return isEqual(formData, o?.variantOptionValue);
       //   });
-
       //   if (!found) {
       //     // const sortedNewValues = {};
       //     // product?.product_properties_variants.sort().forEach(function (v, i) {
       //     //   sortedNewValues[v] = product?.product_properties_variants[v];
       //     // });
-
       //     const combinations = product?.product_properties_variants?.map((product_property) => {
       //       const sortedNewValues = {};
       //       Object.keys(product_property?.variantOptionValue)
@@ -201,12 +208,10 @@ const ProductDetails = ({ onClose }) => {
       //         .forEach(function (v, i) {
       //           sortedNewValues[v] = product_property?.variantOptionValue[v];
       //         });
-
       //       return `Variant Combination: ${Object.values(sortedNewValues).join("/")} Price: GHS${product_property?.variantOptionPrice}  Quantity: ${
       //         product_property?.variantOptionQuantity === "-99" ? "Unlimited" : product_property?.variantOptionQuantity
       //       }`;
       //     });
-
       //     setStep((step) => step - 1);
       //     setStepsClicked((data) => data.slice(0, -1));
       //     addToast(
@@ -214,7 +219,6 @@ const ProductDetails = ({ onClose }) => {
       //         <p className="text-center text-red-500">{`Product variant combination '${Object.entries(formData)
       //           .map(([key, value]) => `${value}`)
       //           .join("/")}' is not possible`}</p>
-
       //         <div className="mt-2 text-center text-black">
       //           <p className="font-bold">Available combinations</p>
       //           {combinations.map((combination, index) => {
@@ -226,7 +230,6 @@ const ProductDetails = ({ onClose }) => {
       //           })}
       //         </div>
       //       </div>,
-
       //       {
       //         appearance: `info`,
       //         autoDismiss: true,
@@ -240,14 +243,15 @@ const ProductDetails = ({ onClose }) => {
       //     setVariantID(found?.variantOptionId);
       //   }
       // }
-      setVariantQuantity(product?.product_quantity === "-99" ? "Unlimited" : parseInt(product?.product_quantity));
     }
   }, [noOfSteps, step]);
 
   // return null;
 
+  // console.log(stepsClicked, step);
+
   return (
-    <div className="flex w-full rounded-lg" style={{ maxHeight: 700 }}>
+    <div className="flex w-full rounded-lg overflow-auto" style={{ maxHeight: 500 }}>
       <div className="w-5/12">
         {product?.product_images?.length > 1 ? (
           <Carousel showArrows={false} showIndicators={false} showThumbs={false} className="flex flex-col items-center justify-center w-full h-full">
@@ -300,7 +304,9 @@ const ProductDetails = ({ onClose }) => {
             <p className="text-sm">Product ID: {product.product_id}</p>
             <div className="mt-4">
               {step === noOfSteps && (
-                <span className="mr-2 text-sm font-bold">Variant Quantity: {variantQuantity === "-99" ? "Unlimited" : variantQuantity}</span>
+                <span className="mr-2 text-sm font-bold">
+                  Variant Quantity: {product?.product_quantity === "-99" ? "Unlimited" : product?.product_quantity}
+                </span>
               )}
               {step === noOfSteps && <span className="text-sm font-bold">Variant Price: GHS{productPrice}</span>}
             </div>
@@ -321,6 +327,7 @@ const ProductDetails = ({ onClose }) => {
                             onClick={() => {
                               setStep(stepClicked?.step);
                               const sliced = stepsClicked.slice(0, index);
+                              // console.log({ sliced });
                               // const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
                               setStepsClicked(sliced);
                             }}
@@ -380,8 +387,8 @@ const ProductDetails = ({ onClose }) => {
                     productPrice={productPrice}
                     formData={formData}
                     reset={reset}
-                    variantQuantity={variantQuantity}
-                    variantID={variantID}
+                    setStep={setStep}
+                    setStepsClicked={setStepsClicked}
                   />
                 </div>
               </div>

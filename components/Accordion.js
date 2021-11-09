@@ -139,7 +139,7 @@ const Accordion = ({ product, index }) => {
 
         <div className="flex justify-between w-full">
           {/* Item Name */}
-          <div className="flex cursor-pointer" onClick={() => setIsActive(!isActive)}>
+          <div className="flex cursor-pointer w-2/3 leading-none" onClick={() => setIsActive(!isActive)}>
             <span className="mr-1">{index + 1}.</span>
             <div>
               <span className="font-bold">{product.title}</span>
@@ -160,7 +160,7 @@ const Accordion = ({ product, index }) => {
           {/* Item Name */}
 
           {/* Amount and Delete */}
-          <div className="font-bold">
+          <div className="font-bold leading-none">
             <span className="mr-1">GHS{Number(parseFloat(product.totalPrice).toFixed(2))}</span>
             <button
               className="justify-self-end focus:outline-none"

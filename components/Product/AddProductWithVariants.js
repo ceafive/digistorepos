@@ -37,12 +37,20 @@ const RenderTap = ({ item, step, setStep, setFormData, variantName, setStepsClic
   );
 };
 
-const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, variantQuantity }) => {
+const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, variantQuantity, setStep, setStepsClicked }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   const productsInCart = useSelector((state) => state.cart.productsInCart);
 
-  const quantities = [1, 2, 3, 4, 5, 6];
+  const quantities = variantQuantity === "-99" ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6].slice(0, parseInt(variantQuantity));
+
+  React.useEffect(() => {
+    if (parseInt(variantQuantity) === 0) {
+      addToast(`Variant sold out`, { appearance: "warning", autoDismiss: true });
+      setStep((steps) => steps - 1);
+      setStepsClicked((stepsClicked) => stepsClicked.slice(0, -1));
+    }
+  }, []);
 
   const submitFormData = (values) => {
     const res = reduce(values, (result, value, key) => ({ ...result, [capitalize(key)]: value }), {});
@@ -243,6 +251,8 @@ const AddProductWithVariants = ({ onClose }) => {
   const [variantID, setVariantID] = React.useState("");
   const [stepsClicked, setStepsClicked] = React.useState([]);
 
+  // console.log(variantQuantity);
+
   const reset = () => {
     onClose();
     setProductPrice(0);
@@ -274,7 +284,7 @@ const AddProductWithVariants = ({ onClose }) => {
   // return null;
 
   return (
-    <div className="flex w-full rounded-lg" style={{ maxHeight: 700 }}>
+    <div className="flex w-full rounded-lg overflow-auto" style={{ maxHeight: 500 }}>
       <div className="w-5/12">
         {product?.product_images?.length > 1 ? (
           <Carousel showArrows={false} showIndicators={false} showThumbs={false} className="flex flex-col items-center justify-center w-full h-full">
@@ -422,6 +432,8 @@ const AddProductWithVariants = ({ onClose }) => {
                     reset={reset}
                     variantQuantity={variantQuantity}
                     variantID={variantID}
+                    setStep={setStep}
+                    setStepsClicked={setStepsClicked}
                   />
                 </div>
               </div>

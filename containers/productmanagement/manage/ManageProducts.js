@@ -540,7 +540,7 @@ const ManageProducts = ({ setReRUn }) => {
                                     e.persist();
                                     setNewQuantity(e.target.value);
                                   }}
-                                  min="1"
+                                  min="0"
                                   type={isUnlimited ? "text" : "number"}
                                   placeholder="eg. 100"
                                   className="w-32 px-3 py-2 text-sm bg-white border border-black rounded outline-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1 "

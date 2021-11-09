@@ -24,7 +24,7 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  console.log({ router });
+  // console.log({ router });
 
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
   const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);

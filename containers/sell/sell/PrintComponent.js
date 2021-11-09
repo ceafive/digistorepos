@@ -1,6 +1,7 @@
 import { find, reduce, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { paymentOptionNames } from "utils";
 
 const ListItem = ({ text, value, className }) => {
   return (
@@ -107,18 +108,15 @@ const PrintComponent = React.forwardRef((props, ref) => {
           {paymentMethodsAndAmount.map((paymentMethod, index) => {
             const fee = find(transactionFeeCharges, { service: paymentMethod.method });
             return (
-              <div key={paymentMethod.method + index} className="flex justify-between my-4">
-                <div>
-                  <p>{paymentMethod.method}</p>
-                  {fee ? <p className="text-sm">Fee: GHS{fee?.charge}</p> : <></>}
-                  <p className="text-sm">Contact: {paymentMethod?.payment_number}</p>
-                  <p className="text-sm">{paymentMethod.date}</p>
-                </div>
-                <div className="justify-end justify-self-end justify-items-end">
-                  <div>
-                    <span>GHS{paymentMethod.amount}</span>
-                  </div>
-                </div>
+              <div key={paymentMethod.method + index}>
+                <p>{paymentOptionNames[paymentMethod.method]}</p>
+                {fee ? <p className="text-sm">Fee: GHS{fee?.charge}</p> : <></>}
+                {paymentMethod?.payment_number && (
+                  <p className="text-sm">
+                    {paymentMethod?.method === "VISAG" ? "Phone/Email" : "Payment Number"}: {paymentMethod?.payment_number}
+                  </p>
+                )}
+                <p className="text-sm">{paymentMethod.date}</p>
               </div>
             );
           })}
@@ -160,6 +158,17 @@ const PrintComponent = React.forwardRef((props, ref) => {
               <p>
                 GHS
                 {saleTotal}
+              </p>
+            </div>
+          </>
+
+          <>
+            <hr className="my-2" />
+            <div className="flex items-center justify-between">
+              <p className="mr-4 font-bold tracking-wide">AMOUNT PAID</p>
+              <p>
+                GHS
+                {amountReceivedFromPayer}
               </p>
             </div>
           </>
