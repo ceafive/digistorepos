@@ -35,7 +35,7 @@ const CustomersTable = ({ setReRUn }) => {
     handleSubmit,
   } = useForm({});
 
-  const allCustomers = useSelector((state) => state.customers.allCustomers);
+  let allCustomers = useSelector((state) => state.customers.allCustomers);
   //   console.log(allCustomers);
 
   const [allProducts, setAllProducts] = React.useState([]);
@@ -207,7 +207,7 @@ const CustomersTable = ({ setReRUn }) => {
           title={<p className="text-xl font-bold">{`Customers`}</p>}
           icons={tableIcons}
           columns={columns}
-          data={allCustomers.map((o) => ({ ...o, tableData: {} }))}
+          data={allCustomers.map((o) => ({ ...o, total_spends: Number(o?.total_spends), tableData: {} }))} // change total spends to number for good column sorting
           options={{
             selection: false,
             padding: `dense`,

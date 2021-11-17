@@ -27,12 +27,16 @@ const CustomerOrdersDetails = ({ customer, user, onClose }) => {
       try {
         setFetching(true);
         const formCurrentValues = getValues();
-        const transactionsRes = await axios.post("/api/customers/get-customer-orders-details", {
+
+        const data = {
           merchant: user?.user_merchant_id,
           customer_phone: customer?.customer_phone,
           start_date: format(formCurrentValues?.startDate || startOfMonth(new Date()), "dd-MM-yyyy"),
           end_date: format(formCurrentValues?.endDate || new Date(), "dd-MM-yyyy"),
-        });
+        };
+
+        // console.log(data);
+        const transactionsRes = await axios.post("/api/customers/get-customer-orders-details", data);
 
         const { data: transactionsResData } = await transactionsRes.data;
         // console.log(transactionsResData);
