@@ -50,10 +50,12 @@ export default function Login() {
       });
       const res = await axios.post("/api/auth/login", values);
       const data = await res.data;
+      // console.log({ data });
 
       const { success, error } = verifyToken(JSON.stringify(data));
 
       if (error) {
+        setProcessing(false);
         setLoginError({
           status: true,
           message: error,
@@ -64,11 +66,11 @@ export default function Login() {
         router.push("/sell/sell");
       }
     } catch (error) {
+      setProcessing(false);
       setLoginError({
         status: false,
         message: "ERROR",
       });
-      setProcessing(false);
       if (error.response) {
         console.log(error.response.data);
       } else if (error.request) {

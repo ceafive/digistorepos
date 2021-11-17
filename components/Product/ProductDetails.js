@@ -251,7 +251,7 @@ const ProductDetails = ({ onClose }) => {
   // console.log(stepsClicked, step);
 
   return (
-    <div className="flex w-full rounded-lg overflow-auto" style={{ maxHeight: 500 }}>
+    <div className="flex w-full rounded-lg overflow-auto" style={{ minHeight: 500, maxHeight: 500 }}>
       <div className="w-5/12">
         {product?.product_images?.length > 1 ? (
           <Carousel showArrows={false} showIndicators={false} showThumbs={false} className="flex flex-col items-center justify-center w-full h-full">
