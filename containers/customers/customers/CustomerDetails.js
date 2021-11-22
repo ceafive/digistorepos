@@ -19,7 +19,7 @@ const CustomerDetails = ({ customer, user, onClose }) => {
         });
 
         const { data: customerDetailsResData } = await customerDetailsRes.data;
-        console.log(customerDetailsResData);
+        // console.log(customerDetailsResData);
         setCustomerDetails(customerDetailsResData);
         setFetching(false);
       } catch (error) {

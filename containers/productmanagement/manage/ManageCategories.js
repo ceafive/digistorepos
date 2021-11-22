@@ -359,6 +359,15 @@ const ManageCategories = ({ setReRUn }) => {
           icons={tableIcons}
           columns={columns}
           data={allCategories}
+          actions={[
+            {
+              icon: "drag_indicator",
+              tooltip: "Drag Row",
+              onClick: (event, rowData) => {
+                // Do save operation
+              },
+            },
+          ]}
           components={{
             Toolbar: (props) => (
               <div>
@@ -382,14 +391,53 @@ const ManageCategories = ({ setReRUn }) => {
                     DragState.dropIndex = interProps.data.tableData.id;
                   }
                 }}
-                onDragEnd={() => {
-                  if (DragState.dropIndex !== -1) {
-                    const data = displaceObject(DragState.row, DragState.dropIndex, manageProductCategories);
-                    // console.log({ data });
-                    dispatch(setManageProductCategories(data));
+                onDragEnd={async () => {
+                  try {
+                    if (DragState.dropIndex !== -1) {
+                      const data = displaceObject(DragState.row, DragState.dropIndex, manageProductCategories);
+                      const dataToSend = data.map((val) => {
+                        return {
+                          category_id: val?.product_category_id,
+                          category_level: val?.product_category_level,
+                        };
+                      });
+                      // console.log({ dataToSend });
+
+                      setProcessing(true);
+                      addToast(`Rearranging....`, { appearance: "info", autoDismiss: true });
+
+                      let user = sessionStorage.getItem("IPAYPOSUSER");
+                      user = JSON.parse(user);
+
+                      const payload = {
+                        category_list: JSON.stringify(dataToSend),
+                        merchant: user?.user_merchant_id,
+                        mod_by: user?.login,
+                      };
+
+                      const response = await axios.post("/api/products/rearrange-categories", payload);
+                      const { status, message } = await response.data;
+
+                      if (Number(status) === 0) {
+                        addToast(message, { appearance: "success", autoDismiss: true });
+
+                        const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
+                        const { data: allCategoriesResData } = await allCategoriesRes.data;
+                        // console.log({ allCategoriesResData });
+                        dispatch(setManageProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
+
+                        // setReRUn(new Date());
+                      } else {
+                        addToast(message, { appearance: "error", autoDismiss: true });
+                      }
+                    }
+                    DragState.row = -1;
+                    DragState.dropIndex = -1;
+                  } catch (error) {
+                    console.log(error);
+                  } finally {
+                    setProcessing(false);
                   }
-                  DragState.row = -1;
-                  DragState.dropIndex = -1;
                 }}
               />
             ),
