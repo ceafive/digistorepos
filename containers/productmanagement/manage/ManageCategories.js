@@ -401,7 +401,14 @@ const ManageCategories = ({ setReRUn }) => {
                           category_level: val?.product_category_level,
                         };
                       });
-                      // console.log({ dataToSend });
+
+                      const reformatteddDataToSend = dataToSend.map((item, index) => {
+                        return {
+                          category_id: item?.category_id,
+                          category_level: index + 1,
+                        };
+                      });
+                      // console.log({ reformatteddDataToSend });
 
                       setProcessing(true);
                       addToast(`Rearranging....`, { appearance: "info", autoDismiss: true });
@@ -410,7 +417,7 @@ const ManageCategories = ({ setReRUn }) => {
                       user = JSON.parse(user);
 
                       const payload = {
-                        category_list: JSON.stringify(dataToSend),
+                        category_list: JSON.stringify(reformatteddDataToSend),
                         merchant: user?.user_merchant_id,
                         mod_by: user?.login,
                       };
