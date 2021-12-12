@@ -25,8 +25,7 @@ export default function Navbar(props) {
           </div>
           <div
             className={
-              "lg:flex flex-grow items-center bg-white lg:bg-opacity-0 lg:shadow-none" +
-              (navbarOpen ? " block rounded shadow-lg" : " hidden")
+              "lg:flex flex-grow items-center bg-white lg:bg-opacity-0 lg:shadow-none" + (navbarOpen ? " block rounded shadow-lg" : " hidden")
             }
             id="example-navbar-warning"
           >

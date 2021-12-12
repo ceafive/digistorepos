@@ -432,7 +432,6 @@ const ManageCategories = ({ setReRUn }) => {
                         const { data: allCategoriesResData } = await allCategoriesRes.data;
                         // console.log({ allCategoriesResData });
                         dispatch(setManageProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
-
                         // setReRUn(new Date());
                       } else {
                         addToast(message, { appearance: "error", autoDismiss: true });

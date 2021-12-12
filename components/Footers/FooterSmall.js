@@ -14,7 +14,8 @@ export default function FooterSmall(props) {
                   href="https://sell.digistoreafrica.com/"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-blueGray-300 hover:text-blueGray-900 text-sm font-semibold py-1">
+                  className="text-blueGray-300 hover:text-blueGray-900 text-sm font-semibold py-1"
+                >
                   Digistore Africa
                 </a>
               </div>

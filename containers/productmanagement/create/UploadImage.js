@@ -24,11 +24,9 @@ export default function UploadImage({ maxNumber, classes, setValue, images, setI
         onError={(errors, files) => {
           // console.log({ errors, files });
 
-          errors.maxNumber &&
-            addToast(`Number of selected images exceed maxNumber of ${maxNumber}`, { appearance: `error`, autoDismiss: true });
+          errors.maxNumber && addToast(`Number of selected images exceed maxNumber of ${maxNumber}`, { appearance: `error`, autoDismiss: true });
           errors.acceptType && addToast(`Your selected file type is not allow`, { appearance: `error`, autoDismiss: true });
-          errors.maxFileSize &&
-            addToast(`Selected file size exceed maxFileSize of 2000000 bytes`, { appearance: `error`, autoDismiss: true });
+          errors.maxFileSize && addToast(`Selected file size exceed maxFileSize of 2000000 bytes`, { appearance: `error`, autoDismiss: true });
           errors.resolution && addToast(`Selected file is not match your desired resolution`, { appearance: `error`, autoDismiss: true });
         }}
       >

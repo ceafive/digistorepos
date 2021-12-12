@@ -1,11 +1,11 @@
 /* eslint-disable react/display-name */
 
 import axios from "axios";
-import AddCustomerModal from "containers/sell/sell/cart/AddCustomerModal";
 import Dropdown from "components/Misc/Dropdown";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import { tableIcons } from "components/Misc/TableIcons";
 import Modal from "components/Modal";
+import AddCustomerModal from "containers/sell/sell/cart/AddCustomerModal";
 import { capitalize, filter } from "lodash";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
