@@ -358,12 +358,14 @@ const ProductsSelection = () => {
                   previousLabel={"prev"}
                   nextLabel={"next"}
                   breakLabel={"..."}
-                  breakClassName={"relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"}
+                  breakClassName={
+                    "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 cursor-pointer"
+                  }
                   previousLinkClassName={
-                    "relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    "relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
                   }
                   nextLinkClassName={
-                    "relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    "relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
                   }
                   pageCount={pageCount}
                   marginPagesDisplayed={2}
@@ -372,7 +374,7 @@ const ProductsSelection = () => {
                   containerClassName={"relative z-0 inline-flex rounded-md shadow-sm -space-x-px"}
                   activeLinkClassName={"z-10 bg-indigo-50 border-indigo-500 text-indigo-600"}
                   pageLinkClassName={
-                    "bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+                    "bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium cursor-pointer"
                   }
                 />
               </div>
