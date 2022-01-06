@@ -302,8 +302,13 @@ const ProductsSelection = () => {
                       }
                     }}
                   >
-                    <div key={product.product_id} className="relative " style={{ paddingBottom: "95%" }}>
-                      <img className="absolute h-full w-full object-cover" src={`${imgUrlBase}${product.product_image}`} alt={product.product_name} />
+                    <div key={product.product_id} className="relative" style={{ paddingBottom: "95%" }}>
+                      <img
+                        className="absolute h-full w-full object-left"
+                        // className="absolute h-full w-full object-cover"
+                        src={`${imgUrlBase}${product.product_image}`}
+                        alt={product.product_name}
+                      />
                     </div>
                     <div className="p-2 text-sm">
                       <p className="font-semibold leading-none">{product.product_name}</p>

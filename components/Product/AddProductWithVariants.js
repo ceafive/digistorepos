@@ -347,7 +347,7 @@ const AddProductWithVariants = ({ onClose }) => {
           </div>
 
           <hr className="my-2" />
-          <div className="w-full">
+          <div className="w-full  pb-4">
             {currentStep ? (
               currentStep?.map(([key, value], index) => {
                 const length = value?.length;

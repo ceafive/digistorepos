@@ -288,9 +288,9 @@ const ProductDetails = ({ onClose }) => {
           //     alt={product?.product_image}
           //   />
           // </div>
-          <div className="relative " style={{ paddingBottom: "100%" }}>
+          <div className="relative h-full" style={{}}>
             <img
-              className="absolute h-full w-full object-cover"
+              className="absolute h-full w-full object-center"
               src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
               alt={product?.product_image}
             />
@@ -316,12 +316,12 @@ const ProductDetails = ({ onClose }) => {
           </div>
 
           <hr className="my-2" />
-          <div className="w-full">
+          <div className="w-full pb-4">
             {currentStep ? (
               currentStep?.map(([key, value], index) => {
                 // console.log(value);
                 return (
-                  <div key={key + index} className="w-full h-full">
+                  <div key={key + index} className="w-full h-full ">
                     <div className="flex items-center justify-center w-full">
                       {stepsClicked?.map((stepClicked, index) => {
                         return (
