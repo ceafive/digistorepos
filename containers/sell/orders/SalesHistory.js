@@ -78,6 +78,8 @@ const SalesHistory = () => {
   const [order, setOrder] = React.useState(null);
   const [componentToRender, setComponentToRender] = React.useState("details");
   const [reRun, setReRun] = React.useState(new Date());
+  const [maxWidth, setMaxWidth] = React.useState("sm");
+
   const isAdmin = upperCase(user?.user_merchant_group) === "ADMINISTRATORS" ? true : false;
 
   React.useEffect(() => {
@@ -270,6 +272,7 @@ const SalesHistory = () => {
               setOrder(rowData);
               setComponentToRender("order_actions");
               setOpenModal(true);
+              setMaxWidth("sm");
             },
           },
           // {
@@ -344,7 +347,7 @@ const SalesHistory = () => {
     <>
       <Modal
         open={openModal}
-        maxWidth="sm"
+        maxWidth={maxWidth}
         onClose={() => {
           setOpenModal(false);
           // setReRun(new Date());
@@ -493,6 +496,7 @@ const SalesHistory = () => {
             setComponentToRender("details");
             setOrder(rowData);
             setOpenModal(true);
+            setMaxWidth("md");
           }}
           // detailPanel={[
           //   {
