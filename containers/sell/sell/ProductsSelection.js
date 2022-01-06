@@ -284,11 +284,13 @@ const ProductsSelection = () => {
                         variants: { Type: "Normal" },
                       };
 
+                      // console.log(data);
+
                       if (product?.product_properties_variants?.length) {
                         dispatch(setProductToView(product));
                         dispatch(openVariantsModal());
                         return;
-                      } else if (product?.product_has_property === "YES") {
+                      } else if (product?.product_properties) {
                         // console.log(product);
                         if (parseInt(product?.product_quantity) === 0) {
                           return addToast(`Product sold out`, { appearance: "error", autoDismiss: true });

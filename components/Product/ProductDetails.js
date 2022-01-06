@@ -5,7 +5,8 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
-const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantName, setStepsClicked }) => {
+const RenderTap = ({ item, product, setProductPrice, step, setStep, setFormData, variantName, setStepsClicked }) => {
+  // console.log(item);
   return (
     <button
       className="w-32 h-32 font-bold border border-gray-200 focus:outline-none"
@@ -16,6 +17,8 @@ const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantN
         setFormData((data) => ({ ...data, [variantName]: item.property_value }));
         if (item?.property_price_set === "YES") {
           setProductPrice(Number(parseFloat(item?.property_price).toFixed(2)));
+        } else {
+          setProductPrice(Number(parseFloat(product?.product_price).toFixed(2)));
         }
         setStep(step + 1);
       }}
@@ -316,6 +319,7 @@ const ProductDetails = ({ onClose }) => {
           <div className="w-full">
             {currentStep ? (
               currentStep?.map(([key, value], index) => {
+                // console.log(value);
                 return (
                   <div key={key + index} className="w-full h-full">
                     <div className="flex items-center justify-center w-full">
@@ -351,6 +355,7 @@ const ProductDetails = ({ onClose }) => {
                             setFormData={setFormData}
                             setStepsClicked={setStepsClicked}
                             variantName={capitalize(key)}
+                            product={product}
                           />
                         );
                       })}
