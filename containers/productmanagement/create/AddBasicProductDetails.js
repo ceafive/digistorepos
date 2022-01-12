@@ -10,13 +10,114 @@ import {
 } from "features/manageproducts/manageprodcutsSlice";
 import { filter, get } from "lodash";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
+import DayPickerInput from "react-day-picker/DayPickerInput";
+import { formatDate, parseDate } from "react-day-picker/moment";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
 import AddCategory from "./AddCategory";
 import UploadImage from "./UploadImage";
+
+class DayPicker extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleFromChange = this.handleFromChange.bind(this);
+    this.handleToChange = this.handleToChange.bind(this);
+    this.state = {
+      from: undefined,
+      to: undefined,
+    };
+  }
+
+  showFromMonth() {
+    const { from, to } = this.state;
+    if (!from) {
+      return;
+    }
+    // if (moment(to).diff(moment(from), 'months') < 2) {
+    //   this.to.getDayPicker().showMonth(from);
+    // }
+  }
+
+  handleFromChange(from) {
+    // Change the from date and focus the "to" input field
+    this.setState({ from });
+  }
+
+  handleToChange(to) {
+    this.setState({ to }, this.showFromMonth);
+  }
+
+  render() {
+    const { from, to } = this.state;
+    const modifiers = { start: from, end: to };
+    return (
+      <div className="InputFromTo">
+        <DayPickerInput
+          value={from}
+          placeholder="From"
+          format="LL"
+          formatDate={formatDate}
+          parseDate={parseDate}
+          dayPickerProps={{
+            selectedDays: [from, { from, to }],
+            disabledDays: { after: to },
+            toMonth: to,
+            modifiers,
+            numberOfMonths: 1,
+            onDayClick: () => this.to.getInput().focus(),
+          }}
+          onDayChange={this.handleFromChange}
+        />{" "}
+        —{" "}
+        <span className="InputFromTo-to">
+          <DayPickerInput
+            ref={(el) => (this.to = el)}
+            value={to}
+            placeholder="To"
+            format="LL"
+            formatDate={formatDate}
+            parseDate={parseDate}
+            dayPickerProps={{
+              selectedDays: [from, { from, to }],
+              disabledDays: { before: from },
+              modifiers,
+              month: from,
+              fromMonth: from,
+              numberOfMonths: 1,
+            }}
+            onDayChange={this.handleToChange}
+          />
+        </span>
+        <style jsx>{`
+          .InputFromTo .DayPicker-Day--selected:not(.DayPicker-Day--start):not(.DayPicker-Day--end):not(.DayPicker-Day--outside) {
+            background-color: #f0f8ff !important;
+            color: #4a90e2;
+          }
+          .InputFromTo .DayPicker-Day {
+            border-radius: 0 !important;
+          }
+          .InputFromTo .DayPicker-Day--start {
+            border-top-left-radius: 50% !important;
+            border-bottom-left-radius: 50% !important;
+          }
+          .InputFromTo .DayPicker-Day--end {
+            border-top-right-radius: 50% !important;
+            border-bottom-right-radius: 50% !important;
+          }
+          .InputFromTo .DayPickerInput-Overlay {
+            width: 250px;
+          }
+          .InputFromTo-to .DayPickerInput-Overlay {
+            margin-left: -198px;
+          }
+        `}</style>
+      </div>
+    );
+  }
+}
 
 const AddProductDetails = ({ setGoToVarianceConfig }) => {
   const router = useRouter();
@@ -61,6 +162,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
   const [images, setImages] = React.useState(productWithVariants?.productImages ?? []);
+  const [variantValueIsDate, setVariantValueIsDate] = useState(false);
 
   const isInventorySet = watch("setInventoryQuantity", false);
   const productCategory = watch("productCategory", false);
@@ -477,23 +579,29 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                               )}
                             </div>
 
-                            <div className="">
-                              <label className="text-xs leading-none font-bold">
-                                Variant Values <span className="text-xs">(Separated by comma ",")</span>
-                              </label>
-                              <input
-                                {...register(`variants[${index}].values`, {
-                                  validate: (value) => (productHasVariants ? Boolean(value) : true) || "Variant values must be entered",
-                                })}
-                                defaultValue={values}
-                                type="text"
-                                placeholder="eg. Small,Medium,Large"
-                                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                              />
-                              {errors[`variants`] && errors[`variants`][index] && (
-                                <p className="text-xs text-red-500">{errors[`variants`][index]?.values?.message}</p>
-                              )}
-                            </div>
+                            {!variantValueIsDate ? (
+                              <div className="">
+                                <label className="text-xs leading-none font-bold">
+                                  Variant Values <span className="text-xs">(Separated by comma ",")</span>
+                                </label>
+                                <input
+                                  {...register(`variants[${index}].values`, {
+                                    validate: (value) => (productHasVariants ? Boolean(value) : true) || "Variant values must be entered",
+                                  })}
+                                  defaultValue={values}
+                                  type="text"
+                                  placeholder="eg. Small,Medium,Large"
+                                  className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                                />
+                                {errors[`variants`] && errors[`variants`][index] && (
+                                  <p className="text-xs text-red-500">{errors[`variants`][index]?.values?.message}</p>
+                                )}
+                              </div>
+                            ) : (
+                              <>
+                                <DayPicker />
+                              </>
+                            )}
 
                             <div className="w-1/5 flex">
                               {fields.length > 1 && (
@@ -510,15 +618,28 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                               )}
 
                               {fields?.length < 5 && index === fields.length - 1 && (
-                                <div
-                                  className="font-bold bg-green-500 rounded h-full py-1 px-4 ml-2 mt-4 cursor-pointer"
-                                  onClick={() => {
-                                    append({});
-                                  }}
-                                >
-                                  <button className="justify-self-end focus:outline-none">
-                                    <i className="fas fa-plus text-white" />
-                                  </button>
+                                <div className="flex items-center h-full">
+                                  <div className="flex">
+                                    <input
+                                      className="mr-2"
+                                      type="checkbox"
+                                      checked={variantValueIsDate}
+                                      onChange={(e) => {
+                                        setVariantValueIsDate(e.target.checked);
+                                      }}
+                                    />
+                                    <label className=" text-gray-800">Date?</label>
+                                  </div>
+                                  <div
+                                    className="flex font-bold bg-green-500 rounded py-1 px-4 ml-2 cursor-pointer"
+                                    onClick={() => {
+                                      append({});
+                                    }}
+                                  >
+                                    <button className="justify-self-end focus:outline-none">
+                                      <i className="fas fa-plus text-white" />
+                                    </button>
+                                  </div>
                                 </div>
                               )}
                             </div>

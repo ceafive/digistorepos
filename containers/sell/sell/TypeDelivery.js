@@ -8,9 +8,7 @@ import {
   setDeliveryNotes,
   setDeliveryRouteCosts,
   setPromoAmount,
-  setPromoCodeAppliedOnCartPage,
   setPromoType,
-  setDeliveryEstimate,
 } from "features/cart/cartSlice";
 import { get, upperCase } from "lodash";
 import React from "react";
@@ -230,7 +228,8 @@ const MerchantDistDeliveryType = ({ processingDeliveryCharge, setProcessingDeliv
   React.useEffect(() => {
     const getCoordinates = async () => {
       setProcessingDeliveryCharge(true);
-      const stringCoordinates = await getStringCoordinates(deliveryLocationInputted?.value?.description);
+      const location = encodeURIComponent(deliveryLocationInputted?.value?.description);
+      const stringCoordinates = await getStringCoordinates(location);
 
       const fetchItems = async (stringCoordinates) => {
         try {
@@ -424,7 +423,8 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
         }
       };
 
-      const stringCoordinates = await getStringCoordinates(deliveryLocationInputted?.value?.description);
+      const location = encodeURIComponent(deliveryLocationInputted?.value?.description);
+      const stringCoordinates = await getStringCoordinates(location);
 
       if (stringCoordinates) {
         dispatch(setDeliveryGPS(stringCoordinates));

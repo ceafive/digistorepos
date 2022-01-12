@@ -2,7 +2,6 @@ import { changeItemPropsInCart, removeItemFromCart, setItemDiscount } from "feat
 import { openInventoryModal, setProductToView } from "features/products/productsSlice";
 import { capitalize, find, isEqual } from "lodash";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { configureVariables } from "utils";
@@ -10,13 +9,6 @@ import { configureVariables } from "utils";
 const Accordion = ({ product, index }) => {
   // console.log(product);
   const { addToast } = useToasts();
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
   const dispatch = useDispatch();
 
   const totalTaxes = useSelector((state) => state.cart.totalTaxes);
@@ -26,7 +18,7 @@ const Accordion = ({ product, index }) => {
   const amountReceivedFromPayer = useSelector((state) => state.cart.amountReceivedFromPayer);
 
   // Variables
-  const { covidTax, saleTotal } = React.useMemo(
+  const { saleTotal } = React.useMemo(
     () => configureVariables({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }),
     [transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer]
   );

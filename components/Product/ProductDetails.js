@@ -5,7 +5,8 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
-const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantName, setStepsClicked }) => {
+const RenderTap = ({ item, product, setProductPrice, step, setStep, setFormData, variantName, setStepsClicked }) => {
+  // console.log(item);
   return (
     <button
       className="w-32 h-32 font-bold border border-gray-200 focus:outline-none"
@@ -16,6 +17,8 @@ const RenderTap = ({ item, setProductPrice, step, setStep, setFormData, variantN
         setFormData((data) => ({ ...data, [variantName]: item.property_value }));
         if (item?.property_price_set === "YES") {
           setProductPrice(Number(parseFloat(item?.property_price).toFixed(2)));
+        } else {
+          setProductPrice(Number(parseFloat(product?.product_price).toFixed(2)));
         }
         setStep(step + 1);
       }}
@@ -285,9 +288,9 @@ const ProductDetails = ({ onClose }) => {
           //     alt={product?.product_image}
           //   />
           // </div>
-          <div className="relative " style={{ paddingBottom: "100%" }}>
+          <div className="relative h-full" style={{}}>
             <img
-              className="absolute h-full w-full object-cover"
+              className="absolute h-full w-full object-center"
               src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
               alt={product?.product_image}
             />
@@ -313,11 +316,12 @@ const ProductDetails = ({ onClose }) => {
           </div>
 
           <hr className="my-2" />
-          <div className="w-full">
+          <div className="w-full pb-4">
             {currentStep ? (
               currentStep?.map(([key, value], index) => {
+                // console.log(value);
                 return (
-                  <div key={key + index} className="w-full h-full">
+                  <div key={key + index} className="w-full h-full ">
                     <div className="flex items-center justify-center w-full">
                       {stepsClicked?.map((stepClicked, index) => {
                         return (
@@ -351,6 +355,7 @@ const ProductDetails = ({ onClose }) => {
                             setFormData={setFormData}
                             setStepsClicked={setStepsClicked}
                             variantName={capitalize(key)}
+                            product={product}
                           />
                         );
                       })}

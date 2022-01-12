@@ -8,7 +8,7 @@ const InventoryDetails = ({ onClose }) => {
   const outletSelected = useSelector((state) => state.cart.outletSelected);
   const [variantQuantity, setVariantQuantity] = React.useState(0);
   // console.log({ product });
-  // console.log({ outletSelected });
+  // console.log({ variantQuantity });
 
   React.useEffect(() => {
     if (product?.product_properties_variants && product?.product_properties_variants?.length > 0) {
@@ -64,7 +64,7 @@ const InventoryDetails = ({ onClose }) => {
           </div>
         </div>
 
-        <div className="w-full mt-4">
+        <div className="w-full mt-4 pb-4">
           {product?.product_properties && (
             <div className="mb-4">
               <label className="text-sm leading-none font-bold">Options</label>
@@ -133,7 +133,15 @@ const InventoryDetails = ({ onClose }) => {
                 </div>
               )}
             </div>
-            <p>{variantQuantity ? variantQuantity : product?.product_quantity === "-99" ? "Unlimited" : product?.product_quantity}</p>
+            <p>
+              {variantQuantity
+                ? variantQuantity === "-99"
+                  ? "Unlimited"
+                  : variantQuantity
+                : product?.product_quantity === "-99"
+                ? "Unlimited"
+                : product?.product_quantity}
+            </p>
           </div>
         </div>
       </div>

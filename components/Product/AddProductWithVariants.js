@@ -147,8 +147,10 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
 };
 
 const AddProductWithVariants = ({ onClose }) => {
-  const { addToast, removeAllToasts } = useToasts();
+  const { removeAllToasts } = useToasts();
   const product = useSelector((state) => state.products.productToView);
+
+  // console.log(product);
 
   const transformedVariants = product?.product_properties_variants.map((p) => {
     const sortedVariantProperties = {};
@@ -219,7 +221,8 @@ const AddProductWithVariants = ({ onClose }) => {
   // var result = zipObject(arrKeys, arrValues);
 
   const sortedNewProductProperties = {};
-  Object.keys({ ...product?.product_properties })
+  const variantProperties = product?.product_properties || {};
+  Object.keys({ ...variantProperties })
     .sort((a, b) => {
       const fa = a.toLowerCase();
       const fb = b.toLowerCase();
@@ -251,7 +254,7 @@ const AddProductWithVariants = ({ onClose }) => {
   const [variantID, setVariantID] = React.useState("");
   const [stepsClicked, setStepsClicked] = React.useState([]);
 
-  // console.log(variantQuantity);
+  // console.log(allVariants);
 
   const reset = () => {
     onClose();
@@ -344,7 +347,7 @@ const AddProductWithVariants = ({ onClose }) => {
           </div>
 
           <hr className="my-2" />
-          <div className="w-full">
+          <div className="w-full  pb-4">
             {currentStep ? (
               currentStep?.map(([key, value], index) => {
                 const length = value?.length;

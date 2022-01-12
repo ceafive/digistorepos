@@ -145,11 +145,7 @@ const ProductDetails = ({ onClose }) => {
                               }
                             >
                               {variant?.property_value}{" "}
-                              {`${
-                                variant?.property_price_set === "YES"
-                                  ? `- GHS${Number(parseFloat(variant?.property_price).toFixed(2))}`
-                                  : ""
-                              }`}
+                              {`${variant?.property_price_set === "YES" ? `- GHS${Number(parseFloat(variant?.property_price).toFixed(2))}` : ""}`}
                             </option>
                           );
                         })}

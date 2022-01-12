@@ -9,7 +9,7 @@ import {
 } from "features/manageproducts/manageprodcutsSlice";
 import { filter } from "lodash";
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import VarianceConfiguaration from "./VarianceConfiguaration";
 
@@ -19,12 +19,22 @@ const CreateAProduct = () => {
   const [fetching, setFetching] = React.useState(false);
   const [goToVarianceConfig, setGoToVarianceConfig] = React.useState(false);
 
+  const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
+  const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
+
   React.useEffect(() => {
     const fetchItems = async () => {
       try {
-        setFetching(true);
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
+
+        if (manageProductOutlets?.length === 0) {
+          setFetching(true);
+        }
+
+        if (manageProductCategories?.length === 0) {
+          setFetching(true);
+        }
 
         const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
         const allOutletsRes = await axios.post("/api/products/get-outlets", { user });
