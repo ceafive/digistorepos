@@ -125,8 +125,8 @@ const CustomersTable = ({ setReRun }) => {
       title: "Date of Birth",
       field: "customer_dob",
     },
-    { title: "Total Spend", field: "total_spends", defaultSort: "desc" },
-    { title: "Total Orders", field: "total_counts" },
+    // { title: "Total Spend", field: "total_spends", defaultSort: "desc" },
+    // { title: "Total Orders", field: "total_counts" },
     // { title: "Addresses", field: "customer_addresses",  },
     {
       title: "Actions",
@@ -225,7 +225,7 @@ const CustomersTable = ({ setReRun }) => {
           components={{
             Toolbar: (props) => (
               <div>
-                <MTableToolbar {...props} /> 
+                <MTableToolbar {...props} />
               </div>
             ),
             Pagination: PatchedPagination,
