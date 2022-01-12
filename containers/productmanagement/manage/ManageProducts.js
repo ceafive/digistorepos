@@ -45,7 +45,7 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
-const ManageProducts = ({ setReRUn }) => {
+const ManageProducts = ({ setReRun }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
@@ -101,7 +101,7 @@ const ManageProducts = ({ setReRUn }) => {
 
         if (Number(status) === 0) {
           addToast(message, { appearance: "success", autoDismiss: true });
-          setReRUn(new Date());
+          setReRun(new Date());
         } else {
           addToast(message, { appearance: "error", autoDismiss: true });
         }
@@ -217,7 +217,7 @@ const ManageProducts = ({ setReRUn }) => {
 
       if (Number(status) === 0) {
         addToast(message, { appearance: "success", autoDismiss: true });
-        setReRUn(new Date());
+        setReRun(new Date());
       } else {
         addToast(message, { appearance: "error", autoDismiss: true });
       }
@@ -259,7 +259,7 @@ const ManageProducts = ({ setReRUn }) => {
 
         if (Number(status) === 0) {
           addToast(message, { appearance: "success", autoDismiss: true });
-          setReRUn(new Date());
+          setReRun(new Date());
         } else {
           addToast(message, { appearance: "error", autoDismiss: true });
         }

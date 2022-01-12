@@ -25,7 +25,7 @@ const NewOrder = ({ user, order, fetching, setFetching, onClose }) => {
 
       const processRes = await axios.post("/api/sell/orders/process-order", data);
       const { message, status: resStatus } = await processRes?.data;
-      console.log(processRes);
+      // console.log(processRes);
       addToast(message, { appearance: Number(resStatus) === 0 ? "success" : "error", autoDismiss: true });
     } catch (error) {
       console.log(error);

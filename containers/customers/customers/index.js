@@ -11,7 +11,7 @@ const CustomersPage = () => {
   const dispatch = useDispatch();
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
-  const [reRUn, setReRUn] = React.useState(new Date());
+  const [reRUn, setReRun] = React.useState(new Date());
 
   // Compnent State
   const allCustomers = useSelector((state) => state.customers.allCustomers);
@@ -24,6 +24,8 @@ const CustomersPage = () => {
         }
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
+
+        // console.log(user);
 
         const allCustomerssRes = await axios.post("/api/customers/get-customers", { merchant: user?.user_merchant_id });
 
@@ -58,7 +60,7 @@ const CustomersPage = () => {
         <p>Manage your customers and their balances, or segment them by demographics and spending habits.</p>
       </div>
 
-      <CustomersTable setReRUn={setReRUn} />
+      <CustomersTable setReRun={setReRun} />
     </div>
   );
 };

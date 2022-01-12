@@ -19,7 +19,7 @@ const ManageProductsOrCategories = () => {
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
   const [tabSelected, setTabSelected] = React.useState("products");
-  const [reRUn, setReRUn] = React.useState(new Date());
+  const [reRUn, setReRun] = React.useState(new Date());
 
   // Compnent State
 
@@ -107,8 +107,8 @@ const ManageProductsOrCategories = () => {
           Categories
         </button>{" "}
       </div>
-      {tabSelected === "products" && <ManageProducts setReRUn={setReRUn} />}
-      {tabSelected === "categories" && <ManageCategories setReRUn={setReRUn} />}
+      {tabSelected === "products" && <ManageProducts setReRun={setReRun} />}
+      {tabSelected === "categories" && <ManageCategories setReRun={setReRun} />}
     </div>
   );
 };

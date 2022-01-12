@@ -1,6 +1,7 @@
 import { createPopper } from "@popperjs/core";
 import { onAppLogout } from "features/app/appSlice";
 import { onAppResetCart } from "features/cart/cartSlice";
+import { onAppResetCustomers } from "features/customers/customersSlice";
 import { onAppResetManageProducts } from "features/manageproducts/manageprodcutsSlice";
 import { onAppResetSales } from "features/orders/ordersSlice";
 import { onAppResetProducts } from "features/products/productsSlice";
@@ -33,13 +34,14 @@ const UserDropdown = () => {
     dispatch(onAppResetManageProducts());
     dispatch(onAppResetProducts());
     dispatch(onAppResetSales());
+    dispatch(onAppResetCustomers());
     sessionStorage.removeItem("IPAYPOSUSER");
   };
 
   React.useEffect(() => {
     return () => {
-      // console.log("here");
-      // onLogout()
+      console.log("logging out...");
+      onLogout();
     };
   }, []);
 

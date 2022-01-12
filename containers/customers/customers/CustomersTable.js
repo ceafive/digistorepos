@@ -18,7 +18,7 @@ import CustomerDetails from "./CustomerDetails";
 import CustomerOrdersDetails from "./CustomerOrdersDetails";
 import CustomerTransactions from "./CustomerTransactions";
 
-const CustomersTable = ({ setReRUn }) => {
+const CustomersTable = ({ setReRun }) => {
   let user = sessionStorage.getItem("IPAYPOSUSER");
   user = JSON.parse(user);
 
@@ -182,7 +182,7 @@ const CustomersTable = ({ setReRUn }) => {
           <AddCustomerModal
             onClose={() => setOpenModal(false)}
             functionToRun={() => {
-              setReRUn(new Date());
+              setReRun(new Date());
             }}
           />
         )}
@@ -212,10 +212,20 @@ const CustomersTable = ({ setReRUn }) => {
             selection: false,
             padding: `dense`,
           }}
+          actions={[
+            {
+              icon: () => <i className="text-base text-green-600 fas fa-redo" />,
+              tooltip: "Reload",
+              onClick: () => {
+                setReRun(new Date());
+              },
+              isFreeAction: true,
+            },
+          ]}
           components={{
             Toolbar: (props) => (
               <div>
-                <MTableToolbar {...props} />
+                <MTableToolbar {...props} /> 
               </div>
             ),
             Pagination: PatchedPagination,

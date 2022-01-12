@@ -49,7 +49,7 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
-const ManageCategories = ({ setReRUn }) => {
+const ManageCategories = ({ setReRun }) => {
   const dispatch = useDispatch();
   const { addToast, removeToast } = useToasts();
   const router = useRouter();

@@ -34,7 +34,7 @@ const AssignOrderToRider = ({ order, user, onClose, setReRun }) => {
       };
       const assignRiderRes = await axios.post("/api/sell/orders/assign-rider", data);
       const { data: assignRiderResData } = await assignRiderRes.data;
-      console.log(assignRiderResData);
+      // console.log(assignRiderResData);
     } catch (error) {
       console.log(error);
       sentryErrorLogger(error);
