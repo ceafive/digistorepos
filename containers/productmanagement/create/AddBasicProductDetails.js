@@ -579,31 +579,25 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                               )}
                             </div>
 
-                            {!variantValueIsDate ? (
-                              <div className="">
-                                <label className="text-xs leading-none font-bold">
-                                  Variant Values <span className="text-xs">(Separated by comma ",")</span>
-                                </label>
-                                <input
-                                  {...register(`variants[${index}].values`, {
-                                    validate: (value) => (productHasVariants ? Boolean(value) : true) || "Variant values must be entered",
-                                  })}
-                                  defaultValue={values}
-                                  type="text"
-                                  placeholder="eg. Small,Medium,Large"
-                                  className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                                />
-                                {errors[`variants`] && errors[`variants`][index] && (
-                                  <p className="text-xs text-red-500">{errors[`variants`][index]?.values?.message}</p>
-                                )}
-                              </div>
-                            ) : (
-                              <>
-                                <DayPicker />
-                              </>
-                            )}
+                            <div className="">
+                              <label className="text-xs leading-none font-bold">
+                                Variant Values <span className="text-xs">(Separated by comma ",")</span>
+                              </label>
+                              <input
+                                {...register(`variants[${index}].values`, {
+                                  validate: (value) => (productHasVariants ? Boolean(value) : true) || "Variant values must be entered",
+                                })}
+                                defaultValue={values}
+                                type="text"
+                                placeholder="eg. Small,Medium,Large"
+                                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                              />
+                              {errors[`variants`] && errors[`variants`][index] && (
+                                <p className="text-xs text-red-500">{errors[`variants`][index]?.values?.message}</p>
+                              )}
+                            </div>
 
-                            <div className="w-1/5 flex">
+                            <div className="w-1/5 flex mt-4">
                               {fields.length > 1 && (
                                 <div
                                   className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"
@@ -618,28 +612,15 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                               )}
 
                               {fields?.length < 5 && index === fields.length - 1 && (
-                                <div className="flex items-center h-full">
-                                  <div className="flex">
-                                    <input
-                                      className="mr-2"
-                                      type="checkbox"
-                                      checked={variantValueIsDate}
-                                      onChange={(e) => {
-                                        setVariantValueIsDate(e.target.checked);
-                                      }}
-                                    />
-                                    <label className=" text-gray-800">Date?</label>
-                                  </div>
-                                  <div
-                                    className="flex font-bold bg-green-500 rounded py-1 px-4 ml-2 cursor-pointer"
-                                    onClick={() => {
-                                      append({});
-                                    }}
-                                  >
-                                    <button className="justify-self-end focus:outline-none">
-                                      <i className="fas fa-plus text-white" />
-                                    </button>
-                                  </div>
+                                <div
+                                  className="flex font-bold bg-green-500 rounded py-1 px-4 ml-2 cursor-pointer"
+                                  onClick={() => {
+                                    append({});
+                                  }}
+                                >
+                                  <button className="justify-self-end focus:outline-none">
+                                    <i className="fas fa-plus text-white" />
+                                  </button>
                                 </div>
                               )}
                             </div>
