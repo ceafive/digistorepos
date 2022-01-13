@@ -4,3 +4,10 @@ Dockerfile*
 .env*
 .git
 .gitignore
+node_modules
+.next/
+.eslintignore
+.eslint
+.prettierignore
+.prettierrc
+digistorepos*

@@ -111,7 +111,8 @@ const ProcessSale = ({ setReFetch }) => {
     onAfterPrint: () => setPrinting(false),
   });
 
-  const handleSendNotification = (type) => onSendNotification(type, setSendingNotification, addToast, removeToast, invoiceDetails, user);
+  const handleSendNotification = (type, customer = {}) =>
+    onSendNotification(type, setSendingNotification, addToast, removeToast, invoiceDetails, user, customer);
 
   const handleRaiseOrder = () =>
     onRaiseOrder(

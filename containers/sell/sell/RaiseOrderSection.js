@@ -38,7 +38,6 @@ const RaiseOrderSection = ({
           fetching={fetching}
           handlePrint={handlePrint}
           handleRaiseOrder={handleRaiseOrder}
-          handleSendNotification={handleSendNotification}
           payerAmountEntered={payerAmountEntered}
           printing={printing}
           processError={processError}

@@ -148,8 +148,9 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
                 style={{
                   top: "25%",
                 }}
-                onClick={() => {
-                  addToast(`NOT IMPLEMENTED`, { autoDismiss: true });
+                onClick={async () => {
+                  const status = await handleSendNotification("SMS", { email, phoneNumber });
+                  status ? setPhoneNumber("") : null;
                 }}
               >
                 Send
@@ -181,8 +182,9 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
                 style={{
                   top: "25%",
                 }}
-                onClick={() => {
-                  addToast(`NOT IMPLEMENTED`, { autoDismiss: true });
+                onClick={async () => {
+                  const status = await handleSendNotification("EMAIL", { email, phoneNumber });
+                  status ? setEmail("") : null;
                 }}
               >
                 Send

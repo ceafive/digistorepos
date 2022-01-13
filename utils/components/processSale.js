@@ -106,11 +106,13 @@ const onAddPayment = async function (
   }
 };
 
-const onSendNotification = async (type = "SMS", setSendingNotification, addToast, removeToast, invoiceDetails, user) => {
+const onSendNotification = async (type = "SMS", setSendingNotification, addToast, removeToast, invoiceDetails, user, customer) => {
   try {
     setSendingNotification(type);
     addToast(`Sending ${type}`, { appearance: "info", id: "notif-sending" });
     const payload = {
+      customer_email: customer?.email || "",
+      customer_phone: customer?.phoneNumber || "",
       tran_id: invoiceDetails?.invoice,
       tran_type: "ORDER",
       notify_type: type,
@@ -124,12 +126,15 @@ const onSendNotification = async (type = "SMS", setSendingNotification, addToast
     removeToast("notif-sending");
     if (Number(data?.status) === 0) {
       addToast(data?.message, { appearance: "success", autoDismiss: true });
+      return true;
     } else {
       addToast(data?.message, { appearance: "error", autoDismiss: true });
+      return false;
     }
   } catch (error) {
     console.log(error);
     addToast(error.message, { appearance: "error" });
+    return false;
   } finally {
     setSendingNotification(false);
   }
