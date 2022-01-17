@@ -201,6 +201,7 @@ export default function Login() {
                           },
                         })}
                         type="password"
+                        autoComplete="current-password"
                         pattern="[0-9]*"
                         noValidate
                         className="border border-gray-500 px-3 py-3 placeholder-blueGray-500 text-center text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-0 w-full ease-linear transition-all duration-150"
@@ -222,6 +223,7 @@ export default function Login() {
                           },
                         })}
                         type="password"
+                        autoComplete="current-password"
                         pattern="[0-9]*"
                         noValidate
                         className="border border-gray-500 px-3 py-3 placeholder-blueGray-500 text-center text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring-0 w-full ease-linear transition-all duration-150"

@@ -436,7 +436,7 @@ const ManageProducts = ({ setReRun }) => {
                     },
                   },
                   {
-                    title: isBooking ? "Slots" : "In Stock",
+                    title: isBooking ? "No. of slots" : "In Stock",
                     field: isBooking ? "variantOptionBookingSlot" : "variantOptionQuantity",
                     cellStyle() {
                       return {
@@ -468,7 +468,7 @@ const ManageProducts = ({ setReRun }) => {
                     },
                   },
 
-                  { title: isBooking ? "Slots Blocked" : "Qty. Sold", field: "variantOptionQuantitySold", editable: "never" },
+                  { title: isBooking ? "Slots Booked" : "Qty. Sold", field: "variantOptionQuantitySold", editable: "never" },
                   { title: "Last Stock Date", field: "variantOptionLastStockUpdated", editable: "never" },
                   {
                     title: "Action",
