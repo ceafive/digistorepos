@@ -15,13 +15,12 @@ import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import axios from "axios";
-import Dropdown from "components/Misc/Dropdown";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import { capitalize, filter, isEmpty, lowerCase } from "lodash";
 import MaterialTable, { MTableEditCell, MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
 import React, { forwardRef } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
@@ -46,18 +45,17 @@ const tableIcons = {
 };
 
 const ManageProducts = ({ setReRun }) => {
-  const dispatch = useDispatch();
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
   const {
-    control,
     register,
-    reset,
     watch,
-    setValue,
     formState: { errors },
-    handleSubmit,
   } = useForm({});
+
+  let user = sessionStorage.getItem("IPAYPOSUSER");
+  user = JSON.parse(user);
+  const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
 
   const categorySelected = watch("productCategory", "All");
 
@@ -121,39 +119,18 @@ const ManageProducts = ({ setReRun }) => {
     }
   };
 
-  const buttons = (data) => {
-    // console.log(data);
-    return [
-      {
-        name: "View",
-        action() {
-          const viewLink = `/products/view?product_id=${data?.product_id}`;
-          router.push(viewLink);
-        },
-      },
-      {
-        name: "Modify",
-        action() {
-          const viewLink = `/products/edit?product_id=${data?.product_id}&hasVariants=${
-            data?.product_properties && !isEmpty(data?.product_properties) ? "yes" : "no"
-          }`;
-          router.push(viewLink);
-        },
-      },
-      {
-        name: "Delete",
-        classes: "text-red-500",
-        async action() {
-          await deleteProduct(data?.product_id);
-        },
-      },
-    ];
-  };
-
   const columns = [
     { title: "Product ID", field: "product_id" },
     { title: "Name", field: "product_name" },
-    { title: "Description", field: "product_description" },
+    {
+      title: "Description",
+      field: "product_description",
+      cellStyle() {
+        return {
+          minWidth: 300,
+        };
+      },
+    },
     { title: "Price", field: "product_price" },
     {
       title: "In Stock",
@@ -181,7 +158,11 @@ const ManageProducts = ({ setReRun }) => {
       // console.log(columnDef?.field === "variantOptionQuantity" && !isUnlimited && newValue);
       // return;
 
-      if (columnDef?.field === "variantOptionQuantity" && !isUnlimited && !newValue) {
+      if (
+        isBooking
+          ? columnDef?.field === "variantOptionBookingSlot" && !isUnlimited && !newValue
+          : columnDef?.field === "variantOptionQuantity" && !isUnlimited && !newValue
+      ) {
         addToast(`Value must be entered...`, { appearance: "error", autoDismiss: true });
         return;
       }
@@ -194,6 +175,14 @@ const ManageProducts = ({ setReRun }) => {
       const data = {
         variant: childData?.variantOptionId,
         price: columnDef?.field === "variantOptionPrice" ? newValue : childData?.variantOptionPrice,
+        slots:
+          columnDef?.field === "variantOptionBookingSlot"
+            ? isUnlimited
+              ? "-99"
+              : newValue
+            : childData?.variantOptionBookingSlot === "Unlimited"
+            ? "-99"
+            : childData?.variantOptionBookingSlot || "",
         quantity:
           columnDef?.field === "variantOptionQuantity"
             ? isUnlimited
@@ -207,11 +196,13 @@ const ManageProducts = ({ setReRun }) => {
         mod_by: user?.login,
       };
 
-      // console.log({ data });
+      console.log({ data });
       // return;
 
       const updateVariantRes = await axios.post("/api/products/update-product-variant-props", { data });
-      const { status, message } = await updateVariantRes.data;
+      const resData = await updateVariantRes.data;
+      const { status, message } = resData;
+      console.log({ resData });
 
       removeToast(`update-variant`);
 
@@ -331,7 +322,7 @@ const ManageProducts = ({ setReRun }) => {
               icon: "visibility",
               tooltip: `View Details`,
               iconProps: {
-                color: "secondary",
+                color: "primary",
               },
               onClick(e, row) {
                 const viewLink = `/products/view?product_id=${row?.product_id}`;
@@ -345,6 +336,7 @@ const ManageProducts = ({ setReRun }) => {
                 color: "primary",
               },
               onClick(e, row) {
+                console.log();
                 const viewLink = `/products/edit?product_id=${row?.product_id}&hasVariants=${
                   row?.product_properties && !isEmpty(row?.product_properties) ? "yes" : "no"
                 }`;
@@ -401,7 +393,7 @@ const ManageProducts = ({ setReRun }) => {
                     render(rowData) {
                       let subheader = "";
                       const variantdata = Object.entries(rowData?.variantOptionValue);
-                      variantdata.forEach(([key, value], index) => {
+                      variantdata.forEach(([, value], index) => {
                         subheader += `${value}${index === variantdata?.length - 1 ? " " : " / "}`;
                       });
                       return (
@@ -424,7 +416,7 @@ const ManageProducts = ({ setReRun }) => {
                     render(rowData) {
                       let header = "";
                       const variantdata = Object.entries(rowData?.variantOptionValue);
-                      variantdata.forEach(([key, value], index) => {
+                      variantdata.forEach(([key], index) => {
                         header += `${key}${index === variantdata?.length - 1 ? " " : " / "}`;
                       });
                       return (
@@ -444,27 +436,39 @@ const ManageProducts = ({ setReRun }) => {
                     },
                   },
                   {
-                    title: "In Stock",
-                    field: "variantOptionQuantity",
+                    title: isBooking ? "Slots" : "In Stock",
+                    field: isBooking ? "variantOptionBookingSlot" : "variantOptionQuantity",
                     cellStyle() {
                       return {
                         width: 400,
                       };
                     },
                     render(rowData) {
-                      return (
-                        <p>
-                          {rowData?.variantOptionQuantity === "-99"
-                            ? "Unlimited"
-                            : rowData?.variantOptionQuantity === "0"
-                            ? "Out of Stock"
-                            : rowData?.variantOptionQuantity}
-                        </p>
-                      );
+                      if (isBooking) {
+                        return (
+                          <p>
+                            {rowData?.variantOptionBookingSlot === "-99"
+                              ? "Unlimited"
+                              : rowData?.variantOptionBookingSlot === "0"
+                              ? "Out of Stock"
+                              : rowData?.variantOptionBookingSlot}
+                          </p>
+                        );
+                      } else {
+                        return (
+                          <p>
+                            {rowData?.variantOptionQuantity === "-99"
+                              ? "Unlimited"
+                              : rowData?.variantOptionQuantity === "0"
+                              ? "Out of Stock"
+                              : rowData?.variantOptionQuantity}
+                          </p>
+                        );
+                      }
                     },
                   },
 
-                  { title: "Qty. Sold", field: "variantOptionQuantitySold", editable: "never" },
+                  { title: isBooking ? "Slots Blocked" : "Qty. Sold", field: "variantOptionQuantitySold", editable: "never" },
                   { title: "Last Stock Date", field: "variantOptionLastStockUpdated", editable: "never" },
                   {
                     title: "Action",
@@ -514,12 +518,84 @@ const ManageProducts = ({ setReRun }) => {
                     components={{
                       EditCell: (props) => {
                         // console.log(props);
-                        const [isUnlimited, setIsUnlimited] = React.useState(["Unlimited", "-99"].includes(props?.rowData?.variantOptionQuantity));
+                        const [isUnlimited, setIsUnlimited] = React.useState(
+                          ["Unlimited", "-99"].includes(isBooking ? props?.rowData?.variantOptionBookingSlot : props?.rowData?.variantOptionQuantity)
+                        );
                         const [newQuantity, setNewQuantity] = React.useState(
-                          props?.rowData?.variantOptionQuantity === "-99" ? "" : props?.rowData?.variantOptionQuantity
+                          isBooking
+                            ? props?.rowData?.variantOptionBookingSlot === "-99"
+                              ? ""
+                              : props?.rowData?.variantOptionBookingSlot
+                            : props?.rowData?.variantOptionQuantity === "-99"
+                            ? ""
+                            : props?.rowData?.variantOptionQuantity
                         );
 
-                        if (props?.columnDef?.field === "variantOptionQuantity") {
+                        if (props?.columnDef?.field === "variantOptionBookingSlot") {
+                          return (
+                            <td
+                              style={{
+                                boxShadow: "2px 0px 15px rgba(125,147,178,.25)",
+                                color: "inherit",
+                                width: props.columnDef.tableData.width,
+                                fontSize: "inherit",
+                                fontFamily: "inherit",
+                                fontWeight: "inherit",
+                                padding: "0 16px",
+                              }}
+                            >
+                              <div className="flex items-center w-full">
+                                <input
+                                  disabled={isUnlimited}
+                                  value={newQuantity}
+                                  onChange={(e) => {
+                                    e.persist();
+                                    setNewQuantity(e.target.value);
+                                  }}
+                                  min="0"
+                                  type={isUnlimited ? "text" : "number"}
+                                  placeholder="eg. 100"
+                                  className="w-32 px-3 py-2 text-sm bg-white border border-black rounded outline-none placeholder-blueGray-300 text-blueGray-600 focus:outline-none focus:ring-1 "
+                                />
+
+                                <div className="flex items-center ml-2">
+                                  <input
+                                    name="quantityUnlimited"
+                                    type="checkbox"
+                                    checked={isUnlimited}
+                                    onChange={async (e) => {
+                                      setIsUnlimited(e.target.checked);
+                                    }}
+                                  />
+
+                                  <label className="text-xs ml-1">Unlimited</label>
+                                  <button
+                                    className="p-2 focus:outline-none text-green-500"
+                                    onClick={() => {
+                                      props.cellEditable?.onCellEditApproved(
+                                        newQuantity,
+                                        props.rowData[props.columnDef.field],
+                                        props.rowData,
+                                        props.columnDef,
+                                        isUnlimited
+                                      );
+                                    }}
+                                  >
+                                    <i className="fas fa-check"></i>
+                                  </button>
+                                  <button
+                                    className="p-2 focus:outline-none text-red-500"
+                                    onClick={() => {
+                                      props.onCellEditFinished(props.rowData, props.columnDef);
+                                    }}
+                                  >
+                                    <i className="fas fa-times"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </td>
+                          );
+                        } else if (props?.columnDef?.field === "variantOptionQuantity") {
                           return (
                             <td
                               style={{

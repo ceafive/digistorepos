@@ -12,30 +12,16 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
   const router = useRouter();
   const { addToast } = useToasts();
   const {
-    control,
     register,
-    reset,
-    watch,
-    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm({});
 
   const {
-    control: submitFormControl,
-    register: submitFormRegister,
-    reset: submitFormReset,
-    watch: submitFormWatch,
     formState: { errors: submitFormErrors },
     setError: submitFormSetError,
     clearErrors: submitFormClearErrors,
-    handleSubmit: submitFormHandleSubmit,
   } = useForm({});
-
-  // const { fields, append, remove } = useFieldArray({
-  //   control,
-  //   name: "addVariant",
-  // });
 
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
 
@@ -127,7 +113,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
             capitalize
           );
 
-          const entries = variantsStringArray.reduce((acc, value, index) => {
+          const entries = variantsStringArray.reduce((acc, value) => {
             propertyListIndexIncrease += 1;
             return {
               ...acc,

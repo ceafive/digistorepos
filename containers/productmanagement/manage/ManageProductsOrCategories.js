@@ -1,12 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import {
-  setManageProductCategories,
-  setManageProductOutlets,
-  setManageProductProducts,
-  setProductHasVariants,
-  setProductWithVariants,
-} from "features/manageproducts/manageprodcutsSlice";
+import { setManageProductCategories, setManageProductOutlets, setManageProductProducts } from "features/manageproducts/manageproductsSlice";
 import { filter } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -66,10 +60,7 @@ const ManageProductsOrCategories = () => {
     fetchItems();
 
     // clear data
-    return () => {
-      // dispatch(setProductHasVariants(false));
-      // dispatch(setProductWithVariants({}));
-    };
+    return () => {};
   }, [reRUn]);
 
   if (fetching || fetching === null) {

@@ -1,9 +1,9 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
 import ViewProduct from "containers/productmanagement/edit/view/ViewProduct";
-import { setManageProductCategories, setManageProductOutlets, setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
+import { setManageProductCategories, setManageProductOutlets, setProductWithVariants } from "features/manageproducts/manageproductsSlice";
 import Admin from "layouts/Admin";
-import { capitalize, filter, intersectionWith, isEmpty, map } from "lodash";
+import { capitalize, filter, intersectionWith, map } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";

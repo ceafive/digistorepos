@@ -9,7 +9,7 @@ import {
   setProductHasVariants,
   setProductWithVariants,
   setShowAddCategoryModal,
-} from "features/manageproducts/manageprodcutsSlice";
+} from "features/manageproducts/manageproductsSlice";
 import {
   capitalize,
   filter,

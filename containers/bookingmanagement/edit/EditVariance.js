@@ -1,6 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import { setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
+import { setProductWithVariants } from "features/manageproducts/manageproductsSlice";
 import { capitalize, filter, forEach, fromPairs, intersectionWith, isEmpty, isEqual, join, map, mapValues, omit, sortBy, split, trim } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { v4 as uuidv4 } from "uuid";
 
-const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
+const EditProductVariance = ({ setGoToVarianceConfig }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
@@ -38,10 +38,10 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
 
       const mappedValues = objectValues.map((objectValue) => {
         const newValue = { ...objectValue };
-        delete newValue?.Quantity;
+        delete newValue?.BookingSlots;
         delete newValue?.Price;
         delete newValue?.variantOptionId;
-        delete newValue["QuantityUnlimited"];
+        delete newValue["BookingSlotsUnlimited"];
 
         return newValue;
       });
@@ -54,7 +54,10 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
         return addToast(`Variant already added`, { appearance: "error", autoDismiss: true });
       }
 
-      setVarianceDistribution((varianceData) => ({ ...varianceData, [uuidv4()]: { ...values, Price: "", Quantity: "", QuantityUnlimited: false } }));
+      setVarianceDistribution((varianceData) => ({
+        ...varianceData,
+        [uuidv4()]: { ...values, Price: "", BookingSlots: "", BookingSlotsUnlimited: false },
+      }));
     } catch (error) {
       console.log(error);
     }
@@ -64,8 +67,8 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
     const values = productWithVariants?.variantsDistribution?.reduce((acc, variantDistribution) => {
       // console.log(variantDistribution);
       const data = {
-        Quantity: variantDistribution?.variantOptionQuantity,
-        QuantityUnlimited: variantDistribution?.variantOptionQuantity === "-99" ? true : false,
+        BookingSlots: variantDistribution?.variantOptionBookingSlot,
+        BookingSlotsUnlimited: Number(variantDistribution?.variantOptionBookingSlot) === -99 ? true : false,
         Price: variantDistribution?.variantOptionPrice,
         ...variantDistribution?.variantOptionValue,
       };
@@ -100,7 +103,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
       for (const [key, value] of Object.entries(varianceDistribution)) {
         for (const [keyOfKey, valueOfValue] of Object.entries(value)) {
           // console.log({ keyOfKey, valueOfValue });
-          if (keyOfKey !== "QuantityUnlimited") {
+          if (keyOfKey !== "BookingSlotsUnlimited") {
             if (!valueOfValue) {
               errorObjects.push({
                 error: true,
@@ -176,9 +179,9 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           variantOptionsIndexIncrease += 1;
           const newVal = { ...val };
           delete newVal?.Price;
-          delete newVal?.Quantity;
+          delete newVal?.BookingSlots;
           delete newVal?.variantOptionId;
-          delete newVal["QuantityUnlimited"];
+          delete newVal["BookingSlotsUnlimited"];
 
           const values = Object.entries(newVal);
 
@@ -194,7 +197,8 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           const data = {
             variantOptionValue: optionValues,
             variantOptionPrice: val?.Price,
-            variantOptionQuantity: val["QuantityUnlimited"] ? "-99" : val?.Quantity,
+            variantOptionQuantity: "-99",
+            variantOptionBookingSlot: Number(val["BookingSlotsUnlimited"]) ? -99 : val?.BookingSlots,
           };
 
           if (val?.variantOptionId) {
@@ -219,11 +223,10 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           sellingPrice,
           costPerItem,
           productImages,
-          inventoryQuantity,
-          setInventoryQuantity,
           old_outlet_list,
           applyTax,
-          addVariants,
+          availableDates,
+          availableDays,
         } = productWithVariants;
 
         let user = sessionStorage.getItem("IPAYPOSUSER");
@@ -236,7 +239,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           desc: productDescription,
           price: parseFloat(sellingPrice),
           cost: costPerItem ? parseFloat(costPerItem) : "",
-          quantity: setInventoryQuantity ? parseInt(inventoryQuantity) : -99,
+          quantity: -99,
           category: productCategory || "Test",
           tag: "NORMAL",
           taxable: applyTax ? "YES" : "NO",
@@ -253,6 +256,8 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           // variants_options: JSON.stringify(variants_options),
           variants_options: variants_options,
           property_list: property_list,
+          booking_dates: JSON.stringify(availableDates),
+          booking_days: JSON.stringify(availableDays),
         };
 
         const dataToSendBack = {
@@ -275,23 +280,6 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
 
         dispatch(setProductWithVariants(dataToSendBack));
         setGoToVarianceConfig(false);
-
-        return;
-        const updateProductRes = await axios.post("/api/products/update-product", {
-          data: payload,
-        });
-
-        const response = await updateProductRes.data;
-        // console.log(response);
-
-        if (Number(response?.status) === 0) {
-          addToast(response?.message, { appearance: "success", autoDismiss: true });
-          // router.push("/products/manage");
-          // setRefetch(new Date());
-          setGoToVarianceConfig(false);
-        } else {
-          addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
-        }
       } else {
         addToast("Please fix errors", { appearance: "error", autoDismiss: true });
       }
@@ -361,12 +349,12 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
     if (e.target.checked) {
       setVarianceDistribution((values) => ({
         ...values,
-        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "Unlimited", ["QuantityUnlimited"]: true },
+        [variance[0]]: { ...values[variance[0]], BookingSlots: "Unlimited", BookingSlotsUnlimited: true },
       }));
     } else {
       setVarianceDistribution((values) => ({
         ...values,
-        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "", ["QuantityUnlimited"]: false },
+        [variance[0]]: { ...values[variance[0]], BookingSlots: "", BookingSlotsUnlimited: false },
       }));
     }
   };
@@ -434,18 +422,11 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                       </div>
                     );
                   })}
-                  <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Price</h1>
-                  </div>
-                  <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
-                  </div>
-                  <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Quantity Unlimited</h1>
-                  </div>
-                  <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Actions</h1>
-                  </div>
+
+                  <h1 className="font-bold text-blue-700 self-center">Quantity per slot</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Price</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Unlimited Slots</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Actions</h1>
                 </div>
 
                 <div className="my-2">
@@ -472,19 +453,19 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                     const formattedVarianceEntries = Object.entries(sortedNewValues);
 
                     const removeKeys = formattedVarianceEntries.filter(([key]) => {
-                      if (key === "Quantity" || key === "Price" || key === "QuantityUnlimited") return false;
+                      if (key === "BookingSlots" || key === "Price" || key === "BookingSlotsUnlimited") return false;
                       else return true;
                     });
 
                     // console.log({ removeKeys });
 
                     const removePriceAndQuantty = formattedVarianceEntries.filter(([key]) => {
-                      if (key === "Quantity" || key === "Price") return true;
+                      if (key === "BookingSlots" || key === "Price") return true;
                       else return false;
                     });
 
                     const removeQuantityUnlimited = formattedVarianceEntries.filter(([key]) => {
-                      if (key === "QuantityUnlimited") return true;
+                      if (key === "BookingSlotsUnlimited") return true;
                       else return false;
                     });
 
@@ -499,19 +480,22 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                         })}
 
                         {removePriceAndQuantty.map(([key, value]) => {
-                          const newValue = key === "Quantity" && (value === "-99" || value === "Unlimited") ? "Unlimited" : value;
+                          const newValue = key === "BookingSlots" && (Number(value) === -99 || value === "Unlimited") ? "Unlimited" : value;
                           // console.log(varianceDistribution[variance[0]][key]);
+                          // console.log(key);
 
-                          const disabled = key === "Quantity" && (value === "-99" || value === "Unlimited") ? true : false;
-                          const type = key === "Quantity" && (value === "-99" || value === "Unlimited") ? "text" : "number";
+                          const disabled = key === "BookingSlots" && (Number(value) === -99 || value === "Unlimited") ? true : false;
+                          const type = key === "BookingSlots" && (Number(value) === -99 || value === "Unlimited") ? "text" : "number";
                           return (
-                            <div key={key} className="self-center ">
+                            <div key={key} className="self-center">
                               <input
                                 disabled={disabled}
                                 type={type}
                                 value={newValue}
+                                min="1"
                                 // value={varianceDistribution[variance[0]][key] ?? ""}
                                 onChange={(e) => {
+                                  // console.log(key);
                                   e.persist();
                                   setVarianceDistribution((values) => ({
                                     ...values,
@@ -545,7 +529,10 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                         })}
 
                         <button
-                          className="w-1/2 bg-red-500 rounded py-0 font-bold focus:outline-none"
+                          disabled={allVarianceDistribution?.length < 2}
+                          className={`w-1/2 ${
+                            allVarianceDistribution?.length < 2 ? "bg-gray-300 cursor-not-allowed" : "bg-red-500 "
+                          } rounded py-0 font-bold focus:outline-none`}
                           onClick={async () => {
                             if (variantOptionId) {
                               await deleteVariant(variantOptionId, formattedVarianceKey);

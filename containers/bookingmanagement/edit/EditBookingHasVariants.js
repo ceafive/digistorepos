@@ -1,43 +1,16 @@
-import { current } from "@reduxjs/toolkit";
 import axios from "axios";
-import ButtonSpinner from "components/ButtonSpinner";
-import Modal from "components/Modal";
 import Spinner from "components/Spinner";
-import {
-  setManageProductCategories,
-  setManageProductOutlets,
-  setProductHasVariants,
-  setProductWithVariants,
-  setShowAddCategoryModal,
-} from "features/manageproducts/manageprodcutsSlice";
-import {
-  capitalize,
-  filter,
-  find,
-  flatten,
-  get,
-  has,
-  intersectionWith,
-  isEmpty,
-  isEqual,
-  map,
-  split,
-  trim,
-  union,
-  unionBy,
-  unionWith,
-  uniq,
-} from "lodash";
+import { setManageProductCategories, setManageProductOutlets, setProductWithVariants } from "features/manageproducts/manageproductsSlice";
+import { capitalize, filter, intersectionWith, isEmpty, map } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { useToasts } from "react-toast-notifications";
 
-import EditProductVariants from "./EditProductVariants";
+import EditBookingVariants from "./EditBookingVariants";
 import EditVariance from "./EditVariance";
 
-const EditProductHasVariants = () => {
+const EditBookingHasVariants = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -60,9 +33,11 @@ const EditProductHasVariants = () => {
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
 
   const [goToVarianceConfig, setGoToVarianceConfig] = React.useState(false);
-
   const [fetching, setFetching] = React.useState(false);
   const [refetch, setRefetch] = React.useState(new Date());
+
+  // this is a hack do not delete
+  const [originalVariantsDistribution, setOriginalVariantsDistribution] = React.useState([]);
 
   React.useEffect(() => {
     const fetchItems = async () => {
@@ -111,13 +86,13 @@ const EditProductHasVariants = () => {
           weight: product?.product_weight,
           barcode: product?.product_barcode,
           is_price_global: "YES",
-          setInventoryQuantity: product?.product_quantity === "-99" ? false : true,
           applyTax: product?.product_taxed === "YES" ? true : false,
           old_outlet_list: JSON.stringify(map(product?.product_outlets ?? [], (o) => o?.outlet_id)),
           outlets: map(intersectedOutlets ?? [], (o) => o?.outlet_id),
           productImages: product?.product_images?.map((image) => `https://payments.ipaygh.com/app/webroot/img/products/${image}`) ?? [],
           productImage: `https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}` ?? "",
           product_properties_variants: product?.product_properties_variants ?? [],
+          // product_properties_variants: product?.product_properties_variants ?? [],
           product_properties: product?.product_properties
             ? Object.entries(product?.product_properties ?? {})?.map(([key, value]) => {
                 return {
@@ -126,6 +101,13 @@ const EditProductHasVariants = () => {
                 };
               })
             : [],
+          availableDates: JSON.parse(product?.product_booking_dates || "[]")?.map((v, i) => {
+            return {
+              from: new Date(v?.from),
+              to: new Date(v?.to),
+            };
+          }),
+          availableDays: JSON.parse(product?.product_booking_days || "[]"),
         };
 
         const valuesToDispatch = {
@@ -143,24 +125,28 @@ const EditProductHasVariants = () => {
           productImage: initial?.productImage,
           productImages: initial?.productImages,
           sellingPrice: initial?.sellingPrice,
-          setInventoryQuantity: initial?.setInventoryQuantity,
           sku: initial?.sku,
           tag: initial?.tag,
           variants: initial?.product_properties || [],
-          variantsDistribution: initial?.product_properties_variants || [],
+          variantsDistribution: initial?.product_properties_variants?.map((v) => {
+            return {
+              variantOptionBookingSlot: 1,
+              ...v,
+            };
+          }),
           weight: initial?.weight,
+          availableDates: initial?.availableDates || [],
+          availableDays: initial?.availableDays || [],
         };
 
         // console.log({ valuesToDispatch });
         // console.log(Object.entries(valuesToDispatch));
 
-        // Object.entries(valuesToDispatch).forEach(([key, value]) => setValue(key, value));
-        const hasVariants = valuesToDispatch?.variants && !isEmpty(valuesToDispatch?.variants);
-
-        reset({ ...valuesToDispatch, addVariants: hasVariants });
-
+        reset(valuesToDispatch);
         dispatch(setProductWithVariants(valuesToDispatch));
-        dispatch(setProductHasVariants(!!hasVariants));
+
+        // hack
+        setOriginalVariantsDistribution(valuesToDispatch?.variantsDistribution);
       } catch (error) {
         console.log(error);
       } finally {
@@ -182,7 +168,7 @@ const EditProductHasVariants = () => {
   return (
     <div>
       {!goToVarianceConfig && (
-        <EditProductVariants
+        <EditBookingVariants
           setGoToVarianceConfig={setGoToVarianceConfig}
           setRefetch={setRefetch}
           control={control}
@@ -194,6 +180,7 @@ const EditProductHasVariants = () => {
           clearErrors={clearErrors}
           errors={errors}
           handleSubmit={handleSubmit}
+          originalVariantsDistribution={originalVariantsDistribution}
         />
       )}
 
@@ -202,4 +189,4 @@ const EditProductHasVariants = () => {
   );
 };
 
-export default EditProductHasVariants;
+export default EditBookingHasVariants;

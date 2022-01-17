@@ -1,9 +1,16 @@
+import CreateABooking from "containers/bookingmanagement/create/CreateABooking";
 import CreateAProduct from "containers/productmanagement/create/CreateAProduct";
 import Admin from "layouts/Admin.js";
 import React from "react";
 
-export default function CreateProduct() {
-  return <CreateAProduct />;
+export default function CreateBooking() {
+  let user = sessionStorage.getItem("IPAYPOSUSER");
+  user = JSON.parse(user);
+
+  const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
+
+
+  return isBooking ? <CreateABooking /> : <CreateAProduct />;
 }
 
-CreateProduct.layout = Admin;
+CreateBooking.layout = Admin;

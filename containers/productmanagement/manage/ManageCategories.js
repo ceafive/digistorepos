@@ -18,7 +18,7 @@ import axios from "axios";
 import Dropdown from "components/Misc/Dropdown";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import Modal from "components/Modal";
-import { setManageProductCategories } from "features/manageproducts/manageprodcutsSlice";
+import { setManageProductCategories } from "features/manageproducts/manageproductsSlice";
 import { capitalize, filter } from "lodash";
 import MaterialTable, { MTableBodyRow, MTableToolbar } from "material-table";
 import { useRouter } from "next/router";

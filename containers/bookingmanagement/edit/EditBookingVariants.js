@@ -6,10 +6,9 @@ import Spinner from "components/Spinner";
 import {
   setManageProductCategories,
   setManageProductOutlets,
-  setProductHasVariants,
   setProductWithVariants,
   setShowAddCategoryModal,
-} from "features/manageproducts/manageprodcutsSlice";
+} from "features/manageproducts/manageproductsSlice";
 import {
   capitalize,
   filter,
@@ -30,13 +29,14 @@ import {
   uniq,
 } from "lodash";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
 import AddCategory from "../create/AddCategory";
 import UploadImage from "../create/UploadImage";
+import DayPickerComponent from "../DayPickerComponent";
 import AddNewVariantName from "./AddNewVariantName";
 import AddNewVariantValue from "./AddNewVariantValue";
 
@@ -45,13 +45,12 @@ const EditProduct = ({
   setRefetch,
   control,
   register,
-  reset,
   watch,
   setValue,
-  getValues,
   clearErrors,
   errors,
   handleSubmit,
+  originalVariantsDistribution,
 }) => {
   const { addToast, removeToast, updateToast } = useToasts();
   const dispatch = useDispatch();
@@ -62,14 +61,26 @@ const EditProduct = ({
     name: "variants",
   });
 
+  const {
+    fields: availableDatesFields,
+    append: availableDatesAppend,
+    remove: availableDatesRemove,
+  } = useFieldArray({
+    control,
+    name: "availableDates",
+  });
+
+  const { fields: availableDaysFields } = useFieldArray({
+    control,
+    name: "availableDays",
+  });
+
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
-  const productHasVariants = useSelector((state) => state.manageproducts.productHasVariants);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
   // console.log(productWithVariants);
-  // console.log(productHasVariants);
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
@@ -77,6 +88,7 @@ const EditProduct = ({
   const [showAddNewVariantValue, setShowAddNewVariantValue] = React.useState(false);
   const [variantClicked, setVariantClicked] = React.useState(null);
   const [images, setImages] = React.useState(productWithVariants?.productImages ?? []);
+  const [availableDates, setAvailableDates] = useState(productWithVariants?.availableDates?.length ? true : false);
 
   const {
     register: addCategoryRegister,
@@ -85,19 +97,11 @@ const EditProduct = ({
     handleSubmit: addCategoryHandleSumbit,
   } = useForm();
 
-  const isInventorySet = watch("setInventoryQuantity", false);
   const productCategory = watch("productCategory", false);
-  const allVariants = watch("variants", []);
   const maxNumber = 1;
 
   let user = sessionStorage.getItem("IPAYPOSUSER");
   user = JSON.parse(user);
-
-  const watchAddVariants = watch(`addVariants`, productHasVariants);
-
-  // React.useEffect(() => {
-  //   console.log(getValues());
-  // }, [getValues()]);
 
   const updateProduct = async (values) => {
     try {
@@ -117,11 +121,10 @@ const EditProduct = ({
         sellingPrice,
         costPerItem,
         productImages,
-        inventoryQuantity,
-        setInventoryQuantity,
         applyTax,
         variants,
-        addVariants,
+        availableDates,
+        availableDays,
       } = data;
 
       const imagesToUpload = productImages?.map((productImage) => productImage) ?? [];
@@ -166,22 +169,24 @@ const EditProduct = ({
         name: productName,
         desc: productDescription,
         price: parseFloat(sellingPrice),
-        cost: costPerItem ? parseFloat(costPerItem) : "",
-        quantity: setInventoryQuantity ? parseInt(inventoryQuantity) : -99,
+        cost: costPerItem,
+        quantity: -99,
         category: productCategory,
         tag: "NORMAL",
         taxable: applyTax,
         sku,
-        weight: weight ? parseFloat(weight) : "",
+        weight,
         barcode,
         is_price_global: "YES",
         old_outlet_list,
         outlet_list: JSON.stringify(outlets),
+        property_delete_all: "NO",
+        property_list: JSON.stringify(!isEmpty(property_list) ? property_list : { 0: {} }),
+        variants_options: JSON.stringify(!isEmpty(variant_options) ? variant_options : { 0: {} }),
+        booking_dates: JSON.stringify(availableDates),
+        booking_days: JSON.stringify(availableDays),
         merchant: user["user_merchant_id"],
         mod_by: user["login"],
-        property_delete_all: addVariants ? "NO" : "YES",
-        property_list: addVariants ? JSON.stringify(!isEmpty(property_list) ? property_list : { 0: {} }) : JSON.stringify({ 0: {} }),
-        variants_options: addVariants ? JSON.stringify(!isEmpty(variant_options) ? variant_options : { 0: {} }) : JSON.stringify({ 0: {} }),
       };
 
       // console.log(imagesToUpload);
@@ -194,7 +199,7 @@ const EditProduct = ({
         };
       }
 
-      // console.log(payload);
+      console.log(payload);
       // return;
 
       const updateProductRes = await axios.post("/api/products/update-product", {
@@ -207,23 +212,22 @@ const EditProduct = ({
       if (Number(response?.status) === 0) {
         addToast(response?.message, { appearance: "success", autoDismiss: true });
 
-        reset({
-          productName: "",
-          productCategory: "",
-          productDescription: "",
-          sku: "",
-          outlets: [],
-          weight: "",
-          barcode: "",
-          sellingPrice: "",
-          costPerItem: "",
-          productImages: [],
-          setInventoryQuantity: false,
-          applyTax: false,
-          inventoryQuantity: "",
-        });
+        // reset({
+        //   productName: "",
+        //   productCategory: "",
+        //   productDescription: "",
+        //   sku: "",
+        //   outlets: [],
+        //   weight: "",
+        //   barcode: "",
+        //   sellingPrice: "",
+        //   costPerItem: "",
+        //   productImages: [],
+        //   applyTax: false,
+        //   inventoryQuantity: "",
+        // });
         setImages([]);
-        router.push("/products/manage");
+        router.replace("/products/manage");
       } else {
         addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
       }
@@ -358,48 +362,6 @@ const EditProduct = ({
         errorResponse = { error: error.message };
         console.log(errorResponse);
       }
-    }
-  };
-
-  // const productHasVariantsButton = () => {
-  //   try {
-  //     if (productHasVariants) {
-  //       if (allVariants.length > 0 && allVariants[0] && allVariants[0]?.name) {
-  //         const r = window.confirm("This action will remove all variants you have setup on this product, proceed?");
-  //         if (r === true) {
-  //           dispatch(setProductHasVariants(false));
-  //           remove();
-  //         }
-  //       } else {
-  //         dispatch(setProductHasVariants(false));
-  //       }
-  //     } else {
-  //       dispatch(setProductHasVariants(true));
-  //       // if (fields.length === 0) append({});
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  const productHasVariantsButton = () => {
-    try {
-      if (watchAddVariants) {
-        if (allVariants.length > 0 && allVariants[0] && allVariants[0]?.name) {
-          const r = window.confirm("This action will remove all variants you have setup on this product, proceed?");
-          if (r === true) {
-            setValue(`addVariants`, false);
-            remove();
-          }
-        } else {
-          setValue(`addVariants`, false);
-        }
-      } else {
-        setValue(`addVariants`, true);
-        // if (fields.length === 0) append({});
-      }
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -691,34 +653,33 @@ const EditProduct = ({
         className="focus:outline-none font-bold"
         onClick={() => {
           dispatch(setProductWithVariants({}));
-          dispatch(setProductHasVariants(false));
           router.back();
         }}
       >
         Back
       </button>
       <div className="pb-6 pt-6 px-4">
-        <h1 className="mb-2 font-bold text-2xl text-center">Modify Products</h1>
+        <h1 className="mb-2 font-bold text-2xl text-center">Modify Booking</h1>
         <div className="flex w-full h-full">
           <div className="w-7/12 xl:w-8/12">
             <div>
-              <h1 className="font-bold text-blue-700">Product Details</h1>
+              <h1 className="font-bold text-blue-700">Booking Details</h1>
               <div className="flex w-full justify-between items-center">
                 <div className="w-1/2 mr-2">
-                  <label className="text-sm leading-none  font-bold">Product Name</label>
+                  <label className="text-sm leading-none  font-bold">Name</label>
                   <input
-                    {...register("productName", { required: "Product name is required" })}
+                    {...register("productName", { required: "Name is required" })}
                     type="text"
-                    placeholder="Apricot"
+                    placeholder="Malaria"
                     className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                   />
                   <p className="text-xs text-red-500">{errors["productName"]?.message}</p>
                 </div>
 
                 <div className="w-1/2">
-                  <label className="text-sm leading-none  font-bold">Product Category</label>
+                  <label className="text-sm leading-none  font-bold">Category</label>
                   <select
-                    {...register("productCategory", { required: "Product category is required" })}
+                    {...register("productCategory", { required: "Category is required" })}
                     className="block border-0 appearance-none w-full text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2"
                   >
                     <option value="">{`Select Category`}</option>
@@ -734,208 +695,244 @@ const EditProduct = ({
                   <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
                 </div>
               </div>
-              <div className="w-full mr-2">
-                <label className="text-sm leading-none  font-bold">Description (Optional)</label>
-                <textarea
-                  {...register("productDescription", { required: false })}
-                  type="text"
-                  rows={4}
-                  placeholder="A short description of the product"
-                  className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                />
+              <div className="flex w-full justify-between mt-4">
+                <div className="w-1/2 mr-2">
+                  <label className="text-sm leading-none  font-bold">Description (Optional)</label>
+                  <textarea
+                    {...register("productDescription", { required: false })}
+                    type="text"
+                    rows={4}
+                    placeholder="Enter a short description"
+                    className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className="text-sm leading-none  font-bold">Fee</label>
+                  <input
+                    {...register("sellingPrice", { required: "Fee is required" })}
+                    type="number"
+                    placeholder="12"
+                    min="1"
+                    className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                  />
+                  <p className="text-xs text-red-500">{errors["sellingPrice"]?.message}</p>
+                </div>
               </div>
             </div>
 
             <div>
-              {!watchAddVariants && (
-                <div>
-                  <h1 className="font-bold text-blue-700">Pricing</h1>
-                  <div className="flex w-full justify-between items-center">
-                    <div className="w-1/2 mr-2">
-                      <label className="text-sm leading-none  font-bold">Selling Price</label>
-                      <input
-                        {...register("sellingPrice", { required: "Selling price is required" })}
-                        type="number"
-                        placeholder="12"
-                        className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                      />
-                      <p className="text-xs text-red-500">{errors["sellingPrice"]?.message}</p>
-                    </div>
-
-                    <div className="w-1/2">
-                      <label className="text-sm leading-none  font-bold">
-                        Cost Per Item <span className="text-xs">(Your customers won't see this)</span>
-                      </label>
-                      <input
-                        {...register("costPerItem")}
-                        type="number"
-                        placeholder="Enter cost of product"
-                        className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                      />
-                      <p className="text-xs text-red-500">{errors["costPerItem"]?.message}</p>
-                    </div>
+              <div className="flex justify-between w-full my-4">
+                <div className="w-1/2">
+                  <h1 className="font-bold text-blue-700">Available Dates</h1>
+                  <div className="flex items-center">
+                    <input
+                      checked={availableDates}
+                      onChange={(e) => {
+                        setAvailableDates(e.target.checked);
+                        if (e.target.checked) {
+                          availableDatesAppend({
+                            from: "",
+                            to: "",
+                          });
+                        } else availableDatesRemove();
+                      }}
+                      type="checkbox"
+                      className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
+                    />
+                    <label className="text-sm leading-none font-bold">Set Available Dates</label>
                   </div>
-                  <div className="flex w-full justify-between items-center">
-                    <div className="w-1/2 mr-2">
-                      <label className="text-sm leading-none font-bold">Inventory</label>
-                      <div className="flex items-center w-full mb-2">
-                        <input
-                          {...register("setInventoryQuantity")}
-                          type="checkbox"
-                          className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
-                        />
-                        <label className="text-sm leading-none  font-bold">Set number of units in stock</label>
+
+                  {availableDates && (
+                    <div className="mt-2">
+                      <div className="">
+                        {availableDatesFields.map(({ id }, index) => {
+                          return (
+                            <div key={id} className=" my-1">
+                              <div key={id} className="flex">
+                                <div className="">
+                                  <label className="text-xs leading-none font-bold">Date Range</label>
+                                  <DayPickerComponent index={index} control={control} availableDates={availableDates} />
+                                </div>
+
+                                <div className="flex mt-1">
+                                  {availableDatesFields.length > 1 && (
+                                    <div
+                                      className="flex items-center font-bold bg-red-500 rounded py-1 px-4 ml-2 mt-4 cursor-pointer"
+                                      onClick={() => {
+                                        availableDatesRemove(index);
+                                      }}
+                                    >
+                                      <button className="focus:outline-none">
+                                        <i className="fas fa-trash-alt text-white"></i>
+                                      </button>
+                                    </div>
+                                  )}
+
+                                  <div
+                                    className="flex items-center font-bold bg-green-500 rounded py-1 px-4 ml-2 mt-4 cursor-pointer"
+                                    onClick={() => {
+                                      availableDatesAppend({
+                                        from: "",
+                                        to: "",
+                                      });
+                                    }}
+                                  >
+                                    <button className="focus:outline-none">
+                                      <i className="fas fa-plus text-white" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              <hr className="mt-3" />
+                            </div>
+                          );
+                        })}
                       </div>
-                      {isInventorySet && (
-                        <>
-                          <input
-                            {...register("inventoryQuantity", {
-                              validate: (value) => (isInventorySet ? Boolean(value) && Number(value) > 0 : true) || "Quantity is required",
-                            })}
-                            type="number"
-                            min="1"
-                            placeholder="Quantity in stock"
-                            className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                          />
-                          <p className="text-xs text-red-500">{errors["inventoryQuantity"]?.message}</p>
-                        </>
-                      )}
                     </div>
+                  )}
+                </div>
 
-                    <div className="w-1/2 mt-6">
-                      <label className="text-sm leading-none  font-bold">SKU (Stock Keeping Unit)</label>
-                      <input
-                        {...register("sku")}
-                        type="text"
-                        placeholder=""
-                        className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                      />
-                      <p className="text-xs text-red-500">{errors["sku"]?.message}</p>
-                    </div>
-                  </div>
+                <div className="w-1/2">
+                  <h1 className="font-bold text-blue-700">Available Days</h1>
+                  <div className="w-full">
+                    {availableDaysFields.map((data, index) => {
+                      const { id, day, duration, isClosed } = data;
+                      // console.log(data);
+                      // console.log(isClosed);
 
-                  <div className="flex w-full justify-between items-center">
-                    <div className="w-1/2 mr-2">
-                      <label className="text-sm leading-none  font-bold">Barcode (ISBN,UPC,GTIN, etc)</label>
-                      <input
-                        {...register("barcode")}
-                        type="text"
-                        placeholder="Click and scan product barcode in here"
-                        className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                      />
-                      <p className="text-xs text-red-500">{errors["barcode"]?.message}</p>
-                    </div>
+                      return (
+                        <div key={id} className="w-full">
+                          <div key={id} className="flex items-center w-full">
+                            <div className=" mr-2">
+                              <label className="text-xs leading-none font-bold">Day</label>
+                              <input
+                                {...register(`availableDays[${index}].day`, {})}
+                                defaultValue={day}
+                                type="text"
+                                disabled={true}
+                                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                              />
+                            </div>
+                            <div className="">
+                              <label className="text-xs leading-none font-bold">Duration</label>
+                              <input
+                                {...register(`availableDays[${index}].duration`, {
+                                  validate: (value) => (isClosed ? true : Boolean(value) || "Duration must be entered"),
+                                })}
+                                defaultValue={duration}
+                                type="text"
+                                placeholder="eg. 08:00AM - 09:00AM"
+                                disabled={isClosed}
+                                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
+                              />
+                              {errors[`availableDays`] && errors[`availableDays`][index] && (
+                                <p className="text-xs text-red-500 -mt-2">{errors[`availableDays`][index]?.duration?.message}</p>
+                              )}
+                            </div>
 
-                    <div className="w-1/2">
-                      <label className="text-xs leading-none font-bold">
-                        Weight of the item in Kilograms <span className="text-xs">(Used to calculate shipping rates at checkout)</span>
-                      </label>
-                      <input
-                        {...register("weight")}
-                        type="number"
-                        placeholder=""
-                        className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
-                      />
-                      <p className="text-xs text-red-500">{errors["weight"]?.message}</p>
-                    </div>
+                            <div className="flex items-center ml-4">
+                              <input
+                                {...register(`availableDays[${index}].isClosed`, {
+                                  deps: [`availableDays[${index}].duration`],
+                                })}
+                                type="checkbox"
+                                className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
+                              />
+                              <label className="text-sm leading-none font-bold">Closed?</label>
+                            </div>
+                          </div>
+                          <hr className="my-1" />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              )}
-              <div className="w-full mr-2">
-                <input {...register("applyTax")} type="checkbox" className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2" />
-                <label className="text-sm leading-none  font-bold">Apply tax on this product</label>
               </div>
 
               {/* Variants */}
               <div className="w-full mt-6 bg-gray-200 py-2 px-6 rounded">
-                <div className="flex justify-between items-center w-full">
-                  <div className="flex items-center">
-                    <div className="mr-10">
-                      <h1 className="font-bold text-blue-700">Does your product have variants?</h1>
-                    </div>
-                    <div className="flex justify-between items-center cursor-pointer" onClick={productHasVariantsButton}>
-                      <div
-                        className={`${
-                          watchAddVariants ? "bg-green-400" : ""
-                        } w-10 h-6 flex items-center bg-gray-300 rounded-full p-1 duration-300 ease-in-out`}
-                      >
-                        <div
-                          className={`${
-                            watchAddVariants ? "translate-x-4" : ""
-                          } bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out`}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {watchAddVariants && (
-                    <button
-                      className="text-xs font-bold text-blue-700"
-                      onClick={() => {
-                        setGoToVarianceConfig(true);
-                      }}
-                    >
-                      Edit Variants
-                    </button>
-                  )}
+                <div className="flex justify-end items-center w-full">
+                  <button
+                    className="text-xs font-bold text-blue-700"
+                    onClick={() => {
+                      setGoToVarianceConfig(true);
+                    }}
+                  >
+                    Edit Variants
+                  </button>
                 </div>
                 <h1>Multiple options of the same product which customers can choose from</h1>
                 <hr className="text-blue-500 bg-blue-500" />
-                {watchAddVariants && (
-                  <div className="mt-2 ">
-                    <div className="flex flex-wrap justify-center items-center w-full ">
-                      {sortBy(fields, ["name"])?.map(({ id, name, values }, index) => {
-                        // console.log(values);
-                        return (
-                          <div key={id} className="w-full my-1 ">
-                            <div key={id} className="flex w-full justify-between items-center ">
-                              <div className="">
-                                <label className="text-xs leading-none font-bold">Variant Name</label>
-                                <div className="flex bg-gray-300 p-1 items-center rounded">
-                                  <p className="mr-1">{name}</p>
-                                </div>
-                              </div>
 
-                              <div className="w-1/2">
-                                {/* <div className="w-1/2"> */}
-                                <label className="text-xs leading-none font-bold">Variant Values</label>
-                                <div className="flex flex-wrap">
-                                  {(values || ``)?.split(",").map((value, index) => {
-                                    return (
-                                      <div key={index} className="flex bg-gray-300 p-1 items-center rounded mr-1 mb-1">
-                                        <p className="mr-1">{value}</p>
+                <div className="mt-2 ">
+                  <div className="flex flex-wrap justify-center items-center w-full ">
+                    {sortBy(fields, ["name"])?.map(({ id, name, values }, index) => {
+                      // console.log(values);
+                      return (
+                        <div key={id} className="w-full my-1 ">
+                          <div key={id} className="flex w-full justify-between items-center ">
+                            <div className="">
+                              <label className="text-xs leading-none font-bold">Variant Name</label>
+                              <div className="flex bg-gray-300 p-1 items-center rounded">
+                                <p className="mr-1">{name}</p>
+                              </div>
+                            </div>
+
+                            <div className="w-1/2">
+                              {/* <div className="w-1/2"> */}
+                              <label className="text-xs leading-none font-bold">Variant Values</label>
+                              <div className="flex flex-wrap">
+                                {(values || ``)?.split(",").map((value, index) => {
+                                  return (
+                                    <div key={index} className="flex bg-gray-300 p-1 items-center rounded mr-1 mb-1">
+                                      <p className="mr-1">{value}</p>
+                                      {(values || ``)?.split(",")?.length > 1 && (
                                         <button
                                           onClick={async () => {
-                                            if (productWithVariants?.variantsDistribution?.length > 0) {
-                                              const variantsDistribution = productWithVariants?.variantsDistribution;
+                                            const variantsDistribution = productWithVariants?.variantsDistribution;
+                                            if (variantsDistribution?.length) {
+                                              console.log(variantsDistribution);
+                                              console.log(originalVariantsDistribution);
 
-                                              const foundVariantNames = variantsDistribution.filter((variant) => {
-                                                const optionValues = Object.values(variant?.variantOptionValue);
-                                                return optionValues.includes(value);
-                                              });
-
-                                              if (foundVariantNames?.length > 0) {
-                                                const r = window.confirm(
-                                                  "This action will delete all variant permutations associated with this variant, continue?"
-                                                );
-
-                                                if (r === true) {
-                                                  addToast(`Deleting '${value}' variant permutations...`, {
-                                                    appearance: "info",
+                                              if (originalVariantsDistribution?.length === 1) {
+                                                addToast(
+                                                  `At least one variant permutation must exist, this cannot be deleted. Add and save new permutations before deleting this`,
+                                                  {
+                                                    appearance: "error",
                                                     autoDismiss: true,
                                                     id: "delete-variant-name",
-                                                  });
-
-                                                  for (let i = 0; i < foundVariantNames?.length; i++) {
-                                                    await deleteVariant(foundVariantNames[i]?.variantOptionId);
                                                   }
+                                                );
+                                              } else {
+                                                const foundVariantNames = variantsDistribution.filter((variant) => {
+                                                  const optionValues = Object.values(variant?.variantOptionValue);
+                                                  return optionValues.includes(value);
+                                                });
 
-                                                  updateToast(`delete-variant-name`, { content: `Deleting '${value}' variant` });
+                                                if (foundVariantNames?.length > 0) {
+                                                  const r = window.confirm(
+                                                    "This action will delete all variant permutations associated with this variant, continue?"
+                                                  );
+
+                                                  if (r === true) {
+                                                    addToast(`Deleting '${value}' variant permutations...`, {
+                                                      appearance: "info",
+                                                      autoDismiss: true,
+                                                      id: "delete-variant-name",
+                                                    });
+
+                                                    for (let i = 0; i < foundVariantNames?.length; i++) {
+                                                      await deleteVariant(foundVariantNames[i]?.variantOptionId);
+                                                    }
+
+                                                    updateToast(`delete-variant-name`, { content: `Deleting '${value}' variant` });
+                                                    //call delete single property api
+                                                    deletProductVariantValue(name, value, values);
+                                                  }
+                                                } else {
                                                   //call delete single property api
                                                   deletProductVariantValue(name, value, values);
                                                 }
-                                              } else {
-                                                //call delete single property api
-                                                deletProductVariantValue(name, value, values);
                                               }
                                             } else {
                                               //call delete single property api
@@ -945,56 +942,48 @@ const EditProduct = ({
                                         >
                                           <i className="fas fa-window-close text-red-500"></i>
                                         </button>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
                               </div>
+                            </div>
 
-                              <div id="add-variant-buttons" className="flex items-center">
-                                <button
-                                  className="text-xs font-bold text-blue-700"
-                                  onClick={() => {
-                                    setVariantClicked({ name, values });
-                                    setShowAddNewVariantValue(true);
-                                  }}
-                                >
-                                  Add new variant value
-                                </button>
+                            <div id="add-variant-buttons" className="flex items-center">
+                              <button
+                                className="text-xs font-bold text-blue-700"
+                                onClick={() => {
+                                  setVariantClicked({ name, values });
+                                  setShowAddNewVariantValue(true);
+                                }}
+                              >
+                                Add new variant value
+                              </button>
 
-                                <div
-                                  className="font-bold bg-red-500 rounded w-7 h-7 ml-2 cursor-pointer flex justify-center items-center"
-                                  onClick={async () => {
-                                    if (name) await deleteProperty(name, index);
-                                    else {
-                                      clearErrors(`variants[${index}]`);
-                                      remove(index);
-                                    }
-                                  }}
-                                >
-                                  <i className="fas fa-trash-alt text-white text-xs"></i>
-                                </div>
-
-                                {/* {fields?.length < 5 && index === fields.length - 1 && (
-                                  <div
-                                    className="font-bold bg-green-500 rounded w-7 h-7 ml-2 mt-5 cursor-pointer flex justify-center items-center"
-                                    onClick={() => {
-                                      append({});
-                                    }}
-                                  >
-                                    <i className="fas fa-plus text-white" />
-                                  </div>
-                                )} */}
+                              <div
+                                className={`font-bold ${
+                                  fields?.length < 2 ? "bg-gray-300 cursor-not-allowed" : "bg-red-500 "
+                                }  rounded w-7 h-7 ml-2 cursor-pointer flex justify-center items-center`}
+                                onClick={async () => {
+                                  if (fields?.length < 2) return null;
+                                  if (name) await deleteProperty(name, index);
+                                  else {
+                                    clearErrors(`variants[${index}]`);
+                                    remove(index);
+                                  }
+                                }}
+                              >
+                                <i className="fas fa-trash-alt text-white text-xs"></i>
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                )}
+                </div>
 
-                {productWithVariants?.variants?.length < 5 && (
+                {productWithVariants?.variants?.length < 1 && (
                   <button
                     className="text-xs font-bold text-blue-700 mr-2 mt-6"
                     onClick={() => {

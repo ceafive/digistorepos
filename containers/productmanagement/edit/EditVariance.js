@@ -1,6 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import { setProductWithVariants } from "features/manageproducts/manageprodcutsSlice";
+import { setProductWithVariants } from "features/manageproducts/manageproductsSlice";
 import { capitalize, filter, forEach, fromPairs, intersectionWith, isEmpty, isEqual, join, map, mapValues, omit, sortBy, split, trim } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";

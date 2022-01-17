@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/react";
 import appReducer from "../features/app/appSlice";
 import cartReducer from "../features/cart/cartSlice";
 import customersReducer from "../features/customers/customersSlice";
-import manageprodcutsReducer from "../features/manageproducts/manageprodcutsSlice";
+import manageproductsReducer from "../features/manageproducts/manageproductsSlice";
 import ordersReducer from "../features/orders/ordersSlice";
 import productsReducer from "../features/products/productsSlice";
 
@@ -15,7 +15,7 @@ const sentryReduxEnhancer = Sentry.createReduxEnhancer({
 
 const rootReducer = {
   products: productsReducer,
-  manageproducts: manageprodcutsReducer,
+  manageproducts: manageproductsReducer,
   cart: cartReducer,
   app: appReducer,
   orders: ordersReducer,

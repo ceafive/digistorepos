@@ -1,6 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import { capitalize, filter, intersectionWith, isEqual, join, map, omit, split, trim } from "lodash";
+import { capitalize, filter, intersectionWith, isEmpty, isEqual, join, map, omit, split, trim } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -12,37 +12,26 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
   const router = useRouter();
   const { addToast } = useToasts();
   const {
-    control,
     register,
-    reset,
-    watch,
-    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm({});
 
+  // console.log(errors);
+
   const {
-    control: submitFormControl,
-    register: submitFormRegister,
-    reset: submitFormReset,
-    watch: submitFormWatch,
     formState: { errors: submitFormErrors },
     setError: submitFormSetError,
     clearErrors: submitFormClearErrors,
-    handleSubmit: submitFormHandleSubmit,
   } = useForm({});
 
-  // const { fields, append, remove } = useFieldArray({
-  //   control,
-  //   name: "addVariant",
-  // });
-
   const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
-
   // console.log(productWithVariants);
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [varianceDistribution, setVarianceDistribution] = React.useState({});
+
+  // console.log(varianceDistribution);
 
   const addVariantRow = (values) => {
     try {
@@ -52,9 +41,9 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
 
       const mappedValues = objectValues.map((objectValue) => {
         const newValue = { ...objectValue };
-        delete newValue?.Quantity;
+        delete newValue?.BookingSlots;
         delete newValue?.Price;
-        delete newValue["QuantityUnlimited"];
+        delete newValue["BookingSlotsUnlimited"];
 
         return newValue;
       });
@@ -69,7 +58,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
 
       setVarianceDistribution((varianceData) => ({
         ...varianceData,
-        [uuidv4()]: { ...values, Quantity: "", QuantityUnlimited: false, Price: "" },
+        [uuidv4()]: { ...values, BookingSlots: "", BookingSlotsUnlimited: false, Price: "" },
       }));
     } catch (error) {
       console.log(error);
@@ -81,18 +70,21 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
   // console.log(varianceDistribution);
   // console.log(allVarianceDistribution);
 
-  const handleCreateProduct = async () => {
+  const handleCreateBooking = async () => {
     try {
+      if (isEmpty(varianceDistribution)) {
+        return addToast(`Please click on Add button to add variant`, { appearance: "error", autoDismiss: true });
+      }
       setIsProcessing(true);
       submitFormClearErrors();
       const errorObjects = [];
 
       for (const [key, value] of Object.entries(varianceDistribution)) {
         for (const [keyOfKey, valueOfValue] of Object.entries(value)) {
-          console.log(keyOfKey);
-          console.log({ keyOfKey, valueOfValue });
+          // console.log(keyOfKey);
+          // console.log({ keyOfKey, valueOfValue });
 
-          if (keyOfKey !== "QuantityUnlimited") {
+          if (keyOfKey !== "BookingSlotsUnlimited") {
             if (!valueOfValue) {
               errorObjects.push({
                 error: true,
@@ -153,8 +145,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           variantOptionsIndexIncrease += 1;
           const newVal = { ...val };
           delete newVal?.Price;
-          delete newVal?.Quantity;
-          delete newVal["QuantityUnlimited"];
+          delete newVal?.BookingSlots;
+          delete newVal["BookingSlotsUnlimited"];
 
           const values = Object.entries(newVal);
 
@@ -172,26 +164,14 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
             [variantOptionsIndexIncrease]: {
               variantOptionValue: optionValues,
               variantOptionPrice: val?.Price,
-              variantOptionQuantity: val["QuantityUnlimited"] ? "-99" : val?.Quantity,
+              variantOptionQuantity: "-99",
+              variantOptionBookingSlot: val["BookingSlotsUnlimited"] ? "-99" : val?.BookingSlots,
             },
           };
         }, {});
 
-        const {
-          productName,
-          productCategory,
-          productDescription,
-          sku,
-          outlets,
-          weight,
-          barcode,
-          sellingPrice,
-          costPerItem,
-          productImages,
-          inventoryQuantity,
-          setInventoryQuantity,
-          applyTax,
-        } = productWithVariants;
+        const { productName, productCategory, productDescription, outlets, sellingPrice, productImages, applyTax, availableDates, availableDays } =
+          productWithVariants;
 
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
@@ -204,23 +184,25 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           name: productName,
           desc: productDescription,
           price: parseFloat(sellingPrice),
-          cost: costPerItem ? parseFloat(costPerItem) : "",
-          quantity: setInventoryQuantity ? parseInt(inventoryQuantity) : -99,
+          cost: "",
+          quantity: -99,
           category: productCategory,
           tag: "NORMAL",
           taxable: applyTax ? "YES" : "NO",
-          sku,
-          weight: weight ? parseFloat(weight) : "",
-          barcode,
+          sku: "",
+          weight: "",
+          barcode: "",
           is_price_global: "YES",
           outlet_list: JSON.stringify(outlets),
+          property_list: JSON.stringify(property_list),
+          booking_dates: JSON.stringify(availableDates),
+          booking_days: JSON.stringify(availableDays),
+          variants_options: varianceDistributionValues.length > 0 ? JSON.stringify(variants_options) : JSON.stringify({ 0: {} }),
           merchant: user["user_merchant_id"],
           mod_by: user["login"],
-          property_list: JSON.stringify(property_list),
-          variants_options: varianceDistributionValues.length > 0 ? JSON.stringify(variants_options) : JSON.stringify({ 0: {} }),
         };
 
-        console.log(payload);
+        // console.log(payload);
         // return;
 
         const addProductRes = await axios.post("/api/products/create-product", { data: payload });
@@ -230,7 +212,6 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
 
         if (Number(response?.status) === 0) {
           addToast(response?.message, { appearance: "success", autoDismiss: true });
-
           router.push("/products/manage");
         } else {
           addToast(`${response?.message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
@@ -252,21 +233,21 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
     if (e.target.checked) {
       setVarianceDistribution((values) => ({
         ...values,
-        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "Unlimited", ["QuantityUnlimited"]: true },
+        [variance[0]]: { ...values[variance[0]], ["BookingSlots"]: "Unlimited", ["BookingSlotsUnlimited"]: true },
       }));
     } else {
       setVarianceDistribution((values) => ({
         ...values,
-        [variance[0]]: { ...values[variance[0]], ["Quantity"]: "", ["QuantityUnlimited"]: false },
+        [variance[0]]: { ...values[variance[0]], ["BookingSlots"]: "", ["BookingSlotsUnlimited"]: false },
       }));
     }
   };
 
   return (
     <div className="px-4">
-      <h1>Setup Products</h1>
+      <h1>Setup Booking</h1>
       <div className="flex w-full h-full">
-        <div className="w-full pb-6 pt-6">
+        <div className="w-full pt-6">
           <div>
             <h1 className="text-blue-700 font-bold">Variance Configuration</h1>
             <p className="text-gray-500">Configure your variance, add price and quantity</p>
@@ -274,7 +255,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           </div>
 
           {/* AddVariants Section */}
-          <div className="overflow-scroll" style={{ height: 600 }}>
+          <div className="overflow-scroll" style={{ height: 550 }}>
             <div className={`grid grid-cols-${productWithVariants?.variants.length + 1} gap-3 my-2`}>
               {productWithVariants?.variants?.map((variant, index) => {
                 const variantValues = map(
@@ -289,9 +270,10 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                     <div className="">
                       <select
                         {...register(capitalizeName, { required: `${capitalizeName} is required` })}
+                        defaultValue={""}
                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white"
                       >
-                        <option value="" disabled>{`Select ${capitalizeName}`}</option>
+                        <option value="" disabled="disabled">{`Select ${capitalizeName}`}</option>
                         {variantValues.map((variantValue) => (
                           <option key={variantValue} value={variantValue}>
                             {variantValue}
@@ -328,13 +310,13 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                       </h1>
                     );
                   })}
-                  <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
-                  <h1 className="font-bold text-blue-700 self-center">Quantity Unlimited</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Quantity per slot</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Unlimited Slots</h1>
                   <h1 className="font-bold text-blue-700 self-center">Price</h1>
                   <h1 className="font-bold text-blue-700 self-center">Actions</h1>
                 </div>
 
-                <div className="my-2">
+                <div className="my-0">
                   {allVarianceDistribution.map((variance) => {
                     const formattedVarianceKey = variance[0];
                     const formattedVarianceEntries = Object.entries(variance[1]);
@@ -343,12 +325,12 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                     return (
                       <div key={variance[0]} className={`grid grid-cols-${formattedVarianceEntries.length + 1} gap-3 my-2`}>
                         {formattedVarianceEntries.map(([key, value]) => {
-                          if (key === "Quantity" || key === "Price") {
+                          if (key === "BookingSlots" || key === "Price") {
                             return (
                               <div key={key} className="self-center ">
                                 <input
-                                  disabled={key === "Quantity" && value === "Unlimited" ? true : false}
-                                  type={key === "Quantity" && value === "Unlimited" ? "text" : "number"}
+                                  disabled={key === "BookingSlots" && value === "Unlimited" ? true : false}
+                                  type={key === "BookingSlots" && value === "Unlimited" ? "text" : "number"}
                                   min="1"
                                   value={varianceDistribution[variance[0]][key] ?? ""}
                                   onChange={(e) => {
@@ -359,14 +341,14 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                                     }));
                                   }}
                                   placeholder="10"
-                                  className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                                  className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
                                 />
                                 {errorObject?.errorID === formattedVarianceKey && key === errorObject?.errorKey && (
                                   <p className="text-xs text-red-500">{errorObject?.message}</p>
                                 )}
                               </div>
                             );
-                          } else if (key === "QuantityUnlimited") {
+                          } else if (key === "BookingSlotsUnlimited") {
                             return (
                               <div key={key} className="flex self-center">
                                 <input
@@ -414,6 +396,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           <div className="flex justify-end items-center w-full mt-2">
             <div>
               <button
+                disabled={isProcessing}
                 className="bg-black text-white px-6 py-3 rounded font-bold mr-2 focus:outline-none"
                 onClick={() => {
                   setGoToVarianceConfig(false);
@@ -424,11 +407,12 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
             </div>
             <div className="">
               <button
+                disabled={isProcessing}
                 className={`${
                   isProcessing ? "bg-gray-300 text-gray-200" : "bg-green-800  text-white"
                 }  px-6 py-3 w-full rounded font-semibold focus:outline-none`}
                 onClick={() => {
-                  handleCreateProduct();
+                  handleSubmit(handleCreateBooking)();
                 }}
               >
                 {isProcessing && (
@@ -436,7 +420,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
                     <Spinner type={"TailSpin"} color="black" width={10} height={10} />
                   </div>
                 )}
-                <span> Create Product</span>
+                <span> Create Booking</span>
               </button>
             </div>
           </div>

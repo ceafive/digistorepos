@@ -7,7 +7,7 @@ import {
   setProductHasVariants,
   setProductWithVariants,
   setShowAddCategoryModal,
-} from "features/manageproducts/manageprodcutsSlice";
+} from "features/manageproducts/manageproductsSlice";
 import { capitalize, filter, find, get, has, intersectionWith, isEmpty, isEqual, map } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";

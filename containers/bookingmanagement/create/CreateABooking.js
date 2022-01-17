@@ -1,19 +1,14 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import AddBasicProductDetails from "containers/productmanagement/create/AddBasicProductDetails";
-import {
-  setManageProductCategories,
-  setManageProductOutlets,
-  setProductHasVariants,
-  setProductWithVariants,
-} from "features/manageproducts/manageprodcutsSlice";
+import AddBookingDetails from "containers/bookingmanagement/create/AddBookingDetails";
+import { setManageProductCategories, setManageProductOutlets, setProductWithVariants } from "features/manageproducts/manageproductsSlice";
 import { filter } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import VarianceConfiguaration from "./VarianceConfiguaration";
 
-const CreateAProduct = () => {
+const CreateABooking = () => {
   const dispatch = useDispatch();
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
@@ -57,7 +52,6 @@ const CreateAProduct = () => {
     // clear data
     return () => {
       dispatch(setProductWithVariants({}));
-      dispatch(setProductHasVariants(false));
     };
   }, [dispatch]);
 
@@ -71,10 +65,10 @@ const CreateAProduct = () => {
 
   return (
     <>
-      {!goToVarianceConfig && <AddBasicProductDetails setGoToVarianceConfig={setGoToVarianceConfig} />}
+      {!goToVarianceConfig && <AddBookingDetails setGoToVarianceConfig={setGoToVarianceConfig} />}
       {goToVarianceConfig && <VarianceConfiguaration setGoToVarianceConfig={setGoToVarianceConfig} />}
     </>
   );
 };
 
-export default CreateAProduct;
+export default CreateABooking;

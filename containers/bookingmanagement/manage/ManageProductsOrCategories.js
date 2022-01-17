@@ -6,7 +6,7 @@ import {
   setManageProductProducts,
   setProductHasVariants,
   setProductWithVariants,
-} from "features/manageproducts/manageprodcutsSlice";
+} from "features/manageproducts/manageproductsSlice";
 import { filter } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
