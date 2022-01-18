@@ -72,7 +72,7 @@ const AddBookingDetails = ({ setGoToVarianceConfig }) => {
 
   const createproductWithVariants = (values) => {
     try {
-      console.log(values);
+      // console.log(values);
       dispatch(setProductWithVariants(values));
       setGoToVarianceConfig(true);
     } catch (error) {
@@ -432,7 +432,7 @@ const AddBookingDetails = ({ setGoToVarianceConfig }) => {
                               </div>
                             )}
 
-                            {fields?.length < 5 && index === fields.length - 1 && (
+                            {/* {fields?.length < 5 && index === fields.length - 1 && (
                               <div
                                 className="flex font-bold bg-green-500 rounded py-1 px-4 ml-2 cursor-pointer"
                                 onClick={() => {
@@ -443,7 +443,7 @@ const AddBookingDetails = ({ setGoToVarianceConfig }) => {
                                   <i className="fas fa-plus text-white" />
                                 </button>
                               </div>
-                            )}
+                            )} */}
                           </div>
                         </div>
                         <hr />
