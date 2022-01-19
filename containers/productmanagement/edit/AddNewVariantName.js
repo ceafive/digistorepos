@@ -12,31 +12,31 @@ const AddNewVariantName = ({ processing, action }) => {
   return (
     <div className="w-full p-5">
       <div className="w-full mb-6 md:mb-2">
-        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Variant Name</label>
+        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Property Name</label>
         <input
           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
-          {...register("variantName", {
-            required: "Please enter a variant name",
-            validate: (value) => !value.includes(",") || "YYou can only add 1 variant value at a time. Remove commas and try again",
+          {...register("propertyName", {
+            required: "Please enter a property name",
+            // validate: (value) => !value.includes(",") || "You can only add 1 property name at a time. Remove commas and try again",
           })}
           type="text"
           placeholder="eg. Size"
         />
-        <p className="text-red-500 text-left text-xs italic mt-1">{errors?.variantName?.message}</p>
+        <p className="text-red-500 text-left text-xs italic mt-1">{errors?.propertyName?.message}</p>
       </div>
 
       <div className="w-full mb-6 md:mb-2">
-        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Variant Value</label>
+        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Property Values</label>
         <input
           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
-          {...register("variantValue", {
-            required: "Please enter a variant value",
-            validate: (value) => !value.includes(",") || "You can only add 1 variant value at a time. Remove commas and try again",
+          {...register("propertyValue", {
+            required: "Please enter a property value",
+            // validate: (value) => !value.includes(",") || "You can only add 1 property value at a time. Remove commas and try again",
           })}
           type="text"
           placeholder="eg. Small"
         />
-        <p className="text-red-500 text-left text-xs italic mt-1">{errors?.variantValue?.message}</p>
+        <p className="text-red-500 text-left text-xs italic mt-1">{errors?.propertyValue?.message}</p>
       </div>
 
       <div className="flex justify-center">
@@ -54,7 +54,7 @@ const AddNewVariantName = ({ processing, action }) => {
               <Spinner type={"TailSpin"} color="black" width="10" height="10" />
             </div>
           )}
-          <span>{`Add New Variant`}</span>
+          <span>{`Add New Property`}</span>
         </button>
       </div>
     </div>

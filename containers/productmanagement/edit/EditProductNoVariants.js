@@ -281,7 +281,7 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
         };
       }
 
-      console.log({ payload });
+      // console.log({ payload });
       // return;
 
       const updateProductRes = await axios.post("/api/products/update-product", {
@@ -678,7 +678,7 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
               {/* Variants */}
               <div className="w-full mt-6 bg-gray-200 p-6 rounded">
                 <div className="flex justify-between items-center w-full">
-                  <h1 className="font-bold text-blue-700">Does your product have variants?</h1>
+                  <h1 className="font-bold text-blue-700">Does your product have properties?</h1>
                   <div className="flex justify-between items-center cursor-pointer" onClick={productHasVariantsButton}>
                     <div
                       className={`${
@@ -704,7 +704,7 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
                           <div key={id} className="w-full my-3">
                             <div key={id} className="flex w-full justify-between">
                               <div className="w-1/4 mr-2">
-                                <label className="text-xs leading-none font-bold">Variant Name</label>
+                                <label className="text-xs leading-none font-bold">Property Name</label>
                                 <input
                                   {...register(`variants[${index}].name`, {
                                     validate: {
@@ -728,7 +728,7 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
 
                               <div className="w-1/2">
                                 <label className="text-xs leading-none font-bold">
-                                  Variant Values <span className="text-xs">(Separated by comma ",")</span>
+                                  Property Values <span className="text-xs">(Separated by comma ",")</span>
                                 </label>
                                 <input
                                   {...register(`variants[${index}].values`, {

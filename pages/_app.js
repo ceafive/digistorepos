@@ -61,6 +61,17 @@ export default class MyApp extends App {
     };
 
     let theme = createTheme({
+      palette: {
+        primary: {
+          // light: will be calculated from palette.primary.main,
+          main: "#21428F",
+          // dark: will be calculated from palette.primary.main,
+          // contrastText: will be calculated to contrast with palette.primary.main
+        },
+        secondary: {
+          main: "#4AB647",
+        },
+      },
       typography: {
         fontFamily: "Nunito Sans",
       },

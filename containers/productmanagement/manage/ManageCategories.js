@@ -300,7 +300,7 @@ const ManageCategories = ({ setReRun }) => {
 
   return (
     <>
-      <Modal open={showAddCategoryModal} onClose={() => setShowAddCategoryModal(false)} maxWidth="md">
+      <Modal open={showAddCategoryModal} onClose={() => setShowAddCategoryModal(false)} maxWidth="sm">
         <AddCategory
           addCategoryRegister={addCategoryRegister}
           processing={processing}

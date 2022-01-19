@@ -385,7 +385,7 @@ const AddBookingDetails = ({ setGoToVarianceConfig }) => {
                       <div key={id} className="w-full my-3">
                         <div key={id} className="flex w-full justify-between items-center">
                           <div className=" mr-2">
-                            <label className="text-xs leading-none font-bold">Variant Name</label>
+                            <label className="text-xs leading-none font-bold">Property Name</label>
                             <input
                               {...register(`variants[${index}].name`, {
                                 validate: (value) => Boolean(value) || "Variant name must be entered",
@@ -402,7 +402,7 @@ const AddBookingDetails = ({ setGoToVarianceConfig }) => {
 
                           <div className="">
                             <label className="text-xs leading-none font-bold">
-                              Variant Values <span className="text-xs">(Separated by comma ",")</span>
+                              Property Values <span className="text-xs">(Separated by comma ",")</span>
                             </label>
                             <input
                               {...register(`variants[${index}].values`, {

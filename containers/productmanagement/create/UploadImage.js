@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
 export default function UploadImage({ maxNumber, classes, setValue, images, setImages, deleteImage }) {
+  // console.log(images);
+
   const { addToast } = useToasts();
   const onChange = (imageList, addUpdateIndex) => {
     // data for submit

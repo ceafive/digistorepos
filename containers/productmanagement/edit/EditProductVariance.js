@@ -401,9 +401,9 @@ const EditProductVariance = ({
                     className="block border-0 appearance-none w-full text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2"
                   >
                     <option value="">{`Select Category`}</option>
-                    {manageProductCategories?.map((category) => {
+                    {manageProductCategories?.map((category, index) => {
                       return (
-                        <option key={category?.product_category_id} value={category?.product_category_id}>
+                        <option key={category?.product_category_id + index} value={category?.product_category_id}>
                           {category?.product_category}
                         </option>
                       );
@@ -552,8 +552,8 @@ const EditProductVariance = ({
                         {fields?.map(({ id, name, values }, index) => {
                           // console.log({ name });
                           return (
-                            <div key={id} className="w-full my-3">
-                              <div key={id} className="flex w-full justify-between items-center">
+                            <div key={id + index} className="w-full my-3">
+                              <div className="flex w-full justify-between items-center">
                                 <div className=" mr-2">
                                   <label className="text-xs leading-none font-bold">Variant Name</label>
                                   <input

@@ -9,7 +9,6 @@ export default function CreateBooking() {
 
   const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
 
-
   return isBooking ? <CreateABooking /> : <CreateAProduct />;
 }
 

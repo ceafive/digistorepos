@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { v4 as uuidv4 } from "uuid";
 
-const EditProductVariance = ({ setGoToVarianceConfig }) => {
+const EditVariance = ({ setGoToVarianceConfig }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
@@ -590,4 +590,4 @@ const EditProductVariance = ({ setGoToVarianceConfig }) => {
   );
 };
 
-export default EditProductVariance;
+export default EditVariance;

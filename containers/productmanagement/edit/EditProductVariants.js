@@ -1,34 +1,13 @@
-import { current } from "@reduxjs/toolkit";
 import axios from "axios";
-import ButtonSpinner from "components/ButtonSpinner";
 import Modal from "components/Modal";
 import Spinner from "components/Spinner";
 import {
   setManageProductCategories,
-  setManageProductOutlets,
   setProductHasVariants,
   setProductWithVariants,
   setShowAddCategoryModal,
 } from "features/manageproducts/manageproductsSlice";
-import {
-  capitalize,
-  filter,
-  find,
-  flatten,
-  get,
-  has,
-  intersectionWith,
-  isEmpty,
-  isEqual,
-  map,
-  sortBy,
-  split,
-  trim,
-  union,
-  unionBy,
-  unionWith,
-  uniq,
-} from "lodash";
+import { capitalize, filter, flatten, flattenDeep, get, isEmpty, map, split, trim, uniq } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -40,24 +19,12 @@ import UploadImage from "../create/UploadImage";
 import AddNewVariantName from "./AddNewVariantName";
 import AddNewVariantValue from "./AddNewVariantValue";
 
-const EditProduct = ({
-  setGoToVarianceConfig,
-  setRefetch,
-  control,
-  register,
-  reset,
-  watch,
-  setValue,
-  getValues,
-  clearErrors,
-  errors,
-  handleSubmit,
-}) => {
+const EditProductVariants = ({ setGoToVarianceConfig, setRefetch, control, register, reset, watch, setValue, clearErrors, errors, handleSubmit }) => {
   const { addToast, removeToast, updateToast } = useToasts();
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, remove } = useFieldArray({
     control,
     name: "variants",
   });
@@ -135,7 +102,7 @@ const EditProduct = ({
           capitalize
         );
 
-        const entries = variantsStringArray.reduce((acc, value, index) => {
+        const entries = variantsStringArray.reduce((acc, value) => {
           propertyListIndexIncrease += 1;
           return {
             ...acc,
@@ -155,9 +122,10 @@ const EditProduct = ({
       }, {});
 
       const variant_options = productWithVariants?.variantsDistribution?.reduce((acc, value, index) => {
+        // console.log(value);
         return {
           ...acc,
-          [index]: value,
+          [index]: { ...value, variantOptionBookingSlot: "-99" },
         };
       }, {});
 
@@ -339,7 +307,7 @@ const EditProduct = ({
       // console.log({ data });
 
       const deleteVariantRes = await axios.post("/api/products/delete-product-variant", { data });
-      const { status, message } = await deleteVariantRes.data;
+      const { status } = await deleteVariantRes.data;
 
       removeToast(`delete-variant`);
 
@@ -403,7 +371,7 @@ const EditProduct = ({
     }
   };
 
-  const deleteImage = async (name, index) => {
+  const deleteImage = async (name) => {
     try {
       const r = window.confirm("Are you sure you want to delete image?");
       if (r === true) {
@@ -545,33 +513,33 @@ const EditProduct = ({
     }
   };
 
-  const addProductVariantName = async (values) => {
+  const addProductProperty = async (values) => {
     try {
       setProcessing(true);
       let variants = productWithVariants?.variants;
-      const variantNameExists = variants?.find((variant) => variant?.name.toLowerCase() === values?.variantName.toLowerCase());
+      const propertyNameExists = variants?.find((variant) => variant?.name.toLowerCase() === values?.propertyName.toLowerCase());
 
-      if (variantNameExists) {
+      if (propertyNameExists) {
         return addToast(`Variant already exists`, { appearance: `error`, autoDismiss: true });
       }
 
-      const newVariants = [{ name: values?.variantName, values: values?.variantValue }];
+      const newVariants = [{ name: values?.propertyName, values: values?.propertyValue }];
 
       let propertyListIndexIncrease = -1;
       const property_list = newVariants?.reduce((acc, val) => {
         const values = Object.values(val);
-        const variantName = capitalize(values[0]);
+        const propertyName = capitalize(values[0]);
         const variantsStringArray = map(
           filter(map(split(values[1], ","), trim), (o) => Boolean(o)),
           capitalize
         );
 
-        const entries = variantsStringArray.reduce((acc, value, index) => {
+        const entries = variantsStringArray.reduce((acc, value) => {
           propertyListIndexIncrease += 1;
           return {
             ...acc,
             [propertyListIndexIncrease]: {
-              propertyId: variantName,
+              propertyId: propertyName,
               propertyValue: value,
               propertyPriceSet: "NO",
               propertyPrice: "0",
@@ -585,15 +553,40 @@ const EditProduct = ({
         };
       }, {});
 
-      const addNewVariant = productWithVariants?.variantsDistribution?.map((distribution) => {
-        return {
-          ...distribution,
-          variantOptionValue: {
-            ...distribution?.variantOptionValue,
-            [capitalize(values?.variantName)]: capitalize(values?.variantValue),
-          },
-        };
+      // console.log(property_list);
+
+      const property_list_values = Object.values(property_list);
+      // console.log(property_list_values);
+
+      const addNewVariant = [];
+      property_list_values.forEach((property) => {
+        return productWithVariants?.variantsDistribution?.map((distribution) => {
+          const newDistribution = { ...distribution };
+          // delete newDistribution?.variantOptionId;
+          // console.log(newDistribution);
+          addNewVariant.push({
+            ...newDistribution,
+            // variantOptionId: newDistribution?.variantOptionId || "",
+            variantOptionValue: {
+              ...newDistribution?.variantOptionValue,
+              [capitalize(property?.propertyId)]: capitalize(property?.propertyValue),
+            },
+          });
+        });
       });
+
+      // const addNewVariant = productWithVariants?.variantsDistribution?.map((distribution) => {
+      //   return {
+      //     ...distribution,
+      //     variantOptionValue: {
+      //       ...distribution?.variantOptionValue,
+      //       [capitalize(values?.propertyName)]: capitalize(values?.propertyValue),
+      //     },
+      //   };
+      // });
+
+      // console.log(addNewVariant);
+      // return;
 
       const newVarianceDistribution = addNewVariant.reduce((acc, value, index) => {
         return {
@@ -602,22 +595,26 @@ const EditProduct = ({
         };
       }, {});
 
+      // console.log(newVarianceDistribution);
+
       const data = {
         id: productWithVariants?.id,
+        option: capitalize(values?.propertyName),
         // property_list: property_list,
         // variants_options: newVarianceDistribution,
         property_list: JSON.stringify(property_list),
         variants_options: JSON.stringify(!isEmpty(newVarianceDistribution) ? newVarianceDistribution : { 0: {} }),
-        // variants_options: JSON.stringify(newVarianceDistribution),
         merchant: user?.user_merchant_id,
         mod_by: user?.login,
-        option: capitalize(values?.variantName),
       };
 
-      console.log(data);
+      // console.log(data);
       // return;
-      const addVariantValueRes = await axios.post("/api/products/add-product-variant", data);
-      const { status, message = "" } = await addVariantValueRes.data;
+      const addPropertyValueRes = await axios.post("/api/products/add-product-variant", data);
+      const resData = await addPropertyValueRes.data;
+      // console.log(resData);
+
+      const { status, message = "" } = resData;
 
       if (Number(status) === 0) {
         addToast(`Added`, { appearance: "success", autoDismiss: true });
@@ -667,7 +664,7 @@ const EditProduct = ({
         <AddNewVariantName
           processing={processing}
           action={(values) => {
-            addProductVariantName(values);
+            addProductProperty(values);
           }}
         />
       </Modal>
@@ -722,9 +719,9 @@ const EditProduct = ({
                     className="block border-0 appearance-none w-full text-gray-700 py-2 rounded focus:outline-none text-sm bg-white mb-2"
                   >
                     <option value="">{`Select Category`}</option>
-                    {manageProductCategories?.map((category) => {
+                    {manageProductCategories?.map((category, index) => {
                       return (
-                        <option key={category?.product_category_id} value={category?.product_category_id}>
+                        <option key={category?.product_category_id + index} value={category?.product_category_id}>
                           {category?.product_category}
                         </option>
                       );
@@ -756,6 +753,7 @@ const EditProduct = ({
                       <input
                         {...register("sellingPrice", { required: "Selling price is required" })}
                         type="number"
+                        min="1"
                         placeholder="12"
                         className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                       />
@@ -769,6 +767,7 @@ const EditProduct = ({
                       <input
                         {...register("costPerItem")}
                         type="number"
+                        min="1"
                         placeholder="Enter cost of product"
                         className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                       />
@@ -833,6 +832,7 @@ const EditProduct = ({
                       <input
                         {...register("weight")}
                         type="number"
+                        min="1"
                         placeholder=""
                         className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                       />
@@ -851,7 +851,7 @@ const EditProduct = ({
                 <div className="flex justify-between items-center w-full">
                   <div className="flex items-center">
                     <div className="mr-10">
-                      <h1 className="font-bold text-blue-700">Does your product have variants?</h1>
+                      <h1 className="font-bold text-blue-700">Does your product have properties?</h1>
                     </div>
                     <div className="flex justify-between items-center cursor-pointer" onClick={productHasVariantsButton}>
                       <div
@@ -883,13 +883,15 @@ const EditProduct = ({
                 {watchAddVariants && (
                   <div className="mt-2 ">
                     <div className="flex flex-wrap justify-center items-center w-full ">
-                      {sortBy(fields, ["name"])?.map(({ id, name, values }, index) => {
+                      {fields?.map(({ id, name, values }, index) => {
+                        // console.log(values);
+                        // {sortBy(fields, ["name"])?.map(({ id, name, values }, index) => {
                         // console.log(values);
                         return (
-                          <div key={id} className="w-full my-1 ">
-                            <div key={id} className="flex w-full justify-between items-center ">
+                          <div key={id + index} className="w-full my-1 ">
+                            <div key={id} className="flex w-full justify-between ">
                               <div className="">
-                                <label className="text-xs leading-none font-bold">Variant Name</label>
+                                <label className="text-xs leading-none font-bold">Property Name</label>
                                 <div className="flex bg-gray-300 p-1 items-center rounded">
                                   <p className="mr-1">{name}</p>
                                 </div>
@@ -897,11 +899,11 @@ const EditProduct = ({
 
                               <div className="w-1/2">
                                 {/* <div className="w-1/2"> */}
-                                <label className="text-xs leading-none font-bold">Variant Values</label>
+                                <label className="text-xs leading-none font-bold">Property Values</label>
                                 <div className="flex flex-wrap">
                                   {(values || ``)?.split(",").map((value, index) => {
                                     return (
-                                      <div key={index} className="flex bg-gray-300 p-1 items-center rounded mr-1 mb-1">
+                                      <div key={value + index} className="flex bg-gray-300 p-1 items-center rounded mr-1 mb-1">
                                         <p className="mr-1">{value}</p>
                                         <button
                                           onClick={async () => {
@@ -959,7 +961,7 @@ const EditProduct = ({
                                     setShowAddNewVariantValue(true);
                                   }}
                                 >
-                                  Add new variant value
+                                  Add new property value
                                 </button>
 
                                 <div
@@ -1002,7 +1004,7 @@ const EditProduct = ({
                       setShowAddNewVariantName(true);
                     }}
                   >
-                    Add new variant
+                    Add new property
                   </button>
                 )}
               </div>
@@ -1074,4 +1076,4 @@ const EditProduct = ({
   );
 };
 
-export default EditProduct;
+export default EditProductVariants;

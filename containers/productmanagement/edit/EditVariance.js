@@ -195,6 +195,7 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
             variantOptionValue: optionValues,
             variantOptionPrice: val?.Price,
             variantOptionQuantity: val["QuantityUnlimited"] ? "-99" : val?.Quantity,
+            variantOptionBookingSlot: "-99",
           };
 
           if (val?.variantOptionId) {
@@ -223,7 +224,6 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           setInventoryQuantity,
           old_outlet_list,
           applyTax,
-          addVariants,
         } = productWithVariants;
 
         let user = sessionStorage.getItem("IPAYPOSUSER");
@@ -385,7 +385,8 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
           {/* AddVariants Section */}
           <div className="overflow-scroll" style={{ height: 600 }}>
             <div className={`grid grid-cols-${productWithVariants?.variants.length + 1} gap-3 my-2`}>
-              {sortBy(productWithVariants?.variants, ["name"])?.map((variant, index) => {
+              {productWithVariants?.variants?.map((variant, index) => {
+                // {sortBy(productWithVariants?.variants, ["name"])?.map((variant, index) => {
                 const variantValues = map(
                   filter(map(split(variant?.values, ","), trim), (o) => Boolean(o)),
                   capitalize
@@ -401,8 +402,8 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 rounded leading-tight focus:outline-none focus:bg-white"
                       >
                         <option value="" disabled>{`Select ${capitalizeName}`}</option>
-                        {variantValues.map((variantValue) => (
-                          <option key={variantValue} value={variantValue}>
+                        {variantValues.map((variantValue, index) => (
+                          <option key={variantValue + index} value={variantValue}>
                             {variantValue}
                           </option>
                         ))}
@@ -424,32 +425,29 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
             {allVarianceDistribution?.length > 0 && (
               <div className="mt-4">
                 <div className={`grid grid-cols-${productWithVariants?.variants?.length + 4} gap-3`}>
-                  {sortBy(productWithVariants?.variants, ["name"])?.map((variant) => {
+                  {productWithVariants?.variants?.map((variant, index) => {
+                    // {sortBy(productWithVariants?.variants, ["name"])?.map((variant) => {
                     const capitalizeName = capitalize(variant?.name);
                     return (
-                      <div key={capitalizeName} className="self-center">
-                        <h1 key={capitalizeName} className="font-bold text-blue-700 self-center">
-                          {capitalizeName}
-                        </h1>
+                      <div key={capitalizeName + index} className="self-center">
+                        <h1 className="font-bold text-blue-700 self-center">{capitalizeName}</h1>
                       </div>
                     );
                   })}
-                  <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Price</h1>
-                  </div>
-                  <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
-                  </div>
-                  <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Quantity Unlimited</h1>
-                  </div>
-                  <div className="self-center">
-                    <h1 className="font-bold text-blue-700 self-center">Actions</h1>
-                  </div>
+
+                  {/* <h1 className="font-bold text-blue-700 self-center">Price</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Quantity Unlimited</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Actions</h1> */}
+
+                  <h1 className="font-bold text-blue-700 self-center">Quantity</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Quantity Unlimited</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Price</h1>
+                  <h1 className="font-bold text-blue-700 self-center">Actions</h1>
                 </div>
 
                 <div className="my-2">
-                  {allVarianceDistribution.map((variance) => {
+                  {allVarianceDistribution.map((variance, index) => {
                     const formattedVarianceKey = variance[0];
                     const errorObject = submitFormErrors[formattedVarianceKey];
 
@@ -469,7 +467,8 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                     // console.log({ newValue });
                     // console.log({ sortedNewValues });
 
-                    const formattedVarianceEntries = Object.entries(sortedNewValues);
+                    const formattedVarianceEntries = Object.entries(newValue);
+                    // const formattedVarianceEntries = Object.entries(sortedNewValues);
 
                     const removeKeys = formattedVarianceEntries.filter(([key]) => {
                       if (key === "Quantity" || key === "Price" || key === "QuantityUnlimited") return false;
@@ -478,8 +477,13 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
 
                     // console.log({ removeKeys });
 
-                    const removePriceAndQuantty = formattedVarianceEntries.filter(([key]) => {
-                      if (key === "Quantity" || key === "Price") return true;
+                    const removeQuantity = formattedVarianceEntries.filter(([key]) => {
+                      if (key === "Quantity") return true;
+                      else return false;
+                    });
+
+                    const removePrice = formattedVarianceEntries.filter(([key]) => {
+                      if (key === "Price") return true;
                       else return false;
                     });
 
@@ -489,26 +493,27 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                     });
 
                     return (
-                      <div key={variance[0]} className={`grid grid-cols-${formattedVarianceEntries.length + 1} gap-3 my-2`}>
-                        {removeKeys.map(([key, value]) => {
+                      <div key={variance[0] + index} className={`grid grid-cols-${formattedVarianceEntries.length + 1} gap-3 my-2`}>
+                        {removeKeys.map(([key, value], index) => {
                           return (
-                            <h1 key={key} className="font-bold self-center  bg-gray-300 rounded pl-2 py-2">
+                            <h1 key={key + index} className="font-bold self-center  bg-gray-300 rounded pl-2 py-2">
                               {value}
                             </h1>
                           );
                         })}
 
-                        {removePriceAndQuantty.map(([key, value]) => {
+                        {removeQuantity.map(([key, value], index) => {
                           const newValue = key === "Quantity" && (value === "-99" || value === "Unlimited") ? "Unlimited" : value;
                           // console.log(varianceDistribution[variance[0]][key]);
 
                           const disabled = key === "Quantity" && (value === "-99" || value === "Unlimited") ? true : false;
                           const type = key === "Quantity" && (value === "-99" || value === "Unlimited") ? "text" : "number";
                           return (
-                            <div key={key} className="self-center ">
+                            <div key={key + index} className="self-center ">
                               <input
                                 disabled={disabled}
                                 type={type}
+                                min="1"
                                 value={newValue}
                                 // value={varianceDistribution[variance[0]][key] ?? ""}
                                 onChange={(e) => {
@@ -528,9 +533,9 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                           );
                         })}
 
-                        {removeQuantityUnlimited.map(([key, value]) => {
+                        {removeQuantityUnlimited.map(([key, value], index) => {
                           return (
-                            <div key={key} className="flex self-center">
+                            <div key={key + index} className="flex self-center">
                               <input
                                 type="checkbox"
                                 checked={value}
@@ -540,6 +545,37 @@ const EditProductVariance = ({ setGoToVarianceConfig, setRefetch }) => {
                               />
 
                               <label className="text-xs ml-1">Unlimited</label>
+                            </div>
+                          );
+                        })}
+
+                        {removePrice.map(([key, value], index) => {
+                          const newValue = key === "Quantity" && (value === "-99" || value === "Unlimited") ? "Unlimited" : value;
+                          // console.log(varianceDistribution[variance[0]][key]);
+
+                          const disabled = key === "Quantity" && (value === "-99" || value === "Unlimited") ? true : false;
+                          const type = key === "Quantity" && (value === "-99" || value === "Unlimited") ? "text" : "number";
+                          return (
+                            <div key={key + index} className="self-center ">
+                              <input
+                                disabled={disabled}
+                                type={type}
+                                min="1"
+                                value={newValue}
+                                // value={varianceDistribution[variance[0]][key] ?? ""}
+                                onChange={(e) => {
+                                  e.persist();
+                                  setVarianceDistribution((values) => ({
+                                    ...values,
+                                    [variance[0]]: { ...values[variance[0]], [key]: e.target.value },
+                                  }));
+                                }}
+                                placeholder="10"
+                                className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full "
+                              />
+                              {errorObject?.errorID === formattedVarianceKey && key === errorObject?.errorKey && (
+                                <p className="text-xs text-red-500">{errorObject?.message}</p>
+                              )}
                             </div>
                           );
                         })}

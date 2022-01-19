@@ -17,7 +17,7 @@ import { useToasts } from "react-toast-notifications";
 import AddCategory from "./AddCategory";
 import UploadImage from "./UploadImage";
 
-const AddProductDetails = ({ setGoToVarianceConfig }) => {
+const AddProductDetails = ({ control, register, reset, watch, setValue, errors, handleSubmit, images, setImages, setGoToVarianceConfig }) => {
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
   const dispatch = useDispatch();
@@ -29,23 +29,23 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
   const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
-  // console.log({ productHasVariants });
+  // console.log(productWithVariants);
 
-  const {
-    control,
-    register,
-    reset,
-    watch,
-    setValue,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({
-    defaultValues: {
-      applyTax: false,
-      inventoryQuantity: 0,
-      ...productWithVariants,
-    },
-  });
+  // const {
+  //   control,
+  //   register,
+  //   reset,
+  //   watch,
+  //   setValue,
+  //   formState: { errors },
+  //   handleSubmit,
+  // } = useForm({
+  //   defaultValues: {
+  //     applyTax: false,
+  //     inventoryQuantity: 0,
+  //     ...productWithVariants,
+  //   },
+  // });
 
   const {
     register: addCategoryRegister,
@@ -61,17 +61,13 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
 
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
-  const [images, setImages] = React.useState(productWithVariants?.productImages ?? []);
 
   const isInventorySet = watch("setInventoryQuantity", false);
   const productCategory = watch("productCategory", false);
 
-  // console.log(productCategory);
-  // console.log(showAddCategoryModal);
-  // console.log(productImages);
-
   const createProduct = async (values) => {
     try {
+      // console.log(values);
       setIsProcessing(true);
       addToast(`Adding Product....`, { id: "adding" });
       const data = { ...values, applyTax: get(values, "applyTax") ? "YES" : "NO" };
@@ -142,7 +138,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
           productCategory: "",
           productDescription: "",
           sku: "",
-          outlets: [],
+          outlets: "",
           weight: "",
           barcode: "",
           sellingPrice: "",
@@ -342,6 +338,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                 <input
                   {...register("sellingPrice", { required: "Selling price is required" })}
                   type="number"
+                  min="1"
                   placeholder="12"
                   className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                 />
@@ -355,6 +352,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                 <input
                   {...register("costPerItem")}
                   type="number"
+                  min="1"
                   placeholder="Enter cost of product"
                   className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                 />
@@ -379,6 +377,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                         validate: (value) => (isInventorySet ? Boolean(value) && Number(value) > 0 : true) || "Quantity is required",
                       })}
                       type="number"
+                      min="1"
                       placeholder="Quantity in stock"
                       className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                     />
@@ -418,6 +417,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                 <input
                   {...register("weight")}
                   type="number"
+                  min="1"
                   placeholder=""
                   className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm  outline-none focus:outline-none focus:ring-1 w-full mb-2"
                 />
@@ -432,7 +432,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
             {/* Variants */}
             <div className="w-full mr-2 mt-2 bg-gray-200 p-6 rounded">
               <div className="flex justify-between items-center w-full">
-                <h1 className="font-bold text-blue-700">Does your product have variants?</h1>
+                <h1 className="font-bold text-blue-700">Does your product have properties?</h1>
                 <div
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => {
@@ -462,7 +462,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                         <div key={id} className="w-full my-3">
                           <div key={id} className="flex w-full justify-between items-center">
                             <div className=" mr-2">
-                              <label className="text-xs leading-none font-bold">Variant Name</label>
+                              <label className="text-xs leading-none font-bold">Property Name</label>
                               <input
                                 {...register(`variants[${index}].name`, {
                                   validate: (value) => (productHasVariants ? Boolean(value) : true) || "Variant name must be entered",
@@ -479,7 +479,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
 
                             <div className="">
                               <label className="text-xs leading-none font-bold">
-                                Variant Values <span className="text-xs">(Separated by comma ",")</span>
+                                Property Values <span className="text-xs">(Separated by comma ",")</span>
                               </label>
                               <input
                                 {...register(`variants[${index}].values`, {
@@ -495,7 +495,7 @@ const AddProductDetails = ({ setGoToVarianceConfig }) => {
                               )}
                             </div>
 
-                            <div className="w-1/5 flex mt-4">
+                            <div className="w-1/5 flex">
                               {fields.length > 1 && (
                                 <div
                                   className="font-bold bg-red-500 rounded h-full py-1 px-4 ml-4 mt-4 cursor-pointer"

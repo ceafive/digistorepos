@@ -507,7 +507,7 @@ const EditProduct = ({
     }
   };
 
-  const addProductVariantName = async (values) => {
+  const addProductProperty = async (values) => {
     try {
       setProcessing(true);
       let variants = productWithVariants?.variants;
@@ -629,7 +629,7 @@ const EditProduct = ({
         <AddNewVariantName
           processing={processing}
           action={(values) => {
-            addProductVariantName(values);
+            addProductProperty(values);
           }}
         />
       </Modal>
@@ -872,7 +872,7 @@ const EditProduct = ({
                         <div key={id} className="w-full my-1 ">
                           <div key={id} className="flex w-full justify-between items-center ">
                             <div className="">
-                              <label className="text-xs leading-none font-bold">Variant Name</label>
+                              <label className="text-xs leading-none font-bold">Property Name</label>
                               <div className="flex bg-gray-300 p-1 items-center rounded">
                                 <p className="mr-1">{name}</p>
                               </div>
@@ -880,7 +880,7 @@ const EditProduct = ({
 
                             <div className="w-1/2">
                               {/* <div className="w-1/2"> */}
-                              <label className="text-xs leading-none font-bold">Variant Values</label>
+                              <label className="text-xs leading-none font-bold">Property Values</label>
                               <div className="flex flex-wrap">
                                 {(values || ``)?.split(",").map((value, index) => {
                                   return (
@@ -957,7 +957,7 @@ const EditProduct = ({
                                   setShowAddNewVariantValue(true);
                                 }}
                               >
-                                Add new variant value
+                                Add new property value
                               </button>
 
                               <div
@@ -991,7 +991,7 @@ const EditProduct = ({
                       setShowAddNewVariantName(true);
                     }}
                   >
-                    Add new variant
+                    Add new property
                   </button>
                 )}
               </div>

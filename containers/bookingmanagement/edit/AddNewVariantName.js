@@ -12,7 +12,7 @@ const AddNewVariantName = ({ processing, action }) => {
   return (
     <div className="w-full p-5">
       <div className="w-full mb-6 md:mb-2">
-        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Variant Name</label>
+        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Property Name</label>
         <input
           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
           {...register("variantName", {

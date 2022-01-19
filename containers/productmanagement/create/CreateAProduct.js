@@ -9,15 +9,44 @@ import {
 } from "features/manageproducts/manageproductsSlice";
 import { filter } from "lodash";
 import React from "react";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
 import VarianceConfiguaration from "./VarianceConfiguaration";
 
-const CreateAProduct = () => {
+const CreateAProduct = ({}) => {
   const dispatch = useDispatch();
+
+  const {
+    control,
+    register,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    defaultValues: {
+      productName: "",
+      productCategory: "",
+      productDescription: "",
+      sku: "",
+      outlets: [],
+      weight: "",
+      barcode: "",
+      sellingPrice: "",
+      costPerItem: "",
+      productImages: [],
+      setInventoryQuantity: false,
+      applyTax: false,
+      inventoryQuantity: 0,
+    },
+  });
+
   // Compnent State
   const [fetching, setFetching] = React.useState(false);
   const [goToVarianceConfig, setGoToVarianceConfig] = React.useState(false);
+  const [images, setImages] = React.useState([]);
 
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
   const manageProductOutlets = useSelector((state) => state.manageproducts.manageProductOutlets);
@@ -49,6 +78,43 @@ const CreateAProduct = () => {
         console.log(error);
       } finally {
         setFetching(false);
+
+        reset({
+          productName: "",
+          productCategory: "",
+          productDescription: "",
+          sku: "",
+          outlets: "",
+          weight: "",
+          barcode: "",
+          sellingPrice: "",
+          costPerItem: "",
+          productImages: [],
+          setInventoryQuantity: false,
+          applyTax: false,
+          inventoryQuantity: 0,
+        });
+        dispatch(
+          setProductWithVariants({
+            id: "",
+            productName: "",
+            productCategory: "",
+            productDescription: "",
+            sku: "",
+            outlets: "",
+            weight: "",
+            barcode: "",
+            sellingPrice: "",
+            costPerItem: "",
+            productImages: [],
+            setInventoryQuantity: false,
+            applyTax: false,
+            inventoryQuantity: 0,
+            variants: [],
+            variantsDistribution: [],
+          })
+        );
+        dispatch(setProductHasVariants(false));
       }
     };
 
@@ -56,7 +122,44 @@ const CreateAProduct = () => {
 
     // clear data
     return () => {
-      dispatch(setProductWithVariants({}));
+      reset({
+        productName: "",
+        productCategory: "",
+        productDescription: "",
+        sku: "",
+        outlets: "",
+        weight: "",
+        barcode: "",
+        sellingPrice: "",
+        costPerItem: "",
+        productImage: "",
+        productImages: [],
+        setInventoryQuantity: false,
+        applyTax: false,
+        inventoryQuantity: 0,
+      });
+
+      dispatch(
+        setProductWithVariants({
+          id: "",
+          productName: "",
+          productCategory: "",
+          productDescription: "",
+          sku: "",
+          outlets: "",
+          weight: "",
+          barcode: "",
+          sellingPrice: "",
+          costPerItem: "",
+          productImage: "",
+          productImages: [],
+          setInventoryQuantity: false,
+          applyTax: false,
+          inventoryQuantity: 0,
+          variants: [],
+          variantsDistribution: [],
+        })
+      );
       dispatch(setProductHasVariants(false));
     };
   }, [dispatch]);
@@ -71,7 +174,20 @@ const CreateAProduct = () => {
 
   return (
     <>
-      {!goToVarianceConfig && <AddBasicProductDetails setGoToVarianceConfig={setGoToVarianceConfig} />}
+      {!goToVarianceConfig && (
+        <AddBasicProductDetails
+          control={control}
+          register={register}
+          reset={reset}
+          watch={watch}
+          setValue={setValue}
+          errors={errors}
+          handleSubmit={handleSubmit}
+          images={images}
+          setImages={setImages}
+          setGoToVarianceConfig={setGoToVarianceConfig}
+        />
+      )}
       {goToVarianceConfig && <VarianceConfiguaration setGoToVarianceConfig={setGoToVarianceConfig} />}
     </>
   );

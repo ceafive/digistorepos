@@ -196,13 +196,13 @@ const ManageProducts = ({ setReRun }) => {
         mod_by: user?.login,
       };
 
-      console.log({ data });
+      // console.log({ data });
       // return;
 
       const updateVariantRes = await axios.post("/api/products/update-product-variant-props", { data });
       const resData = await updateVariantRes.data;
       const { status, message } = resData;
-      console.log({ resData });
+      // console.log({ resData });
 
       removeToast(`update-variant`);
 
@@ -393,7 +393,7 @@ const ManageProducts = ({ setReRun }) => {
                     render(rowData) {
                       let subheader = "";
                       const variantdata = Object.entries(rowData?.variantOptionValue);
-                      variantdata.forEach(([, value], index) => {
+                      variantdata.forEach(([key, value], index) => {
                         subheader += `${value}${index === variantdata?.length - 1 ? " " : " / "}`;
                       });
                       return (

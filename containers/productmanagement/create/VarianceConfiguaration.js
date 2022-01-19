@@ -75,8 +75,8 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
 
       for (const [key, value] of Object.entries(varianceDistribution)) {
         for (const [keyOfKey, valueOfValue] of Object.entries(value)) {
-          console.log(keyOfKey);
-          console.log({ keyOfKey, valueOfValue });
+          // console.log(keyOfKey);
+          // console.log({ keyOfKey, valueOfValue });
 
           if (keyOfKey !== "QuantityUnlimited") {
             if (!valueOfValue) {
@@ -159,6 +159,7 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
               variantOptionValue: optionValues,
               variantOptionPrice: val?.Price,
               variantOptionQuantity: val["QuantityUnlimited"] ? "-99" : val?.Quantity,
+              variantOptionBookingSlot: "-99",
             },
           };
         }, {});
@@ -200,13 +201,13 @@ const VarianceConfiguaration = ({ setGoToVarianceConfig }) => {
           barcode,
           is_price_global: "YES",
           outlet_list: JSON.stringify(outlets),
-          merchant: user["user_merchant_id"],
-          mod_by: user["login"],
           property_list: JSON.stringify(property_list),
           variants_options: varianceDistributionValues.length > 0 ? JSON.stringify(variants_options) : JSON.stringify({ 0: {} }),
+          merchant: user["user_merchant_id"],
+          mod_by: user["login"],
         };
 
-        console.log(payload);
+        // console.log(payload);
         // return;
 
         const addProductRes = await axios.post("/api/products/create-product", { data: payload });
