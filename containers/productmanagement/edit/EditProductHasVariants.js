@@ -92,7 +92,7 @@ const EditProductHasVariants = () => {
           data: { data: product },
         } = await axios.post(`/api/products/get-product-details`, { productID: router?.query?.product_id });
 
-        // console.log({ product });
+        console.log(product?.product_properties);
 
         const filteredOutlets = filter(product?.product_outlets ?? [], Boolean);
         const intersectedOutlets = intersectionWith(allOutlets, filteredOutlets, (arrVal, othVal) => arrVal?.outlet_id === othVal?.outlet_id);

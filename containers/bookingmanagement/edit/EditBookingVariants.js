@@ -90,13 +90,6 @@ const EditProduct = ({
   const [images, setImages] = React.useState(productWithVariants?.productImages ?? []);
   const [availableDates, setAvailableDates] = useState(productWithVariants?.availableDates?.length ? true : false);
 
-  const {
-    register: addCategoryRegister,
-    reset: addCategoryReset,
-    formState: { errors: addCategoryErrors },
-    handleSubmit: addCategoryHandleSumbit,
-  } = useForm();
-
   const productCategory = watch("productCategory", false);
   const maxNumber = 1;
 
@@ -245,50 +238,6 @@ const EditProduct = ({
     } finally {
       removeToast(`updating`);
       setIsProcessing(false);
-    }
-  };
-
-  const sumbitNewCategoryToServer = async (values) => {
-    try {
-      setProcessing(true);
-      const data = {
-        name: values?.categoryName,
-        desc: values?.categoryDescription,
-        merchant: user?.user_merchant_id,
-        mod_by: user?.login,
-      };
-
-      const response = await axios.post("/api/products/add-product-category", data);
-      const { status, message } = await response.data;
-
-      if (status === 0) {
-        addCategoryReset({
-          categoryName: "",
-          categoryDescription: "",
-        });
-
-        const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
-        const { data: allCategoriesResData } = await allCategoriesRes.data;
-        const filtered = filter(allCategoriesResData, (o) => Boolean(o));
-        dispatch(setManageProductCategories(filtered));
-        const found = filtered.find((o) => o?.product_category === data?.name);
-        setValue("productCategory", found?.product_category_id ?? ""); // add new cateogry and select it
-        addToast(message, { appearance: "success", autoDismiss: true });
-        dispatch(setShowAddCategoryModal());
-      } else addToast(`${message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
-    } catch (error) {
-      let errorResponse = "";
-      if (error.response) {
-        errorResponse = error.response.data;
-      } else if (error.request) {
-        errorResponse = error.request;
-      } else {
-        errorResponse = { error: error.message };
-      }
-      console.log(errorResponse);
-      setProcessing(false);
-    } finally {
-      setProcessing(false);
     }
   };
 
@@ -611,13 +560,7 @@ const EditProduct = ({
   return (
     <div>
       <Modal open={showAddCategoryModal} onClose={() => dispatch(setShowAddCategoryModal())} maxWidth="sm">
-        <AddCategory
-          addCategoryRegister={addCategoryRegister}
-          processing={processing}
-          addCategoryErrors={addCategoryErrors}
-          addCategoryHandleSumbit={addCategoryHandleSumbit}
-          action={sumbitNewCategoryToServer}
-        />
+        <AddCategory processing={processing} setValue={setValue} setProcessing={setProcessing} />
       </Modal>
       <Modal
         open={showAddNewVariantName}

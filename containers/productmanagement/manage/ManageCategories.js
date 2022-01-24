@@ -18,12 +18,12 @@ import axios from "axios";
 import Dropdown from "components/Misc/Dropdown";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import Modal from "components/Modal";
-import { setManageProductCategories } from "features/manageproducts/manageproductsSlice";
+import { setManageProductCategories, setShowAddCategoryModal } from "features/manageproducts/manageproductsSlice";
 import { capitalize, filter } from "lodash";
 import MaterialTable, { MTableBodyRow, MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
 import React, { forwardRef } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 
@@ -63,26 +63,20 @@ const ManageCategories = ({ setReRun }) => {
     handleSubmit,
   } = useForm({});
 
-  const {
-    register: addCategoryRegister,
-    reset: addCategoryReset,
-    formState: { errors: addCategoryErrors },
-    setValue: addCategorySetValue,
-    handleSubmit: addCategoryHandleSumbit,
-  } = useForm();
-
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
+  const showAddCategoryModal = useSelector((state) => state.manageproducts.showAddCategoryModal);
 
   // console.log({ manageProductCategories });
 
   const [processing, setProcessing] = React.useState(false);
   const [allCategories, setAllCategories] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [showAddCategoryModal, setShowAddCategoryModal] = React.useState(false);
+
   const [isEditing, setIsEditing] = React.useState(false);
 
   const categorySelected = watch("productCategory", "All");
   const [btnText, setBtnText] = React.useState("Edit Category");
+  const [addCatValues, setAddCatValues] = React.useState({});
 
   React.useEffect(() => {
     setLoading(true);
@@ -99,97 +93,79 @@ const ManageCategories = ({ setReRun }) => {
     setLoading(false);
   }, [manageProductCategories, categorySelected]);
 
-  const addNewCategory = async (values) => {
-    try {
-      setProcessing(true);
-      addToast(`Adding....`, { appearance: "info", id: "notif-sending" });
-      let user = sessionStorage.getItem("IPAYPOSUSER");
-      user = JSON.parse(user);
-
-      const data = {
-        name: values?.categoryName,
-        desc: values?.categoryDescription,
-        merchant: user?.user_merchant_id,
-        mod_by: user?.login,
-      };
-
-      const response = await axios.post("/api/products/add-product-category", data);
-      const { status, message } = await response.data;
-      removeToast("notif-sending");
-
-      if (status === 0) {
-        addCategoryReset({
-          categoryName: "",
-          categoryDescription: "",
+  const buttons = (data) => [
+    {
+      name: "Edit",
+      action() {
+        setBtnText("Edit Category");
+        setAddCatValues({
+          categoryName: data?.product_category,
+          categoryDescription: data?.product_category_description,
+          categoryID: data?.product_category_id,
         });
+        // addCategorySetValue("categoryName", data?.product_category);
+        // addCategorySetValue("categoryDescription", data?.product_category_description);
+        // addCategorySetValue("categoryID", data?.product_category_id);
+        setIsEditing(true);
+        dispatch(setShowAddCategoryModal());
+      },
+    },
+    {
+      name: "Delete",
+      classes: "text-red-500",
+      async action() {
+        var r = window.confirm(`Are you sure you want to delete category '${data?.product_category}'. This action cannot be undone`);
+        if (r == true) {
+          // call api
+          await deleteCategory(data?.product_category_id);
+        }
+      },
+    },
+  ];
 
-        const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
-        const { data: allCategoriesResData } = await allCategoriesRes.data;
-        const filtered = filter(allCategoriesResData, (o) => Boolean(o));
-        dispatch(setManageProductCategories(filtered));
+  const columns = [
+    { title: "ID.", field: "product_category_id" },
+    { title: "Category Name", field: "product_category" },
+    { title: "Description", field: "product_category_description" },
+    {
+      title: "Products Under Category",
+      field: "product_count",
+    },
+    { title: "Mod. By", field: "mod_by" },
+    { title: "Mod. Date", field: "mod_date" },
+    {
+      title: "Actions",
+      field: "actions",
+      render(rowData) {
+        return <Dropdown buttons={() => buttons(rowData)} />;
+      },
+    },
+  ];
 
-        addToast(message, { appearance: "success", autoDismiss: true });
-        setShowAddCategoryModal(false);
-      } else addToast(`${message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
-    } catch (error) {
-      let errorResponse = "";
-      if (error.response) {
-        errorResponse = error.response.data;
-      } else if (error.request) {
-        errorResponse = error.request;
-      } else {
-        errorResponse = { error: error.message };
-      }
-      addToast(`${errorResponse}. Fix error and try again`, { appearance: "error", autoDismiss: true });
-    } finally {
-      setProcessing(false);
-    }
+  const DragState = {
+    row: -1,
+    dropIndex: -1, // drag target
   };
 
-  const updateCategory = async (values) => {
-    try {
-      setProcessing(true);
-      addToast(`Updating....`, { appearance: "info", id: "notif-sending" });
-      let user = sessionStorage.getItem("IPAYPOSUSER");
-      user = JSON.parse(user);
+  const onRowSelected = (_evt, rowData) => {
+    // console.log({ rowData });
+  };
 
-      const data = {
-        id: values?.categoryID,
-        name: values?.categoryName,
-        desc: values?.categoryDescription,
-        mod_by: user?.login,
-      };
-
-      const response = await axios.post("/api/products/update-product-category", data);
-      const { status, message } = await response.data;
-      removeToast("notif-sending");
-
-      if (status === 0) {
-        const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
-        const { data: allCategoriesResData } = await allCategoriesRes.data;
-        const filtered = filter(allCategoriesResData, (o) => Boolean(o));
-        dispatch(setManageProductCategories(filtered));
-
-        addToast(message, { appearance: "success", autoDismiss: true });
-        addCategorySetValue("categoryName", "");
-        addCategorySetValue("categoryDescription", "");
-        addCategorySetValue("categoryID", "");
-        setIsEditing(false);
-        setShowAddCategoryModal(false);
-      } else addToast(`${message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
-    } catch (error) {
-      let errorResponse = "";
-      if (error.response) {
-        errorResponse = error.response.data;
-      } else if (error.request) {
-        errorResponse = error.request;
-      } else {
-        errorResponse = { error: error.message };
-      }
-      addToast(`${errorResponse}. Fix error and try again`, { appearance: "error", autoDismiss: true });
-    } finally {
-      setProcessing(false);
+  const displaceObject = (fromIndex, toIndex, arrayToBeModified) => {
+    let modCollection = [...arrayToBeModified];
+    if (fromIndex < toIndex) {
+      let start = arrayToBeModified.slice(0, fromIndex),
+        between = arrayToBeModified.slice(fromIndex + 1, toIndex + 1),
+        end = arrayToBeModified.slice(toIndex + 1);
+      modCollection = [...start, ...between, arrayToBeModified[fromIndex], ...end];
     }
+    if (fromIndex > toIndex) {
+      let start = arrayToBeModified.slice(0, toIndex),
+        between = arrayToBeModified.slice(toIndex, fromIndex),
+        end = arrayToBeModified.slice(fromIndex + 1);
+      modCollection = [...start, arrayToBeModified[fromIndex], ...between, ...end];
+    }
+    return modCollection;
   };
 
   const deleteCategory = async (id) => {
@@ -226,90 +202,21 @@ const ManageCategories = ({ setReRun }) => {
     }
   };
 
-  const buttons = (data) => [
-    {
-      name: "Edit",
-      action() {
-        setBtnText("Edit Category");
-        addCategorySetValue("categoryName", data?.product_category);
-        addCategorySetValue("categoryDescription", data?.product_category_description);
-        addCategorySetValue("categoryID", data?.product_category_id);
-        setIsEditing(true);
-        setShowAddCategoryModal(true);
-      },
-    },
-    {
-      name: "Delete",
-      classes: "text-red-500",
-      async action() {
-        var r = window.confirm(`Are you sure you want to delete category '${data?.product_category}'. This action cannot be undone`);
-        if (r == true) {
-          // call api
-          await deleteCategory(data?.product_category_id);
-        }
-      },
-    },
-  ];
-
-  const columns = [
-    { title: "ID.", field: "product_category_id" },
-    { title: "Category Name", field: "product_category" },
-    { title: "Description", field: "product_category_description" },
-    {
-      title: "Products Under Category",
-      field: "product_count",
-    },
-    { title: "Mod. By", field: "mod_by" },
-    { title: "Mod. Date", field: "mod_date" },
-    {
-      title: "Actions",
-      field: "actions",
-      render(rowData) {
-        return <Dropdown buttons={() => buttons(rowData)} />;
-      },
-    },
-  ];
-
-  const buttonAction = isEditing ? updateCategory : addNewCategory;
-
-  const DragState = {
-    row: -1,
-    dropIndex: -1, // drag target
-  };
-
-  const onRowSelected = (_evt, rowData) => {
-    // console.log({ rowData });
-  };
-
-  const displaceObject = (fromIndex, toIndex, arrayToBeModified) => {
-    let modCollection = [...arrayToBeModified];
-    if (fromIndex < toIndex) {
-      let start = arrayToBeModified.slice(0, fromIndex),
-        between = arrayToBeModified.slice(fromIndex + 1, toIndex + 1),
-        end = arrayToBeModified.slice(toIndex + 1);
-      modCollection = [...start, ...between, arrayToBeModified[fromIndex], ...end];
-    }
-    if (fromIndex > toIndex) {
-      let start = arrayToBeModified.slice(0, toIndex),
-        between = arrayToBeModified.slice(toIndex, fromIndex),
-        end = arrayToBeModified.slice(fromIndex + 1);
-      modCollection = [...start, arrayToBeModified[fromIndex], ...between, ...end];
-    }
-    return modCollection;
-  };
-
   return (
     <>
-      <Modal open={showAddCategoryModal} onClose={() => setShowAddCategoryModal(false)} maxWidth="sm">
+      <Modal open={showAddCategoryModal} onClose={() => dispatch(setShowAddCategoryModal())} maxWidth="sm">
         <AddCategory
-          addCategoryRegister={addCategoryRegister}
           processing={processing}
-          addCategoryErrors={addCategoryErrors}
-          addCategoryHandleSumbit={addCategoryHandleSumbit}
-          action={buttonAction}
+          setValue={() => {}}
           btnText={btnText}
+          setProcessing={setProcessing}
+          action={"manageCategories"}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+          addCatValues={addCatValues}
         />
       </Modal>
+
       <div className="flex w-full h-full">
         <div className="w-full pb-6 pt-12">
           <div>
@@ -320,7 +227,7 @@ const ManageCategories = ({ setReRun }) => {
                 onClick={() => {
                   setBtnText("Add New Category");
                   setIsEditing(false);
-                  setShowAddCategoryModal(true);
+                  dispatch(setShowAddCategoryModal());
                 }}
               >
                 Add New Category

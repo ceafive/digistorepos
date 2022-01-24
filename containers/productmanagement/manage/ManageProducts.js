@@ -66,6 +66,7 @@ const ManageProducts = ({ setReRun }) => {
 
   const [allProducts, setAllProducts] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  // console.log(allProducts);
 
   React.useEffect(() => {
     if (categorySelected !== "All") {
