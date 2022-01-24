@@ -253,9 +253,9 @@ const onRaiseOrder = async (
       payload["order_notes"] = concatValues;
     }
 
-    console.log({ cart });
-    console.log({ payload });
-    return;
+    // console.log({ cart });
+    // console.log({ payload });
+    // return;
 
     const res = await axios.post("/api/sell/sell/raise-order", payload);
     const data = await res.data;
