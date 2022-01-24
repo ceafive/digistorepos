@@ -1,6 +1,6 @@
 import Carousel from "components/Carousel";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
-import { capitalize, find, findIndex, isEqual, reduce, upperCase } from "lodash";
+import { capitalize, find, findIndex, intersectionWith, isEqual, reduce, upperCase } from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
@@ -51,8 +51,8 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
       variantID,
     };
 
-    console.log({ data });
-    return;
+    // console.log({ data });
+    // return;
 
     dispatch(increaseTotalItemsInCart(Math.round(Number(res?.Quantity))));
     dispatch(addItemToCart(data));
@@ -194,8 +194,6 @@ const AddProductWithVariants = ({ onClose }) => {
   const [variantID, setVariantID] = React.useState("");
   const [stepsClicked, setStepsClicked] = React.useState([]);
 
-  console.log(formData);
-
   const reset = () => {
     onClose();
     setProductPrice(0);
@@ -300,9 +298,22 @@ const AddProductWithVariants = ({ onClose }) => {
                             onClick={() => {
                               setStep(stepClicked?.step);
                               const sliced = stepsClicked.slice(0, index);
-                              // const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
+
+                              const result = intersectionWith(stepsClicked, sliced, (arrVal, othVal) => {
+                                return arrVal?.variantName !== othVal?.variantName;
+                              });
+
+                              if (result?.length) {
+                                const newFormData = { ...formData };
+                                result?.forEach((v) => {
+                                  delete newFormData[v];
+                                });
+                                setFormData(newFormData);
+                              } else {
+                                setFormData({});
+                              }
+
                               setStepsClicked(sliced);
-                              // setFormData()
                             }}
                           >
                             <span className="border-b-2 border-blue-500">{stepClicked?.variantName}</span>
@@ -343,7 +354,21 @@ const AddProductWithVariants = ({ onClose }) => {
                         onClick={() => {
                           setStep(stepClicked?.step);
                           const sliced = stepsClicked.slice(0, index);
-                          // const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
+
+                          const result = intersectionWith(stepsClicked, sliced, (arrVal, othVal) => {
+                            return arrVal?.variantName !== othVal?.variantName;
+                          });
+
+                          if (result?.length) {
+                            const newFormData = { ...formData };
+                            result?.forEach((v) => {
+                              delete newFormData[v];
+                            });
+                            setFormData(newFormData);
+                          } else {
+                            setFormData({});
+                          }
+
                           setStepsClicked(sliced);
                         }}
                         key={stepClicked?.variantName}
