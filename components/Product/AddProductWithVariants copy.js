@@ -1,6 +1,22 @@
 import Carousel from "components/Carousel";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
-import { capitalize, find, findIndex, isEqual, reduce, upperCase } from "lodash";
+import {
+  capitalize,
+  compact,
+  find,
+  findIndex,
+  flatten,
+  flattenDeep,
+  isEqual,
+  keys,
+  lowerCase,
+  map,
+  reduce,
+  snakeCase,
+  uniq,
+  upperCase,
+  zipObject,
+} from "lodash";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
@@ -12,7 +28,7 @@ const RenderTap = ({ item, step, setStep, setFormData, variantName, setStepsClic
       className={`${disabled ? "bg-gray-50 text-gray-200" : ""} w-32 h-32 font-bold  border border-gray-200 focus:outline-none`}
       onClick={() => {
         setStepsClicked((data) => [...data, { step, variantName }]);
-        setFormData((data) => ({ ...data, [capitalize(variantName)]: item.property_value }));
+        setFormData((data) => ({ ...data, [variantName]: item.property_value }));
         setStep(step + 1);
       }}
     >
@@ -51,8 +67,8 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
       variantID,
     };
 
-    console.log({ data });
-    return;
+    // console.log({ data });
+    // return;
 
     dispatch(increaseTotalItemsInCart(Math.round(Number(res?.Quantity))));
     dispatch(addItemToCart(data));
@@ -119,25 +135,51 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
           </button>
         );
       })}
+      {/* <div className="flex flex-col items-center justify-center w-32 h-32 border border-gray-200">
+          <input
+            // type="number"
+            placeholder="Enter Quantity"
+            className="w-full h-full font-bold text-center appearance-none focus:appearance-none focus:text-4xl "
+          ></input>
+        </div> */}
     </>
   );
 };
 
 const AddProductWithVariants = ({ onClose }) => {
   const { removeAllToasts } = useToasts();
-  const oldProduct = useSelector((state) => state.products.productToView);
+  const product = useSelector((state) => state.products.productToView);
 
-  const product = { ...oldProduct };
-  // console.log(product?.product_properties);
-  // console.log(product?.product_properties_variants);
+  // console.log(product);
 
   const transformedVariants = product?.product_properties_variants.map((p) => {
+    const sortedVariantProperties = {};
+    Object.keys({ ...p?.variantOptionValue })
+      .sort((a, b) => {
+        const fa = a.toLowerCase();
+        const fb = b.toLowerCase();
+
+        if (fa < fb) {
+          return -1;
+        }
+
+        if (fa > fb) {
+          return 1;
+        }
+
+        return 0;
+      })
+      .forEach(function (v, i) {
+        let key = v.toLowerCase();
+        sortedVariantProperties[key] = p?.variantOptionValue[v];
+      });
     return {
       ...p,
+      variantOptionValue: sortedVariantProperties,
     };
   });
 
-  const transformedVariantOptionValue = Object.values(transformedVariants?.map((p) => p?.variantOptionValue))?.reduce((acc, val) => {
+  const transformedVariantOptionValue = Object.values(transformedVariants?.map((p) => p?.variantOptionValue)).reduce((acc, val) => {
     const newArr = [];
     const keys = Object.keys(val);
 
@@ -170,19 +212,37 @@ const AddProductWithVariants = ({ onClose }) => {
     return [...acc, ...newestArray];
   }, []);
 
-  // console.log(transformedVariantOptionValue);
-
   const uniqTransformedVariantOptionValue = Array.from(new Set(transformedVariantOptionValue.map((item) => JSON.stringify(item)))).map((item) =>
     JSON.parse(item)
   );
-
-  // console.log(uniqTransformedVariantOptionValue);
 
   // var arrKeys = uniq(flatten(map(transformedVariantOptionValue, keys)));
   // var arrValues = map(arrKeys, (key) => compact(map(transformedVariantOptionValue, key)));
   // var result = zipObject(arrKeys, arrValues);
 
-  const allVariants = Object.entries(product?.product_properties);
+  const sortedNewProductProperties = {};
+  const variantProperties = product?.product_properties || {};
+  Object.keys({ ...variantProperties })
+    .sort((a, b) => {
+      const fa = a.toLowerCase();
+      const fb = b.toLowerCase();
+
+      if (fa < fb) {
+        return -1;
+      }
+
+      if (fa > fb) {
+        return 1;
+      }
+
+      return 0;
+    })
+    .forEach(function (v, i) {
+      let key = v.toLowerCase();
+      sortedNewProductProperties[key] = product.product_properties[v];
+    });
+
+  const allVariants = Object.entries(sortedNewProductProperties);
   const noOfSteps = allVariants.length;
 
   // Component State
@@ -194,7 +254,7 @@ const AddProductWithVariants = ({ onClose }) => {
   const [variantID, setVariantID] = React.useState("");
   const [stepsClicked, setStepsClicked] = React.useState([]);
 
-  console.log(formData);
+  // console.log(allVariants);
 
   const reset = () => {
     onClose();
@@ -233,6 +293,16 @@ const AddProductWithVariants = ({ onClose }) => {
           <Carousel showArrows={false} showIndicators={false} showThumbs={false} className="flex flex-col items-center justify-center w-full h-full">
             {product?.product_images?.map((product_image) => {
               return (
+                // <div key={product_image} className="">
+                //   <img
+                //     className="object-cover w-full h-full"
+                //     key={product_image}
+                //     src={`https://payments.ipaygh.com/app/webroot/img/products/${product_image}`}
+                //     alt={product_image}
+                //     // style={{ minHeight: "100%" }}
+                //   />
+                // </div>
+
                 <div key={product_image} className="relative " style={{ paddingBottom: "50%" }}>
                   <img
                     className="absolute h-full w-full object-cover"
@@ -244,12 +314,19 @@ const AddProductWithVariants = ({ onClose }) => {
             })}
           </Carousel>
         ) : (
-          <div className="relative" style={{ paddingBottom: "100%" }}>
+          // <div className="">
+          //   <img
+          //     className="object-cover w-full h-full"
+          //     src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
+          //     alt={product?.product_image}
+          //   />
+          // </div>
+          <div className="relative " style={{ paddingBottom: "100%" }}>
             <img
               className="absolute h-full w-full object-cover"
               src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
               alt={product?.product_image}
-            />
+            />{" "}
           </div>
         )}
       </div>
@@ -273,21 +350,15 @@ const AddProductWithVariants = ({ onClose }) => {
           <div className="w-full  pb-4">
             {currentStep ? (
               currentStep?.map(([key, value], index) => {
-                // console.log(value);
                 const length = value?.length;
                 const founds = [];
 
                 for (let i = 0; i < length; i++) {
-                  const valueToFind = { ...formData, [capitalize(key)]: value[i]?.property_value };
-
-                  // console.log(valueToFind);
-                  const found = findIndex(uniqTransformedVariantOptionValue, valueToFind);
+                  const found = findIndex(uniqTransformedVariantOptionValue, { ...formData, [key]: value[i]?.property_value });
                   if (found === -1) {
                     founds.push(value[i]?.property_value);
                   }
                 }
-
-                // console.log(founds);
 
                 return (
                   <div key={key + index} className="w-full h-full">
@@ -302,7 +373,6 @@ const AddProductWithVariants = ({ onClose }) => {
                               const sliced = stepsClicked.slice(0, index);
                               // const filtered = stepsClicked.filter((clicked) => clicked?.variantName !== stepClicked?.variantName);
                               setStepsClicked(sliced);
-                              // setFormData()
                             }}
                           >
                             <span className="border-b-2 border-blue-500">{stepClicked?.variantName}</span>
