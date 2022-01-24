@@ -114,7 +114,7 @@ const ProcessSale = ({ setReFetch }) => {
   const handleSendNotification = (type, customer = {}) =>
     onSendNotification(type, setSendingNotification, addToast, removeToast, invoiceDetails, user, customer);
 
-  const handleRaiseOrder = () =>
+  const handleRaiseOrder = (values = {}) =>
     onRaiseOrder(
       dispatch,
       setInvoiceDetails,
@@ -127,7 +127,8 @@ const ProcessSale = ({ setReFetch }) => {
       fees,
       saleTotal,
       user,
-      setRewardPoints
+      setRewardPoints,
+      values
     );
 
   return (

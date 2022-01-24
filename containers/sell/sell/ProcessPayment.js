@@ -1,10 +1,11 @@
 // import AddCustomerProcessPayment from "components/Cart/AddCustomerProcessPayment";
 // import TypeDelivery from "components/Sell/Sell/TypeDelivery";
 // import Spinner from "components/Spinner";
+import axios from "axios";
 import {
   addCustomer,
-  applyDiscount,
   onClickToCheckout,
+  setBookingClientInformation,
   setCartPromoCode,
   setDeliveryCharge,
   setDeliveryLocationInputted,
@@ -18,6 +19,7 @@ import {
 import { filter, intersectionWith, isEqual, upperCase } from "lodash";
 import dynamic from "next/dynamic";
 import React from "react";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { configureVariables, merchantUserDeliveryOptions, paymentOptionNames, paymentOptions } from "utils";
@@ -53,11 +55,30 @@ const ProcessPayment = ({
   const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
   const totalTaxes = useSelector((state) => state.cart.totalTaxes);
   const deliveryTypes = useSelector((state) => state.cart.deliveryTypes);
+  const bookingClientInformation = useSelector((state) => state.cart.bookingClientInformation);
 
   // console.log(deliveryTypes);
 
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    watch,
+    setValue,
+  } = useForm({
+    mode: "all",
+    defaultValues: {
+      ...bookingClientInformation,
+    },
+  });
+
+  const watchBookingPhoneNumber = watch("phone", "");
+
   // Variables
   const user = JSON.parse(sessionStorage.getItem("IPAYPOSUSER"));
+  // if account is a booking account
+  const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
+
   const { saleTotal, change } = React.useMemo(
     () => configureVariables({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }),
     [transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer]
@@ -76,7 +97,76 @@ const ProcessPayment = ({
 
   const deliveryLocationIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryLocationInputted;
   const deliveryChargeIsEmpty = deliveryTypeSelected === "Delivery" && !deliveryCharge;
+
+  //State
   const [processingDeliveryCharge, setProcessingDeliveryCharge] = React.useState(false);
+  const [regions] = React.useState([
+    {
+      name: `Ahafo Region`,
+      value: "Ahafo Region",
+    },
+    {
+      name: `Ashanti Region`,
+      value: "Ashanti Region",
+    },
+    {
+      name: `Bono East Region`,
+      value: "Bono East Region",
+    },
+    {
+      name: `Bono Region`,
+      value: "Bono Region",
+    },
+    {
+      name: `Central Region`,
+      value: "Central Region",
+    },
+    {
+      name: `Eastern Region`,
+      value: "Eastern Region",
+    },
+    {
+      name: `Greater Accra Region`,
+      value: "Greater Accra Region",
+    },
+    {
+      name: `North East Region`,
+      value: "North East Region",
+    },
+    {
+      name: `Northern Region`,
+      value: "Northern Region",
+    },
+    {
+      name: `Oti Region`,
+      value: "Oti Region",
+    },
+    {
+      name: `Savannah Region`,
+      value: "Savannah Region",
+    },
+    {
+      name: `Upper East Region`,
+      value: "Upper East Region",
+    },
+    {
+      name: `Upper West Region`,
+      value: "Upper West Region",
+    },
+    {
+      name: `Volta Region`,
+      value: "Volta Region",
+    },
+    {
+      name: `Western North Region`,
+      value: "Western North Region",
+    },
+
+    {
+      name: `Western Region`,
+      value: "Western Region",
+    },
+  ]);
 
   // console.log({ cartSubTotal });
   // console.log({ outletSelected });
@@ -99,6 +189,23 @@ const ProcessPayment = ({
     }
   }, [outlets]);
 
+  React.useEffect(() => {
+    if (watchBookingPhoneNumber?.length === 10) {
+      (async () => {
+        const response = await axios.post("/api/sell/sell/get-a-customer", { phoneNumber: watchBookingPhoneNumber });
+        const responsedata = await response?.data;
+        // console.log(responsedata);
+
+        if (Number(responsedata?.status) === 0) {
+          setValue(`email`, responsedata?.data?.customer_email || "");
+          setValue(`studentName`, responsedata?.data?.customer_name || "");
+        }
+      })();
+    }
+
+    return () => {};
+  }, [watchBookingPhoneNumber]);
+
   return (
     <div>
       {/* Back To sale */}
@@ -115,7 +222,6 @@ const ProcessPayment = ({
         </button>{" "}
       </p>
       {/* Back To sale */}
-
       {/* Pay Field */}
       <div className="flex items-center justify-between">
         <p className="text-5xl">Pay</p>
@@ -135,7 +241,6 @@ const ProcessPayment = ({
         </div>
       </div>
       {/* Pay Field */}
-
       {/* Outlets */}
       {outlets.length > 1 && (
         <div className="mt-4">
@@ -172,7 +277,6 @@ const ProcessPayment = ({
         </div>
       )}
       {/* Outlets */}
-
       {/* Delivery Options */}
       <div className="mt-4">
         <h1 className="mb-1 font-semibold">Pickup or Delivery?</h1>
@@ -239,7 +343,6 @@ const ProcessPayment = ({
         )}
       </div>
       {/* Delivery Options */}
-
       {/* Payment Buttons */}
       <div className="grid grid-cols-3 gap-3 my-4 mt-8 xl:grid-cols-3 2xl:grid-cols-4">
         {paymentButtons.map((paymentButton) => {
@@ -294,49 +397,152 @@ const ProcessPayment = ({
       {/* Payment Buttons */}
 
       {/* Customer */}
-      {currentCustomer ? (
-        <div className="w-full mt-4">
-          <h1 className="mb-1 text-sm font-semibold">Current Customer</h1>
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="font-bold">{currentCustomer.customer_name}</span>
-              <span className="ml-2 text-xs">{currentCustomer.customer_email}</span>
-              <span className="ml-2 text-xs">{currentCustomer.customer_phone}</span>
+      {isBooking ? (
+        <div className="my-4  w-full">
+          <h1 className="font-bold">Client Information</h1>
+
+          <div className="w-full">
+            <label htmlFor="">Name of University</label>
+            <input
+              {...register("uniName", {
+                required: "University name is required",
+              })}
+              type="text"
+              placeholder="University of Ghana"
+              className="bg-white border border-blue-500 rounded shadow placeholder-blueGray-300 text-blueGray-600 focus:outline-none w-full"
+            />
+            <p className="text-xs text-red-500">{errors?.uniName?.message}</p>
+          </div>
+
+          <div className="flex items-center justify-between w-full mt-2">
+            <div className="w-11/12">
+              <label htmlFor="">Name of Student</label>
+              <input
+                {...register("studentName", {
+                  required: "Student name is required",
+                })}
+                type="text"
+                placeholder="John Doe"
+                className="bg-white border border-blue-500 rounded shadow placeholder-blueGray-300 text-blueGray-600 focus:outline-none w-full"
+              />
+              <p className="text-xs text-red-500">{errors?.studentName?.message}</p>
             </div>
-            <div>
-              <button
-                className="font-bold focus:outline-none"
-                onClick={() => {
-                  dispatch(addCustomer(null));
-                }}
+
+            <div className="w-11/12">
+              <label htmlFor="">Student ID Number</label>
+              <input
+                {...register("studentIDNumber", {
+                  required: "Student ID number is required",
+                })}
+                type="text"
+                placeholder="XX1234567890"
+                className="bg-white border border-blue-500 rounded shadow placeholder-blueGray-300 text-blueGray-600 focus:outline-none w-full"
+              />
+              <p className="text-xs text-red-500">{errors?.studentIDNumber?.message}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between w-full mt-2">
+            <div className="w-11/12">
+              <label htmlFor="">Mobile Phone</label>
+              <input
+                {...register("phone", {
+                  required: "Phone number is required",
+                  minLength: {
+                    value: 10,
+                    message: "Phone number must be 10 chars",
+                  },
+                  maxLength: {
+                    value: 10,
+                    message: "Phone number must be 10 chars",
+                  },
+                })}
+                type="number"
+                placeholder="0244454545"
+                min="1"
+                className="bg-white border border-blue-500 rounded shadow placeholder-blueGray-300 text-blueGray-600 focus:outline-none w-full"
+              />
+              <p className="text-xs text-red-500">{errors?.phone?.message}</p>
+            </div>
+
+            <div className="w-11/12">
+              <label htmlFor="">Email</label>
+              <input
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address",
+                  },
+                })}
+                type="email"
+                placeholder="johndoe@mail.com"
+                className="bg-white border border-blue-500 rounded shadow placeholder-blueGray-300 text-blueGray-600 focus:outline-none w-full"
+              />
+              <p className="text-xs text-red-500">{errors?.email?.message}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between w-full mt-2">
+            <div className="w-11/12">
+              <label htmlFor="">Region of Residence</label>
+              <select
+                {...register("studentRegion", {
+                  required: "Region of residence is required",
+                })}
+                className="bg-white border border-blue-500 placeholder-blueGray-300 text-blueGray-600 py-2 rounded shadow focus:outline-none w-full"
               >
-                <i className="text-red-500 fas fa-trash-alt"></i>
-              </button>
+                <option value="" disabled>{`Select ${"region"}`}</option>
+                {regions.map((variantValue) => (
+                  <option key={variantValue?.name} value={variantValue?.value}>
+                    {variantValue?.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-red-500">{errors?.studentRegion?.message}</p>
+            </div>
+
+            <div className="w-11/12">
+              <label htmlFor="">Hall of Residence (if applicable)</label>
+              <input
+                {...register("studentHall", {})}
+                type="text"
+                placeholder="Casely-Hayford"
+                className="bg-white border border-blue-500 rounded shadow placeholder-blueGray-300 text-blueGray-600 focus:outline-none w-full"
+              />
             </div>
           </div>
         </div>
       ) : (
-        <div className="z-10 w-full mt-4">
-          <AddCustomerProcessPayment />
-        </div>
-      )}
-      {/* Customer */}
-
-      {/* 
-          <div className="grid grid-cols-3 gap-2 my-4">
-            {loyaltyTabs.map((loyaltyTab) => {
-              return (
-                <div key={loyaltyTab} className="">
+        <>
+          {currentCustomer ? (
+            <div className="w-full mt-4">
+              <h1 className="mb-1 text-sm font-semibold">Current Customer</h1>
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-bold">{currentCustomer.customer_name}</span>
+                  <span className="ml-2 text-xs">{currentCustomer.customer_email}</span>
+                  <span className="ml-2 text-xs">{currentCustomer.customer_phone}</span>
+                </div>
+                <div>
                   <button
-                    key={loyaltyTab}
-                    className="w-full px-6 py-4 font-semibold text-center text-gray-200 bg-gray-400 rounded focus:outline-none"
+                    className="font-bold focus:outline-none"
+                    onClick={() => {
+                      dispatch(addCustomer(null));
+                    }}
                   >
-                    {loyaltyTab}
+                    <i className="text-red-500 fas fa-trash-alt"></i>
                   </button>
                 </div>
-              );
-            })}
-          </div> */}
+              </div>
+            </div>
+          ) : (
+            <div className="z-10 w-full mt-4">
+              <AddCustomerProcessPayment />
+            </div>
+          )}
+        </>
+      )}
 
       {["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer && (
         <div className="font-bold text-center text-red-500">
@@ -344,6 +550,7 @@ const ProcessPayment = ({
         </div>
       )}
 
+      {/* Customer */}
       {/* Raise Order Button */}
       <div className="self-end w-full mt-5">
         <button
@@ -371,7 +578,12 @@ const ProcessPayment = ({
               ? "bg-gray-200"
               : "bg-green-700"
           } px-6 py-4 text-white font-semibold rounded focus:outline-none w-full text-center`}
-          onClick={handleRaiseOrder}
+          // onClick={handleRaiseOrder}
+
+          onClick={handleSubmit((values) => {
+            dispatch(setBookingClientInformation(values));
+            handleRaiseOrder(values);
+          })}
         >
           {fetching && (
             <div className="inline-block mr-2">

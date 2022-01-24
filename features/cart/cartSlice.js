@@ -46,6 +46,7 @@ const initialState = {
   deliveryEstimate: null,
   hasAutoDiscount: null,
   rewardPoints: null,
+  bookingClientInformation: {},
 };
 
 const initialProductProps = {
@@ -158,6 +159,7 @@ const cartSlice = createSlice({
     setActivePayments(state, action) {
       state.activePayments = action.payload;
     },
+
     setTransactionFeeCharges(state, action) {
       state.transactionFeeCharges = action.payload;
       // state.transactionFeeCharges = Number(parseFloat(action.payload));
@@ -357,6 +359,9 @@ const cartSlice = createSlice({
     setAutoDiscount(state, action) {
       state.hasAutoDiscount = action.payload;
     },
+    setBookingClientInformation(state, action) {
+      state.bookingClientInformation = action.payload;
+    },
   },
 });
 
@@ -403,5 +408,6 @@ export const {
   setDeliveryEstimate,
   setAutoDiscount,
   setRewardPoints,
+  setBookingClientInformation,
 } = cartSlice.actions;
 export default cartSlice.reducer;

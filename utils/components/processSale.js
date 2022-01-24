@@ -1,5 +1,5 @@
 import axios from "axios";
-import { capitalize, get, has, reduce, replace, upperCase } from "lodash";
+import { capitalize, get, has, reduce, replace, upperCase, pick } from "lodash";
 
 const configureVariables = ({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }) => {
   const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));
@@ -152,9 +152,13 @@ const onRaiseOrder = async (
   fees,
   saleTotal,
   user,
-  setRewardPoints
+  setRewardPoints,
+  bookingClientInformation
 ) => {
   try {
+    // if account is a booking account
+    const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
+
     setFetching(true);
     setProcessError(false);
     const productsInCart = cart?.productsInCart;
@@ -192,20 +196,20 @@ const onRaiseOrder = async (
       delivery_notes: cart?.deliveryNotes,
       delivery_id:
         cart?.deliveryTypeSelected === "Pickup" || cart?.deliveryTypeSelected === "Walk In" || cart?.deliveryTypeSelected === "Dine In"
-          ? cart?.outletSelected?.outlet_id ?? ""
+          ? cart?.outletSelected?.outlet_id || ""
           : cart?.deliveryTypes["option_delivery"] === "MERCHANT" || cart?.deliveryTypes["option_delivery"] === "MERCHANT-DIST"
-          ? cart?.deliveryCharge?.delivery_code ?? ""
+          ? cart?.deliveryCharge?.delivery_code || ""
           : cart?.outletSelected?.outlet_id ?? "",
       delivery_location: cart?.deliveryLocationInputted?.label ?? "",
-      delivery_gps: cart?.deliveryGPS ?? "",
-      delivery_name: cart?.currentCustomer?.customer_name ?? "",
+      delivery_gps: cart?.deliveryGPS || "",
+      delivery_name: cart?.currentCustomer?.customer_name || "",
       delivery_contact: cart?.currentCustomer?.customer_phone ?? "",
       delivery_email: cart?.currentCustomer?.customer_email ?? "",
       order_discount_code: cart?.cartPromoCode ?? "",
-      order_amount: cart?.totalPriceInCart ?? 0,
+      order_amount: cart?.totalPriceInCart || 0,
       order_discount: cart?.cartDiscountOnCartTotal + cart?.cartPromoDiscount,
       order_discount_type: cart?.promoType,
-      delivery_charge: cart?.deliveryCharge?.price ?? 0,
+      delivery_charge: cart?.deliveryCharge?.price || 0,
       delivery_charge_type: cart?.deliveryCharge?.pricingtype || "",
       delivery_charge_ref: cart?.deliveryCharge?.estimateId || "",
       service_charge: fees,
@@ -218,7 +222,7 @@ const onRaiseOrder = async (
           : cart?.paymentMethodSet === "MTNMM" || cart?.paymentMethodSet === "TIGOC" || cart?.paymentMethodSet === "VODAC"
           ? "MOMO"
           : "",
-      payment_number: cart?.paymentMethodsAndAmount[0]?.payment_number ?? cart?.currentCustomer?.customer_phone ?? "",
+      payment_number: cart?.paymentMethodsAndAmount[0]?.payment_number || cart?.currentCustomer?.customer_phone || "",
       payment_network: cart?.paymentMethodSet,
       merchant: user["user_merchant_id"],
       source: "INSHP",
@@ -226,15 +230,32 @@ const onRaiseOrder = async (
       mod_by: user["login"],
     };
 
-    // if account is a booking account
-    const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
-    if (isBooking) {
-      payload;
-    }
     // setFetching(false);
-    // console.log({ cart });
+
+    if (isBooking) {
+      let concatValues = "";
+      // passing client details for booking
+      for (let i in {
+        ...pick(bookingClientInformation, [
+          "uniName",
+          "studentName",
+          "studentIDNumber",
+          "phone",
+          "email",
+          "studentRegion",
+          "studentHall", // must always be last since it's optional
+        ]),
+      }) {
+        concatValues += `${i}=${bookingClientInformation[i]}&`;
+      }
+
+      //  data["order_date"] = new Date(rest?.Date);
+      payload["order_notes"] = concatValues;
+    }
+
+    console.log({ cart });
     console.log({ payload });
-    // return;
+    return;
 
     const res = await axios.post("/api/sell/sell/raise-order", payload);
     const data = await res.data;

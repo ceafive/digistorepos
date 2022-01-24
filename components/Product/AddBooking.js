@@ -38,6 +38,10 @@ const RenderTap = ({ product, item, step, setStep, setFormData, variantName, set
 const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, variantQuantity }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
+
+  let user = sessionStorage.getItem("IPAYPOSUSER");
+  user = JSON.parse(user);
+
   const productsInCart = useSelector((state) => state.cart.productsInCart);
 
   const quantities = [1, 2, 3, 4, 5];
@@ -58,7 +62,13 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
       variantID,
     };
 
-    console.log({ data });
+    // if account is a booking account
+    const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
+    if (isBooking) {
+      data["order_date"] = new Date(rest?.Date);
+    }
+
+    // console.log({ data });
     // return;
 
     dispatch(increaseTotalItemsInCart(Math.round(Number(res?.Quantity))));
