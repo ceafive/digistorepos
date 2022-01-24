@@ -646,13 +646,7 @@ const EditProductVariants = ({ setGoToVarianceConfig, setRefetch, control, regis
   return (
     <div>
       <Modal open={showAddCategoryModal} onClose={() => dispatch(setShowAddCategoryModal())} maxWidth="sm">
-        <AddCategory
-          addCategoryRegister={addCategoryRegister}
-          processing={processing}
-          addCategoryErrors={addCategoryErrors}
-          addCategoryHandleSumbit={addCategoryHandleSumbit}
-          action={sumbitNewCategoryToServer}
-        />
+        <AddCategory processing={processing} setValue={setValue} setProcessing={setProcessing} />
       </Modal>
       <Modal
         open={showAddNewVariantName}

@@ -1,6 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import AddBasicProductDetails from "containers/productmanagement/create/AddBasicProductDetails";
+import AddBasicProductDetails from "containers/productmanagement/create/AddProductDetails";
 import {
   setManageProductCategories,
   setManageProductOutlets,

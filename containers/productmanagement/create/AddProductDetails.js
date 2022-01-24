@@ -1,13 +1,8 @@
 import axios from "axios";
 import Modal from "components/Modal";
 import Spinner from "components/Spinner";
-import {
-  setManageProductCategories,
-  setProductHasVariants,
-  setProductWithVariants,
-  setShowAddCategoryModal,
-} from "features/manageproducts/manageproductsSlice";
-import { filter, get } from "lodash";
+import { setProductHasVariants, setProductWithVariants, setShowAddCategoryModal } from "features/manageproducts/manageproductsSlice";
+import { get } from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -17,7 +12,12 @@ import { useToasts } from "react-toast-notifications";
 import AddCategory from "./AddCategory";
 import UploadImage from "./UploadImage";
 
-const AddProductDetails = ({ control, register, reset, watch, setValue, errors, handleSubmit, images, setImages, setGoToVarianceConfig }) => {
+const AddProductDetails = ({
+  //  control, register, reset, watch, setValue, errors, handleSubmit,
+  images,
+  setImages,
+  setGoToVarianceConfig,
+}) => {
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
   const dispatch = useDispatch();
@@ -31,28 +31,21 @@ const AddProductDetails = ({ control, register, reset, watch, setValue, errors, 
 
   // console.log(productWithVariants);
 
-  // const {
-  //   control,
-  //   register,
-  //   reset,
-  //   watch,
-  //   setValue,
-  //   formState: { errors },
-  //   handleSubmit,
-  // } = useForm({
-  //   defaultValues: {
-  //     applyTax: false,
-  //     inventoryQuantity: 0,
-  //     ...productWithVariants,
-  //   },
-  // });
-
   const {
-    register: addCategoryRegister,
-    reset: addCategoryReset,
-    formState: { errors: addCategoryErrors },
-    handleSubmit: addCategoryHandleSumbit,
-  } = useForm();
+    control,
+    register,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    defaultValues: {
+      applyTax: false,
+      inventoryQuantity: 0,
+      ...productWithVariants,
+    },
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -178,63 +171,6 @@ const AddProductDetails = ({ control, register, reset, watch, setValue, errors, 
     }
   };
 
-  const postNewCategory = async (values, user) => {
-    const data = {
-      name: values?.categoryName,
-      desc: values?.categoryDescription,
-      merchant: user?.user_merchant_id,
-      mod_by: user?.login,
-    };
-
-    const response = await axios.post("/api/products/add-product-category", data);
-    const { status, message } = await response.data;
-    return { data, status, message };
-  };
-
-  const getNewCategories = async (status, message, user) => {
-    if (status === 0) {
-      addCategoryReset({
-        categoryName: "",
-        categoryDescription: "",
-      });
-
-      const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });
-      const { data: allCategoriesResData } = await allCategoriesRes.data;
-      const filtered = filter(allCategoriesResData, (o) => Boolean(o));
-      dispatch(setManageProductCategories(filtered));
-      return filtered;
-    } else addToast(`${message}. Fix error and try again`, { appearance: "error", autoDismiss: true });
-  };
-
-  const sumbitNewCategoryToServer = async (values) => {
-    try {
-      setProcessing(true);
-      let user = sessionStorage.getItem("IPAYPOSUSER");
-      user = JSON.parse(user);
-
-      const { data, status, message } = await postNewCategory(values, user);
-      await getNewCategories(status, message, user, data).then((filtered) => {
-        const found = filtered.find((o) => o?.product_category === data?.name);
-        setValue("productCategory", found?.product_category_id ?? ""); // add new cateogry and select it
-        addToast(message, { appearance: "success", autoDismiss: true });
-        dispatch(setShowAddCategoryModal());
-      });
-    } catch (error) {
-      let errorResponse = "";
-      if (error.response) {
-        errorResponse = error.response.data;
-      } else if (error.request) {
-        errorResponse = error.request;
-      } else {
-        errorResponse = { error: error.message };
-      }
-      console.log(errorResponse);
-      setProcessing(false);
-    } finally {
-      setProcessing(false);
-    }
-  };
-
   const buttonParams = React.useMemo(() => {
     switch (productHasVariants) {
       case true:
@@ -263,16 +199,12 @@ const AddProductDetails = ({ control, register, reset, watch, setValue, errors, 
     }
   }, [productCategory]);
 
+  // return null;
+
   return (
     <>
-      <Modal open={showAddCategoryModal} onClose={() => dispatch(setShowAddCategoryModal())} maxWidth="md">
-        <AddCategory
-          addCategoryRegister={addCategoryRegister}
-          processing={processing}
-          addCategoryErrors={addCategoryErrors}
-          addCategoryHandleSumbit={addCategoryHandleSumbit}
-          action={sumbitNewCategoryToServer}
-        />
+      <Modal open={showAddCategoryModal} onClose={() => dispatch(setShowAddCategoryModal())} maxWidth="sm">
+        <AddCategory processing={processing} setValue={setValue} setProcessing={setProcessing} />
       </Modal>
       <button
         className="focus:outline-none font-bold"

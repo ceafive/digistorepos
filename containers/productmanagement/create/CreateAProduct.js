@@ -1,6 +1,6 @@
 import axios from "axios";
 import Spinner from "components/Spinner";
-import AddBasicProductDetails from "containers/productmanagement/create/AddBasicProductDetails";
+import AddProductDetails from "containers/productmanagement/create/AddProductDetails";
 import {
   setManageProductCategories,
   setManageProductOutlets,
@@ -16,6 +16,8 @@ import VarianceConfiguaration from "./VarianceConfiguaration";
 
 const CreateAProduct = ({}) => {
   const dispatch = useDispatch();
+
+  const productWithVariants = useSelector((state) => state.manageproducts.productWithVariants);
 
   const {
     control,
@@ -79,89 +81,89 @@ const CreateAProduct = ({}) => {
       } finally {
         setFetching(false);
 
-        reset({
-          productName: "",
-          productCategory: "",
-          productDescription: "",
-          sku: "",
-          outlets: "",
-          weight: "",
-          barcode: "",
-          sellingPrice: "",
-          costPerItem: "",
-          productImages: [],
-          setInventoryQuantity: false,
-          applyTax: false,
-          inventoryQuantity: 0,
-        });
-        dispatch(
-          setProductWithVariants({
-            id: "",
-            productName: "",
-            productCategory: "",
-            productDescription: "",
-            sku: "",
-            outlets: "",
-            weight: "",
-            barcode: "",
-            sellingPrice: "",
-            costPerItem: "",
-            productImages: [],
-            setInventoryQuantity: false,
-            applyTax: false,
-            inventoryQuantity: 0,
-            variants: [],
-            variantsDistribution: [],
-          })
-        );
-        dispatch(setProductHasVariants(false));
+        // reset({
+        //   productName: "",
+        //   productCategory: "",
+        //   productDescription: "",
+        //   sku: "",
+        //   outlets: "",
+        //   weight: "",
+        //   barcode: "",
+        //   sellingPrice: "",
+        //   costPerItem: "",
+        //   productImages: [],
+        //   setInventoryQuantity: false,
+        //   applyTax: false,
+        //   inventoryQuantity: 0,
+        // });
+        // dispatch(
+        //   setProductWithVariants({
+        //     id: "",
+        //     productName: "",
+        //     productCategory: "",
+        //     productDescription: "",
+        //     sku: "",
+        //     outlets: "",
+        //     weight: "",
+        //     barcode: "",
+        //     sellingPrice: "",
+        //     costPerItem: "",
+        //     productImages: [],
+        //     setInventoryQuantity: false,
+        //     applyTax: false,
+        //     inventoryQuantity: 0,
+        //     variants: [],
+        //     variantsDistribution: [],
+        //   })
+        // );
+        // dispatch(setProductHasVariants(false));
       }
     };
 
     fetchItems();
 
     // clear data
-    return () => {
-      reset({
-        productName: "",
-        productCategory: "",
-        productDescription: "",
-        sku: "",
-        outlets: "",
-        weight: "",
-        barcode: "",
-        sellingPrice: "",
-        costPerItem: "",
-        productImage: "",
-        productImages: [],
-        setInventoryQuantity: false,
-        applyTax: false,
-        inventoryQuantity: 0,
-      });
+    // return () => {
+    //   reset({
+    //     productName: "",
+    //     productCategory: "",
+    //     productDescription: "",
+    //     sku: "",
+    //     outlets: "",
+    //     weight: "",
+    //     barcode: "",
+    //     sellingPrice: "",
+    //     costPerItem: "",
+    //     productImage: "",
+    //     productImages: [],
+    //     setInventoryQuantity: false,
+    //     applyTax: false,
+    //     inventoryQuantity: 0,
+    //   });
 
-      dispatch(
-        setProductWithVariants({
-          id: "",
-          productName: "",
-          productCategory: "",
-          productDescription: "",
-          sku: "",
-          outlets: "",
-          weight: "",
-          barcode: "",
-          sellingPrice: "",
-          costPerItem: "",
-          productImage: "",
-          productImages: [],
-          setInventoryQuantity: false,
-          applyTax: false,
-          inventoryQuantity: 0,
-          variants: [],
-          variantsDistribution: [],
-        })
-      );
-      dispatch(setProductHasVariants(false));
-    };
+    //   dispatch(
+    //     setProductWithVariants({
+    //       id: "",
+    //       productName: "",
+    //       productCategory: "",
+    //       productDescription: "",
+    //       sku: "",
+    //       outlets: "",
+    //       weight: "",
+    //       barcode: "",
+    //       sellingPrice: "",
+    //       costPerItem: "",
+    //       productImage: "",
+    //       productImages: [],
+    //       setInventoryQuantity: false,
+    //       applyTax: false,
+    //       inventoryQuantity: 0,
+    //       variants: [],
+    //       variantsDistribution: [],
+    //     })
+    //   );
+    //   dispatch(setProductHasVariants(false));
+    // };
   }, [dispatch]);
 
   if (fetching || fetching === null) {
@@ -175,7 +177,7 @@ const CreateAProduct = ({}) => {
   return (
     <>
       {!goToVarianceConfig && (
-        <AddBasicProductDetails
+        <AddProductDetails
           control={control}
           register={register}
           reset={reset}
