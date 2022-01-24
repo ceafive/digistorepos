@@ -164,7 +164,7 @@ const onRaiseOrder = async (
       });
 
       const properties = Object.entries(curr?.variants).reduce((acc, variant, index) => {
-        return { ...acc, [upperCase(variant[0])]: [variant[1]][0] };
+        return { ...acc, [upperCase(variant[0])]: upperCase(variant[0]) === "DATE" ? new Date([variant[1]][0]) : [variant[1]][0] };
       }, {});
 
       const typeIsNormal = has(properties, "TYPE");
@@ -226,9 +226,14 @@ const onRaiseOrder = async (
       mod_by: user["login"],
     };
 
+    // if account is a booking account
+    const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
+    if (isBooking) {
+      payload;
+    }
     // setFetching(false);
     // console.log({ cart });
-    // console.log({ payload });
+    console.log({ payload });
     // return;
 
     const res = await axios.post("/api/sell/sell/raise-order", payload);

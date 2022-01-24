@@ -2,7 +2,7 @@ const plugin = require("tailwindcss/plugin");
 const colors = require("tailwindcss/colors");
 const { sidebarRoutes } = require("./utils/routes");
 
-const saferoutecolors = sidebarRoutes.map((route) => `text-${route.iconColor}`);
+const saferoutecolors = sidebarRoutes()?.map((route) => `text-${route.iconColor}`);
 
 module.exports = {
   // mode: "jit",

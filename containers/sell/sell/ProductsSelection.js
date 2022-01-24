@@ -1,4 +1,5 @@
 import Modal from "components/Modal";
+import AddBooking from "components/Product/AddBooking";
 import AddProductWithVariants from "components/Product/AddProductWithVariants";
 import ProductDetails from "components/Product/ProductDetails";
 import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
@@ -15,16 +16,23 @@ import CategoriesScroll from "./CategoriesScroll";
 const ProductsSelection = () => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
+
+  //utils
+  let user = sessionStorage?.getItem("IPAYPOSUSER");
+  user = JSON.parse(user);
+  const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
+
+  var width = window.innerWidth > 0 ? window.innerWidth : screen.width;
+  let perPage = 12; // product number to display per page
+  perPage = width >= 1536 ? 15 : width < 1280 ? 9 : 12;
+
+  //selectors
   const products = useSelector((state) => state.products.products);
   const searchTerm = useSelector((state) => state.products.searchTerm);
   const categorySelected = useSelector((state) => state.products.categorySelected);
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
   const productWithVariantsOpen = useSelector((state) => state.products.productWithVariantsOpen);
   const productsInCart = useSelector((state) => state.cart.productsInCart);
-
-  var width = window.innerWidth > 0 ? window.innerWidth : screen.width;
-  let perPage = 12; // product number to display per page
-  perPage = width >= 1536 ? 15 : width < 1280 ? 9 : 12;
 
   // Compnent State
   const [searchProductsDisplay, setSearchProductsDisplay] = React.useState(products);
@@ -111,8 +119,13 @@ const ProductsSelection = () => {
         <ProductDetails onClose={() => dispatch(openProductModal())} />
       </Modal>
       <Modal open={productWithVariantsOpen} onClose={() => dispatch(openVariantsModal())} maxWidth="md">
-        <AddProductWithVariants onClose={() => dispatch(openVariantsModal())} />
+        {isBooking ? (
+          <AddBooking onClose={() => dispatch(openVariantsModal())} />
+        ) : (
+          <AddProductWithVariants onClose={() => dispatch(openVariantsModal())} />
+        )}
       </Modal>
+
       <div className="relative w-full h-full">
         <div className="mx-auto w-full">
           {/* Search bar and results */}

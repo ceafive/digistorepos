@@ -49,7 +49,7 @@ const ChildNavLink = ({ childLink }) => {
 
   return (
     <li className={`text-left p-3 py-2`}>
-      <button className="text-xs font-semibold focus:outline-none xl:text-base" onClick={(e) => handleClick(e, path)}>
+      <button className="text-xs font-semibold focus:outline-none xl:text-sm" onClick={(e) => handleClick(e, path)}>
         <span
           className={
             router.pathname.indexOf(path) !== -1 ? "text-lightBlue-500 hover:text-lightBlue-600" : "text-blueGray-700 hover:text-blueGray-500"
@@ -65,6 +65,11 @@ const ChildNavLink = ({ childLink }) => {
 export default function Sidebar() {
   const dispatch = useDispatch();
   const router = useRouter();
+
+  let user = sessionStorage?.getItem("IPAYPOSUSER");
+  user = JSON.parse(user);
+  const isBooking = user?.user_permissions?.includes("BUKNSMGT") ? true : false || false;
+
   const secondPaneOpenPathname = useSelector((state) => state.app.secondPaneOpenPathname);
   const openSidebarSecondpane = useSelector((state) => state.app.openSidebarSecondpane);
 
@@ -83,7 +88,7 @@ export default function Sidebar() {
   // console.log(openSidebarSecondpane);
   // console.log(secondPaneOpenPathname);
 
-  const { childLinks } = sidebarRoutes.find((sidebarRoute) => sidebarRoute.slug === secondPaneOpenPathname);
+  const { childLinks } = sidebarRoutes(isBooking)?.find((sidebarRoute) => sidebarRoute.slug === secondPaneOpenPathname);
 
   return (
     <>
@@ -96,7 +101,7 @@ export default function Sidebar() {
         <div className={"min-h-full px-0 mx-auto flex w-full shadow-none"}>
           <div className={`first-pane w-24 xl:w-32 bg-blueGray-100`}>
             <ul className="flex-col min-w-full list-none">
-              {sidebarRoutes.map((sidebarRoute) => {
+              {sidebarRoutes(isBooking).map((sidebarRoute) => {
                 return <NavLink key={sidebarRoute.id} sidebarRoute={sidebarRoute} />;
               })}
             </ul>

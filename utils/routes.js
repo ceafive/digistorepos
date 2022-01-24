@@ -1,4 +1,4 @@
-const sidebarRoutes = [
+const sidebarRoutes = (isBooking = false) => [
   // {
   //   id: 1,
   //   name: "Home",
@@ -17,7 +17,7 @@ const sidebarRoutes = [
   // },
   {
     id: 2,
-    name: "Sell",
+    name: isBooking ? "Book" : "Sell",
     slug: "sell",
     path: "/sell",
     icon: "shopping-bag",
@@ -25,7 +25,7 @@ const sidebarRoutes = [
     childLinks: [
       {
         id: 1,
-        name: "Sell",
+        name: isBooking ? "Book" : "Sell",
         path: "/sell/sell",
         slug: "sell/sell",
       },
@@ -37,7 +37,7 @@ const sidebarRoutes = [
       // },
       {
         id: 3,
-        name: "Sales History",
+        name: isBooking ? "Booking History" : "Sales History",
         path: "/sell/sales-history",
         slug: "sell/sales-history",
       },
@@ -45,7 +45,7 @@ const sidebarRoutes = [
   },
   {
     id: 3,
-    name: "Products",
+    name: isBooking ? "Bookings" : "Products",
     slug: "products",
     path: "/products",
     icon: "tags",
