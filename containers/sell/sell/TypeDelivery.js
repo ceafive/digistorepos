@@ -397,6 +397,8 @@ const IPAYDeliveryType = ({ processingDeliveryCharge, setProcessingDeliveryCharg
             destination_gps: stringCoordinates,
           };
 
+          console.log(payload);
+
           const res = await axios.post("/api/sell/sell/get-ipay-delivery-charge", payload);
 
           if (Number(res?.data?.status) === 0) {

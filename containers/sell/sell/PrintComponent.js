@@ -89,7 +89,6 @@ const PrintComponent = React.forwardRef((props, ref) => {
           <ListItem text="Discount" value={`GHS${cartDiscountOnCartTotal}`} />
           <ListItem text="Promo Amount" value={`GHS${cartPromoDiscount}`} />
           <ListItem className="pt-4" text="Total before tax" value={`GHS${cartTotalMinusDiscount}`} />
-          <ListItem text="Tax COVID-19 Levy 4%" value={`GHS${covidTax}`} />
         </div>
 
         <hr className="my-2" />

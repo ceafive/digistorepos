@@ -80,7 +80,6 @@ export const {
   onSetProductCategories,
   onSelectCategory,
   openInventoryModal,
-
   setAllOutlets,
   setCategoryProductsCount,
   setProductsOnHold,

@@ -246,6 +246,7 @@ const PaidOrder = ({ user, order, fetching, setFetching, onClose }) => {
   //     ["PENDING"].includes(order?.delivery_status)
   //   );
 
+  // console.log(order?.delivery_type, merchantDeliveryConfig?.option_delivery);
   return (
     <div className="w-full p-10 pt-3 pb-5">
       <h1>Order Actions</h1>

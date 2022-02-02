@@ -18,7 +18,7 @@ import axios from "axios";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import Modal from "components/Modal";
 import Spinner from "components/Spinner";
-import { format, startOfMonth } from "date-fns";
+import { addDays, format, startOfMonth } from "date-fns";
 import { setOrderHistory } from "features/orders/ordersSlice";
 import { setAllOutlets } from "features/products/productsSlice";
 import { filter, intersectionWith, map, upperCase } from "lodash";
@@ -97,7 +97,7 @@ const SalesHistory = () => {
           merchant: user?.user_merchant_id,
           outlet: formCurrentValues?.outletSelected,
           start_date: format(formCurrentValues?.startDate || startOfMonth(new Date()), "dd-MM-yyyy"),
-          end_date: format(formCurrentValues?.endDate || new Date(), "dd-MM-yyyy"),
+          end_date: format(formCurrentValues?.endDate || addDays(new Date(), 1), "dd-MM-yyyy"),
           isAdmin,
         };
 
@@ -317,7 +317,7 @@ const SalesHistory = () => {
         merchant: user?.user_merchant_id,
         outlet: "",
         start_date: format(values?.startDate, "dd-MM-yyy"),
-        end_date: format(values?.endDate, "dd-MM-yyyy"),
+        end_date: format(addDays(values?.endDate, 1), "dd-MM-yyyy"),
         isAdmin,
       };
 
@@ -416,7 +416,7 @@ const SalesHistory = () => {
                     <div className="">
                       <input
                         className="w-full"
-                        defaultValue={format(new Date(), "yyyy-MM-dd")}
+                        defaultValue={format(addDays(new Date(), 1), "yyyy-MM-dd")}
                         {...register("endDate", { required: `End date required`, valueAsDate: true })}
                         type="date"
                         // min={format(new Date(), "yyyy-MM-dd")}

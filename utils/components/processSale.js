@@ -1,5 +1,5 @@
 import axios from "axios";
-import { capitalize, get, has, reduce, replace, upperCase, pick } from "lodash";
+import { capitalize, get, has, pick, reduce, replace, upperCase } from "lodash";
 
 const configureVariables = ({ transactionFeeCharges, cartSubTotal, totalTaxes, amountReceivedFromPayer }) => {
   const fees = Number(parseFloat(reduce(transactionFeeCharges, (sum, n) => sum + Number(parseFloat(n?.charge).toFixed(3)), 0)).toFixed(3));

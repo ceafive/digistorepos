@@ -1,4 +1,4 @@
-import { format, startOfMonth, startOfQuarter, startOfYear } from "date-fns";
+import { format, startOfMonth, startOfQuarter, startOfYear, addDays } from "date-fns";
 import React from "react";
 
 const DateRangerSelector = ({ register = () => {}, errors = {}, fetching = false, handleSubmit, handleSubmitQuery }) => {
@@ -24,7 +24,7 @@ const DateRangerSelector = ({ register = () => {}, errors = {}, fetching = false
             <div className="">
               <input
                 className="w-full text-xs"
-                defaultValue={format(new Date(), "yyyy-MM-dd")}
+                defaultValue={format(addDays(new Date(), 1), "yyyy-MM-dd")}
                 {...register("endDate", { required: `End date required`, valueAsDate: true })}
                 type="date"
                 // min={format(new Date(), "yyyy-MM-dd")}

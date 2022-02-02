@@ -63,7 +63,7 @@ const NewOrder = ({ user, order, fetching, setFetching, onClose }) => {
 };
 
 const OrderActions = ({ order, user, onClose }) => {
-  //   console.log(order);
+  // console.log(order);
   const [fetching, setFetching] = React.useState(false);
 
   if (order?.order_status === "NEW") {

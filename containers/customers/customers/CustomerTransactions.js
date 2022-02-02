@@ -2,7 +2,7 @@ import axios from "axios";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import { tableIcons } from "components/Misc/TableIcons";
 import Spinner from "components/Spinner";
-import { format, startOfMonth } from "date-fns";
+import { addDays, format, startOfMonth } from "date-fns";
 import { filter } from "lodash";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React from "react";
@@ -56,7 +56,7 @@ const CustomerTransactions = ({ customer, user, onClose }) => {
         merchant: user?.user_merchant_id,
         customer_phone: customer?.customer_phone,
         start_date: format(values?.startDate, "dd-MM-yyyy"),
-        end_date: format(values?.endDate, "dd-MM-yyyy"),
+        end_date: format(addDays(values?.endDate, 1), "dd-MM-yyyy"),
       });
 
       const { data: transactionsResData } = await transactionsRes.data;
