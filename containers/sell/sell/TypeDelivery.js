@@ -531,16 +531,32 @@ const DeliveryNotes = () => {
   const dispatch = useDispatch();
   const deliveryNotes = useSelector((state) => state.cart.deliveryNotes);
 
+  // return (
+  //   <div className="mt-2">
+  //     <p>Delivery Notes</p>
+  //     <input
+  //       value={deliveryNotes}
+  //       onChange={(e) => {
+  //         e.persist();
+  //         dispatch(setDeliveryNotes(e.target.value));
+  //       }}
+  //       type="text"
+  //       placeholder="Enter delivery notes here..."
+  //       className="w-full p-2 bg-white border border-gray-300 rounded placeholder-blueGray-300 text-blueGray-600 focus:ring-1"
+  //     />
+  //   </div>
+  // );
+
   return (
     <div className="mt-2">
-      <p>Delivery Notes</p>
+      <p>Delivery Due Date</p>
       <input
         value={deliveryNotes}
         onChange={(e) => {
           e.persist();
           dispatch(setDeliveryNotes(e.target.value));
         }}
-        type="text"
+        type="date"
         placeholder="Enter delivery notes here..."
         className="w-full p-2 bg-white border border-gray-300 rounded placeholder-blueGray-300 text-blueGray-600 focus:ring-1"
       />

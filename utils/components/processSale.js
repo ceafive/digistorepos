@@ -254,7 +254,7 @@ const onRaiseOrder = async (
     }
 
     // console.log({ cart });
-    // console.log({ payload });
+    console.log({ payload });
     // return;
 
     const res = await axios.post("/api/sell/sell/raise-order", payload);
