@@ -9,7 +9,6 @@
     "start": "next start -p $PORT",
     "dev": "next dev -p 8080",
     "build": "ANALYZE=true NODE_OPTIONS=\"--max_old_space_size=4096\" next build",
-    "test": "yarn run cypress open",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm run build:tailwind && npm run dev",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md}' --config ./.prettierrc",
