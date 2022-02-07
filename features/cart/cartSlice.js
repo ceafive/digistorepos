@@ -214,7 +214,8 @@ const cartSlice = createSlice({
       else state.cartItemDiscount = action.payload;
     },
     applyDiscount(state) {
-      const { discountAmount, valueReturn } = calculateDiscount(state.totalPriceInCart, state.cartDiscountType, state.cartDiscount);
+      const { discountAmount, valueReturn } = calculateDiscount(state.cartSubTotal, state.cartDiscountType, state.cartDiscount);
+      // const { discountAmount, valueReturn } = calculateDiscount(state.totalPriceInCart, state.cartDiscountType, state.cartDiscount);
 
       const newvalue = valueReturn - state.cartPromoDiscount;
 

@@ -1,13 +1,18 @@
 import { onChangeCartDiscountType, setDiscount } from "features/cart/cartSlice";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 
 const DiscountBox = ({ setShowDiscountBox }) => {
   const dispatch = useDispatch();
+  const { addToast } = useToasts();
   const cartDiscountType = useSelector((state) => state.cart.cartDiscountType);
-  const cartDiscount = useSelector((state) => state.cart.cartDiscount);
+  const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
+  const totalPriceInCart = useSelector((state) => state.cart.totalPriceInCart);
 
   const [amount, setAmount] = React.useState(0);
+
+  // console.log({ cartSubTotal });
 
   return (
     <div className="font-medium bg-white z-10 w-full h-38 rounded shadow border border-gray-500 overflow-hidden">
@@ -43,7 +48,25 @@ const DiscountBox = ({ setShowDiscountBox }) => {
             maxLength={3}
             onChange={(e) => {
               e.persist();
-              setAmount(e.target.value);
+              const parsedFloat = parseFloat(e.target.value);
+
+              // check discount is not more than cart amount
+              if (cartDiscountType === "percent") {
+                if (parsedFloat > 99.99) {
+                  setAmount(0);
+                  return addToast(`Value cannot be more than total cart price`, { appearance: "error", autoDismiss: true });
+                }
+                setAmount(e.target.value);
+              }
+
+              if (cartDiscountType === "amount") {
+                const discountedValue = cartSubTotal - parsedFloat;
+                if (discountedValue < 0) {
+                  setAmount(0);
+                  return addToast(`Value cannot be more than total cart price`, { appearance: "error", autoDismiss: true });
+                }
+                setAmount(e.target.value);
+              }
             }}
             type="number"
             className="appearance-none border border-gray-200 placeholder-blueGray-300 text-blueGray-600 rounded text-sm outline-none focus:outline-none w-full"

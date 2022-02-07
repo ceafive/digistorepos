@@ -289,7 +289,7 @@ const PayButton = () => {
           <p className="font-medium ">Discount</p>
 
           <div className="flex items-center">
-            <p className="mr-2">-GHS{cartDiscountOnCartTotal}</p>
+            <p className="mr-2">-GHS{parseFloat(cartDiscountOnCartTotal).toFixed(2)}</p>
             <button
               className="justify-self-end focus:outline-none"
               onClick={() => {
