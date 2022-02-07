@@ -12,7 +12,8 @@
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm run build:tailwind && npm run dev",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md}' --config ./.prettierrc",
-    "docker-build": "docker build --tag digistorepos:latest ."
+    "docker-build": "docker build --tag digistorepos:latest .",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "eslintConfig": {
     "extends": "react-app"
