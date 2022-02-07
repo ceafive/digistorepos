@@ -193,7 +193,7 @@ const onRaiseOrder = async (
       order_items: JSON.stringify(productsJSON),
       order_outlet: cart?.outletSelected?.outlet_id ?? "",
       delivery_type: replace(upperCase(cart?.deliveryTypeSelected), " ", "-"),
-      delivery_notes: cart?.deliveryNotes,
+      delivery_notes: cart?.deliveryTypeSelected === "Delivery" ? cart?.deliveryNotes : "",
       delivery_id:
         cart?.deliveryTypeSelected === "Pickup" || cart?.deliveryTypeSelected === "Walk In" || cart?.deliveryTypeSelected === "Dine In"
           ? cart?.outletSelected?.outlet_id || ""
@@ -206,10 +206,10 @@ const onRaiseOrder = async (
       delivery_contact: cart?.currentCustomer?.customer_phone ?? "",
       delivery_email: cart?.currentCustomer?.customer_email ?? "",
       order_discount_code: cart?.cartPromoCode ?? "",
-      order_amount: cart?.totalPriceInCart || 0,
-      order_discount: cart?.cartDiscountOnCartTotal + cart?.cartPromoDiscount,
+      order_amount: parseFloat(cart?.totalPriceInCart || 0),
+      order_discount: parseFloat(cart?.cartDiscountOnCartTotal) + parseFloat(cart?.cartPromoDiscount),
       order_discount_type: cart?.promoType,
-      delivery_charge: cart?.deliveryCharge?.price || 0,
+      delivery_charge: parseFloat(cart?.deliveryCharge?.price || 0),
       delivery_charge_type: cart?.deliveryCharge?.pricingtype || "",
       delivery_charge_ref: cart?.deliveryCharge?.estimateId || "",
       service_charge: fees,
@@ -254,7 +254,7 @@ const onRaiseOrder = async (
     }
 
     // console.log({ cart });
-    console.log({ payload });
+    // console.log({ payload });
     // return;
 
     const res = await axios.post("/api/sell/sell/raise-order", payload);

@@ -1,5 +1,6 @@
 import axios from "axios";
 import GooglePlaces from "components/Misc/GooglePlaces";
+import { format } from "date-fns";
 import {
   setCartPromoCode,
   setDeliveryCharge,
@@ -557,6 +558,7 @@ const DeliveryNotes = () => {
           dispatch(setDeliveryNotes(e.target.value));
         }}
         type="date"
+        min={format(new Date(), "yyyy-MM-dd")}
         placeholder="Enter delivery notes here..."
         className="w-full p-2 bg-white border border-gray-300 rounded placeholder-blueGray-300 text-blueGray-600 focus:ring-1"
       />
