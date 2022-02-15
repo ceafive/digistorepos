@@ -36,6 +36,7 @@ const ProcessPayment = ({
   fetching,
   setFetching,
   processError,
+  handlePayment,
 }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
@@ -346,6 +347,7 @@ const ProcessPayment = ({
       {/* Payment Buttons */}
       <div className="grid grid-cols-3 gap-3 my-4 mt-8 xl:grid-cols-3 2xl:grid-cols-4">
         {paymentButtons.map((paymentButton) => {
+          // console.log(paymentButton);
           const generalClasses = `w-40 h-12 font-bold text-white focus:outline-none rounded shadow-sm overflow-hidden px-2 break-words`;
           const enableClasses = `bg-blue-500`;
           const disabledClasses = `bg-gray-200`;
@@ -382,8 +384,15 @@ const ProcessPayment = ({
                       autoDismiss: true,
                     });
                   } else {
-                    dispatch(setPaymentMethodSet(paymentButton.name));
-                    setOpenPhoneNumberInputModal(true);
+                    // show input modal for payments other than INVPAY
+                    if (paymentButton.name === "INVPAY") {
+                      dispatch(setPaymentMethodSet(paymentButton.name));
+                      setOpenPhoneNumberInputModal(true);
+                      // handlePayment({ INVPAY: "" });
+                    } else {
+                      dispatch(setPaymentMethodSet(paymentButton.name));
+                      setOpenPhoneNumberInputModal(true);
+                    }
                   }
                 }}
               >
@@ -544,11 +553,12 @@ const ProcessPayment = ({
         </>
       )}
 
-      {["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer && (
-        <div className="font-bold text-center text-red-500">
-          <p>You need to add a customer to this delivery type to proceed</p>
-        </div>
-      )}
+      {(["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
+        (paymentMethodSet === "INVPAY" && !currentCustomer && (
+          <div className="font-bold text-center text-red-500">
+            <p>You need to add a customer to this delivery/payment type to proceed</p>
+          </div>
+        ))}
 
       {/* Customer */}
       {/* Raise Order Button */}
@@ -562,6 +572,7 @@ const ProcessPayment = ({
             !amountReceivedFromPayer ||
             !outletSelected ||
             (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
+            (paymentMethodSet === "INVPAY" && !currentCustomer) ||
             deliveryChargeIsEmpty ||
             change > 0
           }
@@ -573,6 +584,7 @@ const ProcessPayment = ({
             !amountReceivedFromPayer ||
             !outletSelected ||
             (["Delivery", "Pickup"].includes(deliveryTypeSelected) && !currentCustomer) ||
+            (paymentMethodSet === "INVPAY" && !currentCustomer) ||
             deliveryChargeIsEmpty ||
             change > 0
               ? "bg-gray-200"

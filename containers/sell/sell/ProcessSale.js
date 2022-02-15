@@ -177,6 +177,7 @@ const ProcessSale = ({ setReFetch }) => {
             setProcessError={setProcessError}
             userDetails={user}
             setReFetch={setReFetch}
+            handlePayment={handlePayment}
           />
         </div>
       </div>

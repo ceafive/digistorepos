@@ -30,6 +30,7 @@ const RaiseOrderSection = ({
   setProcessError,
   userDetails,
   setReFetch,
+  handlePayment,
 }) => {
   return (
     <>
@@ -47,6 +48,7 @@ const RaiseOrderSection = ({
           setPayerAmountEntered={setPayerAmountEntered}
           setStep={setStep}
           step={step}
+          handlePayment={handlePayment}
         />
       )}
 

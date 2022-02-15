@@ -40,7 +40,8 @@ const MoMoInput = ({ paymentMethodSet, register, lengthOfMobileNumber, errors })
             message: "Cannot be longer than 10 chars",
           },
         })}
-        placeholder="0547748484"
+        // max="10"
+        placeholder={`${paymentMethodSet === "MTNMM" ? "0546646464" : paymentMethodSet === "VODAC" ? "0203454343" : "0274343234"} `}
         className="relative w-full px-3 text-lg bg-white border border-blue-500 rounded outline-none 4 placeholder-blueGray-300 text-blueGray-600 focus:outline-none"
       />
       <p className="text-sm text-red-500">{errors[paymentMethodSet]?.message}</p>
@@ -67,9 +68,24 @@ const OtherPaymentInput = ({ paymentMethodSet, register, errors }) => {
   );
 };
 
+const InvPayment = ({ paymentMethodSet, onAddPayment }) => {
+  // is is fpr paymentMethodSet === 'INVPAY'
+  React.useEffect(() => {
+    onAddPayment({ [paymentMethodSet]: "" }); // onAddPayemnt is handlePayment
+  }, []);
+
+  return (
+    <div className="my-3">
+      <label className="mb-2 text-sm" htmlFor="">
+        Fetching transaction charge
+      </label>
+    </div>
+  );
+};
+
 const CollectUserDetail = ({ fetching, onAddPayment, paymentMethodSet, register, handleSubmit, lengthOfMobileNumber, errors, cartSubTotal }) => {
-  // console.log(paymentMethodSet);
   // console.log(cartSubTotal);
+
   return (
     <>
       {(paymentMethodSet === "MTNMM" || paymentMethodSet === "TIGOC" || paymentMethodSet === "VODAC") && (
@@ -84,23 +100,27 @@ const CollectUserDetail = ({ fetching, onAddPayment, paymentMethodSet, register,
         <OtherPaymentInput paymentMethodSet={paymentMethodSet} register={register} errors={errors} />
       )}
 
-      <div className="mb-3 text-center">
-        <button
-          disabled={fetching}
-          className={`${
-            fetching ? "bg-gray-300 text-gray-200" : "bg-green-700 text-white"
-          } font-bold px-3 py-3  rounded focus:outline-none ease-linear transition-all duration-150`}
-          type="button"
-          onClick={handleSubmit(onAddPayment)}
-        >
-          {fetching && (
-            <div className="inline-block mr-2">
-              <Spinner type={"TailSpin"} color="black" width={10} height={10} />
-            </div>
-          )}
-          Add Payment
-        </button>
-      </div>
+      {paymentMethodSet === "INVPAY" && <InvPayment paymentMethodSet={paymentMethodSet} onAddPayment={onAddPayment} />}
+
+      {paymentMethodSet !== "INVPAY" && (
+        <div className="mb-3 text-center">
+          <button
+            disabled={fetching}
+            className={`${
+              fetching ? "bg-gray-300 text-gray-200" : "bg-green-700 text-white"
+            } font-bold px-3 py-3  rounded focus:outline-none ease-linear transition-all duration-150`}
+            type="button"
+            onClick={handleSubmit(onAddPayment)}
+          >
+            {fetching && (
+              <div className="inline-block mr-2">
+                <Spinner type={"TailSpin"} color="black" width={10} height={10} />
+              </div>
+            )}
+            Add Payment
+          </button>
+        </div>
+      )}
     </>
   );
 };

@@ -16,8 +16,9 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
   const cartSubTotal = useSelector((state) => state.cart.cartSubTotal);
   const totalTaxes = useSelector((state) => state.cart.totalTaxes);
   const rewardPoints = useSelector((state) => state.cart.rewardPoints);
+  const invoiceDetails = useSelector((state) => state.cart.invoiceDetails);
 
-  // console.log(rewardPoints);
+  // console.log(invoiceDetails);
 
   const [compToRender, setCompToRender] = React.useState(null);
   const [phoneNumber, setPhoneNumber] = React.useState("");
@@ -30,7 +31,14 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
 
   return (
     <div className="py-20 mt-10 text-center">
-      <p className="text-4xl font-bold ">Payment Received</p>
+      <p className="text-4xl font-bold ">{invoiceDetails?.payment === "INVOICE" ? "Invoice Generated" : "Payment Received"}</p>
+      {invoiceDetails?.payment === "INVOICE" && (
+        <div>
+          <p className="mt-2 text-2xl 2xl:text-2xl text-blueGray-900">
+            <span className="font-bold">{invoiceDetails?.message}</span>
+          </p>
+        </div>
+      )}
       {change ? (
         <div>
           <p className="mt-2 text-4xl 2xl:text-5xl text-blueGray-900">
@@ -84,45 +92,74 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             <span>{"Print"}</span>
           </button>
 
-          {/* {currentCustomer?.customer_phone && ( */}
-          <button
-            disabled={sendingNotification}
-            className="mr-6 text-gray-800 focus:outline-none xl:text-lg 2xl:text-xxl"
-            onClick={() => {
-              if (currentCustomer?.customer_phone) {
-                handleSendNotification("SMS");
-              } else {
-                addToast(`Enter phone number to send receipt to`, { autoDismiss: true });
-                setCompToRender("phone");
-              }
-            }}
-          >
-            <span className="w-6 mr-1">
-              <i className="fas fa-sms" />
-            </span>
-            <span>{"SMS Receipt"}</span>
-          </button>
-          {/* )} */}
+          {invoiceDetails?.payment == "INVOICE" && (
+            <>
+              <a
+                href={`https://api.whatsapp.com/send?phone=233${currentCustomer?.customer_phone}&text=${`${invoiceDetails?.invoice_url}
+                        `}`}
+                target="_blank"
+                rel="noreferrer"
+                className={`text-blue-500`}
+              >
+                <button
+                  className="mr-6 text-gray-800 focus:outline-none xl:text-lg 2xl:text-xxl"
+                  onClick={() => {
+                    if (currentCustomer?.customer_phone) {
+                      // handleSendNotification("SMS");
+                    } else {
+                      addToast(`Enter phone number to send receipt to`, { autoDismiss: true });
+                      setCompToRender("phone");
+                    }
+                  }}
+                >
+                  <span className="w-6 mr-1">
+                    <i className="fas fa-sms" />
+                  </span>
+                  <span>Send payment link to Whatsapp</span>
+                </button>
+              </a>
+            </>
+          )}
 
-          {/* {currentCustomer?.customer_email && ( */}
-          <button
-            disabled={sendingNotification}
-            className="text-gray-800 focus:outline-none xl:text-lg 2xl:text-xxl"
-            onClick={() => {
-              if (currentCustomer?.customer_phone) {
-                handleSendNotification("EMAIL");
-              } else {
-                addToast(`Enter email address to send receipt to`, { autoDismiss: true });
-                setCompToRender("email");
-              }
-            }}
-          >
-            <span className="w-6 mr-1">
-              <i className="fas fa-envelope" />
-            </span>
-            <span>{"Email Receipt"}</span>
-          </button>
-          {/* )} */}
+          {invoiceDetails?.payment !== "INVOICE" && (
+            <>
+              <button
+                disabled={sendingNotification}
+                className="mr-6 text-gray-800 focus:outline-none xl:text-lg 2xl:text-xxl"
+                onClick={() => {
+                  if (currentCustomer?.customer_phone) {
+                    handleSendNotification("SMS");
+                  } else {
+                    addToast(`Enter phone number to send receipt to`, { autoDismiss: true });
+                    setCompToRender("phone");
+                  }
+                }}
+              >
+                <span className="w-6 mr-1">
+                  <i className="fas fa-sms" />
+                </span>
+                <span>{"SMS Receipt"}</span>
+              </button>
+
+              <button
+                disabled={sendingNotification}
+                className="text-gray-800 focus:outline-none xl:text-lg 2xl:text-xxl"
+                onClick={() => {
+                  if (currentCustomer?.customer_phone) {
+                    handleSendNotification("EMAIL");
+                  } else {
+                    addToast(`Enter email address to send receipt to`, { autoDismiss: true });
+                    setCompToRender("email");
+                  }
+                }}
+              >
+                <span className="w-6 mr-1">
+                  <i className="fas fa-envelope" />
+                </span>
+                <span>{"Email Receipt"}</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 

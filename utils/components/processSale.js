@@ -60,6 +60,8 @@ const onAddPayment = async function (
 ) {
   // console.log(paymentMethodsAndAmount, paymentMethodSet, payerAmountEntered, cartSubTotal, currentCustomer, values);
   // return;
+
+  // console.log(paymentMethodsAndAmount, paymentMethodSet, payerAmountEntered, cartSubTotal, currentCustomer, values);
   try {
     await fetchFeeCharges(dispatch, setTransactionFeeCharges, setFetching, user, [
       ...paymentMethodsAndAmount,
@@ -215,7 +217,9 @@ const onRaiseOrder = async (
       service_charge: fees,
       total_amount: saleTotal,
       payment_type:
-        cart?.paymentMethodSet === "CASH"
+        cart?.paymentMethodSet === "INVPAY"
+          ? "INVOICE"
+          : cart?.paymentMethodSet === "CASH"
           ? "CASH"
           : cart?.paymentMethodSet === "VISAG"
           ? "CARD"
@@ -223,7 +227,7 @@ const onRaiseOrder = async (
           ? "MOMO"
           : "",
       payment_number: cart?.paymentMethodsAndAmount[0]?.payment_number || cart?.currentCustomer?.customer_phone || "",
-      payment_network: cart?.paymentMethodSet,
+      payment_network: cart?.paymentMethodSet === "INVPAY" ? "UNKNOWN" : cart?.paymentMethodSet,
       merchant: user["user_merchant_id"],
       source: "INSHP",
       notify_source: "WEB",
@@ -232,6 +236,7 @@ const onRaiseOrder = async (
 
     // setFetching(false);
 
+    // this is done for a booking client ie user permissions includes BUKNSMGT
     if (isBooking) {
       let concatValues = "";
       // passing client details for booking
@@ -254,12 +259,12 @@ const onRaiseOrder = async (
     }
 
     // console.log({ cart });
-    // console.log({ payload });
+    // console.log(payload);
     // return;
 
     const res = await axios.post("/api/sell/sell/raise-order", payload);
     const data = await res.data;
-    console.log(data);
+    // console.log(data);
 
     if (Number(data?.status) !== 0) {
       setProcessError(data?.message);
@@ -278,9 +283,11 @@ const onRaiseOrder = async (
         );
         setStep(2);
         setFetching(false);
-      }
-
-      if (cart?.paymentMethodSet !== "CASH") {
+      } else if (cart?.paymentMethodSet === "INVPAY") {
+        dispatch(setInvoiceDetails(data));
+        setStep(2);
+        setFetching(false);
+      } else {
         dispatch(setInvoiceDetails(data));
         setConfirmPaymentText(data?.message);
         setStep(1);
