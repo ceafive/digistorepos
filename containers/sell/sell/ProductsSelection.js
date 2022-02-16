@@ -185,7 +185,17 @@ const ProductsSelection = () => {
                               variants: { Type: "Normal" },
                             };
 
-                            if (product?.product_has_property === "YES") {
+                            // console.log(data);
+
+                            if (product?.product_properties_variants?.length) {
+                              dispatch(setProductToView(product));
+                              dispatch(openVariantsModal());
+                              return;
+                            } else if (product?.product_properties) {
+                              // console.log(product);
+                              if (parseInt(product?.product_quantity) === 0) {
+                                return addToast(`Product sold out`, { appearance: "error", autoDismiss: true });
+                              }
                               dispatch(setProductToView(product));
                               dispatch(openProductModal());
                             } else {
