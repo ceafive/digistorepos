@@ -6,7 +6,23 @@ import ProcessSale from "containers/sell/sell/ProcessSale";
 // import InventoryDetails from "components/Product/InventoryDetails";
 // import ProcessSale from "components/Sell/ProcessSale";
 import ProductsSelection from "containers/sell/sell/ProductsSelection";
-import { setActivePayments, setAutoDiscount, setDeliveryTypes } from "features/cart/cartSlice";
+import {
+  addCustomer,
+  onClickToCheckout,
+  setActivePayments,
+  setAutoDiscount,
+  setBookingClientInformation,
+  setCartPromoCode,
+  setDeliveryCharge,
+  setDeliveryLocationInputted,
+  setDeliveryNotes,
+  setDeliveryTypes,
+  setDeliveryTypeSelected,
+  setOutletSelected,
+  setPaymentMethodSet,
+  setPromoAmount,
+  setPromoType,
+} from "features/cart/cartSlice";
 import { onSetProductCategories, openInventoryModal, productsAdded, setAllOutlets } from "features/products/productsSlice";
 import { motion } from "framer-motion";
 import { filter, intersectionWith, upperCase } from "lodash";
@@ -24,8 +40,9 @@ const SellPage = () => {
   const products = useSelector((state) => state.products.products);
   const productCategories = useSelector((state) => state.products.productCategories);
   const productsOnHold = useSelector((state) => state.products.productsOnHold);
+  const outlets = useSelector((state) => state.products.outlets);
+  const outletSelected = useSelector((state) => state.cart.outletSelected);
 
-  // console.log(products?.length);
   // console.log(productCategories?.length);
 
   // Compnent State
@@ -70,6 +87,10 @@ const SellPage = () => {
 
         if (upperCaseMerchantGroup === "ADMINISTRATORS") {
           dispatch(setAllOutlets(outletsResData));
+
+          if (outletsResData?.length === 1) {
+            dispatch(setOutletSelected(outletsResData[0]));
+          }
         } else {
           const response = intersectionWith(
             filter(outletsResData, (o) => Boolean(o)),
@@ -80,6 +101,10 @@ const SellPage = () => {
           );
 
           dispatch(setAllOutlets(response));
+
+          if (response?.length === 1) {
+            dispatch(setOutletSelected(response[0]));
+          }
         }
         setFetching(false);
       } catch (error) {
@@ -107,27 +132,66 @@ const SellPage = () => {
     );
   }
 
+  // console.log(outlets);
+
   return (
-    <div className="pt-6 pb-6">
-      {!clickToCheckout && (
-        <div className="flex" initial={{ y: "-20vh" }} animate={{ y: 0 }} transition={{ duration: 0.1, type: "tween" }}>
-          <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
-            <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
-          </Modal>
-          <div className="w-7/12 px-4 xl:w-8/12">
-            <ProductsSelection />
-          </div>
-          <div className="w-5/12 px-4 xl:w-4/12">
-            <Cart />
-          </div>
+    <>
+      {outletSelected ? (
+        <div className="pt-6 pb-6">
+          {!clickToCheckout && (
+            <div className="flex" initial={{ y: "-20vh" }} animate={{ y: 0 }} transition={{ duration: 0.1, type: "tween" }}>
+              <Modal open={inventoryModalOpen} onClose={() => dispatch(openInventoryModal())}>
+                <InventoryDetails onClose={() => dispatch(openInventoryModal())} />
+              </Modal>
+              <div className="w-7/12 px-4 xl:w-8/12">
+                <ProductsSelection />
+              </div>
+              <div className="w-5/12 px-4 xl:w-4/12">
+                <Cart />
+              </div>
+            </div>
+          )}
+          {clickToCheckout && (
+            <motion.div className="" initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
+              <ProcessSale setReFetch={setReFetch} />
+            </motion.div>
+          )}
         </div>
+      ) : (
+        <>
+          {outlets.length > 1 ? (
+            <div className="w-full flex justify-center items-center min-h-screen-75">
+              <div className="h-full w-full">
+                <>
+                  <h1 className="font-semibold text-center mb-2">Select Outlet</h1>
+                  <div className="grid grid-cols-3 gap-3 xl:grid-cols-3 2xl:grid-cols-4">
+                    {outlets.map((outlet) => {
+                      return (
+                        <button
+                          key={outlet.outlet_name}
+                          className={`${
+                            outletSelected?.outlet_name === outlet.outlet_name ? "ring-2" : ""
+                          } w-36 h-24 border border-gray-300 focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
+                          onClick={() => {
+                            dispatch(setOutletSelected(outlet));
+                          }}
+                        >
+                          {outlet.outlet_name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center w-full h-full min-h-screen-75">
+              <Spinner type="TailSpin" width={50} height={50} />
+            </div>
+          )}
+        </>
       )}
-      {clickToCheckout && (
-        <motion.div className="" initial={{ y: "100vh" }} animate={{ y: 0 }} transition={{ duration: 0.2, type: "tween" }}>
-          <ProcessSale setReFetch={setReFetch} />
-        </motion.div>
-      )}
-    </div>
+    </>
   );
 };
 

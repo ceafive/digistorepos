@@ -172,23 +172,23 @@ const ProcessPayment = ({
   // console.log({ cartSubTotal });
   // console.log({ outletSelected });
 
-  //Select outlet
-  React.useEffect(() => {
-    const upperCaseMerchantGroup = upperCase(user?.user_merchant_group);
-    if (upperCaseMerchantGroup === "ADMINISTRATORS") {
-      if (outlets?.length === 1) {
-        dispatch(setOutletSelected(outlets[0]));
-      }
-    } else {
-      const response = intersectionWith(filter(outlets, Boolean), user?.user_assigned_outlets ?? [], (arrVal, othVal) => {
-        return arrVal.outlet_id === othVal;
-      });
+  // //Select outlet
+  // React.useEffect(() => {
+  //   const upperCaseMerchantGroup = upperCase(user?.user_merchant_group);
+  //   if (upperCaseMerchantGroup === "ADMINISTRATORS") {
+  //     if (outlets?.length === 1) {
+  //       dispatch(setOutletSelected(outlets[0]));
+  //     }
+  //   } else {
+  //     const response = intersectionWith(filter(outlets, Boolean), user?.user_assigned_outlets ?? [], (arrVal, othVal) => {
+  //       return arrVal.outlet_id === othVal;
+  //     });
 
-      if (response.length === 1) {
-        dispatch(setOutletSelected(response[0]));
-      }
-    }
-  }, [outlets]);
+  //     if (response.length === 1) {
+  //       dispatch(setOutletSelected(response[0]));
+  //     }
+  //   }
+  // }, [outlets]);
 
   React.useEffect(() => {
     if (watchBookingPhoneNumber?.length === 10) {
@@ -243,7 +243,7 @@ const ProcessPayment = ({
       </div>
       {/* Pay Field */}
       {/* Outlets */}
-      {outlets.length > 1 && (
+      {/* {outlets.length > 1 && (
         <div className="mt-4">
           <h1 className="mb-1 font-semibold">Outlets</h1>
           <div className="grid grid-cols-3 gap-3 xl:grid-cols-3 2xl:grid-cols-4">
@@ -276,7 +276,7 @@ const ProcessPayment = ({
             })}
           </div>
         </div>
-      )}
+      )} */}
       {/* Outlets */}
       {/* Delivery Options */}
       <div className="mt-4">
