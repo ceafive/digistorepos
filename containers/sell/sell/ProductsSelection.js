@@ -190,7 +190,6 @@ const ProductsSelection = () => {
                             if (product?.product_properties_variants?.length) {
                               dispatch(setProductToView(product));
                               dispatch(openVariantsModal());
-                              return;
                             } else if (product?.product_properties) {
                               // console.log(product);
                               if (parseInt(product?.product_quantity) === 0) {
@@ -201,6 +200,7 @@ const ProductsSelection = () => {
                             } else {
                               setProductSelected(data);
                             }
+                            dispatch(currentSearchTerm(""));
                           }}
                         >
                           <div className="flex items-center text-black font-medium" key={product.product_id}>
