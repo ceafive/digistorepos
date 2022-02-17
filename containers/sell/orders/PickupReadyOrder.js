@@ -34,11 +34,11 @@ const PickuReadyOrder = ({ user, order, fetching, setFetching, onClose }) => {
         mod_by: user?.login,
       };
 
-      console.log(data);
+      // console.log(data);
 
       const processRes = await axios.post("/api/sell/orders/update-delivery-status", data);
       const { message, status: resStatus } = await processRes?.data;
-      console.log(processRes);
+      // console.log(processRes);
       addToast(message, { appearance: Number(resStatus) === 0 ? "success" : "error", autoDismiss: true });
     } catch (error) {
       console.log(error);

@@ -56,6 +56,8 @@ const ReAssignOrder = ({ user, order, fetching, setFetching, onClose }) => {
 };
 
 const AssignOrderToRider = ({ order, user, onClose, fetching, setFetching, setReRun }) => {
+  const { addToast } = useToasts();
+
   const [riders, setRiders] = React.useState(null);
   const [fetchingData, setFetchingData] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
@@ -84,8 +86,10 @@ const AssignOrderToRider = ({ order, user, onClose, fetching, setFetching, setRe
         mod_by: user?.login,
       };
       const assignRiderRes = await axios.post("/api/sell/orders/assign-rider", data);
-      const { data: assignRiderResData } = await assignRiderRes.data;
-      console.log(assignRiderResData);
+      const { message, status } = await assignRiderRes.data;
+      // console.log({ message, status });
+
+      addToast(message, { appearance: Number(status) === 0 ? "success" : "error", autoDismiss: true });
     } catch (error) {
       console.log(error);
       sentryErrorLogger(error);
@@ -179,11 +183,11 @@ const PaidOrder = ({ user, order, fetching, setFetching, onClose }) => {
         mod_by: user?.login,
       };
 
-      console.log(data);
+      // console.log(data);
 
       const processRes = await axios.post("/api/sell/orders/process-order", data);
       const { message, status: resStatus } = await processRes?.data;
-      console.log(processRes);
+      // console.log(processRes);
       addToast(message, { appearance: Number(resStatus) === 0 ? "success" : "error", autoDismiss: true });
     } catch (error) {
       console.log(error);

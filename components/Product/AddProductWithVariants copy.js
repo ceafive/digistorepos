@@ -81,7 +81,8 @@ const RenderQuantityTap = ({ product, productPrice, variantID, formData, reset, 
       if (variantQuantity) {
         stock_level = variantQuantity === "-99" ? 10000000000000 : parseInt(variantQuantity);
       } else {
-        stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
+        stock_level =
+          product?.product_quantity === "-99" || product?.product_quantity === "Unlimited" ? 10000000000000 : parseInt(product?.product_quantity);
       }
       const productSoldOut = stock_level <= 0;
 

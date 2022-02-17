@@ -17,11 +17,10 @@ import ViewColumn from "@material-ui/icons/ViewColumn";
 import axios from "axios";
 import PatchedPagination from "components/Misc/PatchedPagination";
 import Modal from "components/Modal";
-import Spinner from "components/Spinner";
-import { addDays, format, startOfMonth } from "date-fns";
+import { addDays, format, isValid, startOfMonth } from "date-fns";
 import { setOrderHistory } from "features/orders/ordersSlice";
 import { setAllOutlets } from "features/products/productsSlice";
-import { filter, intersectionWith, map, upperCase } from "lodash";
+import { filter, intersectionWith, lowerCase, map, upperCase } from "lodash";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { forwardRef } from "react";
 import { useForm } from "react-hook-form";
@@ -233,8 +232,25 @@ const SalesHistory = () => {
     {
       title: "Delivery Note",
       field: "delivery_notes",
+      cellStyle: {
+        width: "100%",
+        minWidth: 300,
+      },
+      customFilterAndSearch: (term, rowData) => {
+        const date = new Date(rowData?.delivery_notes);
+        const isDateValid = isValid(date);
+
+        const searchString = rowData?.delivery_notes ? (isDateValid ? format(date, "PPPP") : rowData?.delivery_notes) : "N/A";
+        // console.log(searchString);
+
+        const result = lowerCase(searchString)?.includes(lowerCase(term));
+        return result;
+      },
       render(rowData) {
-        return <p>{rowData?.delivery_notes || "N/A"}</p>;
+        const date = new Date(rowData?.delivery_notes);
+        const isDateValid = isValid(date);
+
+        return <p>{rowData?.delivery_notes ? (isDateValid ? format(date, "PPPP") : rowData?.delivery_notes) : "N/A"}</p>;
       },
     },
     {
@@ -272,7 +288,7 @@ const SalesHistory = () => {
               setOrder(rowData);
               setComponentToRender("order_actions");
               setOpenModal(true);
-              setMaxWidth("sm");
+              setMaxWidth("md");
             },
           },
           // {
@@ -473,6 +489,8 @@ const SalesHistory = () => {
           data={orderHistory.map((o) => ({ ...o, tableData: {} }))}
           options={{
             padding: `dense`,
+            // exportButton: true,
+            filtering: true,
           }}
           actions={[
             {

@@ -16,7 +16,8 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import axios from "axios";
 import PatchedPagination from "components/Misc/PatchedPagination";
-import { capitalize, filter, isEmpty, lowerCase } from "lodash";
+import { setManageProductProducts } from "features/manageproducts/manageproductsSlice";
+import { capitalize, filter, isEmpty, lowerCase, upperCase } from "lodash";
 import MaterialTable, { MTableEditCell, MTableToolbar } from "material-table";
 import { useRouter } from "next/router";
 import React, { forwardRef } from "react";
@@ -45,11 +46,13 @@ const tableIcons = {
 };
 
 const ManageProducts = ({ setReRun }) => {
+  const dispatch = useDispatch();
   const router = useRouter();
   const { addToast, removeToast } = useToasts();
   const {
     register,
     watch,
+    handleSubmit,
     formState: { errors },
   } = useForm({});
 
@@ -61,12 +64,16 @@ const ManageProducts = ({ setReRun }) => {
 
   const manageProductProducts = useSelector((state) => state.manageproducts.manageProductProducts);
   const manageProductCategories = useSelector((state) => state.manageproducts.manageProductCategories);
+  const outlets = useSelector((state) => state.products.outlets);
 
   // console.log({ manageProductProducts });
 
   const [allProducts, setAllProducts] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [fetching, setFetching] = React.useState(false);
   // console.log(allProducts);
+
+  const isAdmin = upperCase(user?.user_merchant_group) === "ADMINISTRATORS" ? true : false;
 
   React.useEffect(() => {
     if (categorySelected !== "All") {
@@ -137,7 +144,7 @@ const ManageProducts = ({ setReRun }) => {
       title: "In Stock",
       field: "inStock",
       render(rowData) {
-        return <p>{rowData?.product_quantity === "-99" ? "Unlimited" : rowData?.product_quantity}</p>;
+        return <p>{rowData?.product_quantity === "-99" || rowData?.product_quantity === "Unlimited" ? "Unlimited" : rowData?.product_quantity}</p>;
       },
     },
     { title: "Qty. Sold", field: "product_quantity_sold" },
@@ -269,6 +276,27 @@ const ManageProducts = ({ setReRun }) => {
     }
   };
 
+  const handleSubmitQuery = async (values) => {
+    try {
+      setFetching(true);
+      const allProductsRes = await axios.post("/api/products/get-outlet-products", {
+        merchant: user?.user_merchant_id,
+        outlet: upperCase(values?.outletSelected),
+      });
+
+      const { data: allProductsResData } = await allProductsRes.data;
+      console.log(allProductsResData);
+      // return setFetching(false);
+
+      dispatch(setManageProductProducts(filter(allProductsResData, (o) => Boolean(o))));
+      setFetching(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setFetching(false);
+    }
+  };
+
   return (
     <>
       <div className="flex w-full h-full">
@@ -287,7 +315,7 @@ const ManageProducts = ({ setReRun }) => {
             </div>
             <hr />
             <div className="flex items-center w-full">
-              <div className="w-1/2">
+              <div className="w-3/12 mr-2">
                 <label className="text-sm font-bold leading-none">Product Categories</label>
                 <select
                   {...register("productCategory")}
@@ -303,6 +331,40 @@ const ManageProducts = ({ setReRun }) => {
                   })}
                 </select>
                 <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
+              </div>
+              <div className="flex w-1/2">
+                {outlets.length > 1 && (
+                  // {!isAdmin && outlets.length > 1 && (
+                  <div className="">
+                    <label className="text-sm font-bold leading-none">Outlets</label>
+                    <select
+                      {...register("outletSelected")}
+                      className="block w-full py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded appearance-none focus:outline-none"
+                    >
+                      <option value="All">{`All Outlets`}</option>
+                      {outlets?.map((outlet) => {
+                        return (
+                          <option key={outlet?.outlet_id} value={outlet?.outlet_id}>
+                            {outlet?.outlet_name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
+                  </div>
+                )}
+
+                <div className="flex">
+                  <button
+                    disabled={fetching}
+                    className={`${
+                      fetching ? `bg-gray-200` : `bg-blue-600  focus:ring focus:ring-blue-500`
+                    }  px-12 py-2 rounded text-white font-semibold focus:outline-none mt-5 ml-5 h-auto`}
+                    onClick={handleSubmit(handleSubmitQuery)}
+                  >
+                    Query
+                  </button>
+                </div>
               </div>
               {/* <div>
                 <button className="px-4 py-1 mt-6 ml-2 font-bold text-white bg-green-500 rounded">View Variance</button>

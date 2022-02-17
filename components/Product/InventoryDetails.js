@@ -138,7 +138,7 @@ const InventoryDetails = ({ onClose }) => {
                 ? variantQuantity === "-99"
                   ? "Unlimited"
                   : variantQuantity
-                : product?.product_quantity === "-99"
+                : product?.product_quantity === "-99" || product?.product_quantity === "Unlimited"
                 ? "Unlimited"
                 : product?.product_quantity}
             </p>

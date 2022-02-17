@@ -58,13 +58,13 @@ const SellPage = () => {
 
         let user = sessionStorage.getItem("IPAYPOSUSER");
         user = JSON.parse(user);
-        const { user_assigned_outlets, user_merchant_group } = user;
+        const { user_assigned_outlets, user_merchant_group, user_merchant_id } = user;
 
-        const allProductsRes = await axios.post("/api/sell/sell/get-all-products", { user });
+        // const allProductsRes = await axios.post("/api/sell/sell/get-all-products", { merchant: user_merchant_id });
         const allCategoriesRes = await axios.post("/api/sell/sell/get-all-categories", { user });
-        const { data: allProductsResData } = await allProductsRes.data;
+        // const { data: allProductsResData } = await allProductsRes.data;
         const { data: allCategoriesResData } = await allCategoriesRes.data;
-        dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
+        // dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
         dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
         setFetching(false);
 
@@ -77,7 +77,7 @@ const SellPage = () => {
         const { data: activePaymentsResData } = await activePaymentsRes.data;
         const { data: outletsResData } = await outletsRes.data;
         const { has_auto_discount } = await autoDiscountRes.data;
-        // console.log({ allCategoriesResData, allProductsResData });
+        // console.log({ allProductsResData });
 
         dispatch(setDeliveryTypes(deliveryTypesResData));
         dispatch(setActivePayments(activePaymentsResData));
@@ -123,6 +123,44 @@ const SellPage = () => {
 
     fetchItems();
   }, [reFetch]);
+
+  React.useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        if (!outletSelected) return false;
+        if (products?.length === 0) {
+          setFetching(true);
+        }
+
+        let user = sessionStorage.getItem("IPAYPOSUSER");
+        user = JSON.parse(user);
+
+        const allProductsRes = await axios.post("/api/sell/sell/get-all-products", {
+          merchant: user?.user_merchant_id,
+          outlet: outletSelected?.outlet_id,
+        });
+        const { data: allProductsResData } = await allProductsRes.data;
+        // console.log({ allProductsResData });
+
+        dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
+
+        setFetching(false);
+      } catch (error) {
+        setFetching(true);
+        let errorResponse = "";
+        if (error.response) {
+          errorResponse = error.response.data;
+        } else if (error.request) {
+          errorResponse = error.request;
+        } else {
+          errorResponse = { error: error.message };
+        }
+        console.log(errorResponse);
+      }
+    };
+
+    fetchItems();
+  }, [outletSelected]);
 
   if (fetching || fetching === null) {
     return (

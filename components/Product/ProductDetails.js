@@ -33,7 +33,10 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, setStep, se
   const { addToast } = useToasts();
   const productsInCart = useSelector((state) => state.cart.productsInCart);
 
-  const quantities = product?.product_quantity === "-99" ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6].slice(0, parseInt(product?.product_quantity));
+  const quantities =
+    product?.product_quantity === "-99" || product?.product_quantity === "Unlimited"
+      ? [1, 2, 3, 4, 5, 6]
+      : [1, 2, 3, 4, 5, 6].slice(0, parseInt(product?.product_quantity));
 
   React.useEffect(() => {
     if (parseInt(product?.product_quantity) === 0) {
@@ -75,7 +78,8 @@ const RenderQuantityTap = ({ product, productPrice, formData, reset, setStep, se
   const checkProductQuantity = (product, quantity) => {
     try {
       let stock_level;
-      stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
+      stock_level =
+        product?.product_quantity === "-99" || product?.product_quantity === "Unlimited" ? 10000000000000 : parseInt(product?.product_quantity);
 
       const productSoldOut = stock_level <= 0;
 
@@ -308,7 +312,8 @@ const ProductDetails = ({ onClose }) => {
             <div className="mt-4">
               {step === noOfSteps && (
                 <span className="mr-2 text-sm font-bold">
-                  Variant Quantity: {product?.product_quantity === "-99" ? "Unlimited" : product?.product_quantity}
+                  Variant Quantity:{" "}
+                  {product?.product_quantity === "-99" || product?.product_quantity === "Unlimited" ? "Unlimited" : product?.product_quantity}
                 </span>
               )}
               {step === noOfSteps && <span className="text-sm font-bold">Variant Price: GHS{productPrice}</span>}

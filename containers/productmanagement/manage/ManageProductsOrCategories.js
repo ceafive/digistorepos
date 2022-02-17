@@ -41,6 +41,7 @@ const ManageProductsOrCategories = () => {
 
         const allProductsRes = await axios.post("/api/products/get-products", { user });
         const { data: allProductsResData } = await allProductsRes.data;
+        // console.log({ allProductsResData });
         dispatch(setManageProductProducts(filter(allProductsResData, (o) => Boolean(o))));
 
         const allCategoriesRes = await axios.post("/api/products/get-product-categories", { user });

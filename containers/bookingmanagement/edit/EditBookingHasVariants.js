@@ -79,7 +79,7 @@ const EditBookingHasVariants = () => {
           productDescription: product?.product_description,
           sellingPrice: product?.product_price,
           costPerItem: product?.product_unit_cost,
-          inventoryQuantity: product?.product_quantity === "-99" ? "" : product?.product_quantity,
+          inventoryQuantity: product?.product_quantity === "-99" || product?.product_quantity === "Unlimited" ? "" : product?.product_quantity,
           productCategory: allCategories.find((category) => category?.product_category === product?.product_category)?.product_category_id,
           tag: "NORMAL",
           sku: product?.product_sku,

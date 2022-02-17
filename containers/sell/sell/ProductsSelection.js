@@ -52,7 +52,8 @@ const ProductsSelection = () => {
       // console.log(product);
       if (productSelected) {
         // console.log(productsInCart);
-        const stock_level = product?.product_quantity === "-99" ? 10000000000000 : parseInt(product?.product_quantity);
+        const stock_level =
+          product?.product_quantity === "-99" || product?.product_quantity === "Unlimited" ? 10000000000000 : parseInt(product?.product_quantity);
         const productSoldOut = stock_level <= 0;
 
         if (productSoldOut) {
@@ -208,6 +209,7 @@ const ProductsSelection = () => {
                               <div className="w-48 h-20">
                                 <img
                                   className="w-full h-full object-cover"
+                                  // src={`${product?.product_image}`}
                                   src={`https://payments.ipaygh.com/app/webroot/img/products/${product?.product_image}`}
                                   alt={product.product_name}
                                 />
@@ -329,6 +331,7 @@ const ProductsSelection = () => {
                       <img
                         className="absolute h-full w-full object-left"
                         // className="absolute h-full w-full object-cover"
+                        // src={`${product.product_image}`}
                         src={`${imgUrlBase}${product.product_image}`}
                         alt={product.product_name}
                       />
@@ -339,7 +342,7 @@ const ProductsSelection = () => {
                       <p className="font-bold pt-4">GHS{product.product_price}</p>
                       <p className="text-xs pt-1">
                         Quantity:{" "}
-                        {product?.product_quantity === "-99"
+                        {product?.product_quantity === "-99" || product?.product_quantity === "Unlimited"
                           ? "Unlimited"
                           : parseInt(product?.product_quantity) < 0
                           ? 0
