@@ -135,7 +135,7 @@ const ManageProducts = ({ setReRun }) => {
       field: "product_description",
       cellStyle() {
         return {
-          minWidth: 300,
+          // minWidth: 300,
         };
       },
     },
@@ -148,8 +148,40 @@ const ManageProducts = ({ setReRun }) => {
       },
     },
     { title: "Qty. Sold", field: "product_quantity_sold" },
-    { title: "Date Added", field: "product_create_date", defaultSort: "desc" },
+    {
+      title: "Date Added",
+      field: "product_create_date",
+      defaultSort: "desc",
+      cellStyle() {
+        return {
+          minWidth: 250,
+        };
+      },
+      render(rowData) {
+        return <p>{new Date(rowData?.product_create_date).toUTCString()}</p>;
+      },
+    },
     { title: "Category", field: "product_category" },
+    {
+      title: "Outlet Name",
+      field: "product_outlets",
+      cellStyle() {
+        return {
+          minWidth: 250,
+        };
+      },
+      render(rowData) {
+        return (
+          <p>
+            {rowData?.product_outlets
+              .map((o) => {
+                return outlets?.find((outlet) => outlet?.outlet_id === o?.outlet_id)?.outlet_name;
+              })
+              .join(", ")}
+          </p>
+        );
+      },
+    },
     // {
     //   title: "Actions",
     //   field: "actions",
@@ -285,7 +317,7 @@ const ManageProducts = ({ setReRun }) => {
       });
 
       const { data: allProductsResData } = await allProductsRes.data;
-      console.log(allProductsResData);
+      // console.log(allProductsResData);
       // return setFetching(false);
 
       dispatch(setManageProductProducts(filter(allProductsResData, (o) => Boolean(o))));
@@ -332,40 +364,42 @@ const ManageProducts = ({ setReRun }) => {
                 </select>
                 <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
               </div>
-              <div className="flex w-1/2">
-                {outlets.length > 1 && (
-                  // {!isAdmin && outlets.length > 1 && (
-                  <div className="">
-                    <label className="text-sm font-bold leading-none">Outlets</label>
-                    <select
-                      {...register("outletSelected")}
-                      className="block w-full py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded appearance-none focus:outline-none"
-                    >
-                      <option value="All">{`All Outlets`}</option>
-                      {outlets?.map((outlet) => {
-                        return (
-                          <option key={outlet?.outlet_id} value={outlet?.outlet_id}>
-                            {outlet?.outlet_name}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
-                  </div>
-                )}
+              {outlets.length > 1 && (
+                <>
+                  <div className="flex w-1/2">
+                    {/* // {!isAdmin && outlets.length > 1 && ( */}
+                    <div className="">
+                      <label className="text-sm font-bold leading-none">Outlets</label>
+                      <select
+                        {...register("outletSelected")}
+                        className="block w-full py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded appearance-none focus:outline-none"
+                      >
+                        <option value="All">{`All Outlets`}</option>
+                        {outlets?.map((outlet) => {
+                          return (
+                            <option key={outlet?.outlet_id} value={outlet?.outlet_id}>
+                              {outlet?.outlet_name}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      <p className="text-xs text-red-500">{errors["productCategory"]?.message}</p>
+                    </div>
 
-                <div className="flex">
-                  <button
-                    disabled={fetching}
-                    className={`${
-                      fetching ? `bg-gray-200` : `bg-blue-600  focus:ring focus:ring-blue-500`
-                    }  px-12 py-2 rounded text-white font-semibold focus:outline-none mt-5 ml-5 h-auto`}
-                    onClick={handleSubmit(handleSubmitQuery)}
-                  >
-                    Query
-                  </button>
-                </div>
-              </div>
+                    <div className="flex">
+                      <button
+                        disabled={fetching}
+                        className={`${
+                          fetching ? `bg-gray-200` : `bg-blue-600  focus:ring focus:ring-blue-500`
+                        }  px-12 py-2 rounded text-white font-semibold focus:outline-none mt-5 ml-5 h-auto`}
+                        onClick={handleSubmit(handleSubmitQuery)}
+                      >
+                        Query
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
               {/* <div>
                 <button className="px-4 py-1 mt-6 ml-2 font-bold text-white bg-green-500 rounded">View Variance</button>
               </div> */}
@@ -385,7 +419,7 @@ const ManageProducts = ({ setReRun }) => {
               icon: "visibility",
               tooltip: `View Details`,
               iconProps: {
-                color: "primary",
+                color: "secondary",
               },
               onClick(e, row) {
                 const viewLink = `/products/view?product_id=${row?.product_id}`;

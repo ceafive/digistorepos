@@ -62,15 +62,12 @@ const PayButton = () => {
     setPayerAmountEntered(Number(parseFloat(amountReceivedFromPayer >= saleTotal ? 0 : saleTotal - amountReceivedFromPayer).toFixed(2)));
   }, [amountReceivedFromPayer, saleTotal]);
 
-  // console.log(payerAmountEntered);
+  // console.log(cartDiscountOnCartTotal);
 
   React.useEffect(() => {
     dispatch(calculateCartSubTotal());
-  }, [totalPriceInCart, deliveryCharge, cartDiscountOnCartTotal, cartPromoDiscount]);
-
-  React.useEffect(() => {
     dispatch(applyDiscount());
-  }, [totalPriceInCart, totalItemsInCart, cartItemDiscount, cartDiscount, cartPromoDiscount, dispatch]);
+  }, [totalPriceInCart, totalItemsInCart, cartItemDiscount, cartDiscount, deliveryCharge, cartDiscountOnCartTotal, cartPromoDiscount]);
 
   React.useEffect(() => {
     if (!totalItemsInCart) {
@@ -201,7 +198,7 @@ const PayButton = () => {
             className="font-bold text-red-500 focus:outline-none"
             onClick={() => {
               dispatch(onResetCart());
-              dispatch(setOutletSelected(null));
+              // dispatch(setOutletSelected(null));
               dispatch(setDeliveryTypeSelected(null));
             }}
           >

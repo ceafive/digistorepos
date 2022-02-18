@@ -21,7 +21,7 @@ function CategoriesScroll({ setOffset }) {
       product_category_id: "ALL",
       product_category: "ALL",
       product_category_description: "All Categories",
-      product_count: `${products?.length} Products`,
+      product_count: `${products?.length}`,
     },
     ...productCategories,
   ];
@@ -36,6 +36,7 @@ function CategoriesScroll({ setOffset }) {
 
             return (
               <Card
+                products={products}
                 key={productCatergory?.product_category_id}
                 productCatergory={productCatergory}
                 setOffset={setOffset}
@@ -53,7 +54,9 @@ function CategoriesScroll({ setOffset }) {
 const LeftArrow = () => <></>;
 const RightArrow = () => <></>;
 
-function Card({ productCatergory, setOffset, categorySelected, backgroundColor }) {
+function Card({ products, productCatergory, setOffset, categorySelected, backgroundColor }) {
+  // console.log(products);
+  // console.log(productCatergory);
   const dispatch = useDispatch();
 
   return (
@@ -69,7 +72,14 @@ function Card({ productCatergory, setOffset, categorySelected, backgroundColor }
       }}
     >
       <p>{upperCase(productCatergory?.product_category)}</p>
-      <p className="text-xs">{productCatergory?.product_count}</p>
+      <p className="text-xs">
+        {productCatergory?.product_category_id !== "ALL"
+          ? products?.filter((p) => p?.product_category_id === productCatergory?.product_category_id)?.length
+          : productCatergory?.product_count}{" "}
+        {/* hack to show number of products for ALL category */}
+        {"Products"}
+      </p>
+      {/* <p className="text-xs">{productCatergory?.product_count}</p> */}
     </button>
   );
 }

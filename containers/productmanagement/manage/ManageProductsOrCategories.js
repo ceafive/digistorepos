@@ -39,7 +39,10 @@ const ManageProductsOrCategories = () => {
           setFetching(true);
         }
 
-        const allProductsRes = await axios.post("/api/products/get-products", { user });
+        const allProductsRes = await axios.post("/api/products/get-outlet-products", {
+          merchant: user?.user_merchant_id,
+          outlet: "ALL",
+        });
         const { data: allProductsResData } = await allProductsRes.data;
         // console.log({ allProductsResData });
         dispatch(setManageProductProducts(filter(allProductsResData, (o) => Boolean(o))));

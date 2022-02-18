@@ -2,8 +2,8 @@ import Modal from "components/Modal";
 import AddBooking from "components/Product/AddBooking";
 import AddProductWithVariants from "components/Product/AddProductWithVariants";
 import ProductDetails from "components/Product/ProductDetails";
-import { addItemToCart, increaseTotalItemsInCart } from "features/cart/cartSlice";
-import { currentSearchTerm, openProductModal, openVariantsModal, setProductToView } from "features/products/productsSlice";
+import { addItemToCart, increaseTotalItemsInCart, onChangeOutlet, onClickToCheckout, onResetCart, setOutletSelected } from "features/cart/cartSlice";
+import { currentSearchTerm, openProductModal, openVariantsModal, setProductsOnHold, setProductToView } from "features/products/productsSlice";
 import { filter, take } from "lodash";
 import React from "react";
 import ReactPaginate from "react-paginate";
@@ -33,6 +33,8 @@ const ProductsSelection = () => {
   const productModalOpen = useSelector((state) => state.products.productModalOpen);
   const productWithVariantsOpen = useSelector((state) => state.products.productWithVariantsOpen);
   const productsInCart = useSelector((state) => state.cart.productsInCart);
+  const outlets = useSelector((state) => state.products.outlets);
+  const outletSelected = useSelector((state) => state.cart.outletSelected);
 
   // Compnent State
   const [searchProductsDisplay, setSearchProductsDisplay] = React.useState(products);
@@ -236,7 +238,34 @@ const ProductsSelection = () => {
               )}
               {/* search results */}
 
+              {outlets.length > 1 && (
+                <div className="mt-4">
+                  <h1 className="mb-1 font-bold text-black">Outlets</h1>
+                  <div className="grid grid-cols-3 gap-3 xl:grid-cols-3 2xl:grid-cols-5">
+                    {outlets.map((outlet) => {
+                      return (
+                        <button
+                          // disabled={!!deliveryCharge} //TODO: disable changing outlets when delivery charge has been calculated
+                          key={outlet.outlet_name}
+                          className={`${
+                            outletSelected?.outlet_name === outlet.outlet_name ? "ring-2" : ""
+                          } w-36 h-20 bg-blueGray-900 text-white  focus:outline-none rounded shadow overflow-hidden font-bold px-2 break-words`}
+                          onClick={() => {
+                            dispatch(setOutletSelected(outlet));
+                            dispatch(onClickToCheckout(false));
+                            dispatch(onChangeOutlet());
+                          }}
+                        >
+                          {outlet.outlet_name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Categories */}
+              <h1 className="mt-3 font-bold text-black">Categories</h1>
               <CategoriesScroll setOffset={setOffset} />
               {/* <div className="flex justify-start items-center w-full mt-4">
                 <div className="grid grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-5">

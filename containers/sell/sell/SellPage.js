@@ -6,23 +6,7 @@ import ProcessSale from "containers/sell/sell/ProcessSale";
 // import InventoryDetails from "components/Product/InventoryDetails";
 // import ProcessSale from "components/Sell/ProcessSale";
 import ProductsSelection from "containers/sell/sell/ProductsSelection";
-import {
-  addCustomer,
-  onClickToCheckout,
-  setActivePayments,
-  setAutoDiscount,
-  setBookingClientInformation,
-  setCartPromoCode,
-  setDeliveryCharge,
-  setDeliveryLocationInputted,
-  setDeliveryNotes,
-  setDeliveryTypes,
-  setDeliveryTypeSelected,
-  setOutletSelected,
-  setPaymentMethodSet,
-  setPromoAmount,
-  setPromoType,
-} from "features/cart/cartSlice";
+import { setActivePayments, setAutoDiscount, setDeliveryTypes, setOutletSelected } from "features/cart/cartSlice";
 import { onSetProductCategories, openInventoryModal, productsAdded, setAllOutlets } from "features/products/productsSlice";
 import { motion } from "framer-motion";
 import { filter, intersectionWith, upperCase } from "lodash";
@@ -61,10 +45,10 @@ const SellPage = () => {
         const { user_assigned_outlets, user_merchant_group, user_merchant_id } = user;
 
         // const allProductsRes = await axios.post("/api/sell/sell/get-all-products", { merchant: user_merchant_id });
-        const allCategoriesRes = await axios.post("/api/sell/sell/get-all-categories", { user });
         // const { data: allProductsResData } = await allProductsRes.data;
-        const { data: allCategoriesResData } = await allCategoriesRes.data;
         // dispatch(productsAdded(filter(allProductsResData, (o) => Boolean(o))));
+        const allCategoriesRes = await axios.post("/api/sell/sell/get-all-categories", { user });
+        const { data: allCategoriesResData } = await allCategoriesRes.data;
         dispatch(onSetProductCategories(filter(allCategoriesResData, (o) => Boolean(o))));
         setFetching(false);
 

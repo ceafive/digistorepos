@@ -736,7 +736,8 @@ const EditProductNoVariants = ({ setGoToVarianceConfig }) => {
               <h1 className="font-bold">Product Gallery</h1>
               <hr className="border-gray-500" />
               <p className="my-2 text-sm font-bold text-gray-600">Upload product images, max of {maxNumber} images (Optional)</p>
-              <p className="mt-2 text-sm font-bold text-red-500">Minimum Size: 800x800</p>
+              <p className="mt-2 text-sm font-bold text-red-500">Minimum Dimensions: 800x800</p>
+              <p className="mt-2 text-sm font-bold text-red-500">Maximum Size: 2MB</p>
 
               <div className="bg-white m-2" style={{ height: 200 }}>
                 <div className="flex flex-col justify-center items-center border border-gray-200 h-full w-full">

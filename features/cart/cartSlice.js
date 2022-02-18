@@ -119,6 +119,17 @@ const cartSlice = createSlice({
       const resetState = { ...initialState };
       resetState.activePayments = state.activePayments;
       resetState.deliveryTypes = state.deliveryTypes;
+      resetState.outletSelected = state.outletSelected;
+      resetState.hasAutoDiscount = state.hasAutoDiscount;
+
+      return resetState;
+    },
+    onChangeOutlet: (state) => {
+      const resetState = { ...initialState };
+      resetState.activePayments = state.activePayments;
+      resetState.deliveryTypes = state.deliveryTypes;
+      resetState.outletSelected = state.outletSelected;
+      resetState.hasAutoDiscount = state.hasAutoDiscount;
 
       return resetState;
     },
@@ -214,8 +225,10 @@ const cartSlice = createSlice({
       else state.cartItemDiscount = action.payload;
     },
     applyDiscount(state) {
-      const { discountAmount, valueReturn } = calculateDiscount(state.cartSubTotal, state.cartDiscountType, state.cartDiscount);
-      // const { discountAmount, valueReturn } = calculateDiscount(state.totalPriceInCart, state.cartDiscountType, state.cartDiscount);
+      const { discountAmount, valueReturn } = calculateDiscount(state.totalPriceInCart, state.cartDiscountType, state.cartDiscount);
+      // const { discountAmount, valueReturn } = calculateDiscount(state.cartSubTotal, state.cartDiscountType, state.cartDiscount);
+
+      // console.log({ discountAmount, valueReturn });
 
       const newvalue = valueReturn - state.cartPromoDiscount;
 
@@ -410,5 +423,6 @@ export const {
   setAutoDiscount,
   setRewardPoints,
   setBookingClientInformation,
+  onChangeOutlet,
 } = cartSlice.actions;
 export default cartSlice.reducer;

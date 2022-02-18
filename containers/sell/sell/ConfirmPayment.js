@@ -155,7 +155,7 @@ const ConfirmPayment = ({
                     dispatch(onClickToCheckout(false));
                     dispatch(onResetCart());
                     dispatch(setProductsOnHold());
-                    dispatch(setOutletSelected(null));
+                    // dispatch(setOutletSelected(null));
                     setReFetch(new Date());
                   })()
                 : setTicking(true);

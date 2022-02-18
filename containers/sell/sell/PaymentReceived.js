@@ -238,7 +238,7 @@ const PaymentReceived = ({ printing, handlePrint, handleSendNotification, sendin
             dispatch(onClickToCheckout(false));
             dispatch(onResetCart());
             dispatch(setProductsOnHold());
-            dispatch(setOutletSelected(null));
+            // dispatch(setOutletSelected(null));
             setReFetch(new Date());
           }}
         >

@@ -243,7 +243,7 @@ const ProcessPayment = ({
       </div>
       {/* Pay Field */}
       {/* Outlets */}
-      {/* {outlets.length > 1 && (
+      {/* {outlets.length > 1 && ( 
         <div className="mt-4">
           <h1 className="mb-1 font-semibold">Outlets</h1>
           <div className="grid grid-cols-3 gap-3 xl:grid-cols-3 2xl:grid-cols-4">
