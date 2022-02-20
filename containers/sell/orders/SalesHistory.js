@@ -489,7 +489,7 @@ const SalesHistory = () => {
           data={orderHistory.map((o) => ({ ...o, tableData: {} }))}
           options={{
             padding: `dense`,
-            // exportButton: true,
+            exportButton: true,
             filtering: true,
           }}
           actions={[
