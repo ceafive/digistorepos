@@ -211,7 +211,10 @@ const CustomersTable = ({ setReRun }) => {
           options={{
             selection: false,
             padding: `dense`,
+            exportButton: true,
+            filtering: true,
           }}
+         
           actions={[
             {
               icon: () => <i className="text-base text-green-600 fas fa-redo" />,
