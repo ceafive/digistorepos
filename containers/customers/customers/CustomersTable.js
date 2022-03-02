@@ -135,6 +135,8 @@ const CustomersTable = ({ setReRun }) => {
         return <Dropdown rowData={rowData} buttons={() => buttons(rowData)} />;
       },
       disableClick: true,
+      export: true,
+      emptyRowsWhenPaging: false,
     },
   ];
 
@@ -213,8 +215,11 @@ const CustomersTable = ({ setReRun }) => {
             padding: `dense`,
             exportButton: true,
             filtering: true,
+            exportFileName: "Customers",
+            exportAllData: true,
+            pageSizeOptions: [5, 10, 20, 50, 100, 200, 500],
+            emptyRowsWhenPaging: false,
           }}
-         
           actions={[
             {
               icon: () => <i className="text-base text-green-600 fas fa-redo" />,
